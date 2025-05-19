@@ -1,0 +1,18 @@
+{
+  "cwd": "C:\\xampp\\htdocs\\Inven_MI",
+  "type": [
+    "web"
+  ],
+  "name": "INVENTORY",
+  "framework": "react",
+  "template": "single-view",
+  "bundler": "vite",
+  "cssPreProcessor": false,
+  "theming": {
+    "customColor": true,
+    "color": "#007aff",
+    "darkMode": false,
+    "iconFonts": true
+  },
+  "customBuild": false
+}

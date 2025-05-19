@@ -1,0 +1,85 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.navbar[class*="bg-color-"] {
+    --f7-navbar-bg-color: var(--f7-theme-color-bg-color);
+  }
+
+/* app.css */
+@media screen and (-webkit-min-device-pixel-ratio: 0) and (min-device-width: 0) {
+  /* Specific for iOS devices */
+  .ios-specific {
+    font-size: 0.875rem; /* Example: smaller font size */
+  }
+  
+  .ios-image {
+    width: 40px; /* Smaller image size */
+  }
+
+  .ios-chevron {
+    font-size: 2rem; /* Smaller chevron size */
+  }
+}
+
+.custom-dialog {
+  width: 20rem; /* Set the desired width of the dialog */
+  background-color: white;
+  left: 50%;
+}
+
+.custom-dialog-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+@media (min-width : 320px){
+  
+.custom-dialog {
+  left: 46%;
+  width: 19rem
+  }  
+}
+@media (min-width : 375px){
+  
+  .custom-dialog {
+    left: 45%;
+    width: 20rem
+  } 
+}
+
+@media (min-width : 425px){
+  
+  .custom-dialog {
+    left: 36%;
+    width: 25rem
+  } 
+}
+
+@media (min-width : 450px){
+  
+  .custom-dialog {
+    left: 40%;
+    width: 25rem
+  } 
+}
+
+@media (min-width : 525px){
+  
+  .custom-dialog {
+    left: 45%;
+    width: 25rem
+  } 
+}
+
+.custom-dialog img {
+  border-radius: 15px;
+  width: 100%;
+}
+
+
+body{
+  font: Inter;
+}
