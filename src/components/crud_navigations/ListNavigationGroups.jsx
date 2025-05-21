@@ -1,20 +1,20 @@
-import React, { useEffect, useState, useRef } from 'react'
-import api from '../../api/api'
-import SearchBar from '../component/SearchBar'
-import { Page, Block, Fab, Icon } from 'framework7-react'
-import ScrollPagination from '../component/ScrollPagination'
-import Loader from '../component/Loader'
-import Transition from '../component/Transition'
-import { useNavigate } from 'react-router-dom'
-import FlyingButton from '../component/FlyingButton'
-import Swal from 'sweetalert2'
-import Layout from '../component/Layout'
-import { encrypting } from '../../helper/EncryptHelper'
-import UserCards from '../component/cards/UserCards'
-import RestoreButton from '../component/RestoreButton'
-import DataEmpty from '../component/DataEmpty'
+import React, { useEffect, useState, useRef } from 'react';
+import api from '../../api/api';
+import SearchBar from '../component/SearchBar';
+import { Page, Block, Fab, Icon } from 'framework7-react';
+import ScrollPagination from '../component/ScrollPagination';
+import Loader from '../component/Loader';
+import Transition from '../component/Transition';
+import { useNavigate } from 'react-router-dom';
+import FlyingButton from '../component/FlyingButton';
+import Swal from 'sweetalert2';
+import Layout from '../component/Layout';
+import { encrypting } from '../../helper/EncryptHelper';
+import NavigationCards from '../component/cards/NavigationsGroupCards';
+import RestoreButton from '../component/RestoreButton';
+import DataEmpty from '../component/DataEmpty';
 
-function UserList() {
+function ListNavigationGroup() {
     const [items, setItems] = useState([])
     const [searchQuery, setSearchQuery] = useState('')
     const [searchTerm, setSearchTerm] = useState('')
@@ -28,16 +28,23 @@ function UserList() {
         fetchItems()
     }, [searchTerm])
 
+    
+
     const fetchItems = async () => {
         try {
+            // try {
+            //     const response = await api.get(endpoint);
+            //     console.log(response.data);
+            // } catch (error) {
+            //     console.error('API Error:', error.response?.data || error.message);
+            // }
             setLoading(true)
-            const response = await api.get(searchTerm ? `inventUser/${searchTerm}` : `inventUser`)
+            const response = await api.get(searchTerm ? `inventNavigationGroup/${searchTerm}` : `inventNavigationGroup`)
             const data = response.data.data
-            console.log('fetched items: ', data.data)
             setItems(data.data);  
             setNextCursor(data.next_cursor)
         } catch (error) {
-            console.error('Error fetching items:', error)
+
         } finally {
             setLoading(false)
             setTimeout(() => setContentVisible(true), 50)
@@ -48,15 +55,13 @@ function UserList() {
         if (!nextCursor || loading) return;
         try {
             setLoading(true)
-            const response = await api.get(
-                searchTerm ? `inventUser/${searchTerm}` : `inventUser`
+            const response = await api.get('/inventNavigationGroup'
                 , {
                 params: {
                     cursor: nextCursor
                 }
             })
             const data = response.data.data
-            console.log('fetched items: ', data.data)
             setItems((prevItems) => {
                 const existingIds = new Set(prevItems.map(item => item.id));
                 const newItems = data.data.filter(item => !existingIds.has(item.id));
@@ -64,7 +69,7 @@ function UserList() {
             });
             setNextCursor(data.next_cursor);
         } catch (error) {
-            console.error('Error fetching more items:', error)
+
         } finally {
             setLoading(false)
             setTimeout(() => setContentVisible(true), 50)
@@ -119,9 +124,9 @@ function UserList() {
         const encryptingID = await encrypting(id)
         navigate(`/user/update-user/${encryptingID}`)
     }
-
+    
     return (
-        <Layout title={'List User'}>
+        <Layout title={'List Navigations'}>
             <SearchBar
                 onChange={handleSearchChange}
                 disable={loading}
@@ -129,14 +134,14 @@ function UserList() {
             />
             <Block>
                 <div className='ms-3 mb-6 flex justify-between'>
-                    <p className='text-xl font-semibold capitalize'>Data User</p>
+                    <p className='text-xl font-bold capitalize'>Navigation Group</p>
                     <RestoreButton goTo={'/user/restore-user'} />
                 </div>                
                 <Transition contentVisible={contentVisible}>
                     <ScrollPagination fetchMoreItems={fetchMoreItems} loading={loading} nextCursor={nextCursor}>
                         {
                             ( items?.map((item) => (
-                                <UserCards
+                                <NavigationCards
                                 key={item.id}
                                 item={item}
                                 goToDetail={goToDetail}
@@ -157,4 +162,4 @@ function UserList() {
     )
 }
 
-export default UserList
+export default ListNavigationGroup;

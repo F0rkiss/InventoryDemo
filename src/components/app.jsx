@@ -12,6 +12,7 @@ import RequireAuth from '../auth/RequireAuth.jsx';
 import store from '../js/store';
 import '../css/app.css';
 import Loader from './component/Loader.jsx';
+import ListNavigationGroup from './crud_navigations/ListNavigationGroups.jsx';
 
 // Lazy load components
 const BarangList = lazy(() => import('./crud_barang/BarangList.jsx'));
@@ -37,6 +38,8 @@ const DetailUser = lazy(() => import('./crud_user/DetailUser.jsx'));
 const CreateUser = lazy(() => import('./crud_user/CreateUser.jsx'));
 const UpdateUser = lazy(() => import('./crud_user/UpdateUser.jsx'));
 const RestoreUser = lazy(() => import('./crud_user/RestoreUser.jsx'));
+
+const NavigationGroupList = lazy(() => import('./crud_navigations/ListNavigationGroups.jsx'));
 
 const ListDepartment = lazy(() => import('./crud_department/ListDepartment.jsx'));
 const UpdateDepartment = lazy(() => import('./crud_department/UpdateDepartment.jsx'));
@@ -128,6 +131,7 @@ const MyApp = () => {
                   <Route path='/department/create-department' element={<CreateDepartment />} />
                   <Route path='/department/restore-department' element={<RestoreDepartment/>} />
 
+                  {/* Make Request  */}
                   <Route path='/make-request/list-make-request' element={<MrList />} />
                   <Route path='/make-request/done-make-request/:id' element={<DoneMR />} />
                   {/* <Route path='/make-request/restore-make-request/' element={<RestoreMR/>} /> */}
@@ -143,6 +147,7 @@ const MyApp = () => {
                   <Route path='/user/create-user' element={<CreateUser />} />
                   <Route path='/user/restore-user' element={<RestoreUser />} />
 
+                  <Route path='/navigations/list-navigations' element={<ListNavigationGroup/>}/>
                 </Route>
 
                 {/* User Routes */}

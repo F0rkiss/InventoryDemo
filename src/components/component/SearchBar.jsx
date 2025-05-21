@@ -11,7 +11,7 @@ function SearchBar({values, disable, onSearch, onChange, className, withBlock = 
     <>
     { withBlock ?
       (<Block>
-        <div className={`bg-white px-3 py-2 rounded-full flex items-center drop-shadow-md font-inter ${className}`}>
+        <div className={`bg-white px-3 py-2 rounded-full flex items-center border border-slate-400/20 font-inter${className}`}>
           <input 
             type='text' 
             placeholder='Search' 
@@ -27,7 +27,7 @@ function SearchBar({values, disable, onSearch, onChange, className, withBlock = 
         </div>
       </Block>) :
       (
-        <div className={`bg-white px-3 py-2 rounded-full flex items-center drop-shadow-md font-inter ${className}`}>
+        <div className={`bg-white px-3 py-2 rounded-full flex items-center drop-shadow-lg font-inter ${className}`}>
           <input 
             type='text' 
             placeholder='Search' 
