@@ -87,21 +87,21 @@ function Login() {
     };
     
     return (
-        <Page className='font-inter bg-custom-gray'>
+        <Page className='font-inter bg-stone-300'>
             <Block>
                 <div className="px-4">
-                    <div className="mt-52  bg-hitam-mi rounded-2xl text-custom-gray shadow-md">
-                        <div className='flex flex-col py-12 w-11/12 justify-center'>
+                    <div className="my-52 bg-hitam-mi rounded-2xl text-custom-gray shadow-lg w-auto">
+                        <div className='flex flex-col py-12 w-11/12'>
                             <div className='ms-12 self-center'>
                                 <img src={gambar} alt="Logo" className='max-w-48 mb-8 max-xs:max-w-36 max-xs:me-6' />
                             </div> 
                             <form onSubmit={handleSubmit}>
                                 <div className='ms-8 mb-6'>
-                                    <p className='mb-2 font-light'>Kode Employee</p>
+                                    <p className='mb-2 font-light'>Employee Code</p>
                                     <input 
                                         type="text" 
                                         className='mt-12 text-lg w-full'
-                                        placeholder='Kode Employee'
+                                        placeholder='Employee Code'
                                         value={credential.employee_code}
                                         onChange={handleInputChange('employee_code')}
                                         required

@@ -36,13 +36,6 @@ function DetailUser() {
 
     const fetchItems = async () => {
         try {
-            try {
-                const response = await api.get(endpoint);
-                console.log(response.data);
-            } catch (error) {
-                console.error('API Error:', error.response?.data || error.message);
-            }
-            
             setLoading(true)
             const response = await api.get(`/inventUser-detail/${decryptedId}`)
             const data = response.data.data

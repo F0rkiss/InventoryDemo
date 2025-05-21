@@ -1,5 +1,6 @@
 import React from 'react'
 import CustomNavbar from './CustomNavbar'
+import { Helmet } from 'react-helmet';
 
 function Layout({title, children}) {
   return (
@@ -7,7 +8,11 @@ function Layout({title, children}) {
     //     <CustomNavbar title={title} />
     //     { children }
     // </Page>
-      <div id='layouts' className="bg-custom-gray overflow-y-scroll font-inter h-screen">
+    
+      <div id='layouts' className="bg-gray-100 overflow-y-scroll font-inter h-screen">
+        <Helmet>
+          <title>{title}</title>
+        </Helmet>
         <CustomNavbar title={title} />
         { children }
       </div>

@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 const CustomSidebar = ({ showProfile = true, navOpen, setNavOpen }) => {
     const [isOpen, setIsOpen] = useState(false)
     const [opens, setOpens] = useState(false)
-    const { name, email, role } = useAuth();
+    const { name, employee_code, role } = useAuth();
     const handleNavigation = useNavigate()
 
     const logout = () => {
@@ -46,7 +46,7 @@ const CustomSidebar = ({ showProfile = true, navOpen, setNavOpen }) => {
             ${opens ? 'opacity-50' : 'opacity-0 pointer-events-none'}`}
                 onClick={() => [setOpens(false), setTimeout(() => setNavOpen(false), 350)]}
             />
-            <div className={`bg-white absolute top-0 left-0 z-50 h-screen transition-all ease-in-out duration-300 ${opens ? 'w-64 overflow-y-scroll max-h-full' : 'w-0'} overflow-hidden rounded-r-3xl`}>
+            <div className={`bg-white absolute top-0 left-0 z-50 h-screen transition-all ease-in-out duration-300 ${opens ? 'w-64 overflow-y-scroll max-h-full' : 'w-0'} overflow-hidden `}>
                 <div className="navbar bg-white flex flex-col">
                     <h2 className="ms-4 font-bold font-inter text-xl mt-5">INVENTORY</h2>
                     <hr className="w-full mt-4" />
@@ -59,19 +59,19 @@ const CustomSidebar = ({ showProfile = true, navOpen, setNavOpen }) => {
                     <div className="mx-2 my-3 bg-coklat-mi rounded-md">
                         <button className="flex bg-coklat-mi rounded-md items-center ios-specific py-3 cursor-pointer text-white w-full justify-between" onClick={toggleAccordion}>
                             <div className='flex mt-1 max-w-40'>
-                                <img className="ios-image ms-2 translate-y-1" style={{ maxWidth: '40px', maxHeight: '40px' }} src={userIcon} alt="Profile" />
+                                <img className="ios-image ms-3 translate-y-1" style={{ maxWidth: '40px', maxHeight: '40px' }} src={userIcon} alt="Profile" />
                                 <div className="name flex flex-col ms-3 translate-y">
                                     <p className="self-start font-inter font-bold text-base capitalize text-ellipsis whitespace-nowrap overflow-hidden max-w-40">{name}</p>
-                                    <p className="self-start font-inter font-normal text-sm text-ellipsis whitespace-nowrap overflow-hidden max-w-40">{email}</p>
+                                    <p className="self-start font-inter font-normal text-sm text-ellipsis whitespace-nowrap overflow-hidden max-w-40">{employee_code}</p>
                                 </div>
                             </div>
-                            <i className={`bx bx-chevron-${isOpen ? 'up' : 'down'} text-4xl text-button-mi ios-chevron ms-1`}></i>
+                            <i className={`bx bx-chevron-${isOpen ? 'up' : 'down'} text-4xl text-button-mi ios-chevron me-1`}></i>
                         </button>
                         <hr className={`border-gray-400 transition-opacity duration-700 mb-2 ${isOpen ? 'opacity-100' : 'opacity-0'}`}
                             onTransitionEnd={() => { if (!isOpen) setIsOpen(null); }}
                         />
                         <div className={`transition-max-height duration-1000 ease-in-out overflow-hidden ${isOpen ? 'max-h-96' : 'max-h-0'}`}>
-                            <div className={`bg-coklat-mi rounded-md mt-2 pb-6  transition-opacity duration-700 ${isOpen ? 'opacity-100' : 'opacity-0'}`}>
+                            <div className={`bg-coklat-mi rounded-md mt-2 pb-6  transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0'}`}>
                                 <button className={`ms-3 text-white flex ${role === 'user' && 'hidden'}`} onClick={() => handleNavigation('/make-request/personal-make-request')}>
                                     <i className="bx bx-message-add text-2xl me-3 mb-2" />
                                     <span className="text-lg leading-8">Make Request Anda</span>
@@ -130,9 +130,9 @@ const CustomSidebar = ({ showProfile = true, navOpen, setNavOpen }) => {
                                     <p className="text-lg font-medium">Data User</p>
                                 </div>
                             </button>
-                            <button className="w-100 text-start" onClick={() => handleNavigation('/user/list-user')}>
-                                <div className={`flex items-center mb-1 w-60 py-1 rounded-r-full ${isActive('/user') ? 'bg-coklat-mi text-white' : ''} active:bg-coklat-mi active:text-white`}>
-                                    < i class='bx bx-lock text-3xl ms-5 me-4'  ></i> 
+                            <button className="w-100 text-start" onClick={() => handleNavigation('/navigations/list-navigations')}>
+                                <div className={`flex items-center mb-1 w-60 py-1 rounded-r-full ${isActive('/navigations/list-navigations') ? 'bg-coklat-mi text-white' : ''} active:bg-coklat-mi active:text-white`}>
+                                    < i class='bx bx-navigation text-3xl ms-5 me-4'  ></i> 
                                     <p className="text-lg font-medium">User Navigation</p>
                                 </div>
                             </button>
