@@ -40,6 +40,8 @@ const UpdateUser = lazy(() => import('./crud_user/UpdateUser.jsx'));
 const RestoreUser = lazy(() => import('./crud_user/RestoreUser.jsx'));
 
 const NavigationGroupList = lazy(() => import('./crud_navigations/ListNavigationGroups.jsx'));
+const CreateNavigationGroup = lazy(() => import('./crud_navigations/CreateNavigationGroups.jsx'));
+const UpdateNavigationGroup = lazy(() => import('./crud_navigations/UpdateNavigationGroups.jsx'));
 
 const ListDepartment = lazy(() => import('./crud_department/ListDepartment.jsx'));
 const UpdateDepartment = lazy(() => import('./crud_department/UpdateDepartment.jsx'));
