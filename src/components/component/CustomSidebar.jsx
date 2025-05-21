@@ -136,6 +136,12 @@ const CustomSidebar = ({ showProfile = true, navOpen, setNavOpen }) => {
                                     <p className="text-lg font-medium">User Navigation</p>
                                 </div>
                             </button>
+                            <button className="w-100 text-start" onClick={() => handleNavigation('/role/list-role')}>
+                                <div className={`flex items-center mb-1 w-60 py-1 rounded-r-full ${isActive('/role/list-role') ? 'bg-coklat-mi text-white' : ''} active:bg-coklat-mi active:text-white`}>
+                                    < i className='bx  bx-tag text-3xl ms-5 me-4' ></i> 
+                                    <p className="text-lg font-medium">Role</p>
+                                </div>
+                            </button>
                             <button className="w-100 text-start" onClick={() => handleNavigation('/billing/list-billing')}>
                                 <div className={`flex items-center mb-1 w-60 py-1 rounded-r-full ${isActive('/billing') ? 'bg-coklat-mi text-white' : ''} active:bg-coklat-mi active:text-white`}>
                                     <i className="bx bx-spreadsheet text-3xl ms-5 me-4"></i>
