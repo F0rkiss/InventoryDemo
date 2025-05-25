@@ -14,7 +14,7 @@ import { DecryptID, encrypting } from '../../helper/EncryptHelper';
 import MakeHistoryForms from '../component/forms/MakeHistoryForms';
 import reactSvgToImage from 'react-svg-to-image';
 import Swal from 'sweetalert2';
-import DateFormatToIDN from '../../helper/DateFormatToIDN';
+import DateFormatToIDN from '../../helper/DateFormatHelper';
 
 const tanggalHistoryToIndonesian = (dateString) => {
     const date = new Date(dateString);

@@ -8,17 +8,17 @@
             const token = localStorage.getItem('authToken');
             return token ? { token } : null;
         });
-
-        const getRoleFromToken = (token) => {
-            if (!token) return null;
+        
+        // const getRoleFromToken = (token) => {
+        //     if (!token) return null;
     
-            try {
-                const decoded = jwtDecode(token);
-                return decoded.role;
-            } catch (error) {
-                return null;
-            }
-        };
+        //     try {
+        //         const decoded = jwtDecode(token);
+        //         return decoded.role;
+        //     } catch (error) {
+        //         return null;
+        //     }
+        // };
 
         const getFromToken = (key, token) => {
             if (!token) return null;
@@ -34,10 +34,9 @@
     
 
         const token = localStorage.getItem('authToken');
-        const role = getRoleFromToken(token);    
-        const name = getFromToken('user',token)
-        const employee_code = getFromToken('EmpCode',token)
-    
+        const role = getFromToken('role', token);
+        const name = getFromToken('user', token);
+        const email = getFromToken('email', token);
 
         useEffect(() => {
             // Update localStorage whenever auth changes
@@ -55,7 +54,7 @@
         // }
 
         return (
-            <AuthContext.Provider value={{ auth, setAuth, role, name, employee_code }}>
+            <AuthContext.Provider value={{ auth, setAuth, role, name, email }}>
                 {children}
             </AuthContext.Provider>
         );

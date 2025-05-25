@@ -32,12 +32,6 @@ function ListNavigationGroup() {
 
     const fetchItems = async () => {
         try {
-            // try {
-            //     const response = await api.get(endpoint);
-            //     console.log(response.data);
-            // } catch (error) {
-            //     console.error('API Error:', error.response?.data || error.message);
-            // }
             setLoading(true)
             const response = await api.get(searchTerm ? `inventNavigationGroup/${searchTerm}` : `inventNavigationGroup`)
             const data = response.data.data
@@ -55,7 +49,8 @@ function ListNavigationGroup() {
         if (!nextCursor || loading) return;
         try {
             setLoading(true)
-            const response = await api.get('/inventNavigationGroup'
+            const response = await api.get(
+                searchTerm ? `inventNavigationGroup/${searchTerm}` : `inventNavigationGroup`
                 , {
                 params: {
                     cursor: nextCursor
@@ -89,7 +84,7 @@ function ListNavigationGroup() {
     const deleteItems = async (id, name) => {
         try {
             const result = await Swal.fire({
-                title: `Apakah Anda Mau Menghapus User ${name}`,
+                title: `Apakah Anda ingin menghapus navigasi ini?`,
                 icon: 'question',
                 showDenyButton: true,
                 confirmButtonText: 'Yes',
@@ -102,7 +97,7 @@ function ListNavigationGroup() {
             });
 
             if (result.isConfirmed) {
-                await api.delete(`/user/${id}`);
+                await api.delete(`inventNavigationGroup-delete/${id}`);
                 setItems(items.filter((item) => item.id !== id));
                 Swal.fire('Terhapus!', '', 'success');
             }
@@ -117,12 +112,12 @@ function ListNavigationGroup() {
 
     const goToDetail = async (id) => {
         const encryptingID = await encrypting(id)
-        navigate(`/user/detail-user/${encryptingID}`)
+        navigate(`/navigations/detail-navigations/${encryptingID}`)
     } 
 
     const goToUpdate = async(id) => {
         const encryptingID = await encrypting(id)
-        navigate(`/user/update-user/${encryptingID}`)
+        navigate(`/navigations/update-navigations/${encryptingID}`)
     }
     
     return (
@@ -135,7 +130,7 @@ function ListNavigationGroup() {
             <Block>
                 <div className='ms-3 mb-6 flex justify-between'>
                     <p className='text-xl font-bold capitalize'>Navigation Group</p>
-                    <RestoreButton goTo={'/user/restore-user'} />
+                    {/* <RestoreButton goTo={'/user/restore-user'} /> */}
                 </div>                
                 <Transition contentVisible={contentVisible}>
                     <ScrollPagination fetchMoreItems={fetchMoreItems} loading={loading} nextCursor={nextCursor}>

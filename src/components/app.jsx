@@ -21,7 +21,13 @@ const UpdateBarang = lazy(() => import('./crud_barang/UpdateBarang.jsx'));
 const DetailBarang = lazy(() => import('./crud_barang/DetailBarang.jsx'));
 const RestoreBarang = lazy(() => import('./crud_barang/RestoreBarang.jsx'))
 
+const ListJenisBarang = lazy(() => import('./crud_jenis_barang/ListJenisBarang.jsx'));
+const CreateJenisBarang = lazy(() => import('./crud_jenis_barang/CreateJenisBarang.jsx'));
+const UpdateJenisBarang = lazy(() => import('./crud_jenis_barang/UpdateJenisBarang.jsx'));
+const DetailJenisBarang = lazy(() => import('./crud_jenis_barang/DetailJenisBarang.jsx'));
+
 const CategoryList = lazy(() => import('./crud-category/CategoryList.jsx'));
+const DetailCategory = lazy(() => import('./crud-category/DetailCategory.jsx'));
 const UpdateCategory = lazy(() => import('./crud-category/UpdateCategory.jsx'));
 const CreateCategory = lazy(() => import('./crud-category/CreateCategory.jsx'));
 const RestoreCategory = lazy(() => import('./crud-category/RestoreCategory.jsx'))
@@ -48,6 +54,7 @@ const RestoreRole = lazy(() => import('./crud_role/RestoreRole.jsx'));
 const NavigationGroupList = lazy(() => import('./crud_navigations/ListNavigationGroups.jsx'));
 const CreateNavigationGroup = lazy(() => import('./crud_navigations/CreateNavigationGroups.jsx'));
 const UpdateNavigationGroup = lazy(() => import('./crud_navigations/UpdateNavigationGroups.jsx'));
+const DetailNavigationGroup = lazy(() => import('./crud_navigations/DetailNavigationGroups.jsx'));
 
 const ListDepartment = lazy(() => import('./crud_department/ListDepartment.jsx'));
 const UpdateDepartment = lazy(() => import('./crud_department/UpdateDepartment.jsx'));
@@ -115,6 +122,11 @@ const MyApp = () => {
                   <Route path="/barang/create-barang" element={<CreateBarang />} />
                   <Route path="/barang/update-barang/:id" element={<UpdateBarang />} />
                   <Route path='/barang/restore-barang' element={<RestoreBarang/>}/>
+
+                  <Route path='/jenis-barang/list-jenis-barang' element={<ListJenisBarang/>} />
+                  <Route path='/jenis-barang/create-jenis-barang' element={<CreateJenisBarang/>} />
+                  <Route path='/jenis-barang/update-jenis-barang/:id' element={<UpdateJenisBarang/>} />
+                  <Route path='/jenis-barang/detail-jenis-barang/:id' element={<DetailJenisBarang/>} />
                   
                   <Route path='/billing/list-billing' element={<ListBilling/>}/>
                   <Route path='/billing/create-billing' element={<CreateBilling/>} />
@@ -123,6 +135,7 @@ const MyApp = () => {
                   <Route path='/billing/detail-billing/:id' element={<DetailBilling/>}/>
 
                   <Route path="/category/list-category" element={<CategoryList />} />
+                  <Route path="/category/detail-category/:id" element={<DetailCategory />} />
                   <Route path="/category/update-category/:id" element={<UpdateCategory />} />
                   <Route path="/category/create-category" element={<CreateCategory />} />
                   <Route path="/category/restore-category" element={<RestoreCategory />} />
@@ -162,6 +175,9 @@ const MyApp = () => {
                   <Route path='/role/restore-role' element={<RestoreRole />} />
 
                   <Route path='/navigations/list-navigations' element={<ListNavigationGroup/>}/>
+                  <Route path='/navigations/create-navigations' element={<CreateNavigationGroup/>}/>
+                  <Route path='/navigations/update-navigations/:id' element={<UpdateNavigationGroup/>}/>
+                  <Route path='/navigations/detail-navigations/:id' element={<DetailNavigationGroup/>}/>
                 </Route>
 
                 {/* User Routes */}
