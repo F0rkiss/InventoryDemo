@@ -8,8 +8,7 @@ import Layout from '../component/Layout'
 import { DecryptID } from '../../helper/EncryptHelper'
 import Swal from 'sweetalert2'
 
-
-function UpdateCategory() {
+function UpdateJenisBarang() {
     const [items, setItems] = useState({
         name: '',
         description: ''
@@ -35,7 +34,7 @@ function UpdateCategory() {
 
     const fetchItems = async () => {
         try {
-            const response = await api.get(`inventCategories-detail/${decryptedId}`)
+            const response = await api.get(`inventJenisBarang-detail/${decryptedId}`)
             const data = response.data.data;
             setItems({
                 name: data.data?.name,
@@ -53,15 +52,15 @@ function UpdateCategory() {
                 return
             }
             setDisabled(true)
-            const response = await api.put(`inventCategories-update/${decryptedId}`, {
+            const response = await api.put(`inventJenisBarang-update/${decryptedId}`, {
                 name: items.name,
                 description: items.description
             })
-            navigate('/category/list-category')
+            navigate('/jenis-barang/list-jenis-barang')
         } catch (error) {
             Swal.fire({
                 icon:'error',
-                title:'Tidak dapat mengubah kategori',
+                title:'Tidak dapat mengubah jenis barang',
                 text:'Ada Kesalahan Dalam Sistem'
             })
         } finally {
@@ -77,11 +76,11 @@ function UpdateCategory() {
     return (
         <Layout title={'Update Category'}>
             <Block>
-                <Back goHome={() => navigate('/category/list-category')} />
+                <Back goHome={() => navigate('/jenis-barang/list-jenis-barang')} />
                 <div className="p-6 mt-6 bg-white shadow-sm rounded">
                     <form onSubmit={handleSubmit}>
                         <div className="mb-5">
-                            <label className='font-semibold'>Category name</label>
+                            <label className='font-semibold'>Item Type</label>
                             <div className='bg-white p-2 rounded-md border-solid border-gray-300 border mt-2'>
                             <input 
                                 type="text" 
@@ -90,7 +89,7 @@ function UpdateCategory() {
                                 onChange={e => setItems({ ...items, name: e.target.value })}
                                 className="w-full p-2 border rounded placeholder:text-gray-400 placeholder:font-inter placeholder:font-light "
                                 // maxLength={40}
-                                placeholder='Nama Kategori'
+                                placeholder='Nama Jenis Barang'
                                 required
                             />
                             </div>
@@ -121,4 +120,4 @@ function UpdateCategory() {
     )
 }
 
-export default UpdateCategory
+export default UpdateJenisBarang;

@@ -17,6 +17,5 @@ export const DecryptID = (encryptedId) =>{
     const decrypted = CryptoJS.AES.decrypt(encryptedId,secretKey)
     // return decrypted.toString(CryptoJS.enc.Utf8)    
     const dec2 = decrypted.toString(CryptoJS.enc.Utf8)
-    console.log(dec2)
     return dec2    
 }

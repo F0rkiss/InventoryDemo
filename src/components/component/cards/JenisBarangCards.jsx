@@ -1,13 +1,13 @@
 import React, { forwardRef } from 'react'
 
-const CategoryCards = forwardRef(({item, goToDetail, goToUpdate, restoreItems, deleteItems, restore = false}, ref) => {
+const JenisBarangCards = forwardRef(({item, goToDetail, goToUpdate, restoreItems, deleteItems, restore = false}, ref) => {
 
 
     return (
         <div className='rounded-lg bg-white border mb-2' ref={ref}>
             <div className='grid grid-cols-3'>
                 <div className='col-start-2 place-items-center py-2'>
-                    <p className='text-center font-bold text-xl'>{item.name}</p>
+                    <p className='text-center font-bold text-xl'>{item.name || item.data?.id?.name}</p>
                 </div>
                 {
                     !restore && 
@@ -30,8 +30,8 @@ const CategoryCards = forwardRef(({item, goToDetail, goToUpdate, restoreItems, d
                       Update
                   </button>
                   <button
-                      onClick={() => deleteItems(item.id, item.name)}
                       className="delete_button bg-white rounded-md text-red-500 font-bold"
+                      onClick={() => deleteItems(item.id, item.name)}
                   >
                       Delete
                   </button>
@@ -49,4 +49,4 @@ const CategoryCards = forwardRef(({item, goToDetail, goToUpdate, restoreItems, d
   )
 })
 
-export default CategoryCards
+export default JenisBarangCards;

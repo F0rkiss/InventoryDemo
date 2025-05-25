@@ -8,14 +8,13 @@ import Transition from '../component/Transition'
 import ScrollPagination from '../component/ScrollPagination'
 import Layout from '../component/Layout'
 import FlyingButton from '../component/FlyingButton'
-import CategoryCards from '../component/cards/CategoryCards'
+import JenisBarangCards from '../component/cards/JenisBarangCards'
 import RestoreButton from '../component/RestoreButton'
 import DataEmpty from '../component/DataEmpty'
 import { encrypting } from '../../helper/EncryptHelper'
 import Swal from 'sweetalert2'
 
-  function CategoryList() {
-
+  function JenisBarangList() {
     const [items, setItems] = useState([])
     const [loading, setLoading] = useState(false)
     const [nextCursor, setNextCursor] = useState(null)
@@ -27,41 +26,43 @@ import Swal from 'sweetalert2'
 
     useEffect(() => {
       fetchItems();
-    }, [searchTerm] )
+    }, [searchTerm])
 
     const fetchItems = async () => {
       try {
         setLoading(true);
-        const response = await api.get(searchTerm ? `inventCategories/${searchTerm}` : 'inventCategories');
+        const response = await api.get(searchTerm ? `inventJenisBarang/${searchTerm}` : 'inventJenisBarang');
         const data = response.data.data;
-        setItems(data.data);
-        setNextCursor(data.next_cursor);
+        console.log(data)
+        setItems(Array.isArray(data) ? data : []);
+        setNextCursor(response.data.next_cursor);
         setLoading(false);
         setTimeout(() => setContentVisible(true), 50);
       } catch (error) {
         setLoading(false);
       }
     };
-
+    
     const fetchMoreItems = async () => {
       if (!nextCursor || loading) return;
       try {
         setLoading(true);
-        const response = await api.get( searchTerm ? `inventCategories/${searchTerm}` : 'inventCategories', {
+        const response = await api.get(searchTerm ? `inventJenisBarang/${searchTerm}` : 'inventJenisBarang', {
           params: {
             cursor: nextCursor,
           },
         });
         const data = response.data.data;
+        console.log(data)
   
           setItems(
             (prevItems) => {
             const existingIds = new Set(prevItems.map(item => item.id));
-            const newItems = data.data.filter(item => !existingIds.has(item.id));
+            const newItems = Array.isArray(data) ? data.filter(item => !existingIds.has(item.id)) : [];
             return [...prevItems, ...newItems];
           }
         );
-        setNextCursor(data.next_cursor);
+        setNextCursor(response.data.next_cursor);
         setLoading(false);
         setTimeout(() => setContentVisible(true), 50);
       } catch (error) {
@@ -69,7 +70,6 @@ import Swal from 'sweetalert2'
       }
     };
   
-
     const handleSearchChange = (query) => {
       setSearchQuery(query);
       if (typingTimeoutRef.current) {
@@ -80,7 +80,6 @@ import Swal from 'sweetalert2'
       }, 750);
     };
 
-    
     const deleteItems = async (id, name) => {
       try {
         const result = await Swal.fire({
@@ -97,31 +96,32 @@ import Swal from 'sweetalert2'
         });
   
         if (result.isConfirmed) {
-          await api.delete(`inventCategories-delete/${id}`);
+          await api.delete(`inventJenisBarang-delete/${id}`);
           setItems(items.filter((item) => item.id !== id));
           Swal.fire('Terhapus!', '', 'success');
         }
+
       } catch (error) {
         Swal.fire({
           icon:'error',
           title:`Tidak Dapat Menghapus ${name}`,
           text:'Ada Kesalahan Dalam Sistem'
-      })
+        })
       }
     };
   
     const goToUpdate = async(itemid) => {
       const encryptingID = await encrypting(itemid)
-      navigate(`/category/update-category/${encryptingID}`);
+      navigate(`/jenis-barang/update-jenis-barang/${encryptingID}`);
     }
     
     const goToDetail = async (id) => {
       const encryptingID = await encrypting(id)
-      navigate(`/category/detail-category/${encryptingID}`)
+      navigate(`/jenis-barang/detail-jenis-barang/${encryptingID}`)
     } 
 
     return (
-      <Layout title={'List Category'}>
+      <Layout title={'List Jenis Barang'}>
           <SearchBar   
             values={searchQuery}
             onChange={handleSearchChange}
@@ -129,21 +129,21 @@ import Swal from 'sweetalert2'
           />
           <Block>
               <div className='ms-3 mb-6 flex justify-between'>
-                  <p className='text-xl font-bold capitalize'>Data Kategori</p>
+                  <p className='text-xl font-bold capitalize'>Data Jenis Barang</p>
                   {/* <RestoreButton goTo={'/category/restore-category'} /> */}
               </div>
                   <Transition contentVisible={contentVisible}>
                           <ScrollPagination fetchMoreItems={fetchMoreItems} loading={loading} nextCursor={nextCursor}>
                               {
-                                  ( items.map((item) => (
-                                      <CategoryCards
+                                  (items || []).map((item) => (
+                                      <JenisBarangCards
                                       key={item.id}
                                       item={item}
                                       goToDetail={goToDetail}
                                       deleteItems={deleteItems}
                                       goToUpdate={goToUpdate}
-                                      />
-                                  )))
+                                    />
+                                  ))
                               }
                           </ScrollPagination>
                           {
@@ -152,9 +152,9 @@ import Swal from 'sweetalert2'
                   </Transition>
                   {loading && <Loader Class="mt-10" />}
           </Block>
-          <FlyingButton goTo={'/category/create-category'} />
+          <FlyingButton goTo={'/jenis-barang/create-jenis-barang'} />
       </Layout>
     )
   }
 
-  export default CategoryList
+  export default JenisBarangList;

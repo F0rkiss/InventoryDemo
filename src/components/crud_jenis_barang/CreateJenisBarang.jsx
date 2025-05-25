@@ -7,7 +7,7 @@ import Layout from '../component/Layout'
 import Swal from 'sweetalert2'
 
 
-function CreateCategory() {
+function CreateJenisBarang() {
     const [items, setItems] = useState({
         name: '',
         description: ''
@@ -23,21 +23,21 @@ function CreateCategory() {
                 return
             }
             setDisabled(true)            
-            const response = await api.post('inventCategories-create', {
+            const response = await api.post('inventJenisBarang-create', {
                 name : items.name,
                 description: items.description
             })
             Swal.fire({
-                title: 'Kategori berhasil dibuat!',
+                title: 'Jenis barang berhasil dibuat!',
                 icon: 'success',
                 timer: 2000,
                 showConfirmButton: false,
             });
-            navigate('/category/list-category')
+            navigate('/jenis-barang/list-jenis-barang')
         } catch (error) {
             Swal.fire({
                 icon:'error',
-                title:'Tidak dapat membuat kategori',
+                title:'Tidak dapat membuat jenis barang',
                 text:'Ada Kesalahan Dalam Sistem'
             })
             setItems({
@@ -57,13 +57,13 @@ function CreateCategory() {
     }
 
     return (
-    <Layout title={'Create Category'}>
+    <Layout title={'Create Jenis Barang'}>
         <Block>
-            <Back goHome={() => navigate('/category/list-category')} />
+            <Back goHome={() => navigate('/jenis-barang/list-jenis-barang')} />
             <div className="p-6 mt-6 bg-white shadow-sm rounded-lg">
                 <form onSubmit={handleSubmit}>
                     <div className="mb-5">
-                        <label className='font-semibold'>Category name</label>
+                        <label className='font-semibold'>Item Type</label>
                         <div className='bg-white p-2 rounded-md border-solid border-gray-300 border mt-2'>
                         <input 
                             type="text" 
@@ -71,8 +71,7 @@ function CreateCategory() {
                             value={items.name} 
                             onChange={e => setItems({ ...items, name: e.target.value })}
                             className="w-full p-2 border rounded placeholder:text-gray-400 placeholder:font-inter placeholder:font-light "
-                            // maxLength={40}
-                            placeholder='Nama Kategori'
+                            placeholder='Nama Jenis Barang'
                             required
                         />
                         </div>
@@ -103,4 +102,4 @@ function CreateCategory() {
     )
 }
 
-export default CreateCategory
+export default CreateJenisBarang;

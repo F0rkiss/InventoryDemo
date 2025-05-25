@@ -33,7 +33,7 @@ function UserList() {
             setLoading(true)
             const response = await api.get(searchTerm ? `inventUser/${searchTerm}` : `inventUser`)
             const data = response.data.data
-            console.log('fetched items: ', data.data)
+            // console.log('fetched items: ', data.data)
             setItems(data.data);  
             setNextCursor(data.next_cursor)
         } catch (error) {
@@ -56,7 +56,7 @@ function UserList() {
                 }
             })
             const data = response.data.data
-            console.log('fetched items: ', data.data)
+            // console.log('fetched items: ', data.data)
             setItems((prevItems) => {
                 const existingIds = new Set(prevItems.map(item => item.id));
                 const newItems = data.data.filter(item => !existingIds.has(item.id));
