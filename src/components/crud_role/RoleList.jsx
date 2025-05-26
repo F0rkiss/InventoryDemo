@@ -121,7 +121,7 @@ function RoleList() {
     }
 
     return (
-        <Layout title={'List User'}>
+        <Layout title={'List Role'}>
             <SearchBar
                 onChange={handleSearchChange}
                 disable={loading}
@@ -129,7 +129,7 @@ function RoleList() {
             />
             <Block>
                 <div className='ms-3 mb-6 flex justify-between'>
-                    <p className='text-xl font-semibold capitalize'>Data User</p>
+                    <p className='text-xl font-semibold capitalize'>Data Role</p>
                     <RestoreButton goTo={'/role/restore-role'} />
                 </div>                
                 <Transition contentVisible={contentVisible}>

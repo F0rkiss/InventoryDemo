@@ -26,6 +26,11 @@ const CreateJenisBarang = lazy(() => import('./crud_jenis_barang/CreateJenisBara
 const UpdateJenisBarang = lazy(() => import('./crud_jenis_barang/UpdateJenisBarang.jsx'));
 const DetailJenisBarang = lazy(() => import('./crud_jenis_barang/DetailJenisBarang.jsx'));
 
+const ListSumberBarang = lazy(() => import('./crud_Sumber_barang/ListSumberBarang.jsx'));
+const CreateSumberBarang = lazy(() => import('./crud_Sumber_barang/CreateSumberBarang.jsx'));
+const UpdateSumberBarang = lazy(() => import('./crud_Sumber_barang/UpdateSumberBarang.jsx'));
+const DetailSumberBarang = lazy(() => import('./crud_Sumber_barang/DetailSumberBarang.jsx'));
+
 const CategoryList = lazy(() => import('./crud-category/CategoryList.jsx'));
 const DetailCategory = lazy(() => import('./crud-category/DetailCategory.jsx'));
 const UpdateCategory = lazy(() => import('./crud-category/UpdateCategory.jsx'));
@@ -127,6 +132,11 @@ const MyApp = () => {
                   <Route path='/jenis-barang/create-jenis-barang' element={<CreateJenisBarang/>} />
                   <Route path='/jenis-barang/update-jenis-barang/:id' element={<UpdateJenisBarang/>} />
                   <Route path='/jenis-barang/detail-jenis-barang/:id' element={<DetailJenisBarang/>} />
+
+                  <Route path='/sumber-barang/list-sumber-barang' element={<ListSumberBarang/>} />
+                  <Route path='/sumber-barang/create-sumber-barang' element={<CreateSumberBarang/>} />
+                  <Route path='/sumber-barang/update-sumber-barang/:id' element={<UpdateSumberBarang/>} />
+                  <Route path='/sumber-barang/detail-sumber-barang/:id' element={<DetailSumberBarang/>} />
                   
                   <Route path='/billing/list-billing' element={<ListBilling/>}/>
                   <Route path='/billing/create-billing' element={<CreateBilling/>} />

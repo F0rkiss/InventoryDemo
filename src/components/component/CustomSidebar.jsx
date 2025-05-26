@@ -121,8 +121,8 @@ const CustomSidebar = ({ showProfile = true, navOpen, setNavOpen }) => {
                                 <p className="text-lg font-medium ml-20">Jenis Barang</p>
                             </div>
                         </button>
-                        <button className="w-100 text-start" disabled>
-                            <div className={`flex items-center mb-1 w-60 py-2 rounded-r-full `}>
+                        <button className="w-100 text-start" onClick={role === 'user' ? () => handleNavigation('/barang-anda') : () => handleNavigation('/sumber-barang/list-sumber-barang')}>
+                            <div className={`flex items-center mb-1 w-60 py-2 rounded-r-full ${isActive('/sumber-barang/list-sumber-barang') ? 'bg-coklat-mi text-white' : ''}  active:bg-coklat-mi active:text-white`}>
                                 <p className="text-lg font-medium ml-20">Sumber Barang</p>
                             </div>
                         </button>
