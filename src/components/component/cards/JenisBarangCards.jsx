@@ -7,7 +7,7 @@ const JenisBarangCards = forwardRef(({item, goToDetail, goToUpdate, restoreItems
         <div className='rounded-lg bg-white border mb-2' ref={ref}>
             <div className='grid grid-cols-3'>
                 <div className='col-start-2 place-items-center py-2'>
-                    <p className='text-center font-bold text-xl'>{item.name || item.data?.id?.name}</p>
+                    <p className='text-center font-bold text-xl'>{item.name || item.data?.name}</p>
                 </div>
                 {
                     !restore && 
