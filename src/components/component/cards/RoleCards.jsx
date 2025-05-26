@@ -13,15 +13,15 @@ const UserCards = forwardRef(({item, deleteItems, goToDetail, goToUpdate, restor
                         <p className='text-sm max-xs:text-sm '>{item.updated_at}</p> */}
                     </div>
                 </div>
-                {
+                {/* {
                     !restore && 
                     <button className='w-8 h-9' onClick={() => goToDetail(item.id)}>
                         <i className="bx bx-dots-vertical-rounded text-2xl max-xs:text-xl" />
                     </button> 
-                }
+                } */}
             </div>
             <div className='flex justify-around p-2 font-bold max-xs:text-xs'>
-                {/* {
+                {
                     !restore ?
                     <>
                     <button className='text-cyan-400' onClick={() => goToUpdate(item.id)}>
@@ -35,7 +35,7 @@ const UserCards = forwardRef(({item, deleteItems, goToDetail, goToUpdate, restor
                     <button className='text-cyan-400' onClick={() => restoreItems(item.id, item.name)}>
                         Restore
                     </button>
-                } */}
+                }
             </div>
         </div>
   )

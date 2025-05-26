@@ -34,7 +34,7 @@ import Swal from 'sweetalert2'
         const response = await api.get(searchTerm ? `inventSumberBarang/${searchTerm}` : 'inventSumberBarang');
         const data = response.data.data;
         // console.log(data)
-        setItems(Array.isArray(data) ? data : []);
+        setItems(data.data);
         setNextCursor(response.data.next_cursor);
         setLoading(false);
         setTimeout(() => setContentVisible(true), 50);
