@@ -25,25 +25,29 @@ import Swal from 'sweetalert2'
     const navigate = useNavigate()
 
     useEffect(() => {
+        console.log('useEffect triggered with searchTerm:', searchTerm);
       fetchItems();
     }, [searchTerm])
 
     const fetchItems = async () => {
+        console.log('fetchItems called with searchTerm:', searchTerm);
       try {
         setLoading(true);
         const response = await api.get(searchTerm ? `inventJenisBarang/${searchTerm}` : 'inventJenisBarang');
         const data = response.data.data;
         console.log(data)
-        setItems(Array.isArray(data) ? data : []);
-        setNextCursor(response.data.next_cursor);
+        setItems(data.data);
+        setNextCursor(data.next_cursor);
         setLoading(false);
         setTimeout(() => setContentVisible(true), 50);
       } catch (error) {
         setLoading(false);
+        console.error('Error fetching items:', error);
       }
     };
     
     const fetchMoreItems = async () => {
+      console.log(nextCursor, loading)
       if (!nextCursor || loading) return;
       try {
         setLoading(true);
@@ -52,13 +56,13 @@ import Swal from 'sweetalert2'
             cursor: nextCursor,
           },
         });
-        const data = response.data.data;
+        const data = response.data;
         console.log(data)
   
           setItems(
             (prevItems) => {
             const existingIds = new Set(prevItems.map(item => item.id));
-            const newItems = Array.isArray(data) ? data.filter(item => !existingIds.has(item.id)) : [];
+            const newItems = data.data.filter(item => !existingIds.has(item.id));
             return [...prevItems, ...newItems];
           }
         );
@@ -67,6 +71,7 @@ import Swal from 'sweetalert2'
         setTimeout(() => setContentVisible(true), 50);
       } catch (error) {
         setLoading(false);
+        console.error('Error fetching more items:', error);
       }
     };
   
@@ -135,7 +140,7 @@ import Swal from 'sweetalert2'
                   <Transition contentVisible={contentVisible}>
                           <ScrollPagination fetchMoreItems={fetchMoreItems} loading={loading} nextCursor={nextCursor}>
                               {
-                                  (items || []).map((item) => (
+                                  (items.map((item) => (
                                       <JenisBarangCards
                                       key={item.id}
                                       item={item}
@@ -143,7 +148,7 @@ import Swal from 'sweetalert2'
                                       deleteItems={deleteItems}
                                       goToUpdate={goToUpdate}
                                     />
-                                  ))
+                                  )))
                               }
                           </ScrollPagination>
                           {

@@ -74,7 +74,7 @@ function UpdateJenisBarang() {
         })
     }
     return (
-        <Layout title={'Update Category'}>
+        <Layout title={'Update Jenis Barang'}>
             <Block>
                 <Back goHome={() => navigate('/jenis-barang/list-jenis-barang')} />
                 <div className="p-6 mt-6 bg-white shadow-sm rounded">
