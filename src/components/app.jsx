@@ -66,19 +66,24 @@ const UpdateDepartment = lazy(() => import('./crud_department/UpdateDepartment.j
 const CreateDepartment = lazy(() => import('./crud_department/CreateDepartment.jsx'));
 const RestoreDepartment = lazy(() => import('./crud_department/RestoreDepartment.jsx'))
 
-const MrList = lazy(() => import('./crud-mr/MrList.jsx'));
-const DoneMR = lazy(() => import('./crud-mr/DoneMR.jsx'));
-const CreateMR = lazy(() => import('./crud-mr/CreateMR.jsx'));
-const UpdateMR = lazy(() => import('./crud-mr/UpdateMR.jsx'))
-const PersonalMR = lazy(() => import('./crud-mr/PersonalMR.jsx'))
-const RestoreMR = lazy(() => import('./crud-mr/RestoreMR.jsx'))
-const MRHistory = lazy(() => import('./crud-mr/MRHistory.jsx'))
-const DetailMR = lazy(() => import('./crud-mr/DetailMR.jsx'))
+// const MrList = lazy(() => import('./crud-mr/MrList.jsx'));
+// const DoneMR = lazy(() => import('./crud-mr/DoneMR.jsx'));
+// const CreateMR = lazy(() => import('./crud-mr/CreateMR.jsx'));
+// const UpdateMR = lazy(() => import('./crud-mr/UpdateMR.jsx'))
+// const PersonalMR = lazy(() => import('./crud-mr/PersonalMR.jsx'))
+// const RestoreMR = lazy(() => import('./crud-mr/RestoreMR.jsx'))
+// const MRHistory = lazy(() => import('./crud-mr/MRHistory.jsx'))
+// const DetailMR = lazy(() => import('./crud-mr/DetailMR.jsx'))
 
 const ListTypeRequest = lazy(() => import('./crud_type_request/ListTypeRequest.jsx'))
 const DetailTypeRequest = lazy(() => import('./crud_type_request/DetailTypeRequest.jsx'))
 const UpdateTypeRequest = lazy(() => import('./crud_type_request/UpdateTypeRequest.jsx'))
 const CreateTypeRequest = lazy(() => import('./crud_type_request/CreateTypeRequest.jsx'))
+
+const ListMakeRequest = lazy(() => import('./crud_make_request/ListMakeRequest.jsx'))
+const DetailMakeRequest = lazy(() => import('./crud_make_request/DetailMakeRequest.jsx'))
+const UpdateMakeRequest = lazy(() => import('./crud_make_request/UpdateMakeRequest.jsx'))
+const CreateMakeRequest = lazy(() => import('./crud_make_request/CreateMakeRequest.jsx'))
 
 const ListBilling = lazy(() => import('./crud_billing/ListBilling.jsx'))
 const CreateBilling = lazy(() => import('./crud_billing/CreateBilling.jsx'))
@@ -86,7 +91,7 @@ const UpdateBilling = lazy(() => import('./crud_billing/UpdateBilling.jsx'))
 const RestoreBilling = lazy(() => import('./crud_billing/RestoreBilling.jsx'))
 const DetailBilling = lazy(() => import('./crud_billing/DetailBilling.jsx'))
 
-const TableMR = lazy(() => import('./Table/TableMR/TabelMR.jsx'))
+// const TableMR = lazy(() => import('./Table/TableMR/TabelMR.jsx'))
 const TableBilling = lazy(() => import('./Table/TableBilling/TableBilling.jsx'))
 
 const EditProfile = lazy(() => import('./profile/EditProfile.jsx'));
@@ -117,10 +122,10 @@ const MyApp = () => {
 
                 {/* Auth Routes */}
                 <Route element={<RequireAuth allowedRoles={['admin', 'user']}/>}>
-                  <Route path='/make-request/create-make-request/:barang_id?' element={<CreateMR/>}/>  
-                  <Route path="/make-request/personal-make-request" element={<PersonalMR />} />  
+                  {/* <Route path='/make-request/create-make-request/:barang_id?' element={<CreateMR/>}/>  
+                  <Route path="/make-request/personal-make-request" element={<PersonalMR />} />   */}
                   <Route path='/edit-profile' element={<EditProfile />} />
-                  <Route path='/make-request/update-make-request-personal/:id' element={<UpdateMR/>}/>
+                  {/* <Route path='/make-request/update-make-request-personal/:id' element={<UpdateMR/>}/> */}
                 </Route>
 
                 {/* Admin Routes */}
@@ -168,19 +173,23 @@ const MyApp = () => {
                   <Route path='/department/restore-department' element={<RestoreDepartment/>} />
 
                   {/* Make Request  */}
-                  <Route path='/make-request/list-make-request' element={<MrList />} />
+                  {/* <Route path='/make-request/list-make-request' element={<MrList />} />
                   <Route path='/make-request/done-make-request/:id' element={<DoneMR />} />
-                  {/* <Route path='/make-request/restore-make-request/' element={<RestoreMR/>} /> */}
+                  <Route path='/make-request/restore-make-request/' element={<RestoreMR/>} />
                   <Route path='/make-request/history/:id' element={<MRHistory/>} />
-                  <Route path='/make-request/detail-make-request/:id' element={<DetailMR/>} />
+                  <Route path='/make-request/detail-make-request/:id' element={<DetailMR/>} /> */}
 
                   <Route path='/type-request/list-type-request' element={<ListTypeRequest />} />
                   <Route path='/type-request/detail-type-request/:id' element={<DetailTypeRequest />} />
                   <Route path='/type-request/update-type-request/:id' element={<UpdateTypeRequest />} />
                   <Route path='/type-request/create-type-request' element={<CreateTypeRequest />} />
 
+                  <Route path='/make-request/list-make-request' element={<ListMakeRequest />} />
+                  <Route path='/make-request/detail-make-request/:id' element={<DetailMakeRequest />} />
+                  <Route path='/make-request/update-make-request/:id' element={<UpdateMakeRequest />} />
+                  <Route path='/make-request/create-make-request' element={<CreateMakeRequest />} />
 
-                  <Route path='/table-mr' element={<TableMR/>} />
+                  {/* <Route path='/table-mr' element={<TableMR/>} /> */}
                   <Route path='/table-billing' element={<TableBilling/>} />
 
                   <Route path='/user/list-user' element={<UserList />} />
