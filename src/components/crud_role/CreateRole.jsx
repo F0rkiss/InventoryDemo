@@ -23,7 +23,7 @@ function CreateRole() {
 
     const role = ([
         {value : 'admin', label : 'Admin'},
-        {value : 'user', label : 'User'}
+        {value : 'role', label : 'role'}
     ])
     const navigate = useNavigate();
 
@@ -36,33 +36,19 @@ function CreateRole() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-
-            if (items.password.length < 8) {
-                Swal.fire({
-                    title: `Password Wajib 8 Karakter`,
-                    icon: 'error',
-                });
-                return;
-            }
-
             if (disabled) {
                 return
             }
             setDisabled(true)
 
-            await api.post('user', {
+            await api.post('inventRole-create', {
                 name : items.name,
-                email : items.email,
-                password : items.password,  
-                role : items.role?.value,
-                department_id : items.department?.value,
-                divisi_id : items.divisi?.value,
             })
-            navigate('/user/list-user')
+            navigate('/role/list-role')
         } catch (error) {
             Swal.fire({
                 icon:'error',
-                title:'Tidak Dapat Membuat User MR',
+                title:'Tidak Dapat Membuat role MR',
                 text:'Ada Kesalahan Dalam Sistem'
             })
             setError(error.response.data)
@@ -83,9 +69,9 @@ function CreateRole() {
     }
   return (
     <div>
-        <Layout title={'Create User'}>
+        <Layout title={'Create role'}>
             <Block>
-                <Back goHome={() => navigate('/user/list-user')}/>
+                <Back goHome={() => navigate('/role/list-role')}/>
                 <div className='bg-white rounded shadow-sm p-3'>
                     <form onSubmit={handleSubmit}>
                         <div className="mb-5">
@@ -103,62 +89,8 @@ function CreateRole() {
                                 />
                             </div>
                         </div>
-                        <div className="mb-5">
-                            <div className="flex justify-between items-center">   
-                            <label>Email:</label>
-                            {
-                                error?.msg.email[0] == 'The email has already been taken.' &&
-                                <p className='text-xs text-red-500'>* Email Sudah Terambil</p>
-                            }
-                            </div>
-                            <div className='bg-white p-2 rounded-md border-solid border-gray-300 border'>
-                                
-                                <input 
-                                    type="email" 
-                                    name="email" 
-                                    value={items.email} 
-                                    onChange={e => setItems({ ...items, email: e.target.value })}
-                                    maxLength={254}
-                                    placeholder='Email'
-                                    className="w-full p-2 border rounded placeholder:text-gray-400 placeholder:font-inter placeholder:font-light"
-                                    required
-                                />
-                            </div>
-                        </div>
-                        <div className="mb-5">
-                            <label>Password:</label>
-                            <div className='bg-white p-2 rounded-md border-solid border-gray-300 border'>
-                                <input 
-                                    type="password" 
-                                    name="password" 
-                                    value={items.password} 
-                                    onChange={e => setItems({ ...items, password: e.target.value })}
-                                    placeholder='Password'
-                                    className="w-full p-2 border rounded placeholder:text-gray-400 placeholder:font-inter placeholder:font-light"
-                                    required
-                                />
-                            </div>
-                        </div>
-                        <div className="mb-5">
-                            <label>Department :</label>
-                            <SelectPaginate
-                            source={'department'}
-                            selectName={'Department'}
-                            itemLabel={['name']}
-                            handleSelectChange={department => setItems({...items, department})}
-                            />
-                        </div>
-                        <div className="mb-5 ">
-                            <label>Role:</label>
-                            <Select 
-                                options={role} 
-                                value={items.role} 
-                                onChange={role => setItems({ ...items, role })}
-                                required
-                            />
-                        </div>
                         <div className="flex">
-                            <button disabled={disabled} type="submit" className="bg-cyan-400 text-white p-2 rounded w-1/2 me-3">Create User</button>
+                            <button disabled={disabled} type="submit" className="bg-cyan-400 text-white p-2 rounded w-1/2 me-3">Create role</button>
                             <button type="button" onClick={clearAll} className="bg-red-400 text-white p-2 rounded w-1/2">Clear</button>
                         </div>
                     </form>
