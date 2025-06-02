@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 const CustomSidebar = ({ showProfile = true, navOpen, setNavOpen }) => {
     const [isOpenProfile, setIsOpenProfile] = useState(false)
     const [isOpenItem, setIsOpenItem] = useState(false)
+    const [isOpenRequest, setIsOpenRequest] = useState(false)
     const [opens, setOpens] = useState(false)
     const { name, email, role } = useAuth();
     const handleNavigation = useNavigate()
@@ -22,6 +23,10 @@ const CustomSidebar = ({ showProfile = true, navOpen, setNavOpen }) => {
 
     const toggleAccordionItem = () => {
         setIsOpenItem(!isOpenItem);
+    };
+
+    const toggleAccordionRequest = () => {
+        setIsOpenRequest(!isOpenRequest);
     };
 
     useEffect(() => {
@@ -51,7 +56,7 @@ const CustomSidebar = ({ showProfile = true, navOpen, setNavOpen }) => {
             ${opens ? 'opacity-50' : 'opacity-0 pointer-events-none'}`}
                 onClick={() => [setOpens(false), setTimeout(() => setNavOpen(false), 350)]}
             />
-            <div className={`bg-white absolute top-0 left-0 z-50 h-screen transition-all ease-in-out duration-300 ${opens ? 'w-64 overflow-y-scroll max-h-full' : 'w-0'} overflow-hidden `}>
+            <div className={`bg-white absolute top-0 left-0 z-50 h-screen transition-all ease-in-out duration-300 ${opens ? 'w-[18rem] overflow-y-scroll max-h-full opacity-100' : 'w-0 opacity-0'} overflow-hidden `}>
                 <div className="navbar bg-white flex flex-col">
                     <h2 className="ms-4 font-bold font-inter text-xl mt-5">INVENTORY</h2>
                     <hr className="w-full mt-4" />
@@ -107,23 +112,31 @@ const CustomSidebar = ({ showProfile = true, navOpen, setNavOpen }) => {
                             <p className="text-lg font-medium">{role === 'user' ? 'Barang Anda' : 'Barang'}</p>
                         </div>
                     </button> */}
-                    <button className="w-100 text-start" onClick={role === 'user' ? () => handleNavigation('/barang-anda') : toggleAccordionItem}>
-                        <div className={`flex items-center mb-1 w-60 py-1 rounded-r-full `}>
-                            <i className="bx bx-package text-3xl ms-5 me-4"></i>
-                            <p className="text-lg font-medium">{role === 'user' ? 'Barang Anda' : 'Barang'}</p>
-                            <i className={`ms-20 bx bx-chevron-${isOpenItem ? 'up' : 'down'} text-4xl ios-chevron me-1`}></i>
+                    <button
+                    className="w-100 text-start"
+                    onClick={role === 'user' ? () => handleNavigation('/barang-anda') : toggleAccordionItem}
+                    >
+                    <div className="flex items-center mb-1 w-full py-1 rounded-r-full justify-between">
+                        <div className="flex items-center">
+                        <i className="bx bx-package text-3xl ms-5 me-4"></i>
+                        <p className="text-lg font-medium">{role === 'user' ? 'Barang Anda' : 'Barang'}</p>
                         </div>
+                        <i className={`bx bx-chevron-${isOpenItem ? 'up' : 'down'} text-4xl ios-chevron me-3`}></i>
+                    </div>
                     </button>
+
                     {/* More feature barang */}
                     <div className={`transition-max-height overflow-hidden ${isOpenItem ? 'max-h-96' : 'max-h-0'}`}>
                         <button className="w-100 text-start" onClick={role === 'user' ? () => handleNavigation('/barang-anda') : () => handleNavigation('/jenis-barang/list-jenis-barang')}>
                             <div className={`flex items-center mb-1 w-60 py-2 rounded-r-full ${isActive('/jenis-barang/list-jenis-barang') ? 'bg-coklat-mi text-white' : ''}  active:bg-coklat-mi active:text-white`}>
-                                <p className="text-lg font-medium ml-20">Jenis Barang</p>
+                                <i className='bx bx-chevron-right text-2xl ml-8 '></i>
+                                <p className="text-lg font-medium">Jenis Barang</p>
                             </div>
                         </button>
                         <button className="w-100 text-start" onClick={role === 'user' ? () => handleNavigation('/barang-anda') : () => handleNavigation('/sumber-barang/list-sumber-barang')}>
                             <div className={`flex items-center mb-1 w-60 py-2 rounded-r-full ${isActive('/sumber-barang/list-sumber-barang') ? 'bg-coklat-mi text-white' : ''}  active:bg-coklat-mi active:text-white`}>
-                                <p className="text-lg font-medium ml-20">Sumber Barang</p>
+                                <i className='bx bx-chevron-right text-2xl ml-8'></i>
+                                <p className="text-lg font-medium">Sumber Barang</p>
                             </div>
                         </button>
                     </div>
@@ -131,18 +144,18 @@ const CustomSidebar = ({ showProfile = true, navOpen, setNavOpen }) => {
                     {
                         role == 'admin' && 
                         <div className={`hidden-to-user `}>
-                            <button className="w-100 text-start" onClick={() => handleNavigation('/department/list-department')}>
+                            {/* <button className="w-100 text-start" onClick={() => handleNavigation('/department/list-department')}>
                                 <div className={`flex items-center mb-1 w-60 py-1 rounded-r-full ${isActive('/department') ? 'bg-coklat-mi text-white' : ''} active:bg-coklat-mi active:text-white`}>
                                     <i className="bx bx-building text-3xl ms-5 me-4"></i>
                                     <p className="text-lg font-medium">Department</p>
                                 </div>
-                            </button>
-                            <button className="w-100 text-start" onClick={() => handleNavigation('/divisi/list-divisi')}>
+                            </button> */}
+                            {/* <button className="w-100 text-start" onClick={() => handleNavigation('/divisi/list-divisi')}>
                                 <div className={`flex items-center mb-1 w-60 py-1 rounded-r-full ${isActive('/divisi') ? 'bg-coklat-mi text-white' : ''} active:bg-coklat-mi active:text-white`}>
                                     <i className="bx bx-briefcase text-3xl ms-5 me-4"></i>
                                     <p className="text-lg font-medium">Divisi</p>
                                 </div>
-                            </button>
+                            </button> */}
                             <button className="w-100 text-start" onClick={() => handleNavigation('/category/list-category')}>
                                 <div className={`flex items-center mb-1 w-60 py-1 rounded-r-full ${isActive('/category') ? 'bg-coklat-mi text-white' : ''} active:bg-coklat-mi active:text-white`}>
                                     <i className="bx bx-category-alt text-3xl ms-5 me-4"></i>
@@ -151,7 +164,7 @@ const CustomSidebar = ({ showProfile = true, navOpen, setNavOpen }) => {
                             </button>
                             <button className="w-100 text-start" onClick={() => handleNavigation('/user/list-user')}>
                                 <div className={`flex items-center mb-1 w-60 py-1 rounded-r-full ${isActive('/user') ? 'bg-coklat-mi text-white' : ''} active:bg-coklat-mi active:text-white`}>
-                                    <i className="bx bx-user-circle text-3xl ms-5 me-4"></i>
+                                    <i className="bx bxs-user-badge text-3xl ms-5 me-4"></i>
                                     <p className="text-lg font-medium">Data User</p>
                                 </div>
                             </button>
@@ -167,21 +180,42 @@ const CustomSidebar = ({ showProfile = true, navOpen, setNavOpen }) => {
                                     <p className="text-lg font-medium">Role</p>
                                 </div>
                             </button>
-                            <button className="w-100 text-start" onClick={() => handleNavigation('/billing/list-billing')}>
+                            {/* <button className="w-100 text-start" onClick={() => handleNavigation('/billing/list-billing')}>
                                 <div className={`flex items-center mb-1 w-60 py-1 rounded-r-full ${isActive('/billing') ? 'bg-coklat-mi text-white' : ''} active:bg-coklat-mi active:text-white`}>
                                     <i className="bx bx-spreadsheet text-3xl ms-5 me-4"></i>
                                     <p className="text-lg font-medium">Billing</p>
                                 </div>
-                            </button>
+                            </button> */}
                     </div>
                     }
                     
-                    <button className="w-100 text-start" onClick={role === 'user' ? () => handleNavigation('/make-request/personal-make-request') :() => handleNavigation('/make-request/list-make-request')}>
-                        <div className={`flex items-center mb-1 w-60 py-1 rounded-r-full ${isActive('/make-request') ? 'bg-coklat-mi text-white' : ''} active:bg-coklat-mi active:text-white`}>
-                            <i className="bx bx-message-add text-3xl ms-5 me-4"></i>
-                            <p className="text-lg font-medium">{role == 'user' ? 'Make Request' : 'Data MR'}</p>
+                    <button
+                    className="w-100 text-start"
+                    onClick={role === 'user' ? () => handleNavigation('/make-request/personal-make-request') : toggleAccordionRequest}
+                    >
+                    <div className="flex items-center mb-1 w-full py-1 rounded-r-full justify-between">
+                        <div className="flex items-center">
+                        <i className="bx bx-message-add text-3xl ms-5 me-4"></i>
+                        <p className="text-lg font-medium">{role === 'user' ? 'Make Request' : 'Data Request'}</p>
                         </div>
+                        <i className={`bx bx-chevron-${isOpenRequest ? 'up' : 'down'} text-4xl ios-chevron me-3`}></i>
+                    </div>
                     </button>
+                    <div className={`transition-max-height overflow-hidden ${isOpenRequest ? 'max-h-96' : 'max-h-0'}`}>
+                        <button className="w-100 text-start" onClick={role === 'user' ? () => handleNavigation('/barang-anda') : () => handleNavigation('/make-request/list-make-request')}>
+                            <div className={`flex items-center mb-1 w-60 py-2 rounded-r-full ${isActive('/jenis-barang/list-jenis-barang') ? 'bg-coklat-mi text-white' : ''}  active:bg-coklat-mi active:text-white`}>
+                                <i className='bx bx-chevron-right text-2xl ml-8 '></i>
+                                <p className="text-lg font-medium">Make Request</p>
+                            </div>
+                        </button>
+                        <button className="w-100 text-start" onClick={role === 'user' ? () => handleNavigation('/barang-anda') : () => handleNavigation('/type-request/list-type-request')}>
+                            <div className={`flex items-center mb-1 w-60 py-2 rounded-r-full ${isActive('/sumber-barang/list-sumber-barang') ? 'bg-coklat-mi text-white' : ''}  active:bg-coklat-mi active:text-white`}>
+                                <i className='bx bx-chevron-right text-2xl ml-8'></i>
+                                <p className="text-lg font-medium">Type Request</p>
+                            </div>
+                        </button>
+                    </div>
+
                 </div>
             </div>
         </>

@@ -40,7 +40,7 @@ function MrList() {
     const fetchItems = async() => {
         try {
             setLoading(true)
-            const response = await api.get(searchTerm ?  `makeRequest/search/${searchTerm}` : 'makeRequest/admin')
+            const response = await api.get(searchTerm ?  `inventMakeRequest/${searchTerm}` : 'inventMakeRequest')
             const data = response.data.data
             setItems(data.data)
             setNextCursor(data.next_cursor)
@@ -55,7 +55,7 @@ function MrList() {
         if (!nextCursor || loading ) return
         try {
             setLoading(true)
-            const response = await api.get(searchTerm ?  `makeRequest/search/${searchTerm}` : 'makeRequest/admin', {
+            const response = await api.get(searchTerm ?  `inventMakeRequest/${searchTerm}` : 'inventMakeRequest', {
                 params: {
                     cursor : nextCursor,
                 }
@@ -132,7 +132,7 @@ function MrList() {
         const formdata = new FormData();
         formdata.append("status", status)
         formdata.append("_method", "PUT")
-        const response = await api.post(`makeRequest/admin/updateStatus/${id}`, formdata , {
+        const response = await api.post(`inventMakeRequest-update/${id}`, formdata , {
             headers : {
                 'Content-Type' : "multipart/form-data"
             }

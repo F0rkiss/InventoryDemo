@@ -53,7 +53,7 @@ function DetailNavigationGroups() {
                 {
                     loading ?
                     (
-                        <Loader Class={'mt-20'} />
+                        <Loader Class={'mt-44'} />
                     ) : (
                     <Transition contentVisible={contentVisible}>
                         {/* <p>{item.msg}</p> */}

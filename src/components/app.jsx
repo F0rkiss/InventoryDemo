@@ -75,6 +75,11 @@ const RestoreMR = lazy(() => import('./crud-mr/RestoreMR.jsx'))
 const MRHistory = lazy(() => import('./crud-mr/MRHistory.jsx'))
 const DetailMR = lazy(() => import('./crud-mr/DetailMR.jsx'))
 
+const ListTypeRequest = lazy(() => import('./crud_type_request/ListTypeRequest.jsx'))
+const DetailTypeRequest = lazy(() => import('./crud_type_request/DetailTypeRequest.jsx'))
+const UpdateTypeRequest = lazy(() => import('./crud_type_request/UpdateTypeRequest.jsx'))
+const CreateTypeRequest = lazy(() => import('./crud_type_request/CreateTypeRequest.jsx'))
+
 const ListBilling = lazy(() => import('./crud_billing/ListBilling.jsx'))
 const CreateBilling = lazy(() => import('./crud_billing/CreateBilling.jsx'))
 const UpdateBilling = lazy(() => import('./crud_billing/UpdateBilling.jsx'))
@@ -168,6 +173,12 @@ const MyApp = () => {
                   {/* <Route path='/make-request/restore-make-request/' element={<RestoreMR/>} /> */}
                   <Route path='/make-request/history/:id' element={<MRHistory/>} />
                   <Route path='/make-request/detail-make-request/:id' element={<DetailMR/>} />
+
+                  <Route path='/type-request/list-type-request' element={<ListTypeRequest />} />
+                  <Route path='/type-request/detail-type-request/:id' element={<DetailTypeRequest />} />
+                  <Route path='/type-request/update-type-request/:id' element={<UpdateTypeRequest />} />
+                  <Route path='/type-request/create-type-request' element={<CreateTypeRequest />} />
+
 
                   <Route path='/table-mr' element={<TableMR/>} />
                   <Route path='/table-billing' element={<TableBilling/>} />

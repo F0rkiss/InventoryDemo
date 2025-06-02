@@ -2,7 +2,7 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { AsyncPaginate } from 'react-select-async-paginate';
 import api from '../../api/api';
 
-function SelectPaginate({ source, itemLabel, handleSelectChange, additional, selectValue, selectName, required, valueKey = 'id', isMulti = false, isClearable, id ,isDisabled, components, maxMenuHeight }) {
+function SelectPaginate({ source, itemLabel, handleSelectChange, additional, selectValue, selectName, required, valueKey = 'id', isMulti = false, isClearable, id ,isDisabled, components, maxMenuHeight, className }) {
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   
@@ -12,7 +12,7 @@ function SelectPaginate({ source, itemLabel, handleSelectChange, additional, sel
   
   const fetchOptions = async (search, page) => {
     try {
-      const response = await api.get(search ? `${source}/search/${search}` : `/${source}`, {
+      const response = await api.get(search ? `${source}/${search}` : `/${source}`, {
         params: {
           cursor: page,
         },
@@ -63,9 +63,45 @@ function SelectPaginate({ source, itemLabel, handleSelectChange, additional, sel
     [source, itemLabel, additional, valueKey]
   );
 
+//   const customStyles = {
+//   control: (provided, state) => ({
+//     ...provided,
+//     backgroundColor: 'white',
+//     padding: '0.1rem',
+//     borderRadius: '0.375rem',
+//     border: '1px solid #D1D5DB', // border-solid border-gray-500 border (1px solid gray-500)
+//     boxShadow: 'none',
+//     '&:hover': {
+//       borderColor: '#6b7280', // Maintain border color on hover
+//     },
+//     // Optional: Adjust minHeight if needed to match original input size
+//     minHeight: '42px', // This value might need adjustment based on your specific font size and line height
+//   }),
+//   // You might also need to adjust other parts to ensure consistent styling
+//   // For example, if you want to remove default padding from the valueContainer:
+//   valueContainer: (provided) => ({
+//     ...provided,
+//     padding: '0 8px', // Adjust as needed, default is often '2px 8px'
+//   }),
+//   input: (provided) => ({
+//     ...provided,
+//     margin: '0', // Remove default margin from the input element itself
+//   }),
+//   // If you also want to style the placeholder text:
+//   placeholder: (provided) => ({
+//     ...provided,
+//     color: '#6B7280', // Approximate color for gray-500 text
+//   }),
+//   // To ensure the menu opens correctly above other content
+//   menu: (provided) => ({
+//     ...provided,
+//     zIndex: 9999,
+//   }),
+// };
+
 
   return (
-    <div  >
+    <div >
       <AsyncPaginate
         maxMenuHeight={maxMenuHeight}
         loadOptions={loadOptions}
@@ -82,7 +118,7 @@ function SelectPaginate({ source, itemLabel, handleSelectChange, additional, sel
         isDisabled={isDisabled}
         id={id}
         isMulti={isMulti}
-        
+        // styles={customStyles} 
       />
     </div>
   );

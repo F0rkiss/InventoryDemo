@@ -8,13 +8,13 @@ import Transition from '../component/Transition'
 import ScrollPagination from '../component/ScrollPagination'
 import Layout from '../component/Layout'
 import FlyingButton from '../component/FlyingButton'
-import CategoryCards from '../component/cards/CategoryCards'
+import TypeRequestCards from '../component/cards/TypeRequestCards'
 import RestoreButton from '../component/RestoreButton'
 import DataEmpty from '../component/DataEmpty'
 import { encrypting } from '../../helper/EncryptHelper'
 import Swal from 'sweetalert2'
 
-  function CategoryList() {
+  function TypeRequestList() {
 
     const [items, setItems] = useState([])
     const [loading, setLoading] = useState(false)
@@ -32,7 +32,7 @@ import Swal from 'sweetalert2'
     const fetchItems = async () => {
       try {
         setLoading(true);
-        const response = await api.get(searchTerm ? `inventCategories/${searchTerm}` : 'inventCategories');
+        const response = await api.get(searchTerm ? `inventTypeRequest/${searchTerm}` : 'inventTypeRequest');
         const data = response.data.data;
         setItems(data.data);
         setNextCursor(data.next_cursor);
@@ -47,7 +47,7 @@ import Swal from 'sweetalert2'
       if (!nextCursor || loading) return;
       try {
         setLoading(true);
-        const response = await api.get( searchTerm ? `inventCategories/${searchTerm}` : 'inventCategories', {
+        const response = await api.get(searchTerm ? `inventTypeRequest/${searchTerm}` : 'inventTypeRequest', {
           params: {
             cursor: nextCursor,
           },
@@ -84,7 +84,7 @@ import Swal from 'sweetalert2'
     const deleteItems = async (id, name) => {
       try {
         const result = await Swal.fire({
-          title: `Apakah Anda ingin menghapus kategori ini?`,
+          title: `Apakah Anda ingin menghapus tipe request ini?`,
           icon: 'question',
           showDenyButton: true,
           confirmButtonText: 'Yes',
@@ -97,7 +97,7 @@ import Swal from 'sweetalert2'
         });
   
         if (result.isConfirmed) {
-          await api.delete(`inventCategories-delete/${id}`);
+          await api.delete(`inventTypeRequest-delete/${id}`);
           setItems(items.filter((item) => item.id !== id));
           Swal.fire('Terhapus!', '', 'success');
         }
@@ -112,16 +112,16 @@ import Swal from 'sweetalert2'
   
     const goToUpdate = async(itemid) => {
       const encryptingID = await encrypting(itemid)
-      navigate(`/category/update-category/${encryptingID}`);
+      navigate(`/type-request/update-type-request/${encryptingID}`);
     }
     
     const goToDetail = async (id) => {
       const encryptingID = await encrypting(id)
-      navigate(`/category/detail-category/${encryptingID}`)
+      navigate(`/type-request/detail-type-request/${encryptingID}`)
     } 
 
     return (
-      <Layout title={'List Category'}>
+      <Layout title={'List Type Request'}>
           <SearchBar   
             values={searchQuery}
             onChange={handleSearchChange}
@@ -129,14 +129,14 @@ import Swal from 'sweetalert2'
           />
           <Block>
               <div className='ms-3 mb-6 flex justify-between'>
-                  <p className='text-xl font-bold capitalize'>Data Kategori</p>
+                  <p className='text-xl font-bold capitalize'>Data Type Request</p>
                   {/* <RestoreButton goTo={'/category/restore-category'} /> */}
               </div>
                   <Transition contentVisible={contentVisible}>
                           <ScrollPagination fetchMoreItems={fetchMoreItems} loading={loading} nextCursor={nextCursor}>
                               {
                                   ( items.map((item) => (
-                                      <CategoryCards
+                                      <TypeRequestCards
                                       key={item.id}
                                       item={item}
                                       goToDetail={goToDetail}
@@ -152,9 +152,9 @@ import Swal from 'sweetalert2'
                   </Transition>
                   {loading && <Loader Class="mt-44" />}
           </Block>
-          <FlyingButton goTo={'/category/create-category'} />
+          <FlyingButton goTo={'/type-request/create-type-request'} />
       </Layout>
     )
   }
 
-  export default CategoryList
+  export default TypeRequestList;

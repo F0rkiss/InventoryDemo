@@ -152,7 +152,7 @@ function ListNavigationGroup() {
                 </Transition>
                 {loading && <Loader Class={'mt-44'} />}
             </Block>
-            <FlyingButton goTo={'/user/create-user'} />
+            <FlyingButton goTo={'/navigations/create-navigations'} />
         </Layout>
     )
 }

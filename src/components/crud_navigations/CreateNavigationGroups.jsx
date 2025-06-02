@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react'
 import api from '../../api/api';
 import { useNavigate } from 'react-router-dom';
 import { Page, Block } from 'framework7-react';
+import { accessOptions, findAccessOption } from '../../helper/FindOptions';
 import SelectPaginate from '../component/SelectPaginate';
 import Select from 'react-select';
 import Back from '../component/Back';
@@ -12,59 +13,43 @@ function CreateNavigationGroups() {
     const [items, setItems] = useState({
         role : null,
         navigation_menu : null,
-        email : '',
-        password : '',
-        divisi : null,
+        create_access : null,
+        read_access : null,
+        update_access : null,
+        delete_access : null,
     })
+
     const [disabled, setDisabled] = useState(false)
     const [error, setError] = useState(null)
-
-    const role = ([
-        {value : 'admin', label : 'Admin'},
-        {value : 'user', label : 'User'},
-        {value : 'manager', label : 'Manager'},
-        {value : 'supervisor', label : 'Supervisor'},
-        {value : 'staff', label : 'Staff'},
-    ])
     const navigate = useNavigate();
-
-    useEffect(() => {
-        if (error) {
-            setError(null)
-        }
-    }, [items.email])
-
+    
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-
-            if (items.password.length < 8) {
-                Swal.fire({
-                    title: `Password Wajib 8 Karakter`,
-                    icon: 'error',
-                });
-                return;
-            }
-
             if (disabled) {
                 return
             }
             setDisabled(true)
-
-            await api.post('user', {
-                name : items.name,
-                email : items.email,
-                password : items.password,  
-                role : items.role?.value,
-                department_id : items.department?.value,
-                divisi_id : items.divisi?.value,
+            await api.post('inventNavigationGroup-create', {
+                role_id : items.role?.value,
+                invent_navigation_menus_id : items.navigation_menu?.value,
+                read_access : items.read_access?.value,
+                create_access : items.create_access?.value,
+                update_access : items.update_access?.value,
+                delete_access : items.delete_access?.value
             })
-            navigate('/user/list-user')
+            Swal.fire({
+                title: 'Navigations Group berhasil dibuat!',
+                icon: 'success',
+                timer: 2000,
+                showConfirmButton: false,
+            });
+            navigate('/navigations/list-navigations')
         } catch (error) {
             Swal.fire({
                 icon:'error',
-                title:'Tidak Dapat Membuat User MR',
-                text:'Ada Kesalahan Dalam Sistem'
+                title:'Tidak dapat membuat navigations group',
+                text:'Kesalahan dalam sistem'
             })
             setError(error.response.data)
         } finally {
@@ -74,92 +59,86 @@ function CreateNavigationGroups() {
 
     const clearAll = () => {
         setItems({
-            name : '',
-            email : '',
-            password : '',
             role : null,
-            department : null,
-            divisi : null,
+            navigation_menu : null,
+            create_access : null,
+            read_access : null,
+            update_access : null,
+            delete_access : null,
         })
     }
   return (
     <div>
-        <Layout title={'Create User'}>
+        <Layout title={'Create Navigation Group'}>
             <Block>
-                <Back goHome={() => navigate('/user/list-user')}/>
+                <Back goHome={() => navigate('/navigations/list-navigations')}/>
                 <div className='bg-white rounded shadow-sm p-3'>
                     <form onSubmit={handleSubmit}>
                         <div className="mb-5">
-                            <label>Nama:</label>
-                            <div className='bg-white p-2 rounded-md border-solid border-gray-300 border'>
-                                <input 
-                                    type="text" 
-                                    name="name" 
-                                    value={items.name} 
-                                    maxLength={50}
-                                    onChange={  e => setItems({ ...items, name: e.target.value })}
-                                    placeholder='Nama'
-                                    className="w-full p-2 border rounded placeholder:text-gray-400 placeholder:font-inter placeholder:font-light"
-                                    required 
-                                />
-                            </div>
-                        </div>
-                        <div className="mb-5">
-                            <div className="flex justify-between items-center">   
-                            <label>Email:</label>
-                            {
-                                error?.msg.email[0] == 'The email has already been taken.' &&
-                                <p className='text-xs text-red-500'>* Email Sudah Terambil</p>
-                            }
-                            </div>
-                            <div className='bg-white p-2 rounded-md border-solid border-gray-300 border'>
-                                
-                                <input 
-                                    type="email" 
-                                    name="email" 
-                                    value={items.email} 
-                                    onChange={e => setItems({ ...items, email: e.target.value })}
-                                    maxLength={254}
-                                    placeholder='Email'
-                                    className="w-full p-2 border rounded placeholder:text-gray-400 placeholder:font-inter placeholder:font-light"
-                                    required
-                                />
-                            </div>
-                        </div>
-                        <div className="mb-5">
-                            <label>Password:</label>
-                            <div className='bg-white p-2 rounded-md border-solid border-gray-300 border'>
-                                <input 
-                                    type="password" 
-                                    name="password" 
-                                    value={items.password} 
-                                    onChange={e => setItems({ ...items, password: e.target.value })}
-                                    placeholder='Password'
-                                    className="w-full p-2 border rounded placeholder:text-gray-400 placeholder:font-inter placeholder:font-light"
-                                    required
-                                />
-                            </div>
-                        </div>
-                        <div className="mb-5">
-                            <label>Department :</label>
+                            <label className='font-semibold'>Role </label>
                             <SelectPaginate
-                            source={'department'}
-                            selectName={'Department'}
-                            itemLabel={['name']}
-                            handleSelectChange={department => setItems({...items, department})}
+                                className={'p-2 rounded-md border-solid border-gray-500 border'}
+                                source={'inventRole'}
+                                selectValue={items.role}
+                                selectName={'Role'}
+                                itemLabel={['name']}
+                                handleSelectChange={role => setItems({...items, role})}
+                                required
                             />
                         </div>
-                        <div className="mb-5 ">
-                            <label>Role:</label>
+                        <div className="mb-5 g-4">
+                            <label className='font-semibold'>Navigation Menu </label>
+                            <SelectPaginate
+                                source={'inventNavigationMenu'}
+                                selectValue={items.navigation_menu}
+                                selectName={'Navigation Menu'}
+                                itemLabel={['name']}
+                                handleSelectChange={navigation_menu => setItems({...items, navigation_menu})}
+                                required
+                            />
+                        </div>
+                        <div className="mb-5">
+                            <label className='font-semibold'>Read Access:</label>
                             <Select 
-                                options={role} 
-                                value={items.role} 
-                                onChange={role => setItems({ ...items, role })}
+                                options={accessOptions} 
+                                value={items.read_access}
+                                placeholder="Pilih Akses Read" 
+                                onChange={read_access => setItems({ ...items, read_access })}
+                                required
+                            />
+                        </div>
+                        <div className="mb-5">
+                            <label className='font-semibold'>Create Access:</label>
+                            <Select 
+                                options={accessOptions} 
+                                value={items.create_access}
+                                placeholder="Pilih Akses Create" 
+                                onChange={create_access => setItems({ ...items, create_access })}
+                                required
+                            />
+                        </div>
+                        <div className="mb-5">
+                            <label className='font-semibold'>Update Access:</label>
+                            <Select 
+                                options={accessOptions} 
+                                value={items.update_access}
+                                placeholder="Pilih Akses Update"
+                                onChange={update_access => setItems({ ...items, update_access })}
+                                required
+                            />
+                        </div>
+                        <div className="mb-5">
+                            <label className='font-semibold'>Delete Access:</label>
+                            <Select 
+                                options={accessOptions} 
+                                value={items.delete_access}
+                                placeholder="Pilih Akses Delete"
+                                onChange={delete_access => setItems({ ...items, delete_access })}
                                 required
                             />
                         </div>
                         <div className="flex">
-                            <button disabled={disabled} type="submit" className="bg-cyan-400 text-white p-2 rounded w-1/2 me-3">Create User</button>
+                            <button disabled={disabled} type="submit" className="bg-cyan-400 text-white p-2 rounded w-1/2 me-3">Create</button>
                             <button type="button" onClick={clearAll} className="bg-red-400 text-white p-2 rounded w-1/2">Clear</button>
                         </div>
                     </form>
