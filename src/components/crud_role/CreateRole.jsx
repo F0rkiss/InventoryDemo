@@ -41,7 +41,7 @@ function CreateRole() {
             }
             setDisabled(true)
 
-            await api.post('inventRole-create', {
+            await api.post('role-create', {
                 name : items.name,
             })
             navigate('/role/list-role')

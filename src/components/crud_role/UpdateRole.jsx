@@ -40,7 +40,7 @@ function UpdateRole() {
 
     const fetchItems = async () => {
         try {
-            const response = await api.get(`inventRole-detail/${decryptedId}`);
+            const response = await api.get(`role-detail/${decryptedId}`);
             const data = response.data.data;
             setItems({
                 name: data?.name || '',
@@ -57,7 +57,7 @@ function UpdateRole() {
                 return
             }
             setDisabled(true)
-            await api.put(`inventRole-update/${decryptedId}`, {
+            await api.put(`role-update/${decryptedId}`, {
                 name : items.name,
             })
         navigate('/role/list-role')

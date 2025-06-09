@@ -12,10 +12,7 @@ import { DecryptID } from '../../helper/EncryptHelper';
 function UpdateUser() {
     const [items, setItems] = useState({
         name : '',
-        email : '',
-        password : '',
-        role : null,
-        department : null,
+        role : null
     })
     const [decryptedId, setDecryptedId] = useState('')
     const role = ([
@@ -43,17 +40,15 @@ function UpdateUser() {
 
     const fetchItems = async () => {
         try {
-            const response = await api.get(`user/${decryptedId}`);
+            const response = await api.get(`inventUser-detail/${decryptedId}`);
             const data = response.data.data;
             setItems({
-                name: data.name || '',
-                email: data.email || '',
-                password: data.password || '',
-                department: data.department ? { value: data.department.id, label: data.department.name } : null,
-                role: data.role ? { value: data.role, label: data.role } : null,
+                name: data.data?.EmpName || '',
+                role: role.find(r => r.value === data.data?.role?.name)
             });
+            console.log('Fetched User:', role);
         } catch (error) {
-
+            console.log("apa yang salah anjengggg")
         }
     };
 
@@ -64,19 +59,16 @@ function UpdateUser() {
                 return
             }
             setDisabled(true)
-            await api.put(`user/${decryptedId}`, {
+            await api.put(`inventUser-update/${decryptedId}`, {
                 name : items.name,
-                email : items.email,
-                password : items.password,
-                role : items.role?.value,
-                department_id : items.department?.value,
-                divisi_id : items.divisi?.value,
+                role: items.role?.value
             })
         navigate('/user/list-user')
         } catch (error) {
             setError(error.response.data.statusCode)
         } finally {
             setDisabled(false)
+            setError(error.response.data.statusCode)
         }
     }
   return (
@@ -96,49 +88,9 @@ function UpdateUser() {
                                     maxLength={50}
                                     placeholder='Nama'
                                     className="w-full p-2 border rounded placeholder:text-gray-400 placeholder:font-inter placeholder:font-light"
-                                    required
+                                    disabled
                                 />
                             </div>
-                        </div>
-                        <div className="mb-5">
-                            <div className="flex items-center justify-between">
-                                <label>Email: </label>
-                                <p className={`text-red-500 text-xs ${error == 400 ? 'inline' : 'hidden'}`}>* Email Tidak Boleh Sama</p>
-                            </div>
-                            <div className='bg-white p-2 rounded-md border-solid border-gray-300 border'>
-                                <input 
-                                    type="email" 
-                                    name="email" 
-                                    value={items.email} 
-                                    onChange={e => setItems({ ...items, email: e.target.value })}
-                                    placeholder='Email'
-                                    className="w-full p-2 border rounded placeholder:text-gray-400 placeholder:font-inter placeholder:font-light"
-                                    required
-                                />
-                            </div>
-                        </div>
-                        <div className="mb-5">
-                            <label>Password:</label>
-                            <div className='bg-white p-2 rounded-md border-solid border-gray-300 border'>
-                                <input 
-                                    type="password" 
-                                    name="password" 
-                                    value={items.password} 
-                                    onChange={e => setItems({ ...items, password: e.target.value })}
-                                    placeholder='Password'
-                                    className="w-full p-2 border rounded placeholder:text-gray-400 placeholder:font-inter placeholder:font-light"
-                                />
-                            </div>
-                        </div>
-                        <div className="mb-5">
-                            <label>Department :</label>
-                            <SelectPaginate
-                            source={'department'}
-                            itemLabel={['name']}
-                            selectName={'Department'}
-                            handleSelectChange={department => setItems({...items, department})}
-                            selectValue={items.department}
-                            />
                         </div>
                         <div className="mb-5 ">
                             <label>Role:</label>
