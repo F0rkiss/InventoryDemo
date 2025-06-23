@@ -44,29 +44,37 @@ function UpdateRole() {
             const data = response.data.data;
             setItems({
                 name: data?.name || '',
+                role: data?.role?.id
             });
         } catch (error) {
 
         }
     };
-
+    // console.log(data)
+    
     const handleSubmit = async (e) => {
         e.preventDefault();        
         try {
-            if (disabled) {
-                return
-            }
-            setDisabled(true)
+            if (disabled) return;
+    
+            setDisabled(true);
             await api.put(`role-update/${decryptedId}`, {
                 name : items.name,
-            })
-        navigate('/role/list-role')
+                role : items.role
+            });
+            navigate('/role/list-role');
         } catch (error) {
-            setError(error.response.data.statusCode)
+            console.error('Submit Error:', error);
+    
+            // Cek error yang aman
+            const statusCode = error?.response?.data?.statusCode || 500;
+            setError(statusCode);
         } finally {
-            setDisabled(false)
+            setDisabled(false);
         }
     }
+    
+    
   return (
         <Layout title={'Update User'}>
             <Block>

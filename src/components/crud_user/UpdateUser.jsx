@@ -9,16 +9,17 @@ import Select from 'react-select';
 import Back from '../component/Back';
 import Layout from '../component/Layout';
 import { DecryptID } from '../../helper/EncryptHelper';
+import { data } from 'dom7';
 function UpdateUser() {
     const [items, setItems] = useState({
         name : '',
         role : null
     })
     const [decryptedId, setDecryptedId] = useState('')
-    const role = ([
-        {value : 'admin', label : 'Admin'},
-        {value : 'user', label : 'User'}
-    ])
+    // const role = ([
+    //     {value : 'admin', label : 'Admin'},
+    //     {value : 'user', label : 'User'}
+    // ])
     const [error, setError] = useState(0)
     const [disabled, setDisabled] = useState(false)
     const {id} = useParams()
@@ -44,11 +45,13 @@ function UpdateUser() {
             const data = response.data.data;
             setItems({
                 name: data.data?.EmpName || '',
-                role: role.find(r => r.value === data.data?.role?.name)
+                role: data.data?.role ? {
+                    value: data.data?.role?.id, label: data.data?.role?.name
+                } : null
             });
-            console.log('Fetched User:', role);
+            console.log('Fetched User:', data.data?.role.name);
         } catch (error) {
-            console.log("apa yang salah anjengggg")
+
         }
     };
 
@@ -59,16 +62,24 @@ function UpdateUser() {
                 return
             }
             setDisabled(true)
-            await api.put(`inventUser-update/${decryptedId}`, {
+            const response = await api.put(`inventUser-update/${decryptedId}`, {
                 name : items.name,
-                role: items.role?.value
+                role_id : items.role?.value,
+    
             })
-        navigate('/user/list-user')
+            console.log(response)
         } catch (error) {
-            setError(error.response.data.statusCode)
+            console.error("Submit Error:", error);
+        
+            if (error.response && error.response.data) {
+                console.log("Error Response Data:", error.response.data);
+                setError(error.response.data.statusCode || 500); // default biar gak undefined
+            } else {
+                setError(500); // fallback
+            }
         } finally {
+            navigate('/user/list-user')
             setDisabled(false)
-            setError(error.response.data.statusCode)
         }
     }
   return (
@@ -94,10 +105,14 @@ function UpdateUser() {
                         </div>
                         <div className="mb-5 ">
                             <label>Role:</label>
-                            <Select 
-                                options={role} 
-                                value={items.role} 
-                                onChange={role => setItems({ ...items, role })}
+                            <SelectPaginate 
+                                selectValue={items.role} 
+                                source={'role'}
+                                selectName={'Role'}
+                                itemLabel={['name']}
+                                handleSelectChange={role => 
+                                    setItems({ ...items, role })
+                                }
                                 required
                             />
                         </div>

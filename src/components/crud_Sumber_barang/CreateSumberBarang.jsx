@@ -7,7 +7,7 @@ import Layout from '../component/Layout'
 import Swal from 'sweetalert2'
 
 
-function CreateJenisBarang() {
+function CreateSumberBarang() {
     const [items, setItems] = useState({
         name: '',
         description: ''
@@ -23,21 +23,21 @@ function CreateJenisBarang() {
                 return
             }
             setDisabled(true)            
-            const response = await api.post('inventJenisBarang-create', {
+            const response = await api.post('inventSumberBarang-create', {
                 name : items.name,
                 description: items.description
             })
             Swal.fire({
-                title: 'Jenis barang berhasil dibuat!',
+                title: 'Sumber barang berhasil dibuat!',
                 icon: 'success',
                 timer: 2000,
                 showConfirmButton: false,
             });
-            navigate('/jenis-barang/list-jenis-barang')
+            navigate('/sumber-barang/list-sumber-barang')
         } catch (error) {
             Swal.fire({
                 icon:'error',
-                title:'Tidak dapat membuat jenis barang',
+                title:'Tidak dapat membuat Sumber barang',
                 text:'Ada Kesalahan Dalam Sistem'
             })
             setItems({
@@ -57,9 +57,9 @@ function CreateJenisBarang() {
     }
 
     return (
-    <Layout title={'Create Jenis Barang'}>
+    <Layout title={'Create Sumber Barang'}>
         <Block>
-            <Back goHome={() => navigate('/jenis-barang/list-jenis-barang')} />
+            <Back goHome={() => navigate('/sumber-barang/list-sumber-barang')} />
             <div className="p-6 mt-6 bg-white shadow-sm rounded-lg">
                 <form onSubmit={handleSubmit}>
                     <div className="mb-5">
@@ -71,7 +71,7 @@ function CreateJenisBarang() {
                             value={items.name} 
                             onChange={e => setItems({ ...items, name: e.target.value })}
                             className="w-full p-2 border rounded placeholder:text-gray-400 placeholder:font-inter placeholder:font-light "
-                            placeholder='Nama Jenis Barang'
+                            placeholder='Nama Sumber Barang'
                             required
                         />
                         </div>
@@ -102,4 +102,4 @@ function CreateJenisBarang() {
     )
 }
 
-export default CreateJenisBarang;
+export default CreateSumberBarang;
