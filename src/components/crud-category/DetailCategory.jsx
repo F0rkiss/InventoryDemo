@@ -42,7 +42,7 @@ function DetailCategory() {
             const data = response.data.data
             setItems(data)
         } catch (error) {
-            console.error('API Error:', error.response?.data || error.message);
+            
         } finally {
             setLoading(false)
             setTimeout(() => setContentVisible(true), 50)

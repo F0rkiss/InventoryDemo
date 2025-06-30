@@ -35,7 +35,7 @@ function ItemList() {
   const fetchItems = async () => {
     setLoading(true);
     try {
-        const response = await api.get(searchTerm ? `/barang/search/${searchTerm}` : '/barang');
+        const response = await api.get(searchTerm ? `/inventBarang/${searchTerm}` : '/inventBarang');
         const data = response.data.data;
         if (data.data.length <= 0) {
           setEmpty(true)
@@ -45,10 +45,10 @@ function ItemList() {
         setItems(data.data);
         setNextCursor(data.next_cursor);
     } catch (error) {
-
+      // console.log(error)
     } finally {
       setLoading(false);
-      setTimeout(() => setContentVisible(true), 50);
+      setTimeout(() => setContentVisible(true), 100);
     }
   };
 
@@ -56,7 +56,7 @@ function ItemList() {
     if (!nextCursor || loading) return;
     setLoading(true);
     try {
-      const response = await api.get(searchTerm ? `/barang/search/${searchTerm}` : '/barang', {
+      const response = await api.get(searchTerm ? `/inventBarang/${searchTerm}` : '/inventBarang', {
         params: {
           cursor: nextCursor,
         },
@@ -89,7 +89,7 @@ function ItemList() {
   const handleDeleteClick = async (id) => {
     try {
       const result = await Swal.fire({
-        title: `Apakah Anda Mau Menghapus Barang`,
+        title: `Apakah Anda Mau Menghapus Barang ini?`,
         icon: 'question',
         showDenyButton: true,
         confirmButtonText: 'Yes',
@@ -102,7 +102,7 @@ function ItemList() {
       });
 
       if (result.isConfirmed) {
-        const response = await api.delete(`/barang/${id}`);
+        const response = await api.delete(`/inventBarang-delete/${id}`);
         setItems((prevItems) => prevItems.filter((item) => item.id !== id));
         await Swal.fire('Terhapus!', '', 'success');
       }
@@ -140,10 +140,6 @@ function ItemList() {
         <Block> 
             <div className='mb-3 flex justify-between'>
               <p className='ms-3  text-xl font-bold capitalize'>Data Barang</p>
-              <RestoreButton goTo={'/barang/restore-barang'} />
-            </div>
-            <div className='flex justify-end items-center mb-4'>
-              <button className='bg-green-500 w-max px-3 h-8 rounded-lg font-light text-white' onClick={() => setOpenModal(!openModal)}>Export Data</button>
             </div>
             <Transition contentVisible={contentVisible}>
               <ScrollPagination

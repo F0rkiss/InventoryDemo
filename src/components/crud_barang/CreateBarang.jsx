@@ -4,30 +4,23 @@ import { useNavigate } from 'react-router-dom';
 import Select from 'react-select';
 import Back from '../component/Back';
 import { Block, Page } from 'framework7-react';
+import { accessOptions } from '../../helper/FindOptions';
 import Layout from '../component/Layout';
 import SelectPaginate from '../component/SelectPaginate';
 import Swal from 'sweetalert2';
 
-function CreateItem() {
-    const statuses = ([
-        { value: 'in use', label: 'In Use' },
-        { value: 'out', label: 'Out' },
-        { value: 'in service', label: 'Servis' },
-        { value: 'rusak', label: 'Rusak' }
-    ]);
-     
+function CreateBarang() { 
     const [newItem, setNewItem] = useState({
-        category: null,
-        user: null,
-        brand: '',
-        typeMonitor: '',
-        status: null,
-        unitDevice: '',
-        dateBarangMasuk: '',
-        spekOrigin: '',
-        spekAkhir: '',    
-        note: '',
+        name : '',
+        kode_barang : '',
+        kode_gudang : '',
+        satuan : '',
         image : null,
+        jenis_barang : null,
+        categories : null,
+        sumber_barang : null,
+        tingkat_kebutuhan : null,
+        is_asset : null
     });
     
     const [disabled, setDisabled] = useState(false)
@@ -39,7 +32,6 @@ function CreateItem() {
     }
 
     useEffect(() => {
-        console.log(newItem)
     }, [newItem])
 
     const handleFileChange = (e) => {
@@ -66,30 +58,35 @@ function CreateItem() {
         
         const formdata = new FormData()
 
-        formdata.append('user_id', newItem.user?.value)
-        formdata.append('category_id', newItem.category?.value)
-        formdata.append('status', newItem.status?.value)
-        formdata.append('brand', newItem.brand)
-        formdata.append('type_monitor', newItem.typeMonitor)
-        formdata.append('unit_device', newItem.unitDevice)
-        formdata.append('date_barang_masuk', newItem.dateBarangMasuk)
-        formdata.append('spek_origin', newItem.spekOrigin)
-        formdata.append('spek_akhir', newItem.spekAkhir)
-        formdata.append('note', newItem.note)
+        formdata.append('invent_jenis_barangs_id', newItem.jenis_barang?.value)
+        formdata.append('invent_sumber_barangs_id', newItem.sumber_barang?.value)
+        formdata.append('invent_tingkat_kebutuhans_id', newItem.tingkat_kebutuhan?.value)
+        formdata.append('invent_categories_id', newItem.categories?.value)
+        formdata.append('name', newItem.name)
+        formdata.append('is_asset', newItem.is_asset?.value)
+        formdata.append('satuan', newItem.satuan)
+        formdata.append('kode_barang', newItem.kode_barang)
+        formdata.append('kode_gudang', newItem.kode_gudang)
         if (newItem.image) {
             formdata.append('image', newItem.image)
         }
-        await api.post('/barang', formdata, {
+        await api.post('/inventBarang-create', formdata, {
             headers : {
                 "Content-Type" : "multipart/form-data"
             }
+        })
+        Swal.fire({
+            title: 'Barang baru berhasil dibuat!',
+            icon: 'success',
+            timer: 2000,
+            showConfirmButton: false,
         });
-        navigate(-1)
+        navigate('/barang/list-barang')
         } catch (error) {
             Swal.fire({
                 icon:'error',
                 title:'Tidak Dapat Membuat Barang',
-                text:'Ada Kesalahan Dalam Sistem'
+                text:'Ada kesalahan dalam sistem'
             })
         } finally {
             setDisabled(false)
@@ -100,121 +97,121 @@ function CreateItem() {
         <Layout title={'Create Barang'}>
             <Block>
                 <Back goHome={goHome}/>
-                <div className="container mt-6 bg-white p-2 shadow-md rounded-md font-inter -translate-y-3 mx-auto   ">
+                <div className="p-6 mt-6 bg-white shadow-sm rounded-lg">
                     <form onSubmit={makeItem}>
                         <div className="mb-5">
-                            <label>User:</label>
-                            <SelectPaginate
-                            source={'user'}
-                            selectName={'User'}
-                            itemLabel={['name']}
-                            handleSelectChange={user => setNewItem({...newItem, user})}
-                            />
-                        </div>
-                        <div className="mb-5">
-                            <label>Category:</label>
-                            <SelectPaginate
-                            selectName={'Kategori'}
-                            source={'category'}
-                            itemLabel={['name', 'kode']}
-                            handleSelectChange={category => setNewItem({...newItem, category})}
-                            />
-                        </div>
-                        <div className="mb-5 ">
-                            <label>Status:</label>
-                            <Select 
-                                options={statuses} 
-                                value={newItem.status} 
-                                onChange={status => setNewItem({ ...newItem, status })}
-                                required
-                            />
-                        </div>
-                        <div className="mb-5">
-                            <label>Brand:</label>
-                            <div className='bg-white p-2 rounded-md border-solid border-gray-300 border'>
+                            <label>Name</label>
+                            <div className='bg-white p-2 rounded-md border-solid border-gray-300 border mt-2'>
                             <input 
                                 type="text" 
-                                name="brand" 
-                                value={newItem.brand} 
-                                onChange={e => setNewItem({ ...newItem, brand: e.target.value })}
+                                name="name" 
+                                value={newItem.name} 
+                                onChange={e => setNewItem({ ...newItem, name: e.target.value })}
                                 className="w-full p-2 border rounded placeholder:text-gray-400 placeholder:font-inter placeholder:font-light "
                                 maxLength={80}
-                                placeholder='Nama Brand'
+                                placeholder='Name'
                                 required
                             />
                             </div>
                         </div>
                         <div className="mb-5">
-                            <label>Type Monitor:</label>
-                            <div className='bg-white p-2 rounded-md border-solid border-gray-300 border'>
+                            <label>Kode Barang</label>
+                            <div className='bg-white p-2 rounded-md border-solid border-gray-300 border mt-2'>
                             <input 
                                 type="text" 
-                                name="typeMonitor" 
-                                value={newItem.typeMonitor} 
-                                onChange={e => setNewItem({ ...newItem, typeMonitor: e.target.value })}
+                                name="kode_barang" 
+                                value={newItem.kode_barang} 
+                                onChange={e => setNewItem({ ...newItem, kode_barang: e.target.value })}
+                                className="w-full p-2 border rounded placeholder:text-gray-400 placeholder:font-inter placeholder:font-light "
                                 maxLength={80}
-                                placeholder='Tipe Monitor'
+                                placeholder='Kode Barang'
+                                required
+                            />
+                            </div>
+                        </div>
+                        <div className="mb-5">
+                            <label>Kode Gudang</label>
+                            <div className='bg-white p-2 rounded-md border-solid border-gray-300 border mt-2'>
+                            <input 
+                                type="text" 
+                                name="kode_gudang" 
+                                value={newItem.kode_gudang} 
+                                onChange={e => setNewItem({ ...newItem, kode_gudang: e.target.value })}
+                                maxLength={80}
+                                placeholder='Kode Gudang'
                                 className="w-full p-2 border rounded placeholder:text-gray-400 placeholder:font-inter placeholder:font-light"
                                 required
                             />
                             </div>
                         </div>
                         <div className="mb-5">
-                            <label>Unit Device:</label>
-                            <div className='bg-white p-2 rounded-md border-solid border-gray-300 border'>
+                            <label>Satuan</label>
+                            <div className='bg-white p-2 rounded-md border-solid border-gray-300 border mt-2'>
                             <input 
                                 type="text" 
-                                name="unitDevice" 
-                                value={newItem.unitDevice} 
-                                onChange={e => setNewItem({ ...newItem, unitDevice: e.target.value })}
-                                maxLength={255}
+                                name="satuan" 
+                                value={newItem.satuan} 
+                                onChange={e => setNewItem({ ...newItem, satuan: e.target.value })}
+                                maxLength={80}
+                                placeholder='Satuan'
                                 className="w-full p-2 border rounded placeholder:text-gray-400 placeholder:font-inter placeholder:font-light"
-                                placeholder='Nama Unit'
                                 required
                             />
                             </div>
                         </div>
                         <div className="mb-5">
-                            <label>Date Barang Masuk:</label>
-                            <div className='bg-white p-2 rounded-md border-solid border-gray-300 border text-gray-400 font-light font-inter'>
-                            <input 
-                                type="date" 
-                                name="dateBarangMasuk" 
-                                value={newItem.dateBarangMasuk} 
-                                onChange={e => setNewItem({ ...newItem, dateBarangMasuk: e.target.value })}
-                                className="w-full p-2 border rounded"
+                            <label className='font-semibold'>Aset</label>
+                            <Select 
+                                options={accessOptions} 
+                                value={newItem.is_asset}
+                                placeholder="Aset" 
+                                onChange={is_asset => setNewItem({ ...newItem, is_asset })}
                                 required
                             />
-                            </div>
                         </div>
-                        <div className="mb-5">
-                            <label>Spek Origin:</label>
-                            <div className='bg-white p-2 rounded-md border-solid border-gray-300 border font-light font-inter'>
-                            <input 
-                                type="text" 
-                                name="spekOrigin" 
-                                value={newItem.spekOrigin} 
-                                onChange={e => setNewItem({ ...newItem, spekOrigin: e.target.value })}
-                                maxLength={255}
-                                className="w-full p-2 border rounded placeholder:text-gray-400 placeholder:font-inter placeholder:font-light"                            
-                                placeholder='Spek Origin'
+                        <div className="mb-5 g-4">
+                            <label className='font-semibold'>Jenis Barang </label>
+                            <SelectPaginate
+                                source={'inventJenisBarang'}
+                                selectValue={newItem.jenis_barang}
+                                selectName={'Jenis Barang'}
+                                itemLabel={['name']}
+                                handleSelectChange={jenis_barang => setNewItem({...newItem, jenis_barang})}
                                 required
                             />
-                            </div>
                         </div>
-                        <div className="mb-5">
-                            <label>Note:</label>
-                            <div className='bg-white p-2 rounded-md border-solid border-gray-300 border font-light font-inter'>
-                            <input 
-                                type="text" 
-                                name="spekOrigin" 
-                                value={newItem.note} 
-                                onChange={e => setNewItem({ ...newItem, note: e.target.value })}
-                                maxLength={255}
-                                className="w-full p-2 border rounded placeholder:text-gray-400 placeholder:font-inter placeholder:font-light"                            
-                                placeholder='Note'
+                        <div className="mb-5 g-4">
+                            <label className='font-semibold'>Categories </label>
+                            <SelectPaginate
+                                source={'inventCategories'}
+                                selectValue={newItem.categories}
+                                selectName={'Category'}
+                                itemLabel={['name']}
+                                handleSelectChange={categories => setNewItem({...newItem, categories})}
+                                required
                             />
-                            </div>
+                        </div>
+                        <div className="mb-5 g-4">
+                            <label className='font-semibold'>Sumber Barang </label>
+                            <SelectPaginate
+                                source={'inventSumberBarang'}
+                                selectValue={newItem.sumber_barang}
+                                selectName={'Sumber Barang'}
+                                itemLabel={['name']}
+                                handleSelectChange={sumber_barang => setNewItem({...newItem, sumber_barang})}
+                                required
+                            />
+                        </div>
+                        <div className="mb-5 g-4">
+                            <label className='font-semibold'>Tingkat Kebutuhan </label>
+                            <SelectPaginate
+                                source={'tingkatKebutuhanBarang'}
+                                selectValue={newItem.tingkat_kebutuhan}
+                                selectName={'Tingkat Kebutuhan'}
+                                itemLabel={['name']}
+                                handleSelectChange={tingkat_kebutuhan => setNewItem({...newItem, tingkat_kebutuhan})}
+                                required
+                            />
                         </div>
                         <div className="mb-5">
                             <label>Image:</label>
@@ -237,4 +234,4 @@ function CreateItem() {
     );
 }
 
-export default CreateItem;
+export default CreateBarang;

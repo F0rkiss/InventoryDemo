@@ -6,6 +6,7 @@ import api from '../../api/api'
 import Back from '../component/Back'
 import Layout from '../component/Layout'
 import { DecryptID } from '../../helper/EncryptHelper'
+import Transition from '../component/Transition';
 import Swal from 'sweetalert2'
 
 
@@ -17,6 +18,7 @@ function UpdateTypeRequest() {
     })
     const [decryptedId, setDecryptedId] = useState('')
     const [disabled, setDisabled] = useState(false)
+    const [contentVisible, setContentVisible] = useState(false)
     const navigate = useNavigate()
     const { id } = useParams()
 
@@ -45,6 +47,8 @@ function UpdateTypeRequest() {
             })
         } catch (error) {
 
+        } finally {
+            setTimeout(() => setContentVisible(true), 50)
         }
     }
 
@@ -82,59 +86,58 @@ function UpdateTypeRequest() {
         <Layout title={'Update Type Request'}>
             <Block>
                 <Back goHome={() => navigate('/type-request/list-type-request')} />
-                <div className="p-6 mt-6 bg-white shadow-sm rounded">
-                    <form onSubmit={handleSubmit}>
-                        <div className="mb-5">
-                            <label className='font-semibold'>Name</label>
-                            <div className='bg-white p-2 rounded-md border-solid border-gray-300 border mt-2'>
-                            <input 
-                                type="text" 
-                                name="Nama" 
-                                value={items.name} 
-                                onChange={e => setItems({ ...items, name: e.target.value })}
-                                className="w-full p-2 border rounded placeholder:text-gray-400 placeholder:font-inter placeholder:font-light "
-                                // maxLength={40}
-                                placeholder='Nama Tipe Request'
-                                required
-                            />
+                <Transition contentVisible={contentVisible}>
+                    <div className="p-6 mt-6 bg-white shadow-sm rounded">
+                        <form onSubmit={handleSubmit}>
+                            <div className="mb-5">
+                                <label className='font-semibold'>Name</label>
+                                <div className='bg-white p-2 rounded-md border-solid border-gray-300 border mt-2'>
+                                <input 
+                                    type="text" 
+                                    name="Nama" 
+                                    value={items.name} 
+                                    onChange={e => setItems({ ...items, name: e.target.value })}
+                                    className="w-full p-2 border rounded placeholder:text-gray-400 placeholder:font-inter placeholder:font-light "
+                                    placeholder='Nama Tipe Request'
+                                    required
+                                />
+                                </div>
                             </div>
-                        </div>
-                        <div className="mb-5">
-                            <label className='font-semibold'>Jenis</label>
-                            <div className='bg-white p-2 rounded-md border-solid border-gray-300 border mt-2'>
-                            <input 
-                                type="text" 
-                                name="Jenis" 
-                                value={items.jenis} 
-                                onChange={e => setItems({ ...items, jenis: e.target.value })}
-                                className="w-full p-2 border rounded placeholder:text-gray-400 placeholder:font-inter placeholder:font-light"
-                                // maxLength={40}
-                                placeholder='Jenis'
-                                required
-                            />
+                            <div className="mb-5">
+                                <label className='font-semibold'>Jenis</label>
+                                <div className='bg-white p-2 rounded-md border-solid border-gray-300 border mt-2'>
+                                <input 
+                                    type="text" 
+                                    name="Jenis" 
+                                    value={items.jenis} 
+                                    onChange={e => setItems({ ...items, jenis: e.target.value })}
+                                    className="w-full p-2 border rounded placeholder:text-gray-400 placeholder:font-inter placeholder:font-light"
+                                    placeholder='Jenis'
+                                    required
+                                />
+                                </div>
                             </div>
-                        </div>
-                        <div className="mb-4">
-                            <label className='font-semibold'>Description</label>
-                            <div className='bg-white p-2 rounded-md border border-gray-300 border mt-2'>
-                            <input 
-                                type="text" 
-                                name="description" 
-                                value={items.description} 
-                                onChange={e => setItems({ ...items, description: e.target.value })}
-                                className="w-full p-2 placeholder:text-gray-400 placeholder:font-inter placeholder:font-light"
-                                placeholder='Deskripsi'
-                                required
-                            />
+                            <div className="mb-4">
+                                <label className='font-semibold'>Description</label>
+                                <div className='bg-white p-2 rounded-md border border-gray-300 border mt-2'>
+                                <input 
+                                    type="text" 
+                                    name="description" 
+                                    value={items.description} 
+                                    onChange={e => setItems({ ...items, description: e.target.value })}
+                                    className="w-full p-2 placeholder:text-gray-400 placeholder:font-inter placeholder:font-light"
+                                    placeholder='Deskripsi'
+                                    required
+                                />
+                                </div>
                             </div>
-                            {/* <p className='text-xs text-red-500 mt-1 ms-1'>Kode Hanya Boleh 2 Karakter dan Tidak Boleh Nomor</p> */}
-                        </div>
-                        <div className="flex justify-center mt-6">
-                            <button disabled={disabled} type='submit' className='w-4/12 py-2 rounded-md bg-teal-400 text-white me-2'>Submit</button>
-                            <button className='w-4/12 py-2 rounded-md bg-red-400 text-white' onClick={resetValue} type='button'>Reset</button>
-                        </div>
-                    </form>
-                </div>
+                            <div className="flex justify-center mt-6">
+                                <button disabled={disabled} type='submit' className='w-4/12 py-2 rounded-md bg-teal-400 text-white me-2'>Submit</button>
+                                <button className='w-4/12 py-2 rounded-md bg-red-400 text-white' onClick={resetValue} type='button'>Reset</button>
+                            </div>
+                        </form>
+                    </div>
+                </Transition>
             </Block>
         </Layout>
     )

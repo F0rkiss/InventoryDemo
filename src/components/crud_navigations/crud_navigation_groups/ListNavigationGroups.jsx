@@ -1,18 +1,18 @@
 import React, { useEffect, useState, useRef } from 'react';
-import api from '../../api/api';
-import SearchBar from '../component/SearchBar';
+import api from '../../../api/api';
+import SearchBar from '../../component/SearchBar';
 import { Page, Block, Fab, Icon } from 'framework7-react';
-import ScrollPagination from '../component/ScrollPagination';
-import Loader from '../component/Loader';
-import Transition from '../component/Transition';
+import ScrollPagination from '../../component/ScrollPagination';
+import Loader from '../../component/Loader';
+import Transition from '../../component/Transition';
 import { useNavigate } from 'react-router-dom';
-import FlyingButton from '../component/FlyingButton';
+import FlyingButton from '../../component/FlyingButton';
 import Swal from 'sweetalert2';
-import Layout from '../component/Layout';
-import { encrypting } from '../../helper/EncryptHelper';
-import NavigationCards from '../component/cards/NavigationsGroupCards';
-import RestoreButton from '../component/RestoreButton';
-import DataEmpty from '../component/DataEmpty';
+import Layout from '../../component/Layout';
+import { encrypting } from '../../../helper/EncryptHelper';
+import NavigationCards from '../../component/cards/NavigationsCards';
+import RestoreButton from '../../component/RestoreButton';
+import DataEmpty from '../../component/DataEmpty';
 
 function ListNavigationGroup() {
     const [items, setItems] = useState([])
@@ -35,8 +35,7 @@ function ListNavigationGroup() {
             setLoading(true)
             const response = await api.get(searchTerm ? `inventNavigationGroup/${searchTerm}` : `inventNavigationGroup`)
             const data = response.data.data
-            setItems(data.data);  
-            setNextCursor(data.next_cursor)
+            setItems(data.data.filter(item => item.deleted_at === null));               setNextCursor(data.next_cursor)
         } catch (error) {
 
         } finally {
@@ -59,7 +58,9 @@ function ListNavigationGroup() {
             const data = response.data.data
             setItems((prevItems) => {
                 const existingIds = new Set(prevItems.map(item => item.id));
-                const newItems = data.data.filter(item => !existingIds.has(item.id));
+                const newItems = data.data
+                .filter(item => item.deleted_at === null)
+                .filter(item => !existingIds.has(item.id));
                 return [...prevItems, ...newItems];
             });
             setNextCursor(data.next_cursor);
@@ -112,12 +113,12 @@ function ListNavigationGroup() {
 
     const goToDetail = async (id) => {
         const encryptingID = await encrypting(id)
-        navigate(`/navigations/detail-navigations/${encryptingID}`)
+        navigate(`/navigation-groups/detail-navigation-groups/${encryptingID}`)
     } 
 
     const goToUpdate = async(id) => {
         const encryptingID = await encrypting(id)
-        navigate(`/navigations/update-navigations/${encryptingID}`)
+        navigate(`/navigation-groups/update-navigation-groups/${encryptingID}`)
     }
     
     return (
@@ -130,7 +131,6 @@ function ListNavigationGroup() {
             <Block>
                 <div className='ms-3 mb-6 flex justify-between'>
                     <p className='text-xl font-bold capitalize'>Navigation Group</p>
-                    {/* <RestoreButton goTo={'/user/restore-user'} /> */}
                 </div>                
                 <Transition contentVisible={contentVisible}>
                     <ScrollPagination fetchMoreItems={fetchMoreItems} loading={loading} nextCursor={nextCursor}>
@@ -142,6 +142,7 @@ function ListNavigationGroup() {
                                 goToDetail={goToDetail}
                                 goToUpdate={goToUpdate}
                                 deleteItems={deleteItems}
+                                source={'group'}
                                 />
                             )))
                         }
@@ -152,7 +153,7 @@ function ListNavigationGroup() {
                 </Transition>
                 {loading && <Loader Class={'mt-44'} />}
             </Block>
-            <FlyingButton goTo={'/navigations/create-navigations'} />
+            <FlyingButton goTo={'/navigation-groups/create-navigation-groups'} />
         </Layout>
     )
 }

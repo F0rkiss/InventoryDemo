@@ -1,14 +1,14 @@
 import React, {useEffect, useState} from 'react'
-import api from '../../api/api';
+import api from '../../../api/api';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Page, Block } from 'framework7-react';
-import SelectPaginate from '../component/SelectPaginate';
-import { DecryptID } from '../../helper/EncryptHelper';
+import SelectPaginate from '../../component/SelectPaginate';
+import { DecryptID } from '../../../helper/EncryptHelper';
 import Select from 'react-select';
-import Transition from '../component/Transition';
-import { accessOptions, findAccessOption } from '../../helper/FindOptions';
-import Back from '../component/Back';
-import Layout from '../component/Layout';
+import Transition from '../../component/Transition';
+import { accessOptions, findAccessOption } from '../../../helper/FindOptions';
+import Back from '../../component/Back';
+import Layout from '../../component/Layout';
 import Swal from 'sweetalert2';
 
 function UpdateNavigationGroups() {
@@ -58,11 +58,9 @@ function UpdateNavigationGroups() {
                 delete_access: findAccessOption(data.delete_access)
             })
         } catch (error) {
-            console.error('Error fetching items:', error);
-        } finally {
-            setTimeout(() => setContentVisible(true), 50)
-        }
-    }
+            // console.error('Error fetching items:', error);
+        } finally { setTimeout(() => setContentVisible(true), 50) }
+    };
     
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -112,7 +110,7 @@ function UpdateNavigationGroups() {
     <div>
         <Layout title={'Update Navigation Group'}>
             <Block>
-                <Back goHome={() => navigate('/navigations/list-navigations')}/>
+                <Back goHome={() => navigate('/navigation-groups/list-navigation-groups')}/>
                 <Transition contentVisible={contentVisible}>
                     <div className='bg-white rounded shadow-sm p-3'>
                         <form onSubmit={handleSubmit}>
@@ -120,7 +118,7 @@ function UpdateNavigationGroups() {
                                 <label>Role </label>
                                 <SelectPaginate
                                     selectValue={items.role}
-                                    source={'inventRole'}
+                                    source={'role'}
                                     selectName={'Role'}
                                     itemLabel={['name']}
                                     handleSelectChange={role => setItems({...items, role})}

@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
+
 .navbar[class*="bg-color-"] {
     --f7-navbar-bg-color: var(--f7-theme-color-bg-color);
   }
@@ -79,7 +80,7 @@
   width: 100%;
 }
 
-
-body{
+body {
   font: Inter;
+  /* color: oklch(0.278 0.033 256.848); */
 }

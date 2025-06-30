@@ -12,7 +12,6 @@ import RequireAuth from '../auth/RequireAuth.jsx';
 import store from '../js/store';
 import '../css/app.css';
 import Loader from './component/Loader.jsx';
-import ListNavigationGroup from './crud_navigations/ListNavigationGroups.jsx';
 
 // Lazy load components
 const BarangList = lazy(() => import('./crud_barang/BarangList.jsx'));
@@ -56,10 +55,12 @@ const CreateRole = lazy(() => import('./crud_role/CreateRole.jsx'));
 const UpdateRole = lazy(() => import('./crud_role/UpdateRole.jsx'));
 const RestoreRole = lazy(() => import('./crud_role/RestoreRole.jsx'));
 
-const NavigationGroupList = lazy(() => import('./crud_navigations/ListNavigationGroups.jsx'));
-const CreateNavigationGroup = lazy(() => import('./crud_navigations/CreateNavigationGroups.jsx'));
-const UpdateNavigationGroup = lazy(() => import('./crud_navigations/UpdateNavigationGroups.jsx'));
-const DetailNavigationGroup = lazy(() => import('./crud_navigations/DetailNavigationGroups.jsx'));
+const NavigationGroupList = lazy(() => import('./crud_navigations/crud_navigation_groups/ListNavigationGroups.jsx'));
+const CreateNavigationGroup = lazy(() => import('./crud_navigations/crud_navigation_groups/CreateNavigationGroups.jsx'));
+const UpdateNavigationGroup = lazy(() => import('./crud_navigations/crud_navigation_groups/UpdateNavigationGroups.jsx'));
+const DetailNavigationGroup = lazy(() => import('./crud_navigations/crud_navigation_groups/DetailNavigationGroups.jsx'));
+
+const NavigationMenuList = lazy(() => import('./crud_navigations/crud_navigation_menu/ListNavigationMenu.jsx'));
 
 const ListDepartment = lazy(() => import('./crud_department/ListDepartment.jsx'));
 const UpdateDepartment = lazy(() => import('./crud_department/UpdateDepartment.jsx'));
@@ -204,10 +205,13 @@ const MyApp = () => {
                   <Route path='/role/create-role' element={<CreateRole />} />
                   <Route path='/role/restore-role' element={<RestoreRole />} />
 
-                  <Route path='/navigations/list-navigations' element={<ListNavigationGroup/>}/>
-                  <Route path='/navigations/create-navigations' element={<CreateNavigationGroup/>}/>
-                  <Route path='/navigations/update-navigations/:id' element={<UpdateNavigationGroup/>}/>
-                  <Route path='/navigations/detail-navigations/:id' element={<DetailNavigationGroup/>}/>
+                  <Route path='/navigation-groups/list-navigation-groups' element={<NavigationGroupList/>}/>
+                  <Route path='/navigation-groups/create-navigation-groups' element={<CreateNavigationGroup/>}/>
+                  <Route path='/navigation-groups/update-navigation-groups/:id' element={<UpdateNavigationGroup/>}/>
+                  <Route path='/navigation-groups/detail-navigation-groups/:id' element={<DetailNavigationGroup/>}/>
+
+                  <Route path='/navigation-menu/list-navigation-menu' element={<NavigationMenuList/>}/>
+                  
                 </Route>
 
                 {/* User Routes */}

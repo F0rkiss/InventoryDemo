@@ -31,7 +31,7 @@ function RoleList() {
     const fetchItems = async () => {
         try {
             setLoading(true)
-            const response = await api.get(searchTerm ? `inventRole/${searchTerm}` : `inventRole`)
+            const response = await api.get(searchTerm ? `role/${searchTerm}` : `role`)
             const data = response.data.data
             // console.log('fetched items: ', data.data)
             setItems(data.data);  
@@ -49,7 +49,7 @@ function RoleList() {
         try {
             setLoading(true)
             const response = await api.get(
-                searchTerm ? `inventRole/${searchTerm}` : `inventRole`
+                searchTerm ? `role/${searchTerm}` : `role`
                 , {
                 params: {
                     cursor: nextCursor

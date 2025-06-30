@@ -1,12 +1,12 @@
 import React, {useEffect, useState} from 'react'
-import api from '../../api/api';
+import api from '../../../api/api';
 import { useNavigate } from 'react-router-dom';
 import { Page, Block } from 'framework7-react';
-import { accessOptions, findAccessOption } from '../../helper/FindOptions';
-import SelectPaginate from '../component/SelectPaginate';
+import { accessOptions, findAccessOption } from '../../../helper/FindOptions';
+import SelectPaginate from '../../component/SelectPaginate';
 import Select from 'react-select';
-import Back from '../component/Back';
-import Layout from '../component/Layout';
+import Back from '../../component/Back';
+import Layout from '../../component/Layout';
 import Swal from 'sweetalert2';
 
 function CreateNavigationGroups() {
@@ -71,14 +71,14 @@ function CreateNavigationGroups() {
     <div>
         <Layout title={'Create Navigation Group'}>
             <Block>
-                <Back goHome={() => navigate('/navigations/list-navigations')}/>
+                <Back goHome={() => navigate('/navigation-groups/list-navigation-groups')}/>
                 <div className='bg-white rounded shadow-sm p-3'>
                     <form onSubmit={handleSubmit}>
                         <div className="mb-5">
                             <label className='font-semibold'>Role </label>
                             <SelectPaginate
                                 className={'p-2 rounded-md border-solid border-gray-500 border'}
-                                source={'inventRole'}
+                                source={'role'}
                                 selectValue={items.role}
                                 selectName={'Role'}
                                 itemLabel={['name']}

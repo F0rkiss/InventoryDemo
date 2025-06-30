@@ -17,7 +17,7 @@ const CustomNavbar = ({title}) => {
               <span className="flex items-center ios-specific">
                 { role &&
                   <button aria-label='sidebar-button' onClick={() => setOpenSidebar(!openSidebar)}>
-                    <i className="bx bx-menu text-black text-3xl ms-3"></i>
+                    <i className="bx bx-menu-alt-left text-black text-3xl ms-4"></i>
                   </button>
                 }
                   <span className="ml-8 text-black text-xl ios-text font-inter max-w-fit whitespace-nowrap">{title}</span>

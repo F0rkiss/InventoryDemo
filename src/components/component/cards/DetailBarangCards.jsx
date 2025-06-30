@@ -1,4 +1,3 @@
-import React, { useEffect, useState } from 'react';
 import { Page, Block } from 'framework7-react';
 import Loader from '../Loader';
 import useAuth from '../../../hooks/useAuth';
