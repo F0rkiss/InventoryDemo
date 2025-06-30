@@ -97,7 +97,7 @@ function RoleList() {
             });
 
             if (result.isConfirmed) {
-                await api.delete(`/user/${id}`);
+                await api.delete(`role-delete/${id}`);
                 setItems(items.filter((item) => item.id !== id));
                 Swal.fire('Terhapus!', '', 'success');
             }

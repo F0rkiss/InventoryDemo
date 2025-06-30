@@ -5,11 +5,11 @@ const MakeRequestCards = forwardRef(({item, goToDetail, goToUpdate, restoreItems
 
 
     return (
-        <div className='rounded-lg bg-white border mb-2' ref={ref}>
-            <div className='grid grid-cols-3'>
+        <div className='rounded-lg bg-white border  mb-2' ref={ref}>
+            <div className='grid grid-cols-3 border-b'>
                 <div className='col-start-2 place-items-center py-2'>
-                    <p className='text-center font-bold text-xl'>{item.kode_mr}</p>
-                    <p className='text-center font-regular italic text-md text-gray-400'>{item.id}</p>
+                    <p className='text-left font-bold text-xl capitalize'>{item.user.EmpName}</p>
+                    <p className='text-center font-regular italic text-md text-gray-400'>{item.kode_mr}</p>
                 </div>
                 {
                     !restore && 
@@ -20,12 +20,16 @@ const MakeRequestCards = forwardRef(({item, goToDetail, goToUpdate, restoreItems
                     </div>
                 }
             </div>
-            <p className='text-center text-md pb-2'>{item.note}</p>
-            <p className='text-center text-md pb-2'>Tanggal : {DateFormat(item.created_at)}</p>
-            <p className='text-center text-md pb-2'>Waktu Dibuat : {DateFormat(item.created_at)}</p>
-            <p className='text-center text-md pb-2'>Waktu Dirubah : {DateFormat(item.updated_at)}</p>
-            <hr  />
+            <p className='flex flex-row justify-between ml-4 mr-4 text-md pb-2'>Note : <p>{ item.note || "Not Assigned"}</p></p>
+            <hr/>
+            <p className='flex flex-row justify-between ml-4 mr-4 text-md pb-2'>Tanggal Dibuat: <p>{DateFormat(item.created_at)}</p></p>
+            <p className='flex flex-row justify-between ml-4 mr-4 text-md pb-2'>Tanggal Dirubah : <p>{DateFormat(item.updated_at)}</p></p>
+            <p className='flex flex-row justify-between ml-4 mr-4 text-md pb-2'>Type Request: <p>{item.type_request.name}</p></p>
+            <p className='flex flex-row justify-between ml-4 mr-4 text-md pb-2'>Jenis : <p>{item.type_request.jenis}</p></p>
+            <p className='flex flex-row justify-between ml-4 mr-4 text-md pb-2'>Description : <p>{item.type_request.description}</p></p>
+            <hr/>
             <div className='flex py-2 mx-6'>
+                
                 { !restore ?
                 <>
                     <button

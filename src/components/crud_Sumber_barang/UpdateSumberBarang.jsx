@@ -8,7 +8,7 @@ import Layout from '../component/Layout'
 import { DecryptID } from '../../helper/EncryptHelper'
 import Swal from 'sweetalert2'
 
-function UpdateJenisBarang() {
+function UpdateSumberBarang() {
     const [items, setItems] = useState({
         name: '',
         description: ''
@@ -34,7 +34,7 @@ function UpdateJenisBarang() {
 
     const fetchItems = async () => {
         try {
-            const response = await api.get(`inventJenisBarang-detail/${decryptedId}`)
+            const response = await api.get(`inventSumberBarang-detail/${decryptedId}`)
             const data = response.data.data;
             setItems({
                 name: data.data?.name,
@@ -52,15 +52,15 @@ function UpdateJenisBarang() {
                 return
             }
             setDisabled(true)
-            const response = await api.put(`inventJenisBarang-update/${decryptedId}`, {
+            const response = await api.put(`inventSumberBarang-update/${decryptedId}`, {
                 name: items.name,
                 description: items.description
             })
-            navigate('/jenis-barang/list-jenis-barang')
+            navigate('/sumber-barang/list-sumber-barang')
         } catch (error) {
             Swal.fire({
                 icon:'error',
-                title:'Tidak dapat mengubah jenis barang',
+                title:'Tidak dapat mengubah Sumber barang',
                 text:'Ada Kesalahan Dalam Sistem'
             })
         } finally {
@@ -76,7 +76,7 @@ function UpdateJenisBarang() {
     return (
         <Layout title={'Update Category'}>
             <Block>
-                <Back goHome={() => navigate('/jenis-barang/list-jenis-barang')} />
+                <Back goHome={() => navigate('/sumber-barang/list-sumber-barang')} />
                 <div className="p-6 mt-6 bg-white shadow-sm rounded">
                     <form onSubmit={handleSubmit}>
                         <div className="mb-5">
@@ -89,7 +89,7 @@ function UpdateJenisBarang() {
                                 onChange={e => setItems({ ...items, name: e.target.value })}
                                 className="w-full p-2 border rounded placeholder:text-gray-400 placeholder:font-inter placeholder:font-light "
                                 // maxLength={40}
-                                placeholder='Nama Jenis Barang'
+                                placeholder='Nama Sumber Barang'
                                 required
                             />
                             </div>
@@ -120,4 +120,4 @@ function UpdateJenisBarang() {
     )
 }
 
-export default UpdateJenisBarang;
+export default UpdateSumberBarang;

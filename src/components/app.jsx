@@ -47,13 +47,12 @@ const UserList = lazy(() => import('./crud_user/UserList.jsx'));
 const DetailUser = lazy(() => import('./crud_user/DetailUser.jsx'));
 const CreateUser = lazy(() => import('./crud_user/CreateUser.jsx'));
 const UpdateUser = lazy(() => import('./crud_user/UpdateUser.jsx'));
-const RestoreUser = lazy(() => import('./crud_user/RestoreUser.jsx'));
 
 const RoleList = lazy(() => import('./crud_role/RoleList.jsx'));
-const DetailRole = lazy(() => import('./crud_role/DetailRole.jsx'));
+
 const CreateRole = lazy(() => import('./crud_role/CreateRole.jsx'));
 const UpdateRole = lazy(() => import('./crud_role/UpdateRole.jsx'));
-const RestoreRole = lazy(() => import('./crud_role/RestoreRole.jsx'));
+
 
 const NavigationGroupList = lazy(() => import('./crud_navigations/crud_navigation_groups/ListNavigationGroups.jsx'));
 const CreateNavigationGroup = lazy(() => import('./crud_navigations/crud_navigation_groups/CreateNavigationGroups.jsx'));
@@ -197,13 +196,13 @@ const MyApp = () => {
                   <Route path='/user/detail-user/:id' element={<DetailUser />} />
                   <Route path='/user/update-user/:id' element={<UpdateUser />} />
                   <Route path='/user/create-user' element={<CreateUser />} />
-                  <Route path='/user/restore-user' element={<RestoreUser />} />
+                  {/* <Route path='/user/restore-user' element={<RestoreUser />} /> */}
 
                   <Route path='/role/list-role' element={<RoleList />} />
-                  <Route path='/role/detail-role/:id' element={<DetailRole />} />
+                  {/* <Route path='/role/detail-role/:id' element={<DetailRole />} /> */}
                   <Route path='/role/update-role/:id' element={<UpdateRole />} />
                   <Route path='/role/create-role' element={<CreateRole />} />
-                  <Route path='/role/restore-role' element={<RestoreRole />} />
+                  {/* <Route path='/role/restore-role' element={<RestoreRole />} /> */}
 
                   <Route path='/navigation-groups/list-navigation-groups' element={<NavigationGroupList/>}/>
                   <Route path='/navigation-groups/create-navigation-groups' element={<CreateNavigationGroup/>}/>
