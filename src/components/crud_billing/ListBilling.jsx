@@ -31,7 +31,7 @@ function ListBilling() {
     const fetchItems = async () => {
         try {
             setLoading(true)
-            const response = await api.get(searchTerm ? `billing/search/${searchTerm}` : `billing`)
+            const response = await api.get(searchTerm ? `billing-search/${searchTerm}` : `billing`)
             const data = response.data.data
             setItems(data.data)
             setNextCursor(data.next_cursor)
@@ -47,7 +47,7 @@ function ListBilling() {
         if (loading || !nextCursor) return
         try {
             setLoading(true)
-            const response = await api.get(searchTerm ? `billing/search/${searchTerm}` : `billing`, {
+            const response = await api.get(searchTerm ? `billing-search/${searchTerm}` : `billing`, {
                 params : {
                     cursor : nextCursor
                 }
@@ -93,7 +93,7 @@ function ListBilling() {
             });
       
             if (result.isConfirmed) {
-              await api.delete(`/billing/${id}`);
+              await api.delete(`/billing-delete/${id}`);
               setItems(items.filter((item) => item.id !== id));
               Swal.fire('Terhapus!', '', 'success');
             }
@@ -111,6 +111,11 @@ function ListBilling() {
         navigate(`/billing/update-billing/${encryptingID}`)
     }
 
+    const goToDetail = async (id) => {
+        const encryptingID = await encrypting(id)
+        navigate(`/billing/detail-billing/${encryptingID}`)
+    }
+
 
   return (
     <Layout title={'List Billing'}>
@@ -118,7 +123,6 @@ function ListBilling() {
         <Block>
             <div className='flex justify-between mb-3'>
                 <p className='text-xl font-bold capitalize ms-3 mb-3'>Data Billing</p>
-                <RestoreButton goTo={'/billing/restore-billing'}/>
             </div>
             <Transition contentVisible={contentVisible}>
                 <ScrollPagination fetchMoreItems={fetchMoreItems} loading={loading} nextCursor={nextCursor}>
@@ -129,6 +133,7 @@ function ListBilling() {
                             item={item}
                             goToUpdate={goToUpdate}
                             deleteItems={deleteItems}
+                            goToDetail={goToDetail}
                             />
                         )))
                     }

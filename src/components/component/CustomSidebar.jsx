@@ -186,7 +186,7 @@ const CustomSidebar = ({ showProfile = true, navOpen, setNavOpen }) => {
                             className="w-100 text-start"
                             onClick={toggleAccordionNavigations}
                             >
-                            <div className="flex items-center mb-1 w-full py-1 rounded-r-full justify-between hover:bg-stone-200">
+                                <div className="flex items-center mb-1 w-full py-1 rounded-r-full justify-between hover:bg-stone-200">
                                 <div className="flex items-center">
                                     <i className="bx bx-navigation text-3xl ms-5 me-4"></i>
                                     <p className="text-lg font-medium">Navigations</p>
@@ -212,12 +212,24 @@ const CustomSidebar = ({ showProfile = true, navOpen, setNavOpen }) => {
                                     <p className="text-lg font-medium">Role</p>
                                 </div>
                             </button>
-                            {/* <button className="w-100 text-start" onClick={() => handleNavigation('/billing/list-billing')}>
+                            <button className="w-100 text-start" onClick={() => handleNavigation('/status/list-status')}>
+                                <div className={`flex items-center mb-1 w-60 py-1 rounded-r-full ${isActive('/status/list-statusole') ? 'bg-coklat-mi text-white' : ''} active:bg-coklat-mi active:text-white`}>
+                                <i className='bx  bx-checkbox-checked text-3xl ms-5 me-4'  ></i> 
+                                    <p className="text-lg font-medium">Status</p>
+                                </div>
+                            </button>
+                            <button className="w-100 text-start" onClick={() => handleNavigation('/jenismemo/list-jenismemo')}>
+                                <div className={`flex items-center mb-1 w-60 py-1 rounded-r-full ${isActive('/status/list-statusole') ? 'bg-coklat-mi text-white' : ''} active:bg-coklat-mi active:text-white`}>
+                                    <i className='bx  bx-note text-3xl ms-5 me-4'  ></i> 
+                                    <p className="text-lg font-medium">Jenis Memo</p>
+                                </div>
+                            </button>
+                            <button className="w-100 text-start" onClick={() => handleNavigation('/billing/list-billing')}>
                                 <div className={`flex items-center mb-1 w-60 py-1 rounded-r-full ${isActive('/billing') ? 'bg-coklat-mi text-white' : ''} active:bg-coklat-mi active:text-white`}>
                                     <i className="bx bx-spreadsheet text-3xl ms-5 me-4"></i>
                                     <p className="text-lg font-medium">Billing</p>
                                 </div>
-                            </button> */}
+                            </button>
                     </div>
                     }
                     

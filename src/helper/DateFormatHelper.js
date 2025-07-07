@@ -1,4 +1,4 @@
-function formatDate(dateString) {
+function formatDate(dateString, withTime = true) {
   const date = new Date(dateString);
 
   // Options for formatting date part
@@ -19,7 +19,13 @@ function formatDate(dateString) {
   const year = date.toLocaleDateString('en-GB', { year: 'numeric', timeZone: 'UTC' });
   const time = date.toLocaleTimeString('en-GB', { hour12: false, timeZone: 'UTC' });
 
-  return `${day} ${month} ${year}, ${time}`;
+  if (withTime) {
+    const time = date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false, timeZone: 'UTC' });
+    return `${day} ${month} ${year}, ${time}`;
+  }
+
+  return `${day} ${month} ${year}`;
+
 }
 
 export default formatDate;

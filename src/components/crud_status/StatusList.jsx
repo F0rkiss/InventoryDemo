@@ -10,11 +10,11 @@ import FlyingButton from '../component/FlyingButton'
 import Swal from 'sweetalert2'
 import Layout from '../component/Layout'
 import { encrypting } from '../../helper/EncryptHelper'
-import UserCards from '../component/cards/UserCards'
+import StatusCards from '../component/cards/StatusCards'
 import RestoreButton from '../component/RestoreButton'
 import DataEmpty from '../component/DataEmpty'
 
-function UserList() {
+function StatusList() {
     const [items, setItems] = useState([])
     const [searchQuery, setSearchQuery] = useState('')
     const [searchTerm, setSearchTerm] = useState('')
@@ -31,7 +31,7 @@ function UserList() {
     const fetchItems = async () => {
         try {
             setLoading(true)
-            const response = await api.get(searchTerm ? `inventUser/${searchTerm}` : `inventUser`)
+            const response = await api.get(searchTerm ? `inventStatus/${searchTerm}` : `inventStatus`)
             const data = response.data.data
             // console.log('fetched items: ', data.data)
             setItems(data.data);  
@@ -49,14 +49,14 @@ function UserList() {
         try {
             setLoading(true)
             const response = await api.get(
-                searchTerm ? `inventUser/${searchTerm}` : `inventUser`
+                searchTerm ? `inventStatus/${searchTerm}` : `inventStatus`
                 , {
                 params: {
                     cursor: nextCursor
                 }
             })
             const data = response.data.data
-            // console.log('fetched items: ', data.data)
+            console.log('fetched items: ', data.data)
             setItems((prevItems) => {
                 const existingIds = new Set(prevItems.map(item => item.id));
                 const newItems = data.data.filter(item => !existingIds.has(item.id));
@@ -97,7 +97,7 @@ function UserList() {
             });
 
             if (result.isConfirmed) {
-                await api.delete(`/user/${id}`);
+                await api.delete(`inventStatus-delete/${id}`);
                 setItems(items.filter((item) => item.id !== id));
                 Swal.fire('Terhapus!', '', 'success');
             }
@@ -112,16 +112,16 @@ function UserList() {
 
     const goToDetail = async (id) => {
         const encryptingID = await encrypting(id)
-        navigate(`/user/detail-user/${encryptingID}`)
+        navigate(`/Status/detail-Status/${encryptingID}`)
     } 
 
     const goToUpdate = async(id) => {
         const encryptingID = await encrypting(id)
-        navigate(`/user/update-user/${encryptingID}`)
+        navigate(`/Status/update-Status/${encryptingID}`)
     }
 
     return (
-        <Layout title={'List User'}>
+        <Layout title={'List Status'}>
             <SearchBar
                 onChange={handleSearchChange}
                 disable={loading}
@@ -129,16 +129,15 @@ function UserList() {
             />
             <Block>
                 <div className='ms-3 mb-6 flex justify-between'>
-                    <p className='text-xl font-semibold capitalize'>Data User</p>
+                    <p className='text-xl font-semibold capitalize'>Data Status</p>
                 </div>                
                 <Transition contentVisible={contentVisible}>
                     <ScrollPagination fetchMoreItems={fetchMoreItems} loading={loading} nextCursor={nextCursor}>
                         {
                             ( items?.map((item) => (
-                                <UserCards
+                                <StatusCards
                                 key={item.id}
                                 item={item}
-                                goToDetail={goToDetail}
                                 goToUpdate={goToUpdate}
                                 deleteItems={deleteItems}
                                 />
@@ -151,9 +150,9 @@ function UserList() {
                 </Transition>
                 {loading && <Loader Class={'mt-44'} />}
             </Block>
-            <FlyingButton goTo={'/user/create-user'} />
+            <FlyingButton goTo={'/status/create-status'} />
         </Layout>
     )
 }
 
-export default UserList
+export default StatusList;

@@ -49,9 +49,16 @@ const CreateUser = lazy(() => import('./crud_user/CreateUser.jsx'));
 const UpdateUser = lazy(() => import('./crud_user/UpdateUser.jsx'));
 
 const RoleList = lazy(() => import('./crud_role/RoleList.jsx'));
-
 const CreateRole = lazy(() => import('./crud_role/CreateRole.jsx'));
 const UpdateRole = lazy(() => import('./crud_role/UpdateRole.jsx'));
+
+const StatusList = lazy(() => import('./crud_status/StatusList.jsx'));
+const CreateStatus = lazy(() => import('./crud_status/CreateStatus.jsx'));
+const UpdateStatus = lazy(() => import('./crud_status/UpdateStatus.jsx'));
+
+const JenisMemoList = lazy(() => import('./crud_jenis_memo/JenisMemoList.jsx'));
+const CreateJenisMemo = lazy(() => import('./crud_jenis_memo/CreateJenisMemo.jsx'));
+const UpdateJenisMemo = lazy(() => import('./crud_jenis_memo/UpdateJenisMemo.jsx'));
 
 
 const NavigationGroupList = lazy(() => import('./crud_navigations/crud_navigation_groups/ListNavigationGroups.jsx'));
@@ -88,7 +95,6 @@ const CreateMakeRequest = lazy(() => import('./crud_make_request/CreateMakeReque
 const ListBilling = lazy(() => import('./crud_billing/ListBilling.jsx'))
 const CreateBilling = lazy(() => import('./crud_billing/CreateBilling.jsx'))
 const UpdateBilling = lazy(() => import('./crud_billing/UpdateBilling.jsx'))
-const RestoreBilling = lazy(() => import('./crud_billing/RestoreBilling.jsx'))
 const DetailBilling = lazy(() => import('./crud_billing/DetailBilling.jsx'))
 
 // const TableMR = lazy(() => import('./Table/TableMR/TabelMR.jsx'))
@@ -151,7 +157,6 @@ const MyApp = () => {
                   <Route path='/billing/list-billing' element={<ListBilling/>}/>
                   <Route path='/billing/create-billing' element={<CreateBilling/>} />
                   <Route path='/billing/update-billing/:id' element={<UpdateBilling/>} />
-                  <Route path='/billing/restore-billing' element={<RestoreBilling/>}/>
                   <Route path='/billing/detail-billing/:id' element={<DetailBilling/>}/>
 
                   <Route path="/category/list-category" element={<CategoryList />} />
@@ -196,13 +201,18 @@ const MyApp = () => {
                   <Route path='/user/detail-user/:id' element={<DetailUser />} />
                   <Route path='/user/update-user/:id' element={<UpdateUser />} />
                   <Route path='/user/create-user' element={<CreateUser />} />
-                  {/* <Route path='/user/restore-user' element={<RestoreUser />} /> */}
 
                   <Route path='/role/list-role' element={<RoleList />} />
-                  {/* <Route path='/role/detail-role/:id' element={<DetailRole />} /> */}
                   <Route path='/role/update-role/:id' element={<UpdateRole />} />
                   <Route path='/role/create-role' element={<CreateRole />} />
-                  {/* <Route path='/role/restore-role' element={<RestoreRole />} /> */}
+
+                  <Route path='/status/list-status' element={<StatusList />} />
+                  <Route path='/status/update-status/:id' element={<UpdateStatus />} />
+                  <Route path='/status/create-status' element={<CreateStatus />} />
+
+                  <Route path='/jenismemo/list-jenismemo' element={<JenisMemoList />} />
+                  <Route path='/jenismemo/update-jenismemo/:id' element={<UpdateJenisMemo />} />
+                  <Route path='/jenismemo/create-jenismemo' element={<CreateJenisMemo />} />
 
                   <Route path='/navigation-groups/list-navigation-groups' element={<NavigationGroupList/>}/>
                   <Route path='/navigation-groups/create-navigation-groups' element={<CreateNavigationGroup/>}/>

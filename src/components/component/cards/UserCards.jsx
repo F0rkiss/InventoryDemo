@@ -14,32 +14,17 @@ const UserCards = forwardRef(({item, deleteItems, goToDetail, goToUpdate, restor
                         <p className='text-sm max-xs:text-sm '>{item.EmpCode}</p>
                     </div>
                 </div>
-                {
-                    !restore && 
                     <button className='w-8 h-9' onClick={() => goToDetail(item.id)}>
                         <i className="bx bx-dots-vertical-rounded text-2xl max-xs:text-xl" />
                     </button> 
-                }
             </div>
             <div className='flex justify-around p-2 font-bold max-xs:text-xs'>
-                {
-                    !restore ?
-                    <>
                     <button className='text-cyan-400' onClick={() => goToUpdate(item.id)}>
                     Update
                     </button>
-                    <button className='text-red-500' onClick={() => deleteItems(item.id, item.name)}>
-                        Delete
-                    </button>
-                    </>
-                    :
-                    <button className='text-cyan-400' onClick={() => restoreItems(item.id, item.name)}>
-                        Restore
-                    </button>
-                }
             </div>
         </div>
   )
 })
 
-export default UserCards
+export default UserCards;

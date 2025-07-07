@@ -1,28 +1,33 @@
-import React, { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
-import { DecryptID, encrypting } from '../../helper/EncryptHelper'
+import React, {useState, useEffect} from 'react'
 import api from '../../api/api'
-import Swal from 'sweetalert2'
-import Layout from '../component/Layout'
-import { Block } from 'framework7-react'
-import Back from '../component/Back'
-import Loader from '../component/Loader'
-import BillingCards from '../component/cards/BillingCards'
-import Transition from '../component/Transition'
-const DetailBilling = () => {
+import { useParams } from 'react-router-dom'
+import { Page, Block } from 'framework7-react';
+import CustomNavbar from '../component/CustomNavbar';
+import Back from '../component/Back';
+import { useNavigate } from 'react-router-dom';
+import BillingDetailBillingAvatar from '../../assets/image/gambar/Profile_avatar_placeholder_large.png'
+import Loader from '../component/Loader';
+import Transition from '../component/Transition';
+import Layout from '../component/Layout';
+import { DecryptID } from '../../helper/EncryptHelper';
+import DateFormatToIDN from '../../helper/DateFormatHelper'
 
-    const [items, setItems] = useState([])
+function DetailBilling() {
+
+    const [item, setItems] = useState({})
+    const {id} = useParams();
+    const navigate = useNavigate();
     const [loading, setLoading] = useState(false)
-    const [decryptedId, setdecryptedId] = useState('')
-    const {id} = useParams()
-    const navigate = useNavigate()
-
+    const [contentVisible, setContentVisible] = useState(false)
+    const [decryptedId, setDecryptedId] = useState('')
+    
+    
     useEffect(() => {
-        const decrypting = DecryptID(id)
-        setdecryptedId(decrypting)
-        if (!decrypting) {
+        const decryptedIds = DecryptID(id)
+        setDecryptedId(decryptedIds)
+        if (!decryptedIds) {
             navigate(-1)
-        } 
+        }    
     }, [id])
 
     useEffect(() => {
@@ -34,84 +39,49 @@ const DetailBilling = () => {
     const fetchItems = async () => {
         try {
             setLoading(true)
-            const response = await api.get(`billing/${decryptedId}`)
+            const response = await api.get(`/billing-detail/${decryptedId}`)
             const data = response.data.data
-            if (data.length == 0) {
-                navigate(-1)
-            }
-            setItems([data])
+            setItems(data)
         } catch (error) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Ada Kesalahan Dalam Sistem'
-            })
+            console.error('API Error:', error.response?.data || error.message);
         } finally {
-            setLoading(false)
+            setTimeout(() => setContentVisible(true), 50)
         }
+        setLoading(false)
     }
-
-    const goToUpdate = async (id) => {
-        const encryptingID = await encrypting(id)
-        navigate(`/billing/update-billing/${encryptingID}`)
-    }
-
-    const deleteItems = async (id) => {
-        try {
-            const result = await Swal.fire({
-              title: `Apakah Anda Mau Menghapus Billing ini`,
-              icon: 'question',
-              showDenyButton: true,
-              confirmButtonText: 'Yes',
-              denyButtonText: 'No',
-              customClass: {
-                actions: 'my-actions',
-                confirmButton: 'order-2',
-                denyButton: 'order-3',
-              },
-            });
-      
-            if (result.isConfirmed) {
-              await api.delete(`/billing/${id}`);
-              setItems(items.filter((item) => item.id !== id));
-              Swal.fire('Terhapus!', '', 'success');
-              navigate(-1)
-            }
-          } catch (error) {
-            Swal.fire({
-                icon:'error',
-                title:'Tidak Dapat Menghapus Billing',
-                text:'Ada Kesalahan Dalam Sistem'
-            })
-          }
-    }
-
+    
+    
     return (
-        <Layout title={'Detail Billing'}>
-            <Block>
-                <Back goHome={() => navigate(-1)}/>
-                <Transition contentVisible={!loading}>
-                    {
-                        items.map((item) => (
-                            <BillingCards 
-                            key={item.id} 
-                            item={item}
-                            items={items}
-                            setItems={setItems}
-                            className={`mt-4`}
-                            desktop={true}
-                            goToUpdate={goToUpdate}
-                            deleteItems={deleteItems}
-                            />
-                        ))
-                    }
-                </Transition>
+    <Layout title={'Detail Billing'}>
+        <Block>
+            <Back goHome={() => navigate('/billing/list-billing')}/>
                 {
-                    
-                    loading && <Loader Class={'mt-44'} /> 
+                    loading ?
+                    (
+                        <Loader Class={'mt-20'} />
+                    ) : (
+                    <Transition contentVisible={contentVisible}>
+                        {/* <p>{item.msg}</p> */}
+                    <div className='bg-white rounded-2vw shadow-sm overflow-hidden p-6 text-lg mt-8'>
+                        <div className='flex justify-between'>
+                        <p className='capitalize'><b>Name : </b>{item.user?.EmpName || "TIDAK ADA"}</p>
+                        <i className={`bx bxs-circle ${item.status === 'aktif' ? 'text-green-500' : item.status === 'diproses' ? 'text-yellow-500' :'text-red-500'}`}></i>
+                        </div>
+                        <p className='capitalize'><b>Penanggung Jawab : </b>{item.penanggungJawab}</p>
+
+                        {/* <p><b>Phone : </b>{item.data?.EmpPhone}</p> */}
+                        <p><b>Biaya :</b>{new Intl.NumberFormat().format(item.biaya).replace(/,/g, '.')}</p>
+                        <p><b>Note :</b>{item.note}</p>
+                        <p><b>Tanggal Berlangganan :</b>{DateFormatToIDN(item.tanggal_berlangganan, false)}</p>
+                        <p><b>Tanggal Selesai Berlangganan :</b>{DateFormatToIDN(item.tanggal_selesai_berlangganan, false)}</p>
+                        <p><b>Tanggal Pembayaran Berlangganan :</b>{DateFormatToIDN(item.tanggal_pembayaran,false)}</p>
+                    </div>
+                    </Transition>
+                    )
                 }
-            </Block>
-        </Layout>
-    )
+        </Block>        
+    </Layout>
+  )
 }
 
 export default DetailBilling

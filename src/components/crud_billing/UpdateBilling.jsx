@@ -43,10 +43,10 @@ function UpdateBilling() {
     }, [decryptedId])
 
     const fetchItems = async () => {
-        const response = await api.get(`billing/${decryptedId}`)
+        const response = await api.get(`billing-detail/${decryptedId}`)
         const data = response.data.data
         setItems({
-            user  : data.user ? {value : data.user?.id, label : data.user?.name} : null,
+            user  : data.user?.EmpName ? {value : data.user?.id, label : data.user?.EmpName} : null,
             penanggung_jawab : data.penanggungJawab,
             tgl_berlangganan : data.tanggal_berlangganan,
             tgl_selesai_berlangganan: data.tanggal_selesai_berlangganan,
@@ -83,7 +83,7 @@ function UpdateBilling() {
             return
         }
         setDisabled(true)
-        const response = await api.put(`billing/${decryptedId}`,{ 
+        const response = await api.put(`billing-update/${decryptedId}`,{ 
             user_id : items.user?.value,
             penanggungJawab : items.penanggung_jawab,
             tanggal_berlangganan : items.tgl_berlangganan,
@@ -114,9 +114,9 @@ function UpdateBilling() {
                     <div className='user-select mb-3'>
                         <label>User</label>
                         <SelectPaginate
-                        source={'user'}
+                        source={'billing-getUser'}
                         handleSelectChange={user => setItems({...items, user})}
-                        itemLabel={['name']}
+                        itemLabel={['EmpName' || 'name']}
                         selectName={'user'}
                         selectValue={items.user}
                         required={true}
