@@ -51,7 +51,7 @@ function CreateBilling() {
             return
         }
         
-        const response = await api.post('billing',{ 
+        const response = await api.post('billing-create',{ 
             user_id : items.user?.value,
             penanggungJawab : items.penanggung_jawab,
             tanggal_berlangganan : items.tgl_berlangganan,
@@ -81,10 +81,10 @@ function CreateBilling() {
                     <div className='user-select mb-3'>
                         <label>User</label>
                         <SelectPaginate
-                        source={'billing/getUser'}
+                        source={'billing-getUser'}
                         handleSelectChange={user => setItems({...items, user})}
-                        itemLabel={['name' || 'user_name']}
-                        selectName={'user'}
+                        itemLabel={['EmpName' || 'name']}
+                        selectName={'User'}
                         required={true}
                         />
                     </div>

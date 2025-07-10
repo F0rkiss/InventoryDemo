@@ -4,7 +4,7 @@ import avatar from '../../../assets/image/gambar/Profile_avatar_placeholder_larg
 import DateFormatToIDN from '../../../helper/DateFormatHelper'
 
 
-const BillingCards = forwardRef(({goToUpdate, restoreItems, deleteItems ,item, restore = false, className, desktop = false}, ref) => {
+const BillingCards = forwardRef(({goToUpdate, goToDetail, deleteItems ,item, restore = false, className, desktop = false}, ref) => {
 
     const [detail, setDetail] = useState(null)
 
@@ -25,7 +25,7 @@ const BillingCards = forwardRef(({goToUpdate, restoreItems, deleteItems ,item, r
                             <img src={avatar} className='max-w-8 max-h-8 rounded-full' />
                             <div className="text ms-3">
                                 <div>
-                                <p className='capitalize font-bold text-sm'>{item.user?.name || item.username || 'User Tidak Ada'}</p>
+                                <p className='capitalize font-bold text-sm'>{item.user.EmpName || item.username || 'User Tidak Ada'}</p>
                                 <p></p>
                                 </div>
                                 <p className='text-xs'>{item.user?.department?.divisi?.kode || item.divisiKode}</p>
@@ -37,7 +37,7 @@ const BillingCards = forwardRef(({goToUpdate, restoreItems, deleteItems ,item, r
                             </button>
                             }
                 </div>
-                <div className={`lower-content transition-all ease-in-out duration-1000 ${detail === item.id ? 'max-h-0' : 'max-h-[500px]'} overflow-hidden my-1`}>
+                <div className={`lower-content transition-all ease-in-out duration-1000 ${detail === item.id} overflow-hidden my-1`}>
                     <div className="grid grid-cols-2 mt-2">
                         <div className="border-b text-center pb-2">
                             <p className='text-xs text-gray-400'>Penanggung Jawab</p>
@@ -49,11 +49,11 @@ const BillingCards = forwardRef(({goToUpdate, restoreItems, deleteItems ,item, r
                         </div>
                         <div className="text-center mt-2">
                             <p className='text-xs text-gray-400'>Tanggal Berlangganan</p>
-                            <p className='text-sm font-bold'>{DateFormatToIDN(item.tanggal_berlangganan)}</p>
+                            <p className='text-sm font-bold'>{DateFormatToIDN(item.tanggal_berlangganan, false)}</p>
                         </div>
                         <div className="text-center mt-2">
                             <p className='text-xs text-gray-400'>Selesai Berlangganan</p>
-                            <p className='text-sm font-bold'>{DateFormatToIDN(item.tanggal_selesai_berlangganan)}</p>
+                            <p className='text-sm font-bold'>{DateFormatToIDN(item.tanggal_selesai_berlangganan, false)}</p>
                         </div>
                     </div>
                 </div>
@@ -61,15 +61,15 @@ const BillingCards = forwardRef(({goToUpdate, restoreItems, deleteItems ,item, r
                     <div className="flex flex-col gap-1">
                         <div className="teks flex justify-between">
                             <p className='font-medium'>Tanggal Berlangganan :</p>
-                            <p className='font-bold'>{DateFormatToIDN(item.tanggal_berlangganan)}</p>
+                            <p className='font-bold'>{DateFormatToIDN(item.tanggal_berlangganan,false)}</p>
                         </div>
                         <div className="teks flex justify-between">
                             <p className='font-medium'>Tanggal Selesai Berlangganan:</p>
-                            <p className='font-bold'>{DateFormatToIDN(item.tanggal_selesai_berlangganan)}</p>
+                            <p className='font-bold'>{DateFormatToIDN(item.tanggal_selesai_berlangganan,false)}</p>
                         </div>
                         <div className="teks flex justify-between">
                             <p className='font-medium'>Tanggal Pembayaran :</p>
-                            <p className='font-bold'>{DateFormatToIDN(item.tanggal_pembayaran)}</p>
+                            <p className='font-bold'>{DateFormatToIDN(item.tanggal_pembayaran,false)}</p>
                         </div>
                         <div className="teks flex justify-between">
                             <p className='font-medium'>Biaya :</p>
@@ -89,15 +89,10 @@ const BillingCards = forwardRef(({goToUpdate, restoreItems, deleteItems ,item, r
                         </div>
                     </div>
                 </div>
-                <div className="tombol flex justify-around h-9 mt-3">
-                    { restore ? 
-                    <button className='bg-cyan-400 text-white shadow-sm rounded-md  w-28' onClick={() => restoreItems(item.id)}>Restore</button>
-                    :
+                <div className="tombol flex justify-around h-9 mt-3 pb-2">
                     <button className='bg-cyan-400 text-white shadow-sm rounded-md  w-28' onClick={() => goToUpdate(item.id)}>Update</button>
-                    }
-                    { !desktop &&
-                    <button className='bg-slate-500 text-white shadow-sm rounded-md w-28' onClick={() => toggleDetail(item.id)}>{detail == item.id ? 'Tutup' : 'Detail' }</button>
-                    }
+                    <button className='bg-slate-500 text-white shadow-sm rounded-md w-28' onClick={() => goToDetail(item.id)}>Detail </button>
+                    {/* <button className='bg-slate-500 text-white shadow-sm rounded-md w-28' onClick={() => toggleDetail(item.id)}>{detail == item.id ? 'Tutup' : 'Detail' }</button> */}
                 </div>
             </div>
         </div>

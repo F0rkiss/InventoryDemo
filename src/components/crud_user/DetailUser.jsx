@@ -61,11 +61,13 @@ function DetailUser() {
                         {/* <p>{item.msg}</p> */}
                     <div className='bg-white rounded shadow-sm overflow-hidden p-6 text-lg mt-8'>
                         <p className='capitalize'><b>Name : </b>{item.data?.EmpName}</p>
-                        <p><b>Email : </b>{item.data?.email}</p>
                         <p className='capitalize'><b>Role : </b>{item.data?.role?.name}</p>
-                        <p><b>Divisi : </b>{item.data?.str_upline_name || "Not Assign yet"}</p>
+                        <p><b>Email : </b>{item.data?.email}</p>
+                        <p><b>Phone : </b>{item.data?.EmpPhone}</p>
+                        <p>------</p>
+                        <p><b>Divisi : </b>{item.data?.posisi_name || "Not Assign yet"}</p>
                         <p><b>Department : </b>{item.data?.str_name || "Not Assign yet"}</p>
-                        <p><b>Kode Divisi : </b>{item.data?.department?.divisi?.kode || "Not Assign yet"}</p>
+                        <p><b>Tingkatan : </b>{item.data?.level_name || "Not Assign yet"}</p>
                     </div>
                     </Transition>
                     )

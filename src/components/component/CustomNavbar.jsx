@@ -23,7 +23,15 @@ const CustomNavbar = ({title}) => {
                   <span className="ml-8 text-black text-xl ios-text font-inter max-w-fit whitespace-nowrap">{title}</span>
               </span>
           </div>
+
+          <div>
+            <button>
+              <i className='bx  bx-bell text-2xl pr-8'  ></i> 
+            </button>
+          </div>
       </Navbar>
+
+      
       </>
   )
 }
