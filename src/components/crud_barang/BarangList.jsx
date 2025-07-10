@@ -147,17 +147,19 @@ function ItemList() {
                 nextCursor={nextCursor}
                 fetchMoreItems={fetchMoreItems}
               >
-              { 
-                items.map((item) => (
-                  <BarangCards
-                    item={item}
-                    handleDetailClick={handleDetailClick}
-                    handleDeleteClick={handleDeleteClick}
-                    handleUpdateClick={handleUpdateClick}
-                    key={item.id}
-                  />
-                ))
-              }
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  { 
+                    items.map((item) => (
+                      <BarangCards
+                        item={item}
+                        handleDetailClick={handleDetailClick}
+                        handleDeleteClick={handleDeleteClick}
+                        handleUpdateClick={handleUpdateClick}
+                        key={item.id}
+                      />
+                    ))
+                  }
+                </div>
               </ScrollPagination>
             </Transition>
         {loading && <Loader Class="mt-20" />}

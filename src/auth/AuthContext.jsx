@@ -22,8 +22,6 @@
         };
     
         const token = localStorage.getItem('authToken');
-        const decoded_temp = jwtDecode(token)
-        console.log(decoded_temp)
         const role = getFromToken('role', token);
         const name = getFromToken('user', token);
         const email = getFromToken('email', token);

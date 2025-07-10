@@ -132,25 +132,27 @@ import Swal from 'sweetalert2'
                   <p className='text-xl font-bold capitalize'>Data Kategori</p>
                   {/* <RestoreButton goTo={'/category/restore-category'} /> */}
               </div>
-                  <Transition contentVisible={contentVisible}>
-                          <ScrollPagination fetchMoreItems={fetchMoreItems} loading={loading} nextCursor={nextCursor}>
-                              {
-                                  ( items.map((item) => (
-                                      <CategoryCards
-                                      key={item.id}
-                                      item={item}
-                                      goToDetail={goToDetail}
-                                      deleteItems={deleteItems}
-                                      goToUpdate={goToUpdate}
-                                      />
-                                  )))
-                              }
-                          </ScrollPagination>
-                          {
-                            items.length <= 0 && !loading && <DataEmpty/>
-                          }
-                  </Transition>
-                  {loading && <Loader Class="mt-44" />}
+              <Transition contentVisible={contentVisible}>
+                <ScrollPagination fetchMoreItems={fetchMoreItems} loading={loading} nextCursor={nextCursor}>
+                  <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
+                    {
+                      ( items.map((item) => (
+                          <CategoryCards
+                          key={item.id}
+                          item={item}
+                          goToDetail={goToDetail}
+                          deleteItems={deleteItems}
+                          goToUpdate={goToUpdate}
+                          />
+                      )))
+                    }
+                  </div>
+                </ScrollPagination>
+                {
+                  items.length <= 0 && !loading && <DataEmpty/>
+                }
+              </Transition>
+              {loading && <Loader Class="mt-44" />}
           </Block>
           <FlyingButton goTo={'/category/create-category'} />
       </Layout>

@@ -133,26 +133,28 @@ import Swal from 'sweetalert2'
                   {/* <RestoreButton goTo={'/category/restore-category'} /> */}
               </div>
                   <Transition contentVisible={contentVisible}>
-                          <ScrollPagination fetchMoreItems={fetchMoreItems} loading={loading} nextCursor={nextCursor}>
-                              {
-                                  ( items.map((item) => (
-                                      <MakeRequestCards
-                                      key={item.id}
-                                      item={item}
-                                      goToDetail={goToDetail}
-                                      deleteItems={deleteItems}
-                                      goToUpdate={goToUpdate}
-                                      />
-                                  )))
-                              }
-                          </ScrollPagination>
+                    <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
+                      <ScrollPagination fetchMoreItems={fetchMoreItems} loading={loading} nextCursor={nextCursor}>
                           {
-                            items.length <= 0 && !loading && <DataEmpty/>
+                            ( items.map((item) => (
+                                <MakeRequestCards
+                                key={item.id}
+                                item={item}
+                                goToDetail={goToDetail}
+                                deleteItems={deleteItems}
+                                goToUpdate={goToUpdate}
+                                />
+                            )))
                           }
+                      </ScrollPagination>
+                    </div>
+                    {
+                      items.length <= 0 && !loading && <DataEmpty/>
+                    }
                   </Transition>
                   {loading && <Loader Class="mt-44" />}
           </Block>
-          <FlyingButton goTo={'/make-request/create-make-request'} />
+          {/* <FlyingButton goTo={'/make-request/create-make-request'} /> */}
       </Layout>
     )
   }

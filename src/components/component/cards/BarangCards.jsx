@@ -21,8 +21,8 @@ const ItemCard = forwardRef(({ item, handleDetailClick, handleUpdateClick, handl
   // }, [desktop])
 
   return (
-    <div ref={ref} className={`bg-white content rounded-md text-sm mb-3 font-inter border overflow-hidden ${isUser ? 'pb-1' : ''}`}>
-      <div className="content">
+    <div ref={ref} className={`bg-white rounded-md text-sm mb-3 font-inter border overflow-hidden flex flex-col justify-between h-full ${isUser ? 'pb-1' : ''}`}>
+      <div className="content flex-grow flex flex-col ">
         <div className="upper_section flex mb-3 justify-between border-b py-2 px-4 items-center">
           { isAsset ? 
             <p className='font-semibold'>Aset</p>
@@ -38,7 +38,7 @@ const ItemCard = forwardRef(({ item, handleDetailClick, handleUpdateClick, handl
               </button> 
           </div>
         </div>
-        <div className={`flex flex-col sm:flex-row p-4 gap-2 pt-0 ${ !isUser && 'border-b'} justify-between`}>
+        <div className={`flex flex-col p-4 gap-2 pt-0 justify-between`}>
           <div className="text w-full">
               <div className="flex justify-between">
                 Kode Barang: <p>{item.kode_barang}</p>
@@ -63,60 +63,17 @@ const ItemCard = forwardRef(({ item, handleDetailClick, handleUpdateClick, handl
             </div>
           </div>
           </div>
-          <div className="max-w-64 self-center sm:self-auto">
-            { item.image &&
+          <div className="max-w-64 self-center sm:self-center">
+            { item.image ?
               <img src={`${apiUrl}${item.image}`} alt="item image" className=''/>
+              :
+              <p className='mt-12'>No Image</p>
             }
           </div>
         </div>
       </div>
-      {/* <div className={`${detail != item.id ? 'max-h-0' : 'max-h-[400px]'} transition-all ease-in-out duration-700 overflow-hidden `}>
-        <div className='mx-4 mt-4'>
-          <div className='flex justify-between pb-1'>
-            <p>Sumber Barang: </p>
-            <p>{item.sumber_barang?.name}</p>
-          </div>
-          <div className='flex justify-between pb-1'>
-            <p>Jenis Barang: </p>
-            <p>{item.jenis_barang?.name}</p>
-          </div>
-          <div className='flex justify-between pb-1'>
-            <p>Kategori Barang: </p>
-            <p>{item.category_barang?.name}</p>
-          </div>
-          <div className='flex justify-between pb-1'>
-            <p>Tingkat Kebutuhan: </p>
-            <p>{item.tingkat_kebutuhan?.name}</p>
-          </div>
-          <div className='flex justify-between pb-1'>
-            <p>Satuan Order: </p>
-            <p>{item.satuan_order}</p>
-          </div>
-          <div className='flex justify-between pb-1'>
-            <p>Satuan Stok: </p>
-            <p>{item.satuan_stok}</p>
-          </div>
-          <div>
-            <div className='flex justify-between text-gray-400 italic pt-2'>
-              <p>Tanggal dibuat: </p>
-              <p>{DateFormat(item.created_at)}</p>
-            </div>
-            <div className='flex justify-between text-gray-400 italic'>
-              <p>Terakhir diubah: </p>
-              <p>{DateFormat(item.updated_at)}</p>
-            </div>
-          </div>
-        </div>
-      </div> */}
-      {/* <div className='place-self-center'>
-        <button className='text-gray-700 w-28' onClick={() => toggleDetail(item.id)}>
-          {detail == item.id ? <i className='bx bx-chevron-up text-3xl'></i> 
-                             : <i className='bx bx-chevron-down text-3xl'></i>
-                             }
-        </button>
-      </div> */}
       { !isUser && !restore &&
-      <div className={`lower_section flex justify-around font-semibold`}>
+      <div className={`flex justify-around font-semibold mt-auto border-t`}>
         <button
           className="update_button text-cyan-400 bg-white flex justify-center h items-center py-3"
           onClick={() => handleUpdateClick(item.id)}
@@ -130,18 +87,6 @@ const ItemCard = forwardRef(({ item, handleDetailClick, handleUpdateClick, handl
           <p>Delete</p>
         </button>
       </div>
-      }
-      {
-        restore && 
-        <div className={`lower_section flex justify-around font-semibold m-2 space-x-2`}>
-          <button
-            className="update_button text-white bg-cyan-400 flex justify-center h items-center py-3 rounded-md"
-            onClick={() => restoreItems(item.id)}
-          >
-          <p>Restore</p>
-          </button>
-        </div>
-       
       }
     </div>
   );

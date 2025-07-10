@@ -1,78 +1,95 @@
-import React, {useState, useEffect} from 'react'
-import api from '../../api/api'
-import { useParams } from 'react-router-dom'
+import React, { useEffect, useState } from 'react';
+import Back from '../component/Back'
 import { Page, Block } from 'framework7-react';
-import CustomNavbar from '../component/CustomNavbar';
-import Back from '../component/Back';
-import { useNavigate } from 'react-router-dom';
-import UserAvatar from '../../assets/image/gambar/Profile_avatar_placeholder_large.png'
-import Loader from '../component/Loader';
-import Transition from '../component/Transition';
+import api from '../../api/api';
+import { replace, useNavigate, useParams } from 'react-router-dom';
 import Layout from '../component/Layout';
-import { DecryptID } from '../../helper/EncryptHelper';
-import DateFormat from '../../helper/DateFormatHelper';
+import { DecryptID, encrypting } from '../../helper/EncryptHelper';
+import Transition from '../component/Transition';
+import DateFormat from '../../helper/DateFormatHelper'
 
-function DetailTypeRequest() {
 
-    const [item, setItems] = useState({})
-    const {id} = useParams();
-    const navigate = useNavigate();
-    const [loading, setLoading] = useState(false)
-    const [contentVisible, setContentVisible] = useState(false)
-    const [decryptedId, setDecryptedId] = useState('')
-    
-    useEffect(() => {
-        const decryptedIds = DecryptID(id)
-        setDecryptedId(decryptedIds)
-        if (!decryptedIds) {
-            navigate(-1)
-        }    
-    }, [id])
-
-    useEffect(() => {
-        if (decryptedId) {
-            fetchItems()
-        }
-    }, [decryptedId])
-
-    const fetchItems = async () => {
-        try {
-            setLoading(true)
-            const response = await api.get(`inventTypeRequest-detail/${decryptedId}`)
-            const data = response.data.data
-            setItems(data)
-        } catch (error) {
-            console.error('API Error:', error.response?.data || error.message);
-        } finally {
-            setLoading(false)
-            setTimeout(() => setContentVisible(true), 50)
-        }
+function DetailMakeRequest() {
+  const [item, setItem] = useState({});
+  const navigate = useNavigate();
+  const { id } = useParams();
+  const [decryptedId, setDecryptedId] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [contentVisible, setContentVisible] = useState(false)
+  
+  // State Untuk Mengecek Apakah Barang Ini Punya Dia
+  useEffect(() => {
+    const decryptedId = DecryptID(id)
+    setDecryptedId(decryptedId)
+    if (!decryptedId) {
+      navigate(-1)
     }
+  }, [id]);
+  
+  useEffect(() => {
+    if (decryptedId) {
+      fetchItems()
+    }
+  }, [decryptedId])
+
+  const fetchItems = async () => {
+    try {
+      setLoading(true);
+      const response = await api.get(`/inventMakeRequest-detail/${decryptedId}`);
+      const data = response.data.data;
+      console.log(data)
+      setItem(data);      
+    } catch (error) {
+
+    } finally {
+      setLoading(false); 
+      setTimeout(() => setContentVisible(true), 50)
+    }
+  };
 
   return (
-    <Layout title={'Detail Type Request'}>
-        <Block>
-            <Back goHome={() => navigate('/type-request/list-type-request')}/>
-                {
-                    loading ?
-                    (
-                        <Loader Class={'mt-20'} />
-                    ) : (
-                    <Transition contentVisible={contentVisible}>
-                        {/* <p>{item.msg}</p> */}
-                    <div className='bg-white rounded shadow-sm overflow-hidden p-6 text-lg mt-8'>
-                        <p className='capitalize'><b>Name: </b><br />{item.name}</p>
-                        <p className='capitalize'><b>Jenis: </b><br />{item.jenis}</p>
-                        <p><b>Description: </b><br />{item.description}</p>
-                        <p><b>Created at: </b><br />{DateFormat(item.created_at)}</p>
-                        <p><b>Last updated: </b><br />{DateFormat(item.updated_at)}</p>
+    <Layout title={'Detail Make Request'}>
+      <Block>
+        <Back goHome={() => navigate('/make-request/list-make-request')}/>
+            <Transition contentVisible={contentVisible}>
+              <div className="bg-white font-inter py-5 mt-3 rounded-md w-full border border-2 border-gray-300/30">
+                <div className="m-4 px-2">
+                    <div className='flex flex-col justify-self-center text-center'>
+                        <p className='text-2xl font-bold capitalize'>{item.user?.EmpName}</p>
+                        <p className='text-gray-500 text-md'>{item.user?.EmpCode}</p>
                     </div>
-                    </Transition>
-                    )
-                }
-        </Block>        
+                    <div className='text-lg gap-2'>
+                        <div className="flex justify-between">
+                            Type Request: <p>{item.type_request?.name || item.nameTypeRequest}</p>
+                        </div>
+                        <div className="flex justify-between">
+                            Jenis: <p>{item.type_request?.jenis || item.jenisTypeRequest}</p>
+                        </div>
+                            {
+                                item.type_request?.description && 
+
+                                <div className="flex justify-between">
+                                    Description: <p>{item.type_request?.description}</p>
+                                </div>
+                            } 
+                        <div className="flex justify-between">
+                            Note: <p>{item.note || '-'}</p>
+                        </div>
+                        <div className="flex justify-between">
+                            Tanggal Dibuat: <p>{DateFormat(item.created_at)}</p>
+                        </div>
+                        <div className="flex justify-between">
+                            Tanggal Dirubah: <p>{DateFormat(item.updated_at)}</p>
+                        </div>
+                    </div>
+                </div>
+              </div>
+            </Transition>
+          {/* ) */}
+        {/* } */}
+      </Block>
     </Layout>
-  )
+  );
 }
 
-export default DetailTypeRequest;
+export default DetailMakeRequest;

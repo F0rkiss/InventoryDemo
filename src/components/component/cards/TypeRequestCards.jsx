@@ -4,7 +4,7 @@ const TypeRequestCards = forwardRef(({item, goToDetail, goToUpdate, restoreItems
 
 
     return (
-        <div className='rounded-lg bg-white border mb-2 p-2' ref={ref}>
+        <div className='rounded-lg bg-white border mb-2 p-2 flex flex-col justify-between' ref={ref}>
             <div className='grid grid-cols-3'>
                 <div className='col-start-2 place-items-center py-2'>
                     <p className='text-center font-bold text-xl'>{item.name}</p>
@@ -20,8 +20,7 @@ const TypeRequestCards = forwardRef(({item, goToDetail, goToUpdate, restoreItems
                 }
             </div>
             <p className='text-center text-md pb-2'>{item.description}</p>
-            <hr  />
-            <div className='flex py-2 mx-6'>
+            <div className='flex py-2 mx-6 border-t'>
               { !restore ?
                 <>
                   <button

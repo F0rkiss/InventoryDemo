@@ -35,14 +35,12 @@ import Swal from 'sweetalert2'
         setLoading(true);
         const response = await api.get(searchTerm ? `inventJenisBarang/${searchTerm}` : 'inventJenisBarang');
         const data = response.data.data;
-        console.log(data)
         setItems(data.data);
         setNextCursor(data.next_cursor);
         setLoading(false);
         setTimeout(() => setContentVisible(true), 50);
       } catch (error) {
         setLoading(false);
-        console.error('Error fetching items:', error);
       }
     };
     
@@ -138,22 +136,24 @@ import Swal from 'sweetalert2'
                   {/* <RestoreButton goTo={'/category/restore-category'} /> */}
               </div>
                   <Transition contentVisible={contentVisible}>
-                          <ScrollPagination fetchMoreItems={fetchMoreItems} loading={loading} nextCursor={nextCursor}>
-                              {
-                                  (items.map((item) => (
-                                      <JenisBarangCards
-                                      key={item.id}
-                                      item={item}
-                                      goToDetail={goToDetail}
-                                      deleteItems={deleteItems}
-                                      goToUpdate={goToUpdate}
-                                    />
-                                  )))
-                              }
-                          </ScrollPagination>
-                          {
-                            items.length <= 0 && !loading && <DataEmpty/>
-                          }
+                    <ScrollPagination fetchMoreItems={fetchMoreItems} loading={loading} nextCursor={nextCursor}>
+                    <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
+                      {
+                          (items.map((item) => (
+                              <JenisBarangCards
+                              key={item.id}
+                              item={item}
+                              goToDetail={goToDetail}
+                              deleteItems={deleteItems}
+                              goToUpdate={goToUpdate}
+                            />
+                          )))
+                      }
+                    </div>
+                    </ScrollPagination>
+                    {
+                      items.length <= 0 && !loading && <DataEmpty/>
+                    }
                   </Transition>
                   {loading && <Loader Class="mt-10" />}
           </Block>

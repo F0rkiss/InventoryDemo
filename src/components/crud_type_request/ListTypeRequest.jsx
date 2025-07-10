@@ -133,22 +133,24 @@ import Swal from 'sweetalert2'
                   {/* <RestoreButton goTo={'/category/restore-category'} /> */}
               </div>
                   <Transition contentVisible={contentVisible}>
-                          <ScrollPagination fetchMoreItems={fetchMoreItems} loading={loading} nextCursor={nextCursor}>
-                              {
-                                  ( items.map((item) => (
-                                      <TypeRequestCards
-                                      key={item.id}
-                                      item={item}
-                                      goToDetail={goToDetail}
-                                      deleteItems={deleteItems}
-                                      goToUpdate={goToUpdate}
-                                      />
-                                  )))
-                              }
-                          </ScrollPagination>
-                          {
-                            items.length <= 0 && !loading && <DataEmpty/>
-                          }
+                    <ScrollPagination fetchMoreItems={fetchMoreItems} loading={loading} nextCursor={nextCursor}>
+                      <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
+                        {
+                            ( items.map((item) => (
+                                <TypeRequestCards
+                                key={item.id}
+                                item={item}
+                                goToDetail={goToDetail}
+                                deleteItems={deleteItems}
+                                goToUpdate={goToUpdate}
+                                />
+                            )))
+                        }
+                      </div>
+                    </ScrollPagination>
+                    {
+                      items.length <= 0 && !loading && <DataEmpty/>
+                    }
                   </Transition>
                   {loading && <Loader Class="mt-44" />}
           </Block>

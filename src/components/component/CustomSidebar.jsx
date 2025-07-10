@@ -63,16 +63,11 @@ const CustomSidebar = ({ showProfile = true, navOpen, setNavOpen }) => {
                 onClick={() => [setOpens(false), setTimeout(() => setNavOpen(false), 350)]}
             />
             <div className={`bg-white absolute top-0 left-0 z-50 h-screen transition-all ease-in-out duration-300 ${opens ? 'w-[18rem] overflow-y-scroll max-h-full' : 'w-0'} overflow-hidden `}>
-                <div className="flex justify-between place-items-center m-5">
+                <div className="
+                flex justify-between place-items-center m-5">
                     <img src={logo}  style={{ maxWidth: '30px', maxHeight: '30px' }} className='' alt="" />
                     <i className='bx bx-x text-4xl ' onClick={() => [setOpens(false), setTimeout(() => setNavOpen(false), 350)]}></i>
-                    {/* <h2 className="font-bold font-inter text-xl m-5 mb-0">INVENTORY</h2> */}
-                    {/* <hr className="w-full mt-4" /> */}
                 </div>
-                {/* <div className="image flex justify-center flex-col bg-white">
-                    <img className="max-w-44 mt-4 mb-4 self-center" src={logo} alt="Logo" />
-                    <hr />
-                </div> */}
                 {   showProfile && (
                     <div className="mx-2 my-3 bg-coklat-mi rounded-md">
                         <button className="flex bg-coklat-mi rounded-md items-center ios-specific py-2 cursor-pointer text-white w-full justify-between" onClick={toggleAccordion}>
