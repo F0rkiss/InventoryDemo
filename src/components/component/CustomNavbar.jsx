@@ -30,8 +30,6 @@ const CustomNavbar = ({title}) => {
             </button>
           </div>
       </Navbar>
-
-      
       </>
   )
 }

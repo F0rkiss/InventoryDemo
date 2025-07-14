@@ -132,18 +132,20 @@ function StatusList() {
                     <p className='text-xl font-semibold capitalize'>Data Status</p>
                 </div>                
                 <Transition contentVisible={contentVisible}>
-                    <ScrollPagination fetchMoreItems={fetchMoreItems} loading={loading} nextCursor={nextCursor}>
-                        {
-                            ( items?.map((item) => (
-                                <StatusCards
-                                key={item.id}
-                                item={item}
-                                goToUpdate={goToUpdate}
-                                deleteItems={deleteItems}
-                                />
-                            )))
-                        }
-                    </ScrollPagination>
+                    <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
+                        <ScrollPagination fetchMoreItems={fetchMoreItems} loading={loading} nextCursor={nextCursor}>
+                            {
+                                ( items?.map((item) => (
+                                    <StatusCards
+                                    key={item.id}
+                                    item={item}
+                                    goToUpdate={goToUpdate}
+                                    deleteItems={deleteItems}
+                                    />
+                                )))
+                            }
+                        </ScrollPagination>
+                    </div>
                     {
                         items.length <= 0 && !loading && <DataEmpty/>
                     }

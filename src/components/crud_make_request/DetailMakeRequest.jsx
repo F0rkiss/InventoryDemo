@@ -7,17 +7,19 @@ import Layout from '../component/Layout';
 import { DecryptID, encrypting } from '../../helper/EncryptHelper';
 import Transition from '../component/Transition';
 import DateFormat from '../../helper/DateFormatHelper'
+import { useAuth } from '../../auth/AuthContext';
 
 
 function DetailMakeRequest() {
   const [item, setItem] = useState({});
+  const details = item.details || []
   const navigate = useNavigate();
   const { id } = useParams();
+  const { role } = useAuth()
   const [decryptedId, setDecryptedId] = useState('')
   const [loading, setLoading] = useState(false)
   const [contentVisible, setContentVisible] = useState(false)
   
-  // State Untuk Mengecek Apakah Barang Ini Punya Dia
   useEffect(() => {
     const decryptedId = DecryptID(id)
     setDecryptedId(decryptedId)
@@ -35,10 +37,14 @@ function DetailMakeRequest() {
   const fetchItems = async () => {
     try {
       setLoading(true);
-      const response = await api.get(`/inventMakeRequest-detail/${decryptedId}`);
+      let response;
+      if (role === 'admin') {
+        response = await api.get(`/inventMakeRequest-admin/detail/${decryptedId}`);
+      } else {
+        response = await api.get(`/inventMakeRequest-detail/${decryptedId}`);
+      }
       const data = response.data.data;
-      console.log(data)
-      setItem(data);      
+      setItem(data);
     } catch (error) {
 
     } finally {
@@ -52,41 +58,65 @@ function DetailMakeRequest() {
       <Block>
         <Back goHome={() => navigate('/make-request/list-make-request')}/>
             <Transition contentVisible={contentVisible}>
-              <div className="bg-white font-inter py-5 mt-3 rounded-md w-full border border-2 border-gray-300/30">
-                <div className="m-4 px-2">
-                    <div className='flex flex-col justify-self-center text-center'>
-                        <p className='text-2xl font-bold capitalize'>{item.user?.EmpName}</p>
-                        <p className='text-gray-500 text-md'>{item.user?.EmpCode}</p>
+              <div className='flex flex-col items-center lg:items-start lg:flex-row gap-6 px-4 justify-center'>
+                <div className="bg-white py-8 px-8 mt-6 rounded-lg border border-gray-300 max-w-2xl">
+                  <div className="flex flex-col items-center text-center mb-6">
+                    <p className="text-xl font-bold capitalize">{item.user?.EmpName}</p>
+                    <p className="text-gray-500 text-base">{item.user?.EmpCode}</p>
+                  </div>
+                  <div className="space-y-4">
+                    <div className="flex">
+                      <div className="w-44 font-medium text-left">Type Request:</div>
+                      <div className="flex-1 text-right">{item.type_request?.name || item.nameTypeRequest}</div>
                     </div>
-                    <div className='text-lg gap-2'>
-                        <div className="flex justify-between">
-                            Type Request: <p>{item.type_request?.name || item.nameTypeRequest}</p>
-                        </div>
-                        <div className="flex justify-between">
-                            Jenis: <p>{item.type_request?.jenis || item.jenisTypeRequest}</p>
-                        </div>
-                            {
-                                item.type_request?.description && 
-
-                                <div className="flex justify-between">
-                                    Description: <p>{item.type_request?.description}</p>
-                                </div>
-                            } 
-                        <div className="flex justify-between">
-                            Note: <p>{item.note || '-'}</p>
-                        </div>
-                        <div className="flex justify-between">
-                            Tanggal Dibuat: <p>{DateFormat(item.created_at)}</p>
-                        </div>
-                        <div className="flex justify-between">
-                            Tanggal Dirubah: <p>{DateFormat(item.updated_at)}</p>
-                        </div>
+                    <div className="flex">
+                      <div className="w-44 font-medium text-left">Jenis:</div>
+                      <div className="flex-1 text-right">{item.type_request?.jenis || item.jenisTypeRequest}</div>
                     </div>
+                    {item.type_request?.description && (
+                      <div className="flex items-start">
+                        <div className="w-44 font-medium text-left pt-1">Description:</div>
+                        <div className="flex-1 text-right whitespace-pre-line break-words">
+                          {item.type_request?.description}
+                        </div>
+                      </div>
+                    )}
+                    <div className="flex">
+                      <div className="w-44 font-medium text-left">Tanggal Dibuat:</div>
+                      <div className="flex-1 text-right">{DateFormat(item.created_at)}</div>
+                    </div>
+                    <div className="flex">
+                      <div className="w-44 font-medium text-left">Tanggal Dirubah:</div>
+                      <div className="flex-1 text-right">{DateFormat(item.updated_at)}</div>
+                    </div>
+                  </div>
                 </div>
+                {details.length > 0 && (
+                  <div className="bg-white py-8 px-8 mt-6 rounded-lg border border-gray-300 max-w-xl w-full">
+                    <p className="font-bold text-lg mb-2 text-center">Detail Barang</p>
+                    <table className="w-full text-center">
+                      <thead>
+                        <tr className='border-b'>
+                          <th className=" px-3 py-1">No</th>
+                          <th className=" px-3 py-1">Quantity</th>
+                          <th className=" px-3 py-1">Note Barang</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {details.map((detail, index) => (
+                          <tr key={detail.id}>
+                            <td className=" px-3 py-1">{index + 1}</td>
+                            <td className=" px-3 py-1">{detail.qty}</td>
+                            <td className=" px-3 py-1">{detail.note_barang}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
               </div>
             </Transition>
           {/* ) */}
-        {/* } */}
       </Block>
     </Layout>
   );

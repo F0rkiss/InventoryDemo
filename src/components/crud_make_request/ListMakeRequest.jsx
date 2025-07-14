@@ -32,7 +32,7 @@ import Swal from 'sweetalert2'
     const fetchItems = async () => {
       try {
         setLoading(true);
-        const response = await api.get(searchTerm ? `inventMakeRequest/${searchTerm}` : 'inventMakeRequest');
+        const response = await api.get(searchTerm ? `inventMakeRequest-admin/${searchTerm}` : 'inventMakeRequest-admin');
         const data = response.data.data;
         setItems(data.data);
         setNextCursor(data.next_cursor);
@@ -47,7 +47,7 @@ import Swal from 'sweetalert2'
       if (!nextCursor || loading) return;
       try {
         setLoading(true);
-        const response = await api.get(searchTerm ? `inventMakeRequest/${searchTerm}` : 'inventMakeRequest', {
+        const response = await api.get(searchTerm ? `inventMakeRequest-admin/${searchTerm}` : 'inventMakeRequest-admin', {
           params: {
             cursor: nextCursor,
           },
@@ -81,34 +81,34 @@ import Swal from 'sweetalert2'
     };
 
     
-    const deleteItems = async (id, name) => {
-      try {
-        const result = await Swal.fire({
-          title: `Apakah Anda ingin menghapus tipe request ini?`,
-          icon: 'question',
-          showDenyButton: true,
-          confirmButtonText: 'Yes',
-          denyButtonText: 'No',
-          customClass: {
-            actions: 'my-actions',
-            confirmButton: 'order-2',
-            denyButton: 'order-3',
-          },
-        });
+    // const deleteItems = async (id, name) => {
+    //   try {
+    //     const result = await Swal.fire({
+    //       title: `Apakah Anda ingin menghapus make request ini?`,
+    //       icon: 'question',
+    //       showDenyButton: true,
+    //       confirmButtonText: 'Yes',
+    //       denyButtonText: 'No',
+    //       customClass: {
+    //         actions: 'my-actions',
+    //         confirmButton: 'order-2',
+    //         denyButton: 'order-3',
+    //       },
+    //     });
   
-        if (result.isConfirmed) {
-          await api.delete(`inventMakeRequest-delete/${id}`);
-          setItems(items.filter((item) => item.id !== id));
-          Swal.fire('Terhapus!', '', 'success');
-        }
-      } catch (error) {
-        Swal.fire({
-          icon:'error',
-          title:`Tidak Dapat Menghapus ${name}`,
-          text:'Ada Kesalahan Dalam Sistem'
-      })
-      }
-    };
+    //     if (result.isConfirmed) {
+    //       await api.delete(`inventMakeRequest-delete/${id}`);
+    //       setItems(items.filter((item) => item.id !== id));
+    //       Swal.fire('Terhapus!', '', 'success');
+    //     }
+    //   } catch (error) {
+    //     Swal.fire({
+    //       icon:'error',
+    //       title:`Tidak dapat Menghapus make request`,
+    //       text:'Ada Kesalahan Dalam Sistem'
+    //   })
+    //   }
+    // };
   
     const goToUpdate = async(itemid) => {
       const encryptingID = await encrypting(itemid)
@@ -141,7 +141,7 @@ import Swal from 'sweetalert2'
                                 key={item.id}
                                 item={item}
                                 goToDetail={goToDetail}
-                                deleteItems={deleteItems}
+                                // deleteItems={deleteItems}
                                 goToUpdate={goToUpdate}
                                 />
                             )))
@@ -154,7 +154,7 @@ import Swal from 'sweetalert2'
                   </Transition>
                   {loading && <Loader Class="mt-44" />}
           </Block>
-          {/* <FlyingButton goTo={'/make-request/create-make-request'} /> */}
+          <FlyingButton goTo={'/make-request/create-make-request'} />
       </Layout>
     )
   }
