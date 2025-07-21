@@ -14,6 +14,8 @@ import '../css/app.css';
 import Loader from './component/Loader.jsx';
 
 // Lazy load components
+const Notifications = lazy(() => import('./component/NotificationsPages'));
+
 const BarangList = lazy(() => import('./crud_barang/BarangList.jsx'));
 const CreateBarang = lazy(() => import('./crud_barang/CreateBarang.jsx'));
 const UpdateBarang = lazy(() => import('./crud_barang/UpdateBarang.jsx'));
@@ -130,6 +132,8 @@ const MyApp = () => {
                   <Route path="*" element={<Navigate to="/dashboard" replace />} />
                   <Route path="/login" element={<Navigate to="/dashboard" replace />} />
                   <Route path='/edit-profile' element={<EditProfile />} />
+
+                  <Route path="/notifications" element={<Notifications />} />
 
                   <Route path="/barang/list-barang" element={<BarangList />} />
                   <Route path="/barang/detail-barang/:id" element={<DetailBarang />} />

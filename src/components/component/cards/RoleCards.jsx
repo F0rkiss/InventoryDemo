@@ -1,7 +1,7 @@
 import React, { forwardRef } from 'react'
 
 
-const UserCards = forwardRef(({item, deleteItems, goToDetail, goToUpdate, restoreItems, restore = false}, ref) => {
+const RoleCards = forwardRef(({item, deleteItems, goToDetail, goToUpdate, restoreItems, restore = false}, ref) => {
 
     return (
         <div className='bg-white mt-3 border rounded-md overflow-hidden' ref={ref}>
@@ -28,4 +28,4 @@ const UserCards = forwardRef(({item, deleteItems, goToDetail, goToUpdate, restor
   )
 })
 
-export default UserCards
+export default RoleCards;
