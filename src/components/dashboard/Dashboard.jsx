@@ -38,7 +38,7 @@ function Dashboard() {
     const fetchItems = async() => {
         try {
             setLoading(true)
-            const response = await api.get('dashboard/admin')
+            // const response = await api.get('dashboard/admin')
             setItems(response.data)
         } catch (error) {
 
