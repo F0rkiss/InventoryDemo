@@ -4,15 +4,49 @@ import useAuth from '../../hooks/useAuth';
 import logo from '../../../public/icons/MI-Inventory-logo.svg'
 import { useNavigate } from 'react-router-dom';
 
+const menus = [
+    { key: "Dashboard", label: "Dashboard", icon: "bx bxs-dashboard", path: "/dashboard" },
+    {
+        key: "Barang" || "JenisBarang" || "SumberBarang",
+        label: "Barang",
+        icon: "bx bx-package",
+        isAccordion: true,
+        children: [
+            { key: "Barang", label: "List Barang", path: "/barang/list-barang" },
+            { key: "JenisBarang", label: "Jenis Barang", path: "/jenis-barang/list-jenis-barang" },
+            { key: "SumberBarang", label: "Sumber Barang", path: "/sumber-barang/list-sumber-barang" },
+        ]
+    },
+    { key: "Categories", label: "Category", icon: "bx bx-category-alt", path: "/category/list-category" },
+    { key: "User", label: "Data User", icon: "bx bxs-user-badge", path: "/user/list-user" },
+    {
+        key: "MakeRequest" || "TypeRequest",
+        label: "Request",
+        icon: "bx bx-message-add",
+        isAccordion: true,
+        children: [
+            { key: "MakeRequest", label: "Make Request", path: "/make-request/list-make-request" },
+            { key: "TypeRequest", label: "Type Request", path: "/type-request/list-type-request" },
+        ]
+    },
+    { key: "JenisMemo", label: "Jenis Memo", icon: "bx bx-note", path: "/jenismemo/list-jenismemo" },
+    { key: "Status", label: "Status", icon: "bx bx-checkbox-checked", path: "/status/list-status" },
+    { key: "NavigationGroup", label: "Navigation Group", icon: "bx bx-navigation", path: "/navigation-groups/list-navigation-groups" },
+    { key: "Role", label: "Role", icon: "bx bx-tag", path: "/role/list-role" },
+    { key: "Billing", label: "Billing", icon: "bx bx-spreadsheet", path: "/billing/list-billing" },
+];
+
 const CustomSidebar = ({ showProfile = true, navOpen, setNavOpen }) => {
     const [isOpenProfile, setIsOpenProfile] = useState(false)
-    const [isOpenItem, setIsOpenItem] = useState(false)
-    const [isOpenRequest, setIsOpenRequest] = useState(false)
-    const [isOpenNavigations, setIsOpenNavigations] = useState(false)
-
     const [opens, setOpens] = useState(false)
-    const { name, email, role } = useAuth();
+    const [openAccordions, setOpenAccordions] = useState({});
+
+    const { name, email, role, navigation_menu } = useAuth();
     const handleNavigation = useNavigate()
+
+    const allowedMenus = menus.filter(menu =>
+        navigation_menu?.some(nav => nav.name === menu.key)
+    );
 
     const logout = () => {
         localStorage.removeItem('authToken')
@@ -23,16 +57,11 @@ const CustomSidebar = ({ showProfile = true, navOpen, setNavOpen }) => {
         setIsOpenProfile(!isOpenProfile);
     };
 
-    const toggleAccordionItem = () => {
-        setIsOpenItem(!isOpenItem);
-    };
-
-    const toggleAccordionRequest = () => {
-        setIsOpenRequest(!isOpenRequest);
-    };
-
-    const toggleAccordionNavigations = () => {
-        setIsOpenNavigations(!isOpenNavigations);
+    const handleAccordionToggle = (key) => {
+        setOpenAccordions(prev => ({
+            ...prev,
+            [key]: !prev[key]
+        }));
     };
 
     useEffect(() => {
@@ -103,155 +132,45 @@ const CustomSidebar = ({ showProfile = true, navOpen, setNavOpen }) => {
                 )}
                 <hr />
                 <div className="bottom-nav flex flex-col font-inter mt-1">
-                    <button className="w-100 text-start" onClick={role === 'user' ? () => handleNavigation('/dashboard-user') : () => handleNavigation('/dashboard-admin') }>
+                    {/* Temporary */}
+                    <button className="w-100 text-start" onClick={() => handleNavigation('/dashboard')}>
                         <div className={`flex items-center w-60 mb-1 py-1 rounded-r-full ${isActive('/dashboard-admin') ? 'bg-coklat-mi text-white' : 'hover:bg-stone-200'} `}>
                             <i className="bx bxs-dashboard text-3xl ms-5 me-4"></i>
                             <p className="text-lg font-medium">Dashboard</p>
                         </div>
                     </button>
-                    {/* <button className="w-100 text-start" onClick={role === 'user' ? () => handleNavigation('/barang-anda') : () => handleNavigation('/barang/list-barang')}>
-                        <div className={`flex items-center mb-1 w-60 py-1 rounded-r-full ${isActive('/barang') ? 'bg-coklat-mi text-white' : ''}  active:bg-coklat-mi active:text-white`}>
-                            <i className="bx bx-package text-3xl ms-5 me-4"></i>
-                            <p className="text-lg font-medium">{role === 'user' ? 'Barang Anda' : 'Barang'}</p>
-                        </div>
-                    </button> */}
-                    <button
-                    className="w-100 text-start"
-                    onClick={role === 'user' ? () => handleNavigation('/barang-anda') : toggleAccordionItem}
-                    >
-                    <div className="flex items-center mb-1 w-full py-1 rounded-r-full justify-between hover:bg-stone-200">
-                        <div className="flex items-center">
-                            <i className="bx bx-package text-3xl ms-5 me-4"></i>
-                            <p className="text-lg font-medium">{role === 'user' ? 'Barang Anda' : 'Barang'}</p>
-                        </div>
-                        <i className={`bx bx-chevron-${isOpenItem ? 'up' : 'down'} text-4xl ios-chevron me-3`}></i>
-                    </div>
-                    </button>
-
-                    {/* More feature barang */}
-                    <div className={`transition-max-height overflow-hidden ${isOpenItem ? 'max-h-96' : 'max-h-0'}`}>
-                        <button className="w-100 text-start" onClick={role === 'user' ? () => handleNavigation('/barang-anda') : () => handleNavigation('/barang/list-barang')}>
-                            <div className={`flex items-center ms-8 border-l-2 border-stone-400 w-60 py-2 rounded-r-full ${isActive('/barang/list-barang') ? 'bg-coklat-mi text-white' : 'hover:bg-stone-200'} `}>
-                                {/* <i className='bx bx-chevron-right text-2xl ml-8 '></i> */}
-                                <p className="text-lg font-medium ps-10">Barang</p>
-                            </div>
-                        </button>
-                        <button className="w-100 text-start" onClick={role === 'user' ? () => handleNavigation('/barang-anda') : () => handleNavigation('/jenis-barang/list-jenis-barang')}>
-                            <div className={`flex items-center ms-8 border-l-2 border-stone-400 w-60 py-2 rounded-r-full ${isActive('/jenis-barang/list-jenis-barang') ? 'bg-coklat-mi text-white' : 'hover:bg-stone-200'} `}>
-                                {/* <i className='bx bx-chevron-right text-2xl ml-8 '></i> */}
-                                <p className="text-lg font-medium ps-10">Jenis Barang</p>
-                            </div>
-                        </button>
-                        <button className="w-100 text-start" onClick={role === 'user' ? () => handleNavigation('/barang-anda') : () => handleNavigation('/sumber-barang/list-sumber-barang')}>
-                            <div className={`flex items-center ms-8 border-l-2 border-stone-400 mb-1 w-60 py-2 rounded-r-full ${isActive('/sumber-barang/list-sumber-barang') ? 'bg-coklat-mi text-white' : 'hover:bg-stone-200'} `}>
-                                {/* <i className='bx bx-chevron-right text-2xl ml-8'></i> */}
-                                <p className="text-lg font-medium ps-10">Sumber Barang</p>
-                            </div>
-                        </button>
-                    </div>
-                    {/* Jika Bukan Admin Tidak Muncul */}
-                    {
-                        role == 'admin' && 
-                        <div className={`hidden-to-user `}>
-                            {/* <button className="w-100 text-start" onClick={() => handleNavigation('/department/list-department')}>
-                                <div className={`flex items-center mb-1 w-60 py-1 rounded-r-full ${isActive('/department') ? 'bg-coklat-mi text-white' : ''} active:bg-coklat-mi active:text-white`}>
-                                    <i className="bx bx-building text-3xl ms-5 me-4"></i>
-                                    <p className="text-lg font-medium">Department</p>
-                                </div>
-                            </button> */}
-                            {/* <button className="w-100 text-start" onClick={() => handleNavigation('/divisi/list-divisi')}>
-                                <div className={`flex items-center mb-1 w-60 py-1 rounded-r-full ${isActive('/divisi') ? 'bg-coklat-mi text-white' : ''} active:bg-coklat-mi active:text-white`}>
-                                    <i className="bx bx-briefcase text-3xl ms-5 me-4"></i>
-                                    <p className="text-lg font-medium">Divisi</p>
-                                </div>
-                            </button> */}
-                            <button className="w-100 text-start" onClick={() => handleNavigation('/category/list-category')}>
-                                <div className={`flex items-center mb-1 w-60 py-1 rounded-r-full ${isActive('/category') ? 'bg-coklat-mi text-white' : 'hover:bg-stone-200'} `}>
-                                    <i className="bx bx-category-alt text-3xl ms-5 me-4"></i>
-                                    <p className="text-lg font-medium">Category</p>
-                                </div>
-                            </button>
-                            <button className="w-100 text-start" onClick={() => handleNavigation('/user/list-user')}>
-                                <div className={`flex items-center mb-1 w-60 py-1 rounded-r-full ${isActive('/user') ? 'bg-coklat-mi text-white' : 'hover:bg-stone-200'} `}>
-                                    <i className="bx bxs-user-badge text-3xl ms-5 me-4"></i>
-                                    <p className="text-lg font-medium">Data User</p>
-                                </div>
-                            </button>
+                    {allowedMenus.map(menu => (
+                        menu.isAccordion ? (
+                            <div key={menu.key}>
                             <button
-                            className="w-100 text-start"
-                            onClick={toggleAccordionNavigations}
+                                onClick={() => handleAccordionToggle(menu.key)}
+                                className="flex items-center mb-1 w-full rounded-r-full justify-between hover:bg-stone-200"
                             >
-                                <div className="flex items-center mb-1 w-full py-1 rounded-r-full justify-between hover:bg-stone-200">
-                                <div className="flex items-center">
-                                    <i className="bx bx-navigation text-3xl ms-5 me-4"></i>
-                                    <p className="text-lg font-medium">Navigations</p>
+                                <div className={`flex items-center mb-1 w-60 py-1 rounded-r-full hover:bg-stone-200 `}>
+                                    <i className={`${menu.icon} text-3xl ms-5 me-4`}></i>
+                                    <p className='text-lg font-medium'>{menu.label}</p>
                                 </div>
-                                <i className={`bx bx-chevron-${isOpenNavigations ? 'up' : 'down'} text-4xl ios-chevron me-3`}></i>
+                                <i className={`bx bx-chevron-${openAccordions[menu.key] ? 'up' : 'down'} text-4xl ios-chevron me-3`}></i>
+                            </button>
+                            <div className={`transition-max-height overflow-hidden ${openAccordions[menu.key] ? 'max-h-96' : 'max-h-0'}`}>
+                                {menu.children.filter(sub => navigation_menu.some(nav => nav.name === sub.key)).map(sub => (
+                                    <button key={sub.key} onClick={() => handleNavigation(sub.path)} className=''>
+                                        <div className={`flex items-center ms-8 border-l-2 border-stone-400 w-60 py-2 rounded-r-full ${isActive(sub.path) ? 'bg-coklat-mi text-white' : 'hover:bg-stone-200'} `}>
+                                            <p className='text-lg font-medium ps-10'>{sub.label}</p>
+                                        </div>
+                                    </button>
+                                ))}
                             </div>
-                            </button>
-                            <div className={`transition-max-height overflow-hidden ${isOpenNavigations ? 'max-h-96' : 'max-h-0'}`}>
-                                <button className="w-100 text-start" onClick={() => handleNavigation('/navigation-groups/list-navigation-groups')}>
-                                    <div className={`flex items-center ms-8 border-l-2 border-stone-400 w-60 py-2 rounded-r-full ${isActive('/navigation-groups/list-navigation-groups') ? 'bg-coklat-mi text-white' : 'hover:bg-stone-200'} `}>
-                                        <p className="text-lg font-medium ps-10">Navigation Group</p>
-                                    </div>
-                                </button>
-                                <button className="w-100 text-start" onClick={() => handleNavigation('/navigation-menu/list-navigation-menu')}>
-                                    <div className={`flex items-center ms-8 border-l-2 border-stone-400 w-60 py-2 rounded-r-full ${isActive('/navigation-menu/list-navigation-menu') ? 'bg-coklat-mi text-white' : 'hover:bg-stone-200'} `}>
-                                        <p className="text-lg font-medium ps-10">Navigation Menu</p>
-                                    </div>
-                                </button>
-                            </div>
-                            <button className="w-100 text-start" onClick={() => handleNavigation('/role/list-role')}>
-                                <div className={`flex items-center mb-1 w-60 py-1 rounded-r-full ${isActive('/role/list-role') ? 'bg-coklat-mi text-white' : 'hover:bg-stone-200'} `}>
-                                    < i className='bx  bx-tag text-3xl ms-5 me-4' ></i> 
-                                    <p className="text-lg font-medium">Role</p>
-                                </div>
-                            </button>
-                            <button className="w-100 text-start" onClick={() => handleNavigation('/status/list-status')}>
-                                <div className={`flex items-center mb-1 w-60 py-1 rounded-r-full ${isActive('/status/list-statusole') ? 'bg-coklat-mi text-white' : ''} active:bg-coklat-mi active:text-white`}>
-                                <i className='bx  bx-checkbox-checked text-3xl ms-5 me-4'  ></i> 
-                                    <p className="text-lg font-medium">Status</p>
-                                </div>
-                            </button>
-                            <button className="w-100 text-start" onClick={() => handleNavigation('/jenismemo/list-jenismemo')}>
-                                <div className={`flex items-center mb-1 w-60 py-1 rounded-r-full ${isActive('/status/list-statusole') ? 'bg-coklat-mi text-white' : ''} active:bg-coklat-mi active:text-white`}>
-                                    <i className='bx  bx-note text-3xl ms-5 me-4'  ></i> 
-                                    <p className="text-lg font-medium">Jenis Memo</p>
-                                </div>
-                            </button>
-                            <button className="w-100 text-start" onClick={() => handleNavigation('/billing/list-billing')}>
-                                <div className={`flex items-center mb-1 w-60 py-1 rounded-r-full ${isActive('/billing') ? 'bg-coklat-mi text-white' : ''} active:bg-coklat-mi active:text-white`}>
-                                    <i className="bx bx-spreadsheet text-3xl ms-5 me-4"></i>
-                                    <p className="text-lg font-medium">Billing</p>
-                                </div>
-                            </button>
-                    </div>
-                    }
-                    
-                    <button
-                    className="w-100 text-start"
-                    onClick={role === 'user' ? () => handleNavigation('/make-request/personal-make-request') : toggleAccordionRequest}
-                    >
-                    <div className="flex items-center mb-1 w-full py-1 rounded-r-full justify-between hover:bg-stone-200">
-                        <div className="flex items-center">
-                            <i className="bx bx-message-add text-3xl ms-5 me-4"></i>
-                            <p className="text-lg font-medium">{role === 'user' ? 'Make Request' : 'Data Request'}</p>
                         </div>
-                        <i className={`bx bx-chevron-${isOpenRequest ? 'up' : 'down'} text-4xl ios-chevron me-3`}></i>
-                    </div>
-                    </button>
-                    <div className={`transition-max-height overflow-hidden mb-4 ${isOpenRequest ? 'max-h-96' : 'max-h-0'}`}>
-                        <button className="w-100 text-start" onClick={role === 'user' ? () => handleNavigation('/barang-anda') : () => handleNavigation('/make-request/list-make-request')}>
-                            <div className={`flex items-center ms-8 border-l-2 border-stone-400 w-60 py-2 rounded-r-full ${isActive('/make-request/list-make-request') ? 'bg-coklat-mi text-white' : 'hover:bg-stone-200'} `}>
-                                <p className="text-lg font-medium ps-10">Make Request</p>
+                        ) : (
+                            <button key={menu.key} onClick={() => handleNavigation(menu.path)} className={`rounded-r-full ${isActive(menu.path) ? 'bg-coklat-mi text-white' : 'hover:bg-stone-200'}`}>
+                            <div className={`flex items-center mb-1 w-60 py-1`}>
+                                <i className={`${menu.icon} text-3xl ms-5 me-4`}></i>
+                                <p className='text-lg font-medium'>{menu.label}</p>
                             </div>
-                        </button>
-                        <button className="w-100 text-start" onClick={role === 'user' ? () => handleNavigation('/barang-anda') : () => handleNavigation('/type-request/list-type-request')}>
-                            <div className={`flex items-center ms-8 border-l-2 border-stone-400 w-60 py-2 rounded-r-full ${isActive('/type-request/list-type-request') ? 'bg-coklat-mi text-white' : 'hover:bg-stone-200'} `}>
-                                <p className="text-lg font-medium ps-10">Type Request</p>
-                            </div>
-                        </button>
-                    </div>
+                            </button>
+                        )
+                        ))}
 
                 </div>
             </div>

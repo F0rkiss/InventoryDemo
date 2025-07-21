@@ -9,10 +9,9 @@ import ScrollPagination from '../component/ScrollPagination'
 import Layout from '../component/Layout'
 import FlyingButton from '../component/FlyingButton'
 import MakeRequestCards from '../component/cards/MakeRequestCards'
-import RestoreButton from '../component/RestoreButton'
 import DataEmpty from '../component/DataEmpty'
 import { encrypting } from '../../helper/EncryptHelper'
-import Swal from 'sweetalert2'
+import { useAuth } from '../../auth/AuthContext'
 
   function MakeRequestList() {
 
@@ -24,6 +23,7 @@ import Swal from 'sweetalert2'
     const [contentVisible, setContentVisible] = useState(false)
     const typingTimeoutRef = useRef(null)
     const navigate = useNavigate()
+    const { role } = useAuth()
 
     useEffect(() => {
       fetchItems();
@@ -32,9 +32,13 @@ import Swal from 'sweetalert2'
     const fetchItems = async () => {
       try {
         setLoading(true);
-        const response = await api.get(searchTerm ? `inventMakeRequest-admin/${searchTerm}` : 'inventMakeRequest-admin');
+        const url = role === 'admin'
+          ? (searchTerm ? `inventMakeRequest-admin/${searchTerm}` : 'inventMakeRequest-admin')
+          : (searchTerm ? `inventMakeRequest/${searchTerm}` : 'inventMakeRequest');
+
+        const response = await api.get(url);
         const data = response.data.data;
-        setItems(data.data);
+        setItems(Array.isArray(data.data) ? data.data : []);
         setNextCursor(data.next_cursor);
         setLoading(false);
         setTimeout(() => setContentVisible(true), 50);
@@ -47,7 +51,10 @@ import Swal from 'sweetalert2'
       if (!nextCursor || loading) return;
       try {
         setLoading(true);
-        const response = await api.get(searchTerm ? `inventMakeRequest-admin/${searchTerm}` : 'inventMakeRequest-admin', {
+        const url = role === 'admin'
+          ? (searchTerm ? `inventMakeRequest-admin/${searchTerm}` : 'inventMakeRequest-admin')
+          : (searchTerm ? `inventMakeRequest/${searchTerm}` : 'inventMakeRequest');
+        const response = await api.get(url, {
           params: {
             cursor: nextCursor,
           },
@@ -81,35 +88,6 @@ import Swal from 'sweetalert2'
     };
 
     
-    // const deleteItems = async (id, name) => {
-    //   try {
-    //     const result = await Swal.fire({
-    //       title: `Apakah Anda ingin menghapus make request ini?`,
-    //       icon: 'question',
-    //       showDenyButton: true,
-    //       confirmButtonText: 'Yes',
-    //       denyButtonText: 'No',
-    //       customClass: {
-    //         actions: 'my-actions',
-    //         confirmButton: 'order-2',
-    //         denyButton: 'order-3',
-    //       },
-    //     });
-  
-    //     if (result.isConfirmed) {
-    //       await api.delete(`inventMakeRequest-delete/${id}`);
-    //       setItems(items.filter((item) => item.id !== id));
-    //       Swal.fire('Terhapus!', '', 'success');
-    //     }
-    //   } catch (error) {
-    //     Swal.fire({
-    //       icon:'error',
-    //       title:`Tidak dapat Menghapus make request`,
-    //       text:'Ada Kesalahan Dalam Sistem'
-    //   })
-    //   }
-    // };
-  
     const goToUpdate = async(itemid) => {
       const encryptingID = await encrypting(itemid)
       navigate(`/make-request/update-make-request/${encryptingID}`);
@@ -130,7 +108,6 @@ import Swal from 'sweetalert2'
           <Block>
               <div className='ms-3 mb-6 flex justify-between'>
                   <p className='text-xl font-bold capitalize'>Data Make Request</p>
-                  {/* <RestoreButton goTo={'/category/restore-category'} /> */}
               </div>
                   <Transition contentVisible={contentVisible}>
                     <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
@@ -141,17 +118,16 @@ import Swal from 'sweetalert2'
                                 key={item.id}
                                 item={item}
                                 goToDetail={goToDetail}
-                                // deleteItems={deleteItems}
                                 goToUpdate={goToUpdate}
                                 />
                             )))
                           }
                       </ScrollPagination>
                     </div>
-                    {
-                      items.length <= 0 && !loading && <DataEmpty/>
-                    }
                   </Transition>
+                  {
+                    items.length === 0 && !loading && contentVisible && <DataEmpty/>
+                  }
                   {loading && <Loader Class="mt-44" />}
           </Block>
           <FlyingButton goTo={'/make-request/create-make-request'} />

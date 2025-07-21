@@ -27,7 +27,6 @@
         const email = getFromToken('email', token);
         const navigation_menu = getFromToken('navigation menu', token);
 
-        
         useEffect(() => {
             // Update localStorage whenever auth changes
             if (auth?.token) {

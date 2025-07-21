@@ -124,22 +124,15 @@ const MyApp = () => {
               <Routes>
                 {/* Public Routes */}
                 <Route path='/login' element={<Login />} />
-                <Route path="/barang/detail-barang/:id" element={<DetailBarang />} />
 
-                {/* Auth Routes */}
-                <Route element={<RequireAuth allowedRoles={['admin', 'user']}/>}>
-                  {/* <Route path='/make-request/create-make-request/:barang_id?' element={<CreateMR/>}/>  
-                  <Route path="/make-request/personal-make-request" element={<PersonalMR />} />   */}
+                <Route element={<RequireAuth/>}>
+                  <Route path='/dashboard' element={<Dashboard />} />
+                  <Route path="*" element={<Navigate to="/dashboard" replace />} />
+                  <Route path="/login" element={<Navigate to="/dashboard" replace />} />
                   <Route path='/edit-profile' element={<EditProfile />} />
-                  {/* <Route path='/make-request/update-make-request-personal/:id' element={<UpdateMR/>}/> */}
-                </Route>
-
-                {/* Admin Routes */}
-                <Route element={<RequireAuth allowedRoles={['admin']} />}>
-                  <Route path="*" element={<Navigate to="/dashboard-admin" replace />} />
-                  <Route path="/login" element={<Navigate to="/dashboard-admin" replace />} />
 
                   <Route path="/barang/list-barang" element={<BarangList />} />
+                  <Route path="/barang/detail-barang/:id" element={<DetailBarang />} />
                   <Route path="/barang/create-barang" element={<CreateBarang />} />
                   <Route path="/barang/update-barang/:id" element={<UpdateBarang />} />
                   <Route path='/barang/restore-barang' element={<RestoreBarang/>}/>
@@ -165,25 +158,6 @@ const MyApp = () => {
                   <Route path="/category/create-category" element={<CreateCategory />} />
                   <Route path="/category/restore-category" element={<RestoreCategory />} />
 
-                  <Route path='/dashboard-admin' element={<Dashboard />} />
-
-                  <Route path='/divisi/list-divisi' element={<ListDivisi />} />
-                  <Route path='/divisi/update-divisi/:id' element={<UpdateDivisi />} />
-                  <Route path='/divisi/create-divisi' element={<CreateDivisi />} />
-                  <Route path='/divisi/restore-divisi' element={<RestoreDivisi />} />
-                  
-                  <Route path='/department/list-department' element={<ListDepartment />} />
-                  <Route path='/department/update-department/:id' element={<UpdateDepartment />} />
-                  <Route path='/department/create-department' element={<CreateDepartment />} />
-                  <Route path='/department/restore-department' element={<RestoreDepartment/>} />
-
-                  {/* Make Request  */}
-                  {/* <Route path='/make-request/list-make-request' element={<MrList />} />
-                  <Route path='/make-request/done-make-request/:id' element={<DoneMR />} />
-                  <Route path='/make-request/restore-make-request/' element={<RestoreMR/>} />
-                  <Route path='/make-request/history/:id' element={<MRHistory/>} />
-                  <Route path='/make-request/detail-make-request/:id' element={<DetailMR/>} /> */}
-
                   <Route path='/type-request/list-type-request' element={<ListTypeRequest />} />
                   <Route path='/type-request/detail-type-request/:id' element={<DetailTypeRequest />} />
                   <Route path='/type-request/update-type-request/:id' element={<UpdateTypeRequest />} />
@@ -194,7 +168,6 @@ const MyApp = () => {
                   <Route path='/make-request/update-make-request/:id' element={<UpdateMakeRequest />} />
                   <Route path='/make-request/create-make-request' element={<CreateMakeRequest />} />
 
-                  {/* <Route path='/table-mr' element={<TableMR/>} /> */}
                   <Route path='/table-billing' element={<TableBilling/>} />
 
                   <Route path='/user/list-user' element={<UserList />} />
@@ -221,13 +194,6 @@ const MyApp = () => {
 
                   <Route path='/navigation-menu/list-navigation-menu' element={<NavigationMenuList/>}/>
                   
-                </Route>
-
-                {/* User Routes */}
-                <Route element={<RequireAuth allowedRoles={['user']} />}>
-                  <Route path='/dashboard-user' element={<DashboardUser />} />
-                  {/* <Route path="*" element={<Navigate to="/dashboard-user" replace />} /> */}
-                  <Route path='/barang-anda' element={<BarangUser/>}></Route>
                 </Route>
 
                 {/* Catch all */}

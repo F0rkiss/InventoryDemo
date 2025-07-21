@@ -24,10 +24,8 @@ function Login() {
             const decoded = jwtDecode(token);
             const role = decoded.role;
 
-            if (role === 'admin') {
-                navigate('/dashboard-admin', { replace: true });
-            } else if (role === 'user') {
-                navigate('/dashboard-user', { replace: true });
+            if ( role ) {
+                navigate('/dashboard', { replace: true });
             }
         }
     }, [navigate]);
@@ -67,10 +65,8 @@ function Login() {
             const role = decoded.role;
     
             // Navigate based on role
-            if (role === 'admin') {
-                navigate('/dashboard-admin', { replace: true });
-            } else if (role === 'user') {
-                navigate('/dashboard-user', { replace: true });
+            if (role ) {
+                navigate('/dashboard', { replace: true });
             } else {
                 // Handle cases where the role is not recognized
                 setErrorMessage('Login failed: Unrecognized role');
@@ -87,60 +83,53 @@ function Login() {
     };
     
     return (
-        <Page className='font-inter bg-stone-300'>
-            <Block>
-                <div className="px-4">
-                    <div className="my-52 bg-hitam-mi rounded-2xl text-custom-gray shadow-lg w-auto">
-                        <div className='flex flex-col py-12 w-11/12'>
-                            <div className='ms-12 self-center'>
-                                <img src={gambar} alt="Logo" className='max-w-48 mb-8 max-xs:max-w-36 max-xs:me-6' />
-                            </div> 
-                            <form onSubmit={handleSubmit}>
-                                <div className='ms-8 mb-6'>
-                                    <p className='mb-2 font-light'>Employee Code</p>
-                                    <input 
-                                        type="text" 
-                                        className='mt-12 text-lg w-full'
-                                        placeholder='Employee Code'
-                                        value={credential.employee_code}
-                                        onChange={handleInputChange('employee_code')}
-                                        required
-                                    />
-                                    <hr className='self-center' />
-                                </div>
-                                <div className='ms-8 mb-4'>
-                                    <p className='mb-2 font-light'>Password</p>
-                                    <input 
-                                        type="password" 
-                                        placeholder='Password'
-                                        value={credential.password}
-                                        onChange={handleInputChange('password')}
-                                        className='mt-12 text-lg w-full'
-                                        required
-                                    />
-                                    <hr className='self-center' />
-                                </div>
-                                {errorMessage && (
-                                    <div className='ms-8 mb-4 text-red-500 text-sm text-center'>
-                                        {errorMessage}
-                                    </div>
-                                )}
-                                <div className="submit flex justify-center px-2 mt-6">
-                                    <button 
-                                        type='submit' 
-                                        disabled={disabled}
-                                        className='bg-gray-200 text-hitam-mi text-lg rounded-xl ms-8 py-3 max-xs:py-3'
-                                    >
-                                        Sign In
-                                    </button>
-                                </div>
-                            </form>
-                            {/* <button className='mt-9' onClick={cryptocurrency}>Mantap</button> */}
-                        </div>
-                    </div>
-                </div>
-            </Block>
-        </Page>
+      <div className="min-h-screen flex items-center justify-center bg-white font-inter">
+        <div className="bg-[#212121] rounded-2xl shadow-2xl p-10 w-full max-w-sm">
+        <div className="flex justify-center mb-6">
+            <img src={gambar} alt="Logo" className="h-14 object-contain" />
+        </div>
+        <h2 className="text-2xl font-bold text-center text-white mb-6">Sign In</h2>
+        <form onSubmit={handleSubmit}>
+            <div className='mb-6 border-b'>
+            <label className='block text-gray-200 text-sm font-light mb-2 px-0'>Employee Code</label>
+            <input
+                type="text"
+                className='bg-white border-b-2 border-gray-600 w-full !pb-1 !text-white placeholder:text-gray-500 focus:outline-none focus:border-gray-200 transition-colors'
+                placeholder='Enter employee code'
+                value={credential.employee_code}
+                onChange={handleInputChange('employee_code')}
+                required
+            />
+            </div>
+            <div className='mb-6 border-b'>
+            <label className='block text-gray-200 text-sm font-light mb-2 px-0'>Password</label>
+            <input
+                type="password"
+                placeholder='Enter password'
+                value={credential.password}
+                onChange={handleInputChange('password')}
+                className='bg-transparent border-b-2  w-full py-2 !pb-1 !text-white placeholder:text-gray-500 focus:outline-none focus:border-gray-200 transition-colors'
+                required
+            />
+            </div>
+            {errorMessage && (
+            <div className='mb-6 text-red-500 text-sm text-center'>
+                {errorMessage}
+            </div>
+            )}
+            <div className="mt-8">
+            <button
+                type='submit'
+                disabled={disabled}
+                className='w-full bg-gray-200 text-black font-semibold py-3 rounded-lg hover:bg-gray-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-base tracking-wider'
+            >
+                Sign In
+            </button>
+            </div>
+        </form>
+        </div>
+    </div>
+
     )
 }
 

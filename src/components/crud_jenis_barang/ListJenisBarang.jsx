@@ -25,12 +25,11 @@ import Swal from 'sweetalert2'
     const navigate = useNavigate()
 
     useEffect(() => {
-        console.log('useEffect triggered with searchTerm:', searchTerm);
+        // console.log('useEffect triggered with searchTerm:', searchTerm);
       fetchItems();
     }, [searchTerm])
 
     const fetchItems = async () => {
-        console.log('fetchItems called with searchTerm:', searchTerm);
       try {
         setLoading(true);
         const response = await api.get(searchTerm ? `inventJenisBarang/${searchTerm}` : 'inventJenisBarang');
