@@ -1,21 +1,16 @@
 import CryptoJS from "crypto-js";
 
-const secretKey = `${import.meta.env.VITE_REACT_APP_KEY}`
+const secretKey = `${import.meta.env.VITE_REACT_APP_KEY}`;
 
-export const encrypting = (id) =>{
-    return new Promise((resolve, reject) => {
-        try {
-            const encryptingId = encodeURIComponent(CryptoJS.AES.encrypt(id.toString(), secretKey).toString())
-            resolve(encryptingId)
-        } catch (error) {
-            reject(error)
-        }
-    })
-}
+// Encrypting function
+export const encrypting = (id) => {
+    const encrypted = CryptoJS.AES.encrypt(id.toString(), secretKey).toString();
+    return encodeURIComponent(encrypted); // Safe for URL usage
+};
 
-export const DecryptID = (encryptedId) =>{
-    const decrypted = CryptoJS.AES.decrypt(encryptedId,secretKey)
-    // return decrypted.toString(CryptoJS.enc.Utf8)    
-    const dec2 = decrypted.toString(CryptoJS.enc.Utf8)
-    return dec2    
-}
+// Decrypting function
+export const DecryptID = (encryptedId) => {
+    const decoded = decodeURIComponent(encryptedId);
+    const decrypted = CryptoJS.AES.decrypt(decoded, secretKey);
+    return decrypted.toString(CryptoJS.enc.Utf8);
+};

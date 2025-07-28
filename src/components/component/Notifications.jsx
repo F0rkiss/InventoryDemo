@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../api/api';
 import dayjs from '../../helper/RelativeTimeHelper';
+import { encrypting } from '../../helper/EncryptHelper';
 
 const Notifications = () => {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -64,18 +65,8 @@ const Notifications = () => {
     };
 
     const handleNotificationClick = async (id) => {
-        setItems((prevItems) =>
-            prevItems.map((item) =>
-                item.id === id ? { ...item, isRead: true } : item
-            )
-        );
-
-        // Optional update to backend
-        // try {
-        //     await api.post(`/notification/read/${id}`);
-        // } catch (error) {
-        //     console.error('Failed to mark notification as read:', error);
-        // }
+        const encryptingID = await encrypting(id)
+        navigate(`/approvalStepHistory-makeRequest/detail/${encryptingID}`)
     };
 
     useEffect(() => {

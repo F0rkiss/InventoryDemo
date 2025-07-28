@@ -15,6 +15,7 @@ import Loader from './component/Loader.jsx';
 
 // Lazy load components
 const Notifications = lazy(() => import('./component/NotificationsPages'));
+const ApprovalMakeRequest = lazy(() => import('./approval-page/approvalMR'));
 
 const BarangList = lazy(() => import('./crud_barang/BarangList.jsx'));
 const CreateBarang = lazy(() => import('./crud_barang/CreateBarang.jsx'));
@@ -134,6 +135,7 @@ const MyApp = () => {
                   <Route path='/edit-profile' element={<EditProfile />} />
 
                   <Route path="/notifications" element={<Notifications />} />
+                  <Route path="/approvalStepHistory-makeRequest/detail/:id" element={<ApprovalMakeRequest />} />
 
                   <Route path="/barang/list-barang" element={<BarangList />} />
                   <Route path="/barang/detail-barang/:id" element={<DetailBarang />} />

@@ -1,10 +1,15 @@
 import React, { forwardRef } from 'react'
 import dayjs from 'dayjs'
+import { useNavigate } from 'react-router-dom'
+import { encrypting } from '../../../helper/EncryptHelper'
 import relativeTime from 'dayjs/plugin/relativeTime'
+import ApprovalActions from '../ApprovalActions'
 
 dayjs.extend(relativeTime)
 
-const NotifCards = forwardRef(({ item, restoreItems, restore = false }, ref) => {
+const NotifCards = forwardRef(({ item, goToPage, restoreItems, restore = false, onApprove, onDecline }, ref) => {
+    const navigate = useNavigate()
+
     return (
         <div className='bg-white mt-3 border rounded-md overflow-hidden shadow-sm' ref={ref}>
             <div className="p-4 flex flex-col border-b w-full">
@@ -21,14 +26,16 @@ const NotifCards = forwardRef(({ item, restoreItems, restore = false }, ref) => 
                     <p className="text-xs text-gray-400">
                         {item.should_approve ? 'Perlu approval' : 'Tidak perlu approval'}
                     </p>
-                    <p className="text-xs text-gray-400">{item.kode_mr}</p>
+                    <p className="text-xs text-gray-400">{item.kode}</p>
                 </div>
             </div>
+            
+            
             <div className='flex justify-end px-4 py-2'>
                 <button className='text-cyan-500 font-semibold text-sm'
-                    // onClick={() => goTo()}
+                    onClick={() => goToPage(item.id)}
                 >
-                    Direct
+                    Lihat Detail
                 </button>
             </div>
         </div>

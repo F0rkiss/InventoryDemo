@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import Layout from '../component/Layout'
+import Layout from './Layout'
 import Transition from '../component/Transition'
 import ScrollPagination from '../component/ScrollPagination'
 import Loader from '../component/Loader'
@@ -30,7 +30,7 @@ function Notifications() {
         try {
             setLoading(true)
             const response = await api.get('notification')
-            const data = response.data.data
+            const data = response.data?.data || []
 
             const withReadStatus = data.map((item) => ({
                 ...item,
@@ -38,9 +38,11 @@ function Notifications() {
             }))
 
             setItems(withReadStatus)
-            setNextCursor(data.next_cursor)
+            setNextCursor(data.next_cursor || null)
         } catch (error) {
             console.error('Gagal fetch notifikasi:', error)
+            setItems([])
+            setNextCursor(null)
         } finally {
             setLoading(false)
             setTimeout(() => setContentVisible(true), 50)
@@ -54,7 +56,7 @@ function Notifications() {
             const response = await api.get('notification', {
                 params: { cursor: nextCursor },
             })
-            const data = response.data.data
+            const data = response.data?.data || []
 
             const newItems = data.map((item) => ({
                 ...item,
@@ -67,7 +69,7 @@ function Notifications() {
                 return [...prevItems, ...uniqueNew]
             })
 
-            setNextCursor(data.next_cursor)
+            setNextCursor(data.next_cursor || null)
         } catch (error) {
             console.error('Gagal fetch notifikasi tambahan:', error)
         } finally {
@@ -78,7 +80,7 @@ function Notifications() {
 
     const goToPage = async (id) => {
         const encryptingID = await encrypting(id)
-        navigate(`/notification/detail/${encryptingID}`)
+        navigate(`/approvalStepHistory-makeRequest/detail/${encryptingID}`)
     }
 
     return (
