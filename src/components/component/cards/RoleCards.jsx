@@ -30,4 +30,4 @@ const UserCards = forwardRef(({item, deleteItems, goToDetail, goToUpdate, restor
   )
 })
 
-export default UserCards
+export default RoleCards;

@@ -29,6 +29,8 @@ function UpdateMakeRequest() {
     const [disabled, setDisabled] = useState(false)
     const { role } = useAuth()
     const navigate = useNavigate()
+    const [originalItems, setOriginalItems] = useState(null);
+    const [originalDetails, setOriginalDetails] = useState([]);
 
     useEffect(() => {
         const decryptedIds = DecryptID(id)
@@ -51,11 +53,16 @@ function UpdateMakeRequest() {
                 : `inventMakeRequest-detail/${decryptedId}`
             const response = await api.get(url);
             const data = response.data.data;
-            setItems({
+            console.log(data)
+            const fetchedItems = {
                 type_request : data.type_request ? { value: data.type_request.id, label: data.type_request.name } : null,
                 tanggal : data.tanggal,
-            });
-            setDetails(data.details || [])
+            };
+            const fetchedDetails = data.details || [];
+            setItems(fetchedItems);
+            setDetails(fetchedDetails);
+            setOriginalItems(fetchedItems);
+            setOriginalDetails(fetchedDetails);
         } catch (error) {
             
         } finally { setTimeout(() => setContentVisible(true), 50) }
@@ -114,8 +121,13 @@ function UpdateMakeRequest() {
     }
 
     const resetValue = () => {
-        setItems({ type_request: null, tanggal: '' });
-        setDetails([]);
+        if (originalItems && originalDetails) {
+            setItems(originalItems);
+            setDetails(originalDetails);
+        } else {
+            setItems({ type_request: null, tanggal: '' });
+            setDetails([]);
+        }
     }
 
     return (
@@ -160,12 +172,14 @@ function UpdateMakeRequest() {
                                             <td className="py-2 px-2 font-semibold">{item.note_barang}</td>
                                             <td className="py-2 font-semibold">{item.qty}</td>
                                             <td className="flex place-self-end py-2 px-2">
-                                                <button className="ms-2c" onClick={() => {
-                                                    setDetails(details.filter((_, i) => i !== id));
-                                                    setInitialDetails(details[id])
-                                                    setOpenModal(!openModal)
+                                                <button className="ms-2c" onClick={e => {
+                                                    e.preventDefault();
+                                                    setEditIndex(id);
+                                                    setInitialDetails(details[id]);
+                                                    setOpenModal(true);
                                                 }}><i className='bx bx-edit text-xl text-cyan-600'></i></button>
-                                                <button className="ms-2" onClick={() => {
+                                                <button className="ms-2" onClick={e => {
+                                                    e.preventDefault();
                                                     setDetails(details.filter((_, i) => i !== id));
                                                 }}><i className='bx bx-trash text-xl text-red-500'></i></button>
                                             </td>
@@ -196,16 +210,20 @@ function UpdateMakeRequest() {
             {
                 openModal && <ModalMR
                 open={openModal}
-                onClose={() => setOpenModal(false)}
+                onClose={() => {
+                    setOpenModal(false);
+                    setEditIndex(null);
+                }}
                 onSave={data => {
                     if (editIndex !== null) {
-                        // Edit mode: ganti record di posisi editIndex
+                        // Edit mode: update record at editIndex
                         setDetails(details.map((item, idx) => idx === editIndex ? data : item));
                     } else {
-                        // Add mode: tambahkan data baru
+                        // Add mode: add new data
                         setDetails([...details, data]);
                     }
-                    setOpenModal(false)
+                    setOpenModal(false);
+                    setEditIndex(null);
                 }}
                 initialData={initialDetails}
                 />
