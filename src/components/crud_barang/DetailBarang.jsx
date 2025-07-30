@@ -55,12 +55,7 @@ function DetailItem() {
     <Layout title={'Detail Barang'}>
       <Block>
         <Back goHome={() => navigate('/barang/list-barang')}/>
-          {/* {
-            loading ?
-            (
-              <Loader Class={'mt-20'} />
-            ) : ( */}
-            <Transition contentVisible={contentVisible}>
+            d<Transition contentVisible={contentVisible}>
               <div className="bg-white font-inter py-5 mt-3 rounded-md w-full shadow-sm">
                 <div className="flex flex-col mx-6"> 
                   { isAsset ? 

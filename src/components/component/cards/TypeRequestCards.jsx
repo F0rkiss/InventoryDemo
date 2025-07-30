@@ -1,6 +1,6 @@
 import React, { forwardRef } from 'react'
 
-const TypeRequestCards = forwardRef(({item, goToDetail, canUpdate, canDelete, goToUpdate, restoreItems, deleteItems, restore = false, canDelete, canUpdate}, ref) => {
+const TypeRequestCards = forwardRef(({item, goToDetail, canUpdate, canDelete, goToUpdate, restoreItems, deleteItems, restore = false}, ref) => {
 
 
     return (
