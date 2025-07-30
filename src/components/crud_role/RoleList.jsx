@@ -11,8 +11,8 @@ import Swal from 'sweetalert2'
 import Layout from '../component/Layout'
 import { encrypting } from '../../helper/EncryptHelper'
 import RoleCards from '../component/cards/RoleCards'
-import RestoreButton from '../component/RestoreButton'
 import DataEmpty from '../component/DataEmpty'
+import useMenuAccess from '../../hooks/useMenuAccess'
 
 function RoleList() {
     const [items, setItems] = useState([])
@@ -22,6 +22,7 @@ function RoleList() {
     const [loading, setLoading] = useState(false)
     const [contentVisible, setContentVisible] = useState(false)
     const navigate = useNavigate();
+    const { canCreate, canUpdate, canDelete } = useMenuAccess('Role')
     const typingTimeoutRef = useRef(null)
 
     useEffect(() => {
@@ -141,6 +142,8 @@ function RoleList() {
                                 goToDetail={goToDetail}
                                 goToUpdate={goToUpdate}
                                 deleteItems={deleteItems}
+                                canUpdate={canUpdate}
+                                canDelete={canDelete}
                                 />
                             )))
                         }
@@ -151,7 +154,7 @@ function RoleList() {
                 </Transition>
                 {loading && <Loader Class={'mt-44'} />}
             </Block>
-            <FlyingButton goTo={'/role/create-role'} />
+            { canCreate && <FlyingButton goTo={'/role/create-role'} />}
         </Layout>
     )
 }

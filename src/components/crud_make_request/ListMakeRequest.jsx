@@ -12,6 +12,7 @@ import MakeRequestCards from '../component/cards/MakeRequestCards'
 import DataEmpty from '../component/DataEmpty'
 import { encrypting } from '../../helper/EncryptHelper'
 import { useAuth } from '../../auth/AuthContext'
+import useMenuAccess from '../../hooks/useMenuAccess'
 
   function MakeRequestList() {
 
@@ -24,6 +25,7 @@ import { useAuth } from '../../auth/AuthContext'
     const typingTimeoutRef = useRef(null)
     const navigate = useNavigate()
     const { role } = useAuth()
+    const { canCreate, canUpdate } = useMenuAccess('MakeRequest');
 
     useEffect(() => {
       fetchItems();
@@ -119,6 +121,7 @@ import { useAuth } from '../../auth/AuthContext'
                                 item={item}
                                 goToDetail={goToDetail}
                                 goToUpdate={goToUpdate}
+                                canUpdate={canUpdate}
                                 />
                             )))
                           }
@@ -130,7 +133,7 @@ import { useAuth } from '../../auth/AuthContext'
                   }
                   {loading && <Loader Class="mt-44" />}
           </Block>
-          <FlyingButton goTo={'/make-request/create-make-request'} />
+          { canCreate && <FlyingButton goTo={'/make-request/create-make-request'} />}
       </Layout>
     )
   }

@@ -1,7 +1,7 @@
 import { forwardRef } from 'react'
 
 
-const NavigationGroupCards = forwardRef(({item, deleteItems, goToDetail, goToUpdate, restoreItems, restore = false, source}, ref) => {
+const NavigationGroupCards = forwardRef(({item, deleteItems, goToDetail, goToUpdate, restoreItems, restore = false, source, canUpdate, canDelete}, ref) => {
 
     return (
         <>
@@ -20,7 +20,7 @@ const NavigationGroupCards = forwardRef(({item, deleteItems, goToDetail, goToUpd
                             </button> 
                         }
                     </div>
-                    <div className="p-2 ps-2 flex border-b w-full">
+                    <div className="p-2 ps-2 flex w-full">
                         <div className='flex justify-between w-full max-xs:h-16'>
                             <div className="text ms-4 max-xs:self-center  max-w-64 max-xs:w-40 whitespace-nowrap flex flex-col justify-center">
                                 {/* <p className='text-sm max-xs:text-sm whitespace-nowrap italic'>Permission</p> */}
@@ -56,23 +56,26 @@ const NavigationGroupCards = forwardRef(({item, deleteItems, goToDetail, goToUpd
                         </div>
                         
                     </div>
-                    <div className='flex justify-around p-2 font-bold max-xs:text-xs'>
-                        {
-                            !restore ?
-                            <>
-                            <button className='text-cyan-400' onClick={() => goToUpdate(item.id)}>
-                            Update
-                            </button>
-                            <button className='text-red-500' onClick={() => deleteItems(item.id, item.role?.name)}>
-                                Delete
-                            </button>
-                            </>
-                            :
-                            <button className='text-cyan-400' onClick={() => restoreItems(item.id, item.name)}>
-                                Restore
-                            </button>
-                        }
-                    </div>
+                    { canUpdate || canDelete &&
+                        <div className='flex justify-around p-2 border-t font-bold max-xs:text-xs'>
+                            { canUpdate &&
+                                <button
+                                className="update_button text-cyan-400 bg-white flex justify-center h items-center py-3"
+                                onClick={() => handleUpdateClick(item.id)}
+                                >
+                                <p>Update</p>
+                                </button>
+                            }
+                            { canDelete &&
+                                <button
+                                className="delete_button text-red-500 bg-white flex justify-center items-center py-3"
+                                onClick={() => handleDeleteClick(item.id)}
+                                >
+                                <p>Delete</p>
+                                </button>
+                            }
+                        </div>
+                    }
                 </div>
                 :
                 <div className='bg-white mt-3 border rounded-lg overflow-hidden' ref={ref}>

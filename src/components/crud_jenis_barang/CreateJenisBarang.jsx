@@ -5,7 +5,7 @@ import api from '../../api/api'
 import Back from '../component/Back'
 import Layout from '../component/Layout'
 import Swal from 'sweetalert2'
-
+import useMenuAccess from '../../hooks/useMenuAccess'
 
 function CreateJenisBarang() {
     const [items, setItems] = useState({

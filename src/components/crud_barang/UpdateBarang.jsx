@@ -13,6 +13,7 @@ import Transition from '../component/Transition';
 import { instanceOf } from 'prop-types';
 
 function UpdateBarang() {
+    const navigate = useNavigate();
     const [contentVisible, setContentVisible] = useState(false)
     const [error, setError] = useState({});
     const [decryptedId, setDecryptedId] = useState('')
@@ -31,7 +32,6 @@ function UpdateBarang() {
     const [disabled, setDisabled] = useState(false)
     const fileInputRef = useRef(null)
     const { id } = useParams();
-    const navigate = useNavigate();
 
     useEffect(() => {
         const decryptedId = DecryptID(id)

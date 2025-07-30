@@ -13,6 +13,7 @@ import RestoreButton from '../component/RestoreButton'
 import DataEmpty from '../component/DataEmpty'
 import { encrypting } from '../../helper/EncryptHelper'
 import Swal from 'sweetalert2'
+import useMenuAccess from '../../hooks/useMenuAccess'
 
 function ListBilling() {
     const [items, setItems] = useState([])
@@ -22,6 +23,7 @@ function ListBilling() {
     const [loading, setLoading] = useState(false)
     const [contentVisible, setContentVisible] = useState(false)
     const typingTimeoutRef = useRef(null)
+    const { canCreate, canDelete, canUpdate } = useMenuAccess('Billing')
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -134,6 +136,8 @@ function ListBilling() {
                             goToUpdate={goToUpdate}
                             deleteItems={deleteItems}
                             goToDetail={goToDetail}
+                            canDelete={canDelete}
+                            canUpdate={canUpdate}
                             />
                         )))
                     }
@@ -144,7 +148,7 @@ function ListBilling() {
             </Transition>
             {loading && <Loader Class={'mt-40'}/>}
         </Block>
-        <FlyingButton goTo={'/billing/create-billing'} />
+        { canCreate && <FlyingButton goTo={'/billing/create-billing'} />}
     </Layout>
   )
 }

@@ -6,7 +6,6 @@ import Back from '../component/Back'
 import Layout from '../component/Layout'
 import Swal from 'sweetalert2'
 
-
 function CreateSumberBarang() {
     const [items, setItems] = useState({
         name: '',

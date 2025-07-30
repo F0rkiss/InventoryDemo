@@ -9,10 +9,10 @@ import ScrollPagination from '../component/ScrollPagination'
 import Layout from '../component/Layout'
 import FlyingButton from '../component/FlyingButton'
 import CategoryCards from '../component/cards/CategoryCards'
-import RestoreButton from '../component/RestoreButton'
 import DataEmpty from '../component/DataEmpty'
 import { encrypting } from '../../helper/EncryptHelper'
 import Swal from 'sweetalert2'
+import useMenuAccess from '../../hooks/useMenuAccess'
 
   function CategoryList() {
 
@@ -23,6 +23,7 @@ import Swal from 'sweetalert2'
     const [searchQuery, setSearchQuery] = useState('')
     const [contentVisible, setContentVisible] = useState(false)
     const typingTimeoutRef = useRef(null)
+    const { canCreate, canUpdate, canDelete } = useMenuAccess('Categories')
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -143,6 +144,8 @@ import Swal from 'sweetalert2'
                           goToDetail={goToDetail}
                           deleteItems={deleteItems}
                           goToUpdate={goToUpdate}
+                          canUpdate={canUpdate}
+                          canDelete={canDelete}
                           />
                       )))
                     }
@@ -154,7 +157,7 @@ import Swal from 'sweetalert2'
               </Transition>
               {loading && <Loader Class="mt-44" />}
           </Block>
-          <FlyingButton goTo={'/category/create-category'} />
+          { canCreate && <FlyingButton goTo={'/category/create-category'} />}
       </Layout>
     )
   }

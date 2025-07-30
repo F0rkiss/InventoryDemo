@@ -11,6 +11,7 @@ import Swal from 'sweetalert2';
 import { isDynamic, findisDynamicOption } from '../../helper/FindOptions';
 
 function CreateJenisMemo() {
+
     const [items, setItems] = useState({
         name : '',
         description: '',

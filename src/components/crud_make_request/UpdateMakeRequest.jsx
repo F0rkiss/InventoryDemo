@@ -9,6 +9,7 @@ import SelectPaginate from '../component/SelectPaginate'
 import ModalMR from '../component/modal/ModalMR'
 import { DecryptID } from '../../helper/EncryptHelper'
 import Transition from '../component/Transition'
+import { useAuth } from '../../auth/AuthContext'
 
 function UpdateMakeRequest() {
     const [items, setItems] = useState({
@@ -26,6 +27,7 @@ function UpdateMakeRequest() {
     const [contentVisible, setContentVisible] = useState(false)
     const [openModal, setOpenModal] = useState(false)
     const [disabled, setDisabled] = useState(false)
+    const { role } = useAuth()
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -44,15 +46,16 @@ function UpdateMakeRequest() {
 
     const fetchItem = async () => {
         try {
-            const response = await api.get(`/inventMakeRequest-admin/detail/${decryptedId}`);
+            const url = role === 'admin'
+                ? `inventMakeRequest-admin/detail/${decryptedId}`
+                : `inventMakeRequest-detail/${decryptedId}`
+            const response = await api.get(url);
             const data = response.data.data;
-            console.log(data)
             setItems({
                 type_request : data.type_request ? { value: data.type_request.id, label: data.type_request.name } : null,
                 tanggal : data.tanggal,
             });
             setDetails(data.details || [])
-            console.log(items)
         } catch (error) {
             
         } finally { setTimeout(() => setContentVisible(true), 50) }
@@ -103,6 +106,7 @@ function UpdateMakeRequest() {
                 title:'Gagal mengubah make request',
                 text:'Ada Kesalahan Dalam Sistem'
             })
+            console.log(error)
             resetValue
         } finally {
             setDisabled(false)

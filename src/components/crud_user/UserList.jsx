@@ -11,8 +11,8 @@ import Swal from 'sweetalert2'
 import Layout from '../component/Layout'
 import { encrypting } from '../../helper/EncryptHelper'
 import UserCards from '../component/cards/UserCards'
-import RestoreButton from '../component/RestoreButton'
 import DataEmpty from '../component/DataEmpty'
+import useMenuAccess from '../../hooks/useMenuAccess'
 
 function UserList() {
     const [items, setItems] = useState([])
@@ -22,6 +22,7 @@ function UserList() {
     const [loading, setLoading] = useState(false)
     const [contentVisible, setContentVisible] = useState(false)
     const navigate = useNavigate();
+    const { canUpdate } = useMenuAccess('User')
     const typingTimeoutRef = useRef(null)
 
     useEffect(() => {
@@ -142,6 +143,7 @@ function UserList() {
                                 goToDetail={goToDetail}
                                 goToUpdate={goToUpdate}
                                 deleteItems={deleteItems}
+                                canUpdate={canUpdate}
                                 />
                             )))
                         }
@@ -153,7 +155,6 @@ function UserList() {
                 </Transition>
                 {loading && <Loader Class={'mt-44'} />}
             </Block>
-            <FlyingButton goTo={'/user/create-user'} />
         </Layout>
     )
 }

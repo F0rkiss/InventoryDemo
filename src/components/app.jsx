@@ -18,7 +18,7 @@ const BarangList = lazy(() => import('./crud_barang/BarangList.jsx'));
 const CreateBarang = lazy(() => import('./crud_barang/CreateBarang.jsx'));
 const UpdateBarang = lazy(() => import('./crud_barang/UpdateBarang.jsx'));
 const DetailBarang = lazy(() => import('./crud_barang/DetailBarang.jsx'));
-const RestoreBarang = lazy(() => import('./crud_barang/RestoreBarang.jsx'))
+// const RestoreBarang = lazy(() => import('./crud_barang/RestoreBarang.jsx'))
 
 const ListJenisBarang = lazy(() => import('./crud_jenis_barang/ListJenisBarang.jsx'));
 const CreateJenisBarang = lazy(() => import('./crud_jenis_barang/CreateJenisBarang.jsx'));
@@ -135,7 +135,7 @@ const MyApp = () => {
                   <Route path="/barang/detail-barang/:id" element={<DetailBarang />} />
                   <Route path="/barang/create-barang" element={<CreateBarang />} />
                   <Route path="/barang/update-barang/:id" element={<UpdateBarang />} />
-                  <Route path='/barang/restore-barang' element={<RestoreBarang/>}/>
+                  {/* <Route path='/barang/restore-barang' element={<RestoreBarang/>}/> */}
 
                   <Route path='/jenis-barang/list-jenis-barang' element={<ListJenisBarang/>} />
                   <Route path='/jenis-barang/create-jenis-barang' element={<CreateJenisBarang/>} />

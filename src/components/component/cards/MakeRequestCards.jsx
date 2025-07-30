@@ -1,7 +1,7 @@
 import React, { forwardRef } from 'react'
 import DateFormat from '../../../helper/DateFormatHelper'
 
-const MakeRequestCards = forwardRef(({item, goToDetail, goToUpdate, restoreItems, deleteItems, restore = false}, ref) => {
+const MakeRequestCards = forwardRef(({item, goToDetail, canUpdate, goToUpdate, restoreItems, deleteItems, restore = false}, ref) => {
 
 
     return (
@@ -40,36 +40,15 @@ const MakeRequestCards = forwardRef(({item, goToDetail, goToUpdate, restoreItems
                         Description: <p>{item.type_request?.description}</p>
                     </div>
                 } 
-              {/* <div className="flex justify-between">
-                Tanggal Dibuat: <p>{DateFormat(item.created_at)}</p>
-              </div>
-              <div className="flex justify-between">
-                Tanggal Dirubah: <p>{DateFormat(item.updated_at)}</p>
-              </div> */}
             </div>
 
             <div className='flex py-2 px-6 border-t'>
-                { !restore ?
-                <>
+                { canUpdate &&
                     <button
                         className="update_button bg-white rounded-md me-4 text-cyan-400 font-bold"
                         onClick={() => goToUpdate(item.id)}
                     >
                         Update
-                    </button>
-                    {/* <button
-                        onClick={() d=> deleteItems(item.id, item.name)}
-                        className="delete_button bg-white rounded-md text-red-500 font-bold"
-                    >
-                        Delete
-                    </button> */}
-                </>
-                :
-                    <button
-                        className="restore_button bg-white rounded-md me-4 text-cyan-400 font-bold"
-                        onClick={() => restoreItems(item.id, item.name)}
-                    >
-                        Restore
                     </button>
                 }
             </div>

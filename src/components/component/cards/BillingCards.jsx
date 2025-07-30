@@ -4,7 +4,7 @@ import avatar from '../../../assets/image/gambar/Profile_avatar_placeholder_larg
 import DateFormatToIDN from '../../../helper/DateFormatHelper'
 
 
-const BillingCards = forwardRef(({goToUpdate, goToDetail, deleteItems ,item, restore = false, className, desktop = false}, ref) => {
+const BillingCards = forwardRef(({goToUpdate, goToDetail, deleteItems ,item, restore = false, className, desktop = false, canDelete, canUpdate}, ref) => {
 
     const [detail, setDetail] = useState(null)
 
@@ -90,9 +90,22 @@ const BillingCards = forwardRef(({goToUpdate, goToDetail, deleteItems ,item, res
                     </div>
                 </div>
                 <div className="tombol flex justify-around h-9 mt-3 pb-2">
-                    <button className='bg-cyan-400 text-white shadow-sm rounded-md  w-28' onClick={() => goToUpdate(item.id)}>Update</button>
-                    <button className='bg-slate-500 text-white shadow-sm rounded-md w-28' onClick={() => goToDetail(item.id)}>Detail </button>
-                    {/* <button className='bg-slate-500 text-white shadow-sm rounded-md w-28' onClick={() => toggleDetail(item.id)}>{detail == item.id ? 'Tutup' : 'Detail' }</button> */}
+                    { canUpdate &&
+                        <button
+                        className="update_button text-cyan-400 bg-white flex justify-center h items-center py-3"
+                        onClick={() => handleUpdateClick(item.id)}
+                        >
+                        <p>Update</p>
+                        </button>
+                    }
+                    { canDelete &&
+                        <button
+                        className="delete_button text-red-500 bg-white flex justify-center items-center py-3"
+                        onClick={() => handleDeleteClick(item.id)}
+                        >
+                        <p>Delete</p>
+                        </button>
+                    }
                 </div>
             </div>
         </div>

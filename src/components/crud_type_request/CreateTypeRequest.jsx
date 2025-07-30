@@ -6,8 +6,9 @@ import Back from '../component/Back'
 import Layout from '../component/Layout'
 import Swal from 'sweetalert2'
 
-
 function CreateTypeRequest() {
+    const navigate = useNavigate()
+
     const [items, setItems] = useState({
         name: '',
         jenis: '',
@@ -15,7 +16,6 @@ function CreateTypeRequest() {
     })  
       
     const [disabled, setDisabled] = useState(false)
-    const navigate = useNavigate()
 
     const handleSubmit = async(e) =>{
         e.preventDefault();

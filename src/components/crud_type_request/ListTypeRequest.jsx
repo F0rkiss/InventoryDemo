@@ -13,9 +13,9 @@ import RestoreButton from '../component/RestoreButton'
 import DataEmpty from '../component/DataEmpty'
 import { encrypting } from '../../helper/EncryptHelper'
 import Swal from 'sweetalert2'
+import useMenuAccess from '../../hooks/useMenuAccess'
 
   function TypeRequestList() {
-
     const [items, setItems] = useState([])
     const [loading, setLoading] = useState(false)
     const [nextCursor, setNextCursor] = useState(null)
@@ -24,6 +24,7 @@ import Swal from 'sweetalert2'
     const [contentVisible, setContentVisible] = useState(false)
     const typingTimeoutRef = useRef(null)
     const navigate = useNavigate()
+    const { canCreate, canUpdate, canDelete } = useMenuAccess('TypeRequest');
 
     useEffect(() => {
       fetchItems();
@@ -143,6 +144,8 @@ import Swal from 'sweetalert2'
                                 goToDetail={goToDetail}
                                 deleteItems={deleteItems}
                                 goToUpdate={goToUpdate}
+                                canUpdate={canUpdate}
+                                canDelete={canDelete}
                                 />
                             )))
                         }
@@ -154,7 +157,7 @@ import Swal from 'sweetalert2'
                   </Transition>
                   {loading && <Loader Class="mt-44" />}
           </Block>
-          <FlyingButton goTo={'/type-request/create-type-request'} />
+          {canCreate && <FlyingButton goTo={'/type-request/create-type-request'} />}
       </Layout>
     )
   }

@@ -3,23 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import DateFormat from '../../../helper/DateFormatHelper'
 
-const ItemCard = forwardRef(({ item, handleDetailClick, handleUpdateClick, handleDeleteClick, restoreItems, isUser, restore = false }, ref) => {
+const ItemCard = forwardRef(({ item, handleDetailClick, handleUpdateClick, handleDeleteClick, restoreItems, isUser, restore = false, canUpdate, canDelete }, ref) => {
   const navigate = useNavigate();
   const apiUrl = import.meta.env.VITE_URL
   const [detail, setDetail] = useState(null);
   const [lazyLoad, setLazyLoad] = useState({})
   const isAsset = item.is_asset
   
-  // useEffect(() => {
-  //   if (desktop) {
-  //       setDetail((prevDetails) => prevDetails = item.id)
-  //       setLazyLoad((prev) => ({
-  //           ...prev, 
-  //           [item[0].id]: true
-  //       }))
-  //   }
-  // }, [desktop])
-
   return (
     <div ref={ref} className={`bg-white rounded-md text-sm mb-3 font-inter border overflow-hidden flex flex-col justify-between h-full ${isUser ? 'pb-1' : ''}`}>
       <div className="content flex-grow flex flex-col ">
@@ -72,22 +62,24 @@ const ItemCard = forwardRef(({ item, handleDetailClick, handleUpdateClick, handl
           </div>
         </div>
       </div>
-      { !isUser && !restore &&
       <div className={`flex justify-around font-semibold mt-auto border-t`}>
+      { canUpdate &&
         <button
           className="update_button text-cyan-400 bg-white flex justify-center h items-center py-3"
           onClick={() => handleUpdateClick(item.id)}
         >
           <p>Update</p>
         </button>
+      }
+      { canDelete &&
         <button
           className="delete_button text-red-500 bg-white flex justify-center items-center py-3"
           onClick={() => handleDeleteClick(item.id)}
         >
           <p>Delete</p>
         </button>
-      </div>
       }
+      </div>
     </div>
   );
 });

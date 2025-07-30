@@ -10,6 +10,8 @@ import Layout from '../../component/Layout';
 import Swal from 'sweetalert2';
 
 function CreateNavigationGroups() {
+    const navigate = useNavigate();
+
     const [items, setItems] = useState({
         role : null,
         navigation_menu : null,
@@ -21,7 +23,6 @@ function CreateNavigationGroups() {
 
     const [disabled, setDisabled] = useState(false)
     const [error, setError] = useState(null)
-    const navigate = useNavigate();
     
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -44,7 +45,7 @@ function CreateNavigationGroups() {
                 timer: 2000,
                 showConfirmButton: false,
             });
-            navigate('/navigations/list-navigations')
+            navigate('/navigation-groups/list-navigation-groups')
         } catch (error) {
             Swal.fire({
                 icon:'error',

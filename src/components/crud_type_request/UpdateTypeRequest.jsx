@@ -9,8 +9,8 @@ import { DecryptID } from '../../helper/EncryptHelper'
 import Transition from '../component/Transition';
 import Swal from 'sweetalert2'
 
-
 function UpdateTypeRequest() {
+
     const [items, setItems] = useState({
         name: '',
         jenis: '',

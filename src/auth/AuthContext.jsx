@@ -35,6 +35,32 @@
                 localStorage.removeItem('authToken');
             }
         }, [auth]);
+
+        useEffect(() => {
+        const interval = setInterval(() => {
+                const token = localStorage.getItem('authToken');
+                if (token) {
+                    try {
+                        const decoded = jwtDecode(token);
+                        const exp = decoded.exp * 1000; // dalam milidetik
+                        if (Date.now() >= exp) {
+                            // Token expired
+                            alert("Sesi login Anda telah berakhir. Silakan login ulang.");
+                            setAuth(null);
+                            localStorage.removeItem('authToken');
+                            window.location.href = '/'; // redirect ke halaman login
+                        }
+                    } catch (e) {
+                        console.error("Token error:", e);
+                        setAuth(null);
+                        localStorage.removeItem('authToken');
+                        window.location.href = '/';
+                    }
+                }
+            }, 10000); // periksa setiap 10 detik
+        return () => clearInterval(interval);
+        }, []);
+
         
         return (
             <AuthContext.Provider value={{ auth, setAuth, role, name, email, navigation_menu }}>

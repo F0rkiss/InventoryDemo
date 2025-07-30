@@ -1,7 +1,7 @@
 import React, { forwardRef } from 'react'
 
 
-const UserCards = forwardRef(({item, deleteItems, goToDetail, goToUpdate, restoreItems, restore = false}, ref) => {
+const UserCards = forwardRef(({item, deleteItems, goToDetail, goToUpdate, restoreItems, restore = false, canUpdate}, ref) => {
 
     return (
         <div className='bg-white mt-3 border rounded-md overflow-hidden' ref={ref}>
@@ -18,11 +18,13 @@ const UserCards = forwardRef(({item, deleteItems, goToDetail, goToUpdate, restor
                         <i className="bx bx-dots-vertical-rounded text-2xl max-xs:text-xl" />
                     </button> 
             </div>
-            <div className='flex justify-around p-2 font-bold max-xs:text-xs'>
-                    <button className='text-cyan-400' onClick={() => goToUpdate(item.id)}>
-                    Update
-                    </button>
-            </div>
+            { canUpdate && 
+                <div className='flex justify-around p-2 font-bold max-xs:text-xs'>
+                        <button className='text-cyan-400' onClick={() => goToUpdate(item.id)}>
+                        Update
+                        </button>
+                </div>
+            }
         </div>
   )
 })

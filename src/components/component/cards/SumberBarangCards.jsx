@@ -1,6 +1,6 @@
 import React, { forwardRef } from 'react'
 
-const SumberBarangCards = forwardRef(({item, goToDetail, goToUpdate, restoreItems, deleteItems, restore = false}, ref) => {
+const SumberBarangCards = forwardRef(({item, goToDetail, goToUpdate, restoreItems, deleteItems, restore = false, canDelete, canUpdate}, ref) => {
 
 
     return (
@@ -21,27 +21,20 @@ const SumberBarangCards = forwardRef(({item, goToDetail, goToUpdate, restoreItem
             <p className='text-center text-md pb-2'>{item.description}</p>
             <hr  />
             <div className='flex py-2 mx-6'>
-              { !restore ?
-                <>
-                  <button
-                      className="update_button bg-white rounded-md me-4 text-cyan-400 font-bold"
-                      onClick={() => goToUpdate(item.id)}
-                  >
-                      Update
-                  </button>
-                  <button
-                      className="delete_button bg-white rounded-md text-red-500 font-bold"
-                      onClick={() => deleteItems(item.id, item.name)}
-                  >
-                      Delete
-                  </button>
-                </>
-                :
-                  <button
-                        className="restore_button bg-white rounded-md me-4 text-cyan-400 font-bold"
-                        onClick={() => restoreItems(item.id, item.name)}
+                { canUpdate &&
+                    <button
+                    className="update_button text-cyan-400 bg-white flex justify-center h items-center py-3"
+                    onClick={() => handleUpdateClick(item.id)}
                     >
-                        Restore
+                    <p>Update</p>
+                    </button>
+                }
+                { canDelete &&
+                    <button
+                    className="delete_button text-red-500 bg-white flex justify-center items-center py-3"
+                    onClick={() => handleDeleteClick(item.id)}
+                    >
+                    <p>Delete</p>
                     </button>
                 }
             </div>

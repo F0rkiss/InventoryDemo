@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import CustomNavbar from '../component/CustomNavbar'
-import { Page, Block } from 'framework7-react'
+import { Block } from 'framework7-react'
 import { useNavigate, useParams } from 'react-router-dom'
 import api from '../../api/api'
 import Back from '../component/Back'
@@ -15,6 +14,7 @@ function UpdateJenisBarang() {
     })
     const [decryptedId, setDecryptedId] = useState('')
     const [disabled, setDisabled] = useState(false)
+
     const navigate = useNavigate()
     const { id } = useParams()
 

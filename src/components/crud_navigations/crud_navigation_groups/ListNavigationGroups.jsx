@@ -11,8 +11,8 @@ import Swal from 'sweetalert2';
 import Layout from '../../component/Layout';
 import { encrypting } from '../../../helper/EncryptHelper';
 import NavigationCards from '../../component/cards/NavigationsCards';
-import RestoreButton from '../../component/RestoreButton';
 import DataEmpty from '../../component/DataEmpty';
+import useMenuAccess from '../../../hooks/useMenuAccess';
 
 function ListNavigationGroup() {
     const [items, setItems] = useState([])
@@ -22,6 +22,7 @@ function ListNavigationGroup() {
     const [loading, setLoading] = useState(false)
     const [contentVisible, setContentVisible] = useState(false)
     const navigate = useNavigate();
+    const { canCreate, canUpdate, canDelete } = useMenuAccess('NavigationGroup')
     const typingTimeoutRef = useRef(null)
 
     useEffect(() => {
@@ -116,6 +117,7 @@ function ListNavigationGroup() {
         navigate(`/navigation-groups/detail-navigation-groups/${encryptingID}`)
     } 
 
+    if (!canUpdate){}
     const goToUpdate = async(id) => {
         const encryptingID = await encrypting(id)
         navigate(`/navigation-groups/update-navigation-groups/${encryptingID}`)
@@ -143,6 +145,8 @@ function ListNavigationGroup() {
                                     goToDetail={goToDetail}
                                     goToUpdate={goToUpdate}
                                     deleteItems={deleteItems}
+                                    canDelete={canDelete}
+                                    canUpdate={canUpdate}
                                     source={'group'}
                                     />
                                 )))
@@ -155,7 +159,7 @@ function ListNavigationGroup() {
                 </Transition>
                 {loading && <Loader Class={'mt-44'} />}
             </Block>
-            <FlyingButton goTo={'/navigation-groups/create-navigation-groups'} />
+            {canCreate && <FlyingButton goTo={'/navigation-groups/create-navigation-groups'} />}
         </Layout>
     )
 }

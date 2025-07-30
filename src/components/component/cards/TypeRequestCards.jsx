@@ -1,6 +1,6 @@
 import React, { forwardRef } from 'react'
 
-const TypeRequestCards = forwardRef(({item, goToDetail, goToUpdate, restoreItems, deleteItems, restore = false}, ref) => {
+const TypeRequestCards = forwardRef(({item, goToDetail, canUpdate, canDelete, goToUpdate, restoreItems, deleteItems, restore = false, canDelete, canUpdate}, ref) => {
 
 
     return (
@@ -21,28 +21,21 @@ const TypeRequestCards = forwardRef(({item, goToDetail, goToUpdate, restoreItems
             </div>
             <p className='text-center text-md pb-2'>{item.description}</p>
             <div className='flex py-2 mx-6 border-t'>
-              { !restore ?
-                <>
+                { canUpdate &&
                   <button
                       className="update_button bg-white rounded-md me-4 text-cyan-400 font-bold"
                       onClick={() => goToUpdate(item.id)}
                   >
                       Update
                   </button>
+                }
+                { canDelete &&
                   <button
                       onClick={() => deleteItems(item.id, item.name)}
                       className="delete_button bg-white rounded-md text-red-500 font-bold"
                   >
                       Delete
                   </button>
-                </>
-                :
-                  <button
-                        className="restore_button bg-white rounded-md me-4 text-cyan-400 font-bold"
-                        onClick={() => restoreItems(item.id, item.name)}
-                    >
-                        Restore
-                    </button>
                 }
             </div>
         </div>

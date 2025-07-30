@@ -2,7 +2,6 @@ import React, {useEffect, useState} from 'react'
 import api from '../../api/api';
 import { useNavigate } from 'react-router-dom';
 import { Page, Block } from 'framework7-react';
-import CustomNavbar from '../component/CustomNavbar';
 import SelectPaginate from '../component/SelectPaginate';
 import Select from 'react-select';
 import Back from '../component/Back';

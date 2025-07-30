@@ -9,10 +9,10 @@ import ScrollPagination from '../component/ScrollPagination'
 import Layout from '../component/Layout'
 import FlyingButton from '../component/FlyingButton'
 import SumberBarangCards from '../component/cards/SumberBarangCards'
-import RestoreButton from '../component/RestoreButton'
 import DataEmpty from '../component/DataEmpty'
 import { encrypting } from '../../helper/EncryptHelper'
 import Swal from 'sweetalert2'
+import useMenuAccess from '../../hooks/useMenuAccess'
 
   function SumberBarangList() {
     const [items, setItems] = useState([])
@@ -22,6 +22,7 @@ import Swal from 'sweetalert2'
     const [searchQuery, setSearchQuery] = useState('')
     const [contentVisible, setContentVisible] = useState(false)
     const typingTimeoutRef = useRef(null)
+    const { canCreate, canDelete, canUpdate } = useMenuAccess('SumberBarang')
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -142,6 +143,8 @@ import Swal from 'sweetalert2'
                                       goToDetail={goToDetail}
                                       deleteItems={deleteItems}
                                       goToUpdate={goToUpdate}
+                                      canDelete={canDelete}
+                                      canUpdate={canUpdate}
                                     />
                                   ))
                               }
@@ -152,7 +155,7 @@ import Swal from 'sweetalert2'
                   </Transition>
                   {loading && <Loader Class="mt-10" />}
           </Block>
-          <FlyingButton goTo={'/sumber-barang/create-sumber-barang'} />
+          { canCreate && <FlyingButton goTo={'/sumber-barang/create-sumber-barang'} />}
       </Layout>
     )
   }

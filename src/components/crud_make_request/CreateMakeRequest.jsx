@@ -9,6 +9,8 @@ import SelectPaginate from '../component/SelectPaginate'
 import ModalMR from '../component/modal/ModalMR'
 
 function CreateMakeRequest() {
+    const navigate = useNavigate()
+
     const [items, setItems] = useState({
         type_request: null,
         tanggal: '',
@@ -23,20 +25,6 @@ function CreateMakeRequest() {
 
     const [openModal, setOpenModal] = useState(false)
     const [disabled, setDisabled] = useState(false)
-    const navigate = useNavigate()
-
-    // const fetchItem = async () => {
-    //     try {
-    //         const response = await api.get(`/inventMakeRequest-detail/${decryptedId}`);
-    //         const data = response.data.data;
-    //         setItem({
-    //             type_request : data.type_request ? { value: data.jenis_barang?.id, label: data.jenis_barang?.name } : null,
-    //             kode_gudang : data.kode_gudang,
-    //         });
-    //     } catch (error) {
-            
-    //     } finally { setTimeout(() => setContentVisible(true), 50) }
-    // };
 
     const handleSubmit = async(e) =>{
         e.preventDefault();

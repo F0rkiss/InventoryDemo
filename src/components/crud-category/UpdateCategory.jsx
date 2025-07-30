@@ -8,15 +8,15 @@ import Layout from '../component/Layout'
 import { DecryptID } from '../../helper/EncryptHelper'
 import Swal from 'sweetalert2'
 
-
 function UpdateCategory() {
+    const navigate = useNavigate()
+
     const [items, setItems] = useState({
         name: '',
         description: ''
     })
     const [decryptedId, setDecryptedId] = useState('')
     const [disabled, setDisabled] = useState(false)
-    const navigate = useNavigate()
     const { id } = useParams()
 
     useEffect(() => {

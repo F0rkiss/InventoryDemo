@@ -83,7 +83,7 @@ function UpdateNavigationGroups() {
                 timer: 2000,
                 showConfirmButton: false,
             });
-            navigate('/navigations/list-navigations')
+            navigate('/navigation-groups/list-navigation-groups')
         } catch (error) {
             Swal.fire({
                 icon:'error',

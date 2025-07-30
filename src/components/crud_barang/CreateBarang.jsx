@@ -10,6 +10,8 @@ import SelectPaginate from '../component/SelectPaginate';
 import Swal from 'sweetalert2';
 
 function CreateBarang() { 
+    const navigate = useNavigate()
+
     const [newItem, setNewItem] = useState({
         name : '',
         kode_barang : '',
@@ -25,7 +27,6 @@ function CreateBarang() {
     
     const [disabled, setDisabled] = useState(false)
     const fileInputRef = useRef(null)
-    const navigate = useNavigate()
 
     const goHome = () =>{
         navigate('/barang/list-barang')

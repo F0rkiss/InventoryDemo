@@ -13,7 +13,7 @@ const CustomNavbar = ({title}) => {
       { openSidebar &&
         <CustomSidebar navOpen={openSidebar} setNavOpen={setOpenSidebar} />
       }
-      <div bgColor="white" className="flex justify-between h-16 items-center border-b-2 border-gray-400/20 !z-10">
+      <div className="flex bg-white justify-between h-16 items-center border-b-2 border-gray-400/20 !z-10">
           <div className="flex justify-between w-full">
               <span className="flex items-center ios-specific">
                 { role &&

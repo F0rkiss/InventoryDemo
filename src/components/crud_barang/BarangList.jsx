@@ -14,7 +14,7 @@ import DataEmpty from '../component/DataEmpty';
 import ModalBarang from '../component/modal/ModalBarang';
 import Swal from 'sweetalert2';
 import { encrypting } from '../../helper/EncryptHelper';
-
+import useMenuAccess from '../../hooks/useMenuAccess';
 
 function ItemList() {
   const [items, setItems] = useState([]);
@@ -27,6 +27,7 @@ function ItemList() {
   const [openModal, setOpenModal] = useState(false)
   const [empty, setEmpty] = useState(false)
   const navigate = useNavigate()
+  const { canCreate, canUpdate, canDelete } = useMenuAccess('Barang');
 
   useEffect(() => {
     fetchItems(); 
@@ -45,7 +46,7 @@ function ItemList() {
         setItems(data.data);
         setNextCursor(data.next_cursor);
     } catch (error) {
-      // console.log(error)
+      
     } finally {
       setLoading(false);
       setTimeout(() => setContentVisible(true), 100);
@@ -155,6 +156,8 @@ function ItemList() {
                         handleDetailClick={handleDetailClick}
                         handleDeleteClick={handleDeleteClick}
                         handleUpdateClick={handleUpdateClick}
+                        canDelete={canDelete}
+                        canUpdate={canUpdate}
                         key={item.id}
                       />
                     ))
@@ -164,7 +167,7 @@ function ItemList() {
             </Transition>
         {loading && <Loader Class="mt-20" />}
         { items.length <= 0 && !loading &&  <DataEmpty/>}
-        <FlyingButton goTo={'/barang/create-barang'}/>
+        {canCreate && <FlyingButton goTo={'/barang/create-barang'}/>}
       </Block>
       {
         openModal && 

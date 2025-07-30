@@ -3,14 +3,11 @@ import api from '../../api/api';
 import { useNavigate } from 'react-router-dom';
 import { Page, Block } from 'framework7-react';
 import { useParams } from 'react-router-dom';
-import CustomNavbar from '../component/CustomNavbar';
-import SelectPaginate from '../component/SelectPaginate';
 import Select from 'react-select';
 import Back from '../component/Back';
 import Layout from '../component/Layout';
 import { DecryptID } from '../../helper/EncryptHelper';
 import {isDynamic, findisDynamicOption} from '../../helper/FindOptions'
-
 
 function UpdateJenisMemo() {
     const [items, setItems] = useState({

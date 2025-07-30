@@ -50,13 +50,6 @@ function DetailItem() {
     }
   };
 
-  // const handleInputChange = (field) => (e) => {
-  //   setItemHistories({ ...itemHistories, [field]: e.target.value });
-  // };
-
-  // const handleSelectChange = (field) => (selectedOption) => {
-  //     setItemHistories({ ...itemHistories, [field]: selectedOption });
-  // };
 
   return (
     <Layout title={'Detail Barang'}>

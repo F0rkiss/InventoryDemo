@@ -14,6 +14,7 @@ const PathMenu = [
     { menu: "Categories", path: "/category/list-category" },
     { menu: "User", path: "/user/list-user" },
     { menu: "MakeRequest", path: "/make-request/list-make-request" },
+    { menu: "TypeRequest", path: "/type-request/list-type-request" },
     { menu: "JenisMemo", path: "/jenismemo/list-jenismemo" },
     { menu: "NavigationGroup", path: "/navigation-groups/list-navigation-groups" },
     { menu: "NavigationMenu", path: "/navigation-menu/list-navigation-menu" },
