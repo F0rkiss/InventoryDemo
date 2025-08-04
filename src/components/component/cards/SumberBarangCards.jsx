@@ -2,44 +2,62 @@ import React, { forwardRef } from 'react'
 
 const SumberBarangCards = forwardRef(({item, goToDetail, goToUpdate, restoreItems, deleteItems, restore = false, canDelete, canUpdate}, ref) => {
 
+    const handleUpdateClick = (id) => {
+        goToUpdate(id);
+    };
+
+    const handleDeleteClick = (id) => {
+        deleteItems(id, item.name);
+    };
 
     return (
-        <div className='rounded-lg bg-white border mb-2' ref={ref}>
-            <div className='grid grid-cols-3'>
-                <div className='col-start-2 place-items-center py-2'>
-                    <p className='text-center font-bold text-xl'>{item.name || item.data?.id?.name}</p>
-                </div>
-                {
-                    !restore && 
-                    <div className='col-start-3 justify-self-end py-1'>
-                        <button className='w-8 h-9' onClick={() => goToDetail(item.id)}>
-                            <i className="bx bx-dots-vertical-rounded text-2xl max-xs:text-xl" />
-                        </button> 
-                    </div>
-                }
+        <div className='rounded-lg bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200 p-4 flex flex-col justify-between min-h-[200px]' ref={ref}>
+            {/* Header Section */}
+            <div className='flex justify-between items-center mb-3 border-b flex flex-col items-center justify-center py-3 min-h-[64px] relative'>
+                <h3 className='font-bold text-xl capitalize text-center leading-tight'>
+                    {item.name || item.data?.id?.name}
+                </h3>
+                {!restore && (
+                    <button
+                        className='absolute right-2 top-2 w-8 h-9'
+                        onClick={() => goToDetail(item.id)}
+                    >
+                        <i className="bx bx-dots-vertical-rounded text-lg text-gray-600" />
+                    </button>
+                )}
             </div>
-            <p className='text-center text-md pb-2'>{item.description}</p>
-            <hr  />
-            <div className='flex py-2 mx-6'>
-                { canUpdate &&
+
+            {/* Content Section */}
+            <div className='flex-1 space-y-3'>
+                <div className="flex justify-between items-start">
+                    <span className="text-sm font-medium text-gray-600">Description:</span>
+                    <p className="text-sm text-gray-800 text-right max-w-[60%] break-words">
+                        {item.description || "N/A"}
+                    </p>
+                </div>
+            </div>
+
+            {/* Action Buttons Section */}
+            <div className='flex justify-end gap-2 pt-3 mt-3 border-t border-gray-100'>
+                {canUpdate && (
                     <button
-                    className="update_button text-cyan-400 bg-white flex justify-center h items-center py-3"
-                    onClick={() => handleUpdateClick(item.id)}
+                        className="px-3 py-1.5 bg-cyan-50 hover:bg-cyan-100 text-cyan-600 font-medium rounded-md transition-colors duration-200 text-sm"
+                        onClick={() => handleUpdateClick(item.id)}
                     >
-                    <p>Update</p>
+                        Update
                     </button>
-                }
-                { canDelete &&
+                )}
+                {canDelete && (
                     <button
-                    className="delete_button text-red-500 bg-white flex justify-center items-center py-3"
-                    onClick={() => handleDeleteClick(item.id)}
+                        className="px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 font-medium rounded-md transition-colors duration-200 text-sm"
+                        onClick={() => handleDeleteClick(item.id)}
                     >
-                    <p>Delete</p>
+                        Delete
                     </button>
-                }
+                )}
             </div>
         </div>
-  )
+    )
 })
 
 export default SumberBarangCards;

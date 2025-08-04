@@ -41,10 +41,6 @@ const RestoreCategory = lazy(() => import('./crud-category/RestoreCategory.jsx')
 
 const Dashboard = lazy(() => import('./dashboard/Dashboard.jsx'));
 
-const ListDivisi = lazy(() => import('./crud_divisi/ListDivisi.jsx'));
-const UpdateDivisi = lazy(() => import('./crud_divisi/UpdateDivisi.jsx'));
-const CreateDivisi = lazy(() => import('./crud_divisi/CreateDivisi.jsx'));
-const RestoreDivisi = lazy(() => import('./crud_divisi/RestoreDivisi.jsx'))
 
 const UserList = lazy(() => import('./crud_user/UserList.jsx'));
 const DetailUser = lazy(() => import('./crud_user/DetailUser.jsx'));
@@ -71,24 +67,18 @@ const DetailNavigationGroup = lazy(() => import('./crud_navigations/crud_navigat
 
 const NavigationMenuList = lazy(() => import('./crud_navigations/crud_navigation_menu/ListNavigationMenu.jsx'));
 
-const ListDepartment = lazy(() => import('./crud_department/ListDepartment.jsx'));
-const UpdateDepartment = lazy(() => import('./crud_department/UpdateDepartment.jsx'));
-const CreateDepartment = lazy(() => import('./crud_department/CreateDepartment.jsx'));
-const RestoreDepartment = lazy(() => import('./crud_department/RestoreDepartment.jsx'))
-
-// const MrList = lazy(() => import('./crud-mr/MrList.jsx'));
-// const DoneMR = lazy(() => import('./crud-mr/DoneMR.jsx'));
-// const CreateMR = lazy(() => import('./crud-mr/CreateMR.jsx'));
-// const UpdateMR = lazy(() => import('./crud-mr/UpdateMR.jsx'))
-// const PersonalMR = lazy(() => import('./crud-mr/PersonalMR.jsx'))
-// const RestoreMR = lazy(() => import('./crud-mr/RestoreMR.jsx'))
-// const MRHistory = lazy(() => import('./crud-mr/MRHistory.jsx'))
-// const DetailMR = lazy(() => import('./crud-mr/DetailMR.jsx'))
-
 const ListTypeRequest = lazy(() => import('./crud_type_request/ListTypeRequest.jsx'))
 const DetailTypeRequest = lazy(() => import('./crud_type_request/DetailTypeRequest.jsx'))
 const UpdateTypeRequest = lazy(() => import('./crud_type_request/UpdateTypeRequest.jsx'))
 const CreateTypeRequest = lazy(() => import('./crud_type_request/CreateTypeRequest.jsx'))
+
+const ListApprovalStep = lazy(() => import('./crud_approval_step/ApprovalStepList.jsx'))
+const DetailApprovalStep = lazy(() => import('./crud_approval_step/DetailApprovalStep.jsx'))
+const UpdateApprovalStep = lazy(() => import('./crud_approval_step/UpdateApprovalStep.jsx'))
+const CreateApprovalStep = lazy(() => import('./crud_approval_step/CreateApprovalStep.jsx'))
+
+const ListPurchaseRequest = lazy(() => import('./crud_purchase_request/ListPurchaseRequest.jsx'))
+const CreatePurchaseRequest = lazy(() => import('./crud_purchase_request/CreatePurchaseRequest.jsx'))
 
 const ListMakeRequest = lazy(() => import('./crud_make_request/ListMakeRequest.jsx'))
 const DetailMakeRequest = lazy(() => import('./crud_make_request/DetailMakeRequest.jsx'))
@@ -168,6 +158,14 @@ const MyApp = () => {
                   <Route path='/type-request/detail-type-request/:id' element={<DetailTypeRequest />} />
                   <Route path='/type-request/update-type-request/:id' element={<UpdateTypeRequest />} />
                   <Route path='/type-request/create-type-request' element={<CreateTypeRequest />} />
+
+                  <Route path='/approval-step/list-approval-step' element={<ListApprovalStep />} />
+                  <Route path='/approval-step/detail-approval-step/:id' element={<DetailApprovalStep />} />
+                  <Route path='/approval-step/update-approval-step/:id' element={<UpdateApprovalStep />} />
+                  <Route path='/approval-step/create-approval-step' element={<CreateApprovalStep />} />
+
+                  <Route path='/purchase-request/create-purchase-request' element={<CreatePurchaseRequest />} />
+                  <Route path='/purchase-request/list-purchase-request' element={<ListPurchaseRequest />} />
 
                   <Route path='/make-request/list-make-request' element={<ListMakeRequest />} />
                   <Route path='/make-request/detail-make-request/:id' element={<DetailMakeRequest />} />

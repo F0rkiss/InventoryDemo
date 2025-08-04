@@ -67,34 +67,38 @@ const ApprovalActions = ({
         <div className={`flex flex-col gap-2 px-4 py-3 bg-gray-50 ${className}`}>
             {/* Reason Input Field */}
             {showReasonField && (
-                <div className="mb-3">
-                    <textarea
-                        className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-red-500 focus:border-red-500"
-                        placeholder="Masukkan alasan penolakan..."
-                        value={reason}
-                        onChange={(e) => setReason(e.target.value)}
-                        rows="3"
-                    />
-                    <div className="flex gap-2 mt-2">
-                        <button
-                            className="bg-gray-500 hover:bg-gray-600 text-white font-medium py-2 px-4 rounded-md text-sm transition-colors duration-200"
-                            onClick={() => {
-                                setShowReasonField(false)
-                                setReason('')
-                            }}
-                        >
-                            Batal
-                        </button>
-                        <button
-                            className="bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-md text-sm transition-colors duration-200 disabled:opacity-50"
-                            onClick={handleReasonSubmit}
-                            disabled={!reason.trim()}
-                        >
-                            Kirim
-                        </button>
-                    </div>
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+                <div className={`flex flex-col gap-2 px-4 py-3 bg-gray-50 rounded-md shadow-lg w-full max-w-md ${className}`}>
+                {/* Reason Input Field */}
+                <textarea
+                    className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                    placeholder="Masukkan alasan penolakan..."
+                    value={reason}
+                    onChange={(e) => setReason(e.target.value)}
+                    rows="3"
+                />
+                <div className="flex gap-2 mt-2 justify-end">
+                    <button
+                    className="bg-gray-500 hover:bg-gray-600 text-white font-medium py-2 px-4 rounded-md text-sm transition-colors duration-200"
+                    onClick={() => {
+                        setShowReasonField(false)
+                        setReason('')
+                    }}
+                    >
+                    Batal
+                    </button>
+                    <button
+                    className="bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-md text-sm transition-colors duration-200 disabled:opacity-50"
+                    onClick={handleReasonSubmit}
+                    disabled={!reason.trim()}
+                    >
+                    Kirim
+                    </button>
                 </div>
+                </div>
+            </div>
             )}
+
 
             {/* Action Buttons */}
             <div className="flex gap-2">

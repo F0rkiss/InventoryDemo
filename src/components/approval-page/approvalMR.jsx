@@ -199,9 +199,6 @@ function DetailMakeRequest() {
                         className="max-w-2xl mx-auto"
                         disabled={actionLoading}
                     />
-                    {message && (
-                        <div className={`mt-4 text-center font-semibold ${message.includes('berhasil') ? 'text-green-600' : 'text-red-600'}`}>{message}</div>
-                    )}
                 </div>
                 </Transition>
         </Block>
