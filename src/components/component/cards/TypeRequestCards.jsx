@@ -4,8 +4,8 @@ const TypeRequestCards = forwardRef(({item, goToDetail, canUpdate, canDelete, go
 
 
     return (
-        <div className='rounded-lg bg-white border mb-2 p-2 flex flex-col justify-between' ref={ref}>
-            <div className='grid grid-cols-3'>
+        <div className='rounded-lg bg-white border mb-2 flex flex-col justify-between' ref={ref}>
+            <div className='grid grid-cols-3 border-b p-2'>
                 <div className='col-start-2 place-items-center py-2'>
                     <p className='text-center font-bold text-xl'>{item.name}</p>
                     <p className='text-center font-regular italic text-md text-gray-400'>{item.jenis}</p>
@@ -19,8 +19,8 @@ const TypeRequestCards = forwardRef(({item, goToDetail, canUpdate, canDelete, go
                     </div>
                 }
             </div>
-            <p className='text-center text-md pb-2'>{item.description}</p>
-            <div className='flex py-2 mx-6 border-t'>
+            <p className='text-center text-md p-2'>{item.description}</p>
+            <div className='flex py-2 mx-6'>
                 { canUpdate &&
                   <button
                       className="update_button bg-white rounded-md me-4 text-cyan-400 font-bold"

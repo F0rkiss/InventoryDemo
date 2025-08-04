@@ -3,11 +3,8 @@ import Back from '../component/Back'
 import { Page, Block } from 'framework7-react';
 import api from '../../api/api';
 import { replace, useNavigate, useParams } from 'react-router-dom';
-import Loader from '../component/Loader';
 import Layout from '../component/Layout';
-import { useAuth } from '../../auth/AuthContext';
 import { DecryptID, encrypting } from '../../helper/EncryptHelper';
-import Swal from 'sweetalert2';
 import Transition from '../component/Transition';
 
 function DetailItem() {
@@ -20,7 +17,6 @@ function DetailItem() {
   const isAsset = item.is_asset
   const apiUrl = import.meta.env.VITE_URL
   
-  // State Untuk Mengecek Apakah Barang Ini Punya Dia
   useEffect(() => {
     const decryptedId = DecryptID(id)
     setDecryptedId(decryptedId)
@@ -50,53 +46,48 @@ function DetailItem() {
     }
   };
 
-
   return (
     <Layout title={'Detail Barang'}>
       <Block>
-        <Back goHome={() => navigate('/barang/list-barang')}/>
-            d<Transition contentVisible={contentVisible}>
+        <div className='px-4'>
+          <Back goHome={() => navigate('/barang/list-barang')}/>
+            <Transition contentVisible={contentVisible}>
               <div className="bg-white font-inter py-5 mt-3 rounded-md w-full shadow-sm">
-                <div className="flex flex-col mx-6"> 
-                  { isAsset ? 
-                    <p className='font-semibold'>Aset</p>
-                    :
-                    <p className='font-semibold'>Non Aset</p>
-                  }
-                  <h1 className="font-bold capitalize text-xl text-ellipsis whitespace-nowrap overflow-hidden text-center">
-                    {item.name}
-                  </h1>
-                  <div className="flex justify-between">
-                    Kode Barang: <p>{item.kode_barang}</p>
+                <div className="mx-6 space-y-4">
+                  <p className="font-semibold">{isAsset ? 'Aset' : 'Non Aset'}</p>
+                  <h1 className="font-bold capitalize text-xl">{item.name}</h1>
+                  <div className="grid grid-cols-2 gap-y-2 border-t pt-4 text-sm">
+                    <div className="font-medium text-gray-700">Kode Barang</div>
+                    <div className="text-gray-800 text-right">{item.kode_barang}</div>
+
+                    <div className="font-medium text-gray-700">Kode Gudang</div>
+                    <div className="text-gray-800">{item.kode_gudang}</div>
+
+                    <div className="font-medium text-gray-700">Satuan</div>
+                    <div className="text-gray-800">{item.satuan}</div>
+
+                    <div className="font-medium text-gray-700">Sumber Barang</div>
+                    <div className="text-gray-800">{item.sumber_barang?.name || '-'}</div>
+
+                    <div className="font-medium text-gray-700">Jenis Barang</div>
+                    <div className="text-gray-800">{item.jenis_barang?.name || '-'}</div>
+
+                    <div className="font-medium text-gray-700">Kategori</div>
+                    <div className="text-gray-800">{item.category_barang?.name || '-'}</div>
+
+                    <div className="font-medium text-gray-700">Tingkat Kebutuhan</div>
+                    <div className="text-gray-800">{item.tingkat_kebutuhan?.name || '-'}</div>
                   </div>
-                  <div className="flex justify-between">
-                    Kode Gudang: <p>{item.kode_gudang}</p>
-                  </div>
-                  <div className="flex justify-between">
-                    Satuan: <p>{item.satuan}</p>
-                  </div>
-                  <div className="flex justify-between">
-                    Sumber barang: <p>{item.sumber_barang?.name}</p>
-                  </div>
-                  <div className="flex justify-between">
-                    Jenis barang: <p>{item.jenis_barang?.name}</p>
-                  </div>
-                  <div className="flex justify-between">
-                    Kategori: <p>{item.category_barang?.name}</p>
-                  </div>
-                  <div className="flex justify-between">
-                    Tingkat kebutuhan: <p>{item.tingkat_kebutuhan?.name}</p>
-                  </div>
-                  <div className="w-full place-items-center self-center sm:self-auto">
-                    { item.image &&
-                      <img src={`${apiUrl}${item.image}`} alt="item image" className='max-w-lg'/>
-                    }
-                  </div>
+
+                  {item.image && (
+                    <div className="flex justify-center mt-6">
+                      <img src={`${apiUrl}${item.image}`} alt="item image" className="max-w-lg w-full rounded shadow" />
+                    </div>
+                  )}
                 </div>
               </div>
             </Transition>
-          {/* ) */}
-        {/* } */}
+        </div>
       </Block>
     </Layout>
   );

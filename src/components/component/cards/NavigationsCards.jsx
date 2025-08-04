@@ -56,26 +56,24 @@ const NavigationGroupCards = forwardRef(({item, deleteItems, goToDetail, goToUpd
                         </div>
                         
                     </div>
-                    { canUpdate || canDelete &&
-                        <div className='flex justify-around p-2 border-t font-bold max-xs:text-xs'>
-                            { canUpdate &&
-                                <button
-                                className="update_button text-cyan-400 bg-white flex justify-center h items-center py-3"
-                                onClick={() => handleUpdateClick(item.id)}
-                                >
-                                <p>Update</p>
-                                </button>
-                            }
-                            { canDelete &&
-                                <button
-                                className="delete_button text-red-500 bg-white flex justify-center items-center py-3"
-                                onClick={() => handleDeleteClick(item.id)}
-                                >
-                                <p>Delete</p>
-                                </button>
-                            }
-                        </div>
-                    }
+                    <div className='flex justify-around p-2 border-t font-bold max-xs:text-xs'>
+                        { canUpdate &&
+                            <button
+                            className="update_button text-cyan-400 bg-white flex justify-center items-center py-2"
+                            onClick={() => handleUpdateClick(item.id)}
+                            >
+                            <p>Update</p>
+                            </button>
+                        }
+                        { canDelete &&
+                            <button
+                            className="delete_button text-red-500 bg-white flex justify-center items-center py-2"
+                            onClick={() => handleDeleteClick(item.id)}
+                            >
+                            <p>Delete</p>
+                            </button>
+                        }
+                    </div>
                 </div>
                 :
                 <div className='bg-white mt-3 border rounded-lg overflow-hidden' ref={ref}>

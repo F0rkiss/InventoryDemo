@@ -99,9 +99,9 @@ const CustomSidebar = ({ showProfile = true, navOpen, setNavOpen }) => {
                 </div>
                 {   showProfile && (
                     <div className="mx-2 my-3 bg-coklat-mi rounded-md">
-                        <button className="flex bg-coklat-mi rounded-md items-center ios-specific py-2 cursor-pointer text-white w-full justify-between" onClick={toggleAccordion}>
-                            <div className='flex mt-1 max-w-40'>
-                                <img className="ios-image ms-3 translate-y-1" style={{ maxWidth: '40px', maxHeight: '41px' }} src={userIcon} alt="Profile" />
+                        <button className="flex rounded-md items-center py-3 pb-4 px-3 text-white w-full justify-between" onClick={toggleAccordion}>
+                            <div className='flex max-w-40'>
+                                <i className='bx bxs-user-circle text-5xl'></i>
                                 <div className="name flex flex-col ms-3 translate-y">
                                     <p className="self-start font-inter font-bold text-base capitalize text-ellipsis whitespace-nowrap overflow-hidden max-w-40">{name}</p>
                                     <p className="self-start font-inter font-normal text-sm text-ellipsis whitespace-nowrap overflow-hidden max-w-40">{email}</p>
@@ -109,17 +109,10 @@ const CustomSidebar = ({ showProfile = true, navOpen, setNavOpen }) => {
                             </div>
                             <i className={`bx bx-chevron-${isOpenProfile ? 'up' : 'down'} text-4xl text-button-mi ios-chevron me-1`}></i>
                         </button>
-                        <hr className={`border-gray-400 transition-opacity duration-700 mb-2 ${isOpenProfile ? 'opacity-100' : 'opacity-0'}`}
-                            onTransitionEnd={() => { if (!isOpenProfile) setIsOpenProfile(null); }}
-                        />
                         <div className={`transition-max-height duration-1000 ease-in-out overflow-hidden ${isOpenProfile ? 'max-h-96' : 'max-h-0'}`}>
-                            <div className={`bg-coklat-mi rounded-md mt-2 pb-6  transition-opacity duration-300 ${isOpenProfile ? 'opacity-100' : 'opacity-0'}`}>
-                                <button className={`ms-3 text-white flex ${role === 'user' && 'hidden'}`} onClick={() => handleNavigation('/make-request/personal-make-request')}>
-                                    <i className="bx bx-message-add text-2xl me-3 mb-2" />
-                                    <span className="text-lg leading-8">Make Request Anda</span>
-                                </button>
-                                <button className="ms-3 text-white flex" onClick={() => handleNavigation('/edit-profile')}>
-                                    <i className="bx bx-edit-alt text-2xl me-3 mb-2" />
+                            <div className={`bg-coklat-mi rounded-md mt-2 pb-6 transition-opacity duration-300 ${isOpenProfile ? 'opacity-100' : 'opacity-0'}`}>
+                                <button className="ms-3 mb-2 text-white flex " onClick={() => handleNavigation('/edit-profile')}>
+                                    <i className="bx bxs-user-detail text-2xl me-3" />
                                     <span className="text-lg leading-8">Profile</span>
                                 </button>
                                 <button className="ms-3 text-white flex" onClick={logout}>
