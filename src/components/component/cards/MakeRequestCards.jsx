@@ -5,7 +5,7 @@ const MakeRequestCards = forwardRef(({item, goToDetail, canUpdate, goToUpdate, r
 
 
     return (
-        <div className='rounded-lg bg-white border mb-2 flex flex-col justify-between' ref={ref}>
+        <div className='rounded-lg bg-white border mb-2 flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow duration-200' ref={ref}>
             <div className='border-b flex flex-col items-center justify-center py-3 min-h-[64px] relative'>
                 <p className='font-bold text-xl capitalize text-center leading-tight'>
                     {item.EmpName}
@@ -16,10 +16,10 @@ const MakeRequestCards = forwardRef(({item, goToDetail, canUpdate, goToUpdate, r
                 {
                     !restore && (
                         <button
-                        className='absolute right-2 top-2 w-8 h-9'
+                        className='absolute detail-button'
                         onClick={() => goToDetail(item.id)}
                         >
-                        <i className="bx bx-dots-vertical-rounded text-2xl max-xs:text-xl" />
+                        <i className="bx bx-dots-vertical-rounded text-xl max-xs:text-xl" />
                         </button>
                     )
                 }
@@ -44,8 +44,9 @@ const MakeRequestCards = forwardRef(({item, goToDetail, canUpdate, goToUpdate, r
             <div className='flex py-2 px-2'>
                 { canUpdate &&
                     <button
-                        className="bg-cyan-50 hover:bg-cyan-100/70 rounded-md text-cyan-500 font-semibold py-1"
+                        className="update-button py-1"
                         onClick={() => goToUpdate(item.id)}
+                        title="View Details"
                     >
                         Update
                     </button>

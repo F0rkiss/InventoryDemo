@@ -109,7 +109,7 @@ import useMenuAccess from '../../hooks/useMenuAccess'
           />
           <Block>
               <div className='ms-3 mb-6 flex justify-between'>
-                  <p className='text-xl font-bold capitalize'>Data Make Request</p>
+                  <p className='text-xl font-semibold capitalize'>Data Make Request</p>
               </div>
                   <Transition contentVisible={contentVisible}>
                     <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>

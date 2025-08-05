@@ -99,22 +99,22 @@ function DetailMakeRequest() {
   }
   
   return (
-    <Layout title={'Make Request Detail'}>
+    <Layout title={'Detail Make Request'}>
       <Block>
         <div className="px-4">
-          <div className="flex items-center justify-between mb-4">
-            <Back goHome={() => navigate('/make-request/list-make-request')} />
-              {
-                role === 'admin' ? 
-                (
-                  <p>{item.is_full_approval}</p>
-                ) : (
-                  <p className={`${item.can_be_deleted ? 'text-amber-700 bg-amber-200 py-2 px-2' : 'text-green-700 bg-green-200 py-2 px-2'} rounded-md`}>{item.is_full_approval}</p>
-                )
-              }
-          </div>
           {/* Main Info & Detail */}
             <Transition contentVisible={contentVisible}>
+            <div className="flex items-center justify-between mb-4">
+              <Back goHome={() => navigate('/make-request/list-make-request')} />
+                {
+                  role === 'admin' ? 
+                  (
+                    <p className='rounded-md bg-gray-300 p-2 text-gray-700'>{item.is_full_approval}</p>
+                  ) : (
+                    <p className={`${item.can_be_deleted ? 'text-amber-700 bg-amber-200 py-2 px-2' : 'text-green-700 bg-green-200 py-2 px-2'} rounded-md`}>{item.is_full_approval}</p>
+                  )
+                }
+            </div>
               <>
               <div className="flex flex-col lg:flex-row gap-4 mt-3">
                 <div className="bg-white border rounded-md p-6 flex-1 min-h-[200px]">
