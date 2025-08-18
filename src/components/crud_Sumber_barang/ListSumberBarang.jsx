@@ -123,39 +123,38 @@ import useMenuAccess from '../../hooks/useMenuAccess'
 
     return (
       <Layout title={'List Sumber Barang'}>
-          <SearchBar   
-            values={searchQuery}
-            onChange={handleSearchChange}
-            disable={loading}
-          />
           <Block>
-              <div className='ms-3 mb-6 flex justify-between'>
-                  <p className='text-xl font-bold capitalize'>Data Sumber Barang</p>
-                  {/* <RestoreButton goTo={'/category/restore-category'} /> */}
-              </div>
-                  <Transition contentVisible={contentVisible}>
-                          <ScrollPagination fetchMoreItems={fetchMoreItems} loading={loading} nextCursor={nextCursor}>
-                              <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
-                              {
-                                  (items || []).map((item) => (
-                                      <SumberBarangCards
-                                      key={item.id}
-                                      item={item}
-                                      goToDetail={goToDetail}
-                                      deleteItems={deleteItems}
-                                      goToUpdate={goToUpdate}
-                                      canDelete={canDelete}
-                                      canUpdate={canUpdate}
-                                    />
-                                  ))
-                              }
-                              </div>
-                          </ScrollPagination>
-                          {
-                            items.length <= 0 && !loading && <DataEmpty/>
-                          }
-                  </Transition>
-                  {loading && <Loader Class="mt-10" />}
+            <div className='ms-3 mb-4 flex items-center justify-between'>
+                <p className='lg:text-3xl text-2xl font-semibold capitalize'>Sumber Barang List</p>
+                <SearchBar
+                    onChange={handleSearchChange}
+                    disable={loading}
+                    values={searchQuery}
+                />
+            </div>
+            <Transition contentVisible={contentVisible}>
+                    <ScrollPagination fetchMoreItems={fetchMoreItems} loading={loading} nextCursor={nextCursor}>
+                        <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
+                        {
+                            (items || []).map((item) => (
+                                <SumberBarangCards
+                                key={item.id}
+                                item={item}
+                                goToDetail={goToDetail}
+                                deleteItems={deleteItems}
+                                goToUpdate={goToUpdate}
+                                canDelete={canDelete}
+                                canUpdate={canUpdate}
+                              />
+                            ))
+                        }
+                        </div>
+                    </ScrollPagination>
+                    {
+                      items.length <= 0 && !loading && <DataEmpty/>
+                    }
+            </Transition>
+            { loading && <Loader Class="mt-10" /> }
           </Block>
           { canCreate && <FlyingButton goTo={'/sumber-barang/create-sumber-barang'} />}
       </Layout>

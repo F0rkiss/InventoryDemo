@@ -69,7 +69,7 @@ function CreateRole() {
         <Layout title={'Create role'}>
             <Block>
                 <Back goHome={() => navigate('/role/list-role')}/>
-                <div className='bg-white rounded shadow-sm p-3'>
+                <div className='bg-white rounded-lg shadow-sm p-5'>
                     <form onSubmit={handleSubmit}>
                         <div className="mb-5">
                             <label>Nama:</label>

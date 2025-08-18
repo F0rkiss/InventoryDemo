@@ -11,8 +11,8 @@ import Swal from 'sweetalert2'
 import Layout from '../component/Layout'
 import { encrypting } from '../../helper/EncryptHelper'
 import JenisMemoCards from '../component/cards/JenisMemoCards'
-import RestoreButton from '../component/RestoreButton'
 import DataEmpty from '../component/DataEmpty'
+import useMenuAccess from '../../hooks/useMenuAccess'
 
 function JenisMemoList() {
     const [items, setItems] = useState([])
@@ -22,6 +22,7 @@ function JenisMemoList() {
     const [loading, setLoading] = useState(false)
     const [contentVisible, setContentVisible] = useState(false)
     const navigate = useNavigate();
+    const { canCreate, canUpdate, canDelete } = useMenuAccess('JenisMemo')
     const typingTimeoutRef = useRef(null)
 
     useEffect(() => {
@@ -122,15 +123,15 @@ function JenisMemoList() {
 
     return (
         <Layout title={'List Jenis Memo'}>
-            <SearchBar
-                onChange={handleSearchChange}
-                disable={loading}
-                values={searchQuery}
-            />
             <Block>
-                <div className='ms-3 mb-6 flex justify-between'>
-                    <p className='text-xl font-semibold capitalize'>Data Jenis Memo</p>
-                </div>                
+                <div className='ms-3 mb-4 flex items-center justify-between'>
+                    <p className='lg:text-3xl text-2xl font-semibold capitalize'>Jenis Memo List</p>
+                    <SearchBar
+                        onChange={handleSearchChange}
+                        disable={loading}
+                        values={searchQuery}
+                    />
+              </div>
                 <Transition contentVisible={contentVisible}>
                     <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
                         <ScrollPagination fetchMoreItems={fetchMoreItems} loading={loading} nextCursor={nextCursor}>
@@ -141,6 +142,8 @@ function JenisMemoList() {
                                     item={item}
                                     goToUpdate={goToUpdate}
                                     deleteItems={deleteItems}
+                                    canUpdate={canUpdate}
+                                    canDelete={canDelete}
                                     />
                                 )))
                             }

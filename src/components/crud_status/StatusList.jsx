@@ -11,8 +11,8 @@ import Swal from 'sweetalert2'
 import Layout from '../component/Layout'
 import { encrypting } from '../../helper/EncryptHelper'
 import StatusCards from '../component/cards/StatusCards'
-import RestoreButton from '../component/RestoreButton'
 import DataEmpty from '../component/DataEmpty'
+import useMenuAccess from '../../hooks/useMenuAccess'
 
 function StatusList() {
     const [items, setItems] = useState([])
@@ -22,6 +22,7 @@ function StatusList() {
     const [loading, setLoading] = useState(false)
     const [contentVisible, setContentVisible] = useState(false)
     const navigate = useNavigate();
+    const { canCreate, canUpdate, canDelete } = useMenuAccess('Status')
     const typingTimeoutRef = useRef(null)
 
     useEffect(() => {
@@ -112,25 +113,25 @@ function StatusList() {
 
     const goToDetail = async (id) => {
         const encryptingID = await encrypting(id)
-        navigate(`/Status/detail-Status/${encryptingID}`)
+        navigate(`/status/detail-status/${encryptingID}`)
     } 
 
     const goToUpdate = async(id) => {
         const encryptingID = await encrypting(id)
-        navigate(`/Status/update-Status/${encryptingID}`)
+        navigate(`/status/update-status/${encryptingID}`)
     }
 
     return (
         <Layout title={'List Status'}>
-            <SearchBar
-                onChange={handleSearchChange}
-                disable={loading}
-                values={searchQuery}
-            />
             <Block>
-                <div className='ms-3 mb-6 flex justify-between'>
-                    <p className='text-xl font-semibold capitalize'>Data Status</p>
-                </div>                
+                <div className='ms-3 mb-4 flex items-center justify-between'>
+                    <p className='lg:text-3xl text-2xl font-semibold capitalize'>Status List</p>
+                    <SearchBar
+                        onChange={handleSearchChange}
+                        disable={loading}
+                        values={searchQuery}
+                    />
+                </div>              
                 <Transition contentVisible={contentVisible}>
                     <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
                         <ScrollPagination fetchMoreItems={fetchMoreItems} loading={loading} nextCursor={nextCursor}>
@@ -141,6 +142,9 @@ function StatusList() {
                                     item={item}
                                     goToUpdate={goToUpdate}
                                     deleteItems={deleteItems}
+                                    canUpdate={canUpdate}
+                                    canDelete={canDelete}
+                                    goToDetail={goToDetail}
                                     />
                                 )))
                             }
@@ -152,7 +156,7 @@ function StatusList() {
                 </Transition>
                 {loading && <Loader Class={'mt-44'} />}
             </Block>
-            <FlyingButton goTo={'/status/create-status'} />
+            { canCreate && <FlyingButton goTo={'/status/create-status'} />}
         </Layout>
     )
 }

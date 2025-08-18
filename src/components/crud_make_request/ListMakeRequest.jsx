@@ -102,36 +102,36 @@ import useMenuAccess from '../../hooks/useMenuAccess'
 
     return (
       <Layout title={'List Make Request'}>
-          <SearchBar   
-            values={searchQuery}
-            onChange={handleSearchChange}
-            disable={loading}
-          />
           <Block>
-              <div className='ms-3 mb-6 flex justify-between'>
-                  <p className='text-xl font-semibold capitalize'>Data Make Request</p>
+            <div className='ms-3 mb-4 flex items-center justify-between'>
+              <p className='lg:text-3xl text-2xl font-semibold capitalize'>Make Request List</p>
+              <SearchBar
+                  onChange={handleSearchChange}
+                  disable={loading}
+                  values={searchQuery}
+              />
+            </div>
+            <Transition contentVisible={contentVisible}>
+              <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
+                <ScrollPagination fetchMoreItems={fetchMoreItems} loading={loading} nextCursor={nextCursor}>
+                    {
+                      ( items.map((item) => (
+                          <MakeRequestCards
+                          key={item.id}
+                          item={item}
+                          goToDetail={goToDetail}
+                          goToUpdate={goToUpdate}
+                          canUpdate={canUpdate}
+                          />
+                      )))
+                    }
+                </ScrollPagination>
               </div>
-                  <Transition contentVisible={contentVisible}>
-                    <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
-                      <ScrollPagination fetchMoreItems={fetchMoreItems} loading={loading} nextCursor={nextCursor}>
-                          {
-                            ( items.map((item) => (
-                                <MakeRequestCards
-                                key={item.id}
-                                item={item}
-                                goToDetail={goToDetail}
-                                goToUpdate={goToUpdate}
-                                canUpdate={canUpdate}
-                                />
-                            )))
-                          }
-                      </ScrollPagination>
-                    </div>
-                  </Transition>
-                  {
-                    items.length === 0 && !loading && contentVisible && <DataEmpty/>
-                  }
-                  {loading && <Loader Class="mt-44" />}
+            </Transition>
+            {
+              items.length === 0 && !loading && contentVisible && <DataEmpty/>
+            }
+            {loading && <Loader Class="mt-44" />}
           </Block>
           { canCreate && <FlyingButton goTo={'/make-request/create-make-request'} />}
       </Layout>

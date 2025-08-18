@@ -123,14 +123,14 @@ function UserList() {
 
     return (
         <Layout title={'List User'}>
-            <SearchBar
-                onChange={handleSearchChange}
-                disable={loading}
-                values={searchQuery}
-            />
             <Block>
-                <div className='ms-3 mb-6 flex justify-between'>
-                    <p className='text-xl font-semibold capitalize'>Data User</p>
+                <div className='ms-3 mb-4 flex items-center justify-between'>
+                    <p className='lg:text-3xl text-2xl font-semibold capitalize'>User Data List</p>
+                    <SearchBar
+                        onChange={handleSearchChange}
+                        disable={loading}
+                        values={searchQuery}
+                    />
                 </div>                
                 <Transition contentVisible={contentVisible}>
                     <ScrollPagination fetchMoreItems={fetchMoreItems} loading={loading} nextCursor={nextCursor}>

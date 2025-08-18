@@ -9,10 +9,10 @@ import ScrollPagination from '../component/ScrollPagination'
 import Layout from '../component/Layout'
 import FlyingButton from '../component/FlyingButton'
 import ApprovalStepCard from '../component/cards/ApprovalStepCard.jsx'
-import RestoreButton from '../component/RestoreButton'
 import DataEmpty from '../component/DataEmpty'
 import { encrypting } from '../../helper/EncryptHelper'
 import Swal from 'sweetalert2'
+import useMenuAccess from '../../hooks/useMenuAccess'
 
   function ApprovalStepList() {
 
@@ -24,6 +24,7 @@ import Swal from 'sweetalert2'
     const [contentVisible, setContentVisible] = useState(false)
     const typingTimeoutRef = useRef(null)
     const navigate = useNavigate()
+    const { canUpdate, canDelete } = useMenuAccess('ApprovalStep')
 
     useEffect(() => {
       fetchItems();
@@ -92,15 +93,15 @@ import Swal from 'sweetalert2'
   
     return (
       <Layout title={'List Approval Step'}>
-          <SearchBar   
-            values={searchQuery}
-            onChange={handleSearchChange}
-            disable={loading}
-          />
           <Block>
-              <div className='ms-3 mb-6 flex justify-between'>
-                  <p className='text-xl font-bold capitalize'>Data Approval Step</p>
-              </div>
+              <div className='ms-3 mb-4 flex items-center justify-between'>
+                <p className='lg:text-3xl text-2xl font-semibold capitalize'>Approval Step List</p>
+                <SearchBar
+                    onChange={handleSearchChange}
+                    disable={loading}
+                    values={searchQuery}
+                />
+              </div> 
                   <Transition contentVisible={contentVisible}>
                     <ScrollPagination fetchMoreItems={fetchMoreItems} loading={loading} nextCursor={nextCursor}>
                       <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
@@ -111,6 +112,8 @@ import Swal from 'sweetalert2'
                                 item={item}
                                 goToDetail={goToDetail}
                                 goToUpdate={goToUpdate}
+                                canDelete={canDelete}
+                                canUpdate={canUpdate}
                                 />
                             )))
                         }

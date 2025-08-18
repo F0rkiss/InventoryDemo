@@ -2,91 +2,176 @@ import React, { useEffect, useState } from 'react';
 import Back from '../component/Back'
 import { Page, Block } from 'framework7-react';
 import api from '../../api/api';
-import { replace, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import Layout from '../component/Layout';
-import { DecryptID, encrypting } from '../../helper/EncryptHelper';
+import { DecryptID } from '../../helper/EncryptHelper';
 import Transition from '../component/Transition';
 
 function DetailItem() {
   const [item, setItem] = useState({});
   const navigate = useNavigate();
   const { id } = useParams();
-  const [decryptedId, setDecryptedId] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [contentVisible, setContentVisible] = useState(false)
-  const isAsset = item.is_asset
-  const apiUrl = import.meta.env.VITE_URL
-  
+  const [decryptedId, setDecryptedId] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [contentVisible, setContentVisible] = useState(false);
+  const isAsset = item.is_asset;
+  const apiUrl = import.meta.env.VITE_URL;
+
   useEffect(() => {
-    const decryptedId = DecryptID(id)
-    setDecryptedId(decryptedId)
+    const decryptedId = DecryptID(id);
+    setDecryptedId(decryptedId);
     if (!decryptedId) {
-      navigate(-1)
+      navigate(-1);
     }
   }, [id]);
-  
+
   useEffect(() => {
     if (decryptedId) {
-      fetchItems()
+      fetchItems();
     }
-  }, [decryptedId])
+  }, [decryptedId]);
 
   const fetchItems = async () => {
     try {
       setLoading(true);
       const response = await api.get(`/inventBarang-detail/${decryptedId}`);
       const data = response.data.data;
-      console.log(data)
-      setItem(data);      
+      setItem(data);
     } catch (error) {
-
+      //
     } finally {
-      setLoading(false); 
-      setTimeout(() => setContentVisible(true), 50)
+      setLoading(false);
+      setTimeout(() => setContentVisible(true), 50);
     }
   };
 
   return (
     <Layout title={'Detail Barang'}>
       <Block>
-        <div className='px-4'>
-          <Back goHome={() => navigate('/barang/list-barang')}/>
-            <Transition contentVisible={contentVisible}>
-              <div className="bg-white font-inter py-5 mt-3 rounded-md w-full shadow-sm">
-                <div className="mx-6 space-y-4">
-                  <p className="font-semibold">{isAsset ? 'Aset' : 'Non Aset'}</p>
-                  <h1 className="font-bold capitalize text-xl">{item.name}</h1>
-                  <div className="grid grid-cols-2 gap-y-2 border-t pt-4 text-sm">
-                    <div className="font-medium text-gray-700">Kode Barang</div>
-                    <div className="text-gray-800 text-right">{item.kode_barang}</div>
+        <div className="px-4">
+          <Back goHome={() => navigate('/barang/list-barang')} />
+          <Transition contentVisible={contentVisible}>
+            {/* MOBILE: img on top, all info below */}
+            <div className="bg-white border font-inter py-6 mt-3 rounded-lg w-full">
+              <div className="flex flex-col gap-8">
+                {/* IMAGE: Top on mobile, bottom on desktop/tablet */}
+                <div className="block md:hidden mx-auto">
+                  {item.image && (
+                    <img
+                      src={`${apiUrl}${item.image}`}
+                      alt="item"
+                      className="w-full max-w-xs rounded shadow mx-auto"
+                    />
+                  )}
+                </div>
 
-                    <div className="font-medium text-gray-700">Kode Gudang</div>
-                    <div className="text-gray-800">{item.kode_gudang}</div>
-
-                    <div className="font-medium text-gray-700">Satuan</div>
-                    <div className="text-gray-800">{item.satuan}</div>
-
-                    <div className="font-medium text-gray-700">Sumber Barang</div>
-                    <div className="text-gray-800">{item.sumber_barang?.name || '-'}</div>
-
-                    <div className="font-medium text-gray-700">Jenis Barang</div>
-                    <div className="text-gray-800">{item.jenis_barang?.name || '-'}</div>
-
-                    <div className="font-medium text-gray-700">Kategori</div>
-                    <div className="text-gray-800">{item.category_barang?.name || '-'}</div>
-
-                    <div className="font-medium text-gray-700">Tingkat Kebutuhan</div>
-                    <div className="text-gray-800">{item.tingkat_kebutuhan?.name || '-'}</div>
+                {/* MAIN CONTENT GRID */}
+                <div className="
+                  grid grid-cols-1
+                  md:grid-cols-3 md:gap-6
+                  mx-4 md:mx-8
+                ">
+                  {/* Kolom 1: Data Utama */}
+                  <div className="mb-8 md:mb-0 border-b md:border-b-0 md:border-r md:pr-8">
+                    <div className="mb-1">
+                      {isAsset ? 'Aset' : 'Non - asset'}
+                    </div>
+                    <div className="font-bold capitalize text-2xl leading-tight mb-4">{item.name}</div>
+                    <div className="space-y-2 text-sm mb-3">
+                      <div className="flex justify-between">
+                        <span className="text-gray-500">Kode Barang</span>
+                        <span className="font-semibold">{item.kode_barang}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className=" text-gray-500">Kode Gudang</span>
+                        <span className="font-semibold">{item.kode_gudang}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className=" text-gray-500">Satuan</span>
+                        <span className="font-semibold">{item.satuan}</span>
+                      </div>
+                    </div>
                   </div>
 
-                  {item.image && (
-                    <div className="flex justify-center mt-6">
-                      <img src={`${apiUrl}${item.image}`} alt="item image" className="max-w-lg w-full rounded shadow" />
+                  {/* Kolom 2: Kategori & Tingkat Kebutuhan */}
+                  <div className="mb-8 md:mb-0 md:pe-8">
+                    <div className="mb-5">
+                      <div className='flex justify-between items-center'>
+                        <p className="text-gray-500">Kategori</p>
+                        <p className="font-semibold">{item.category_barang?.name || '-'}</p>
+                      </div>
+                      <div className='flex items-center justify-between'>
+                        <div className='flex items-center ps-1'>
+                          <div className='border-gray-500 border-l border-b w-2 h-2'></div>
+                          <p className="text-gray-500 text-right mt-1 ps-1">
+                            Deskripsi
+                          </p>
+                        </div>
+                        <p className="text-right mt-1">
+                          {item.category_barang?.description || '-'}
+                        </p>
+                      </div>
                     </div>
+                    <div>
+                      <div className='flex justify-between items-center'>
+                        <p className="text-gray-500">Tingkat Kebutuhan</p>
+                        <p className="font-semibold">{item.tingkat_kebutuhan?.name || '-'}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Kolom 3: Sumber Barang & Jenis Barang */}
+                  <div className="md:pl-8">
+                    <div className="mb-5">
+                      <div className='flex justify-between items-center'>
+                        <p className="text-gray-500">Sumber Barang</p>
+                        <p className="font-semibold">{item.sumber_barang?.name || '-'}</p>
+                      </div>
+                      <div className='flex justify-between items-center'>
+                        <div className='flex items-center ps-1'>
+                          <div className='border-gray-500 border-l border-b w-2 h-2'></div>
+                          <p className="text-gray-500 text-right mt-1 ps-1">
+                            Deskripsi
+                          </p>
+                        </div>
+                        <p className="mt-1 text-right">
+                          {item.sumber_barang?.description || '-'}
+                        </p>
+                      </div>
+                    </div>
+                    <div>
+                      <div className='flex justify-between items-center'>
+                        <p className="text-gray-500">Jenis Barang</p>
+                        <p className="font-semibold">{item.jenis_barang?.name || '-'}</p>
+                      </div>
+                      <div className='flex justify-between items-center'>
+                        <div className='flex items-center ps-1'>
+                          <div className='border-gray-500 border-l border-b w-2 h-2'></div>
+                          <p className="text-gray-500 text-right mt-1 ps-1">
+                            Deskripsi
+                          </p>
+                        </div>
+                        <p className="mt-1 text-right">
+                          {item.jenis_barang?.description || '-'}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* IMAGE: Bottom on desktop/tablet */}
+                <div className="hidden md:block mt-6">
+                  {item.image && (
+                    <img
+                      src={`${apiUrl}${item.image}`}
+                      alt="item"
+                      className="w-full max-w-md rounded shadow mx-auto"
+                    />
                   )}
                 </div>
               </div>
-            </Transition>
+            </div>
+          </Transition>
         </div>
       </Block>
     </Layout>

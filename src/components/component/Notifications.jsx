@@ -10,7 +10,7 @@ const Notifications = () => {
     const [nextCursor, setNextCursor] = useState(null);
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
-    const hasFetched = useRef(false); // 👈 Tambahan
+    const hasFetched = useRef(false);
 
     const fetchItems = async () => {
         try {

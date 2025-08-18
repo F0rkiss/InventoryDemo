@@ -111,7 +111,7 @@ function DetailMakeRequest() {
                   (
                     <p className='rounded-md bg-gray-300 p-2 text-gray-700'>{item.is_full_approval}</p>
                   ) : (
-                    <p className={`${item.can_be_deleted ? 'text-amber-700 bg-amber-200 py-2 px-2' : 'text-green-700 bg-green-200 py-2 px-2'} rounded-md`}>{item.is_full_approval}</p>
+                    <p className={`${item.can_be_deleted ? 'text-amber-700 bg-amber-100 border border-amber-500 py-2 px-3' : 'text-green-700 bg-green-100 border border-green-500 py-2 px-3'} rounded-md font-medium`}>{item.is_full_approval}</p>
                   )
                 }
             </div>
@@ -303,7 +303,7 @@ function DetailMakeRequest() {
               {
                 item.can_be_deleted &&
                 <div className='flex justify-end mt-5'>
-                  <button onClick={() => cancelRequest()} className='bg-red-500 hover:bg-red-600 max-w-xs py-2 rounded-md text-white font-medium'>Cancel Request</button>
+                  <button onClick={() => cancelRequest()} className='bg-red-500 hover:bg-red-600 transition-color duration-200 max-w-xs py-2 rounded-md text-white font-medium'>Cancel Request</button>
                 </div>
               }
               </>

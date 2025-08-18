@@ -95,12 +95,6 @@ const TableBilling = lazy(() => import('./Table/TableBilling/TableBilling.jsx'))
 
 const EditProfile = lazy(() => import('./profile/EditProfile.jsx'));
 
-// User
-const DashboardUser = lazy(() => import('./user/dashboard/DashboardUser.jsx'));
-const BarangUser = lazy(() => import('./user/barang/UserBarang.jsx'))
-
-
-
 const MyApp = () => {
   const f7params = {
     name: 'INVENTORY',
@@ -131,7 +125,6 @@ const MyApp = () => {
                   <Route path="/barang/detail-barang/:id" element={<DetailBarang />} />
                   <Route path="/barang/create-barang" element={<CreateBarang />} />
                   <Route path="/barang/update-barang/:id" element={<UpdateBarang />} />
-                  {/* <Route path='/barang/restore-barang' element={<RestoreBarang/>}/> */}
 
                   <Route path='/jenis-barang/list-jenis-barang' element={<ListJenisBarang/>} />
                   <Route path='/jenis-barang/create-jenis-barang' element={<CreateJenisBarang/>} />

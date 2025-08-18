@@ -1,42 +1,36 @@
 import React, { forwardRef } from 'react'
+import DateFormat from '../../../helper/DateFormatHelper';
 
 const RoleCards = forwardRef(({item, deleteItems, goToDetail, goToUpdate, restoreItems, restore = false, canDelete, canUpdate}, ref) => {
 
     return (
         <div className='rounded-lg bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200 p-4 flex flex-col justify-between min-h-[200px]' ref={ref}>
             {/* Header Section */}
-            <div className='flex justify-between items-center mb-3 border-b flex flex-col items-center justify-center py-3 min-h-[64px] relative'>
-                <h3 className='font-bold text-xl capitalize text-center leading-tight'>
+            <div className='grid grid-cols-3 justify-between mb-3 border-b items-center justify-center pb-2'>
+                <h3 className='col-start-2 font-bold text-xl capitalize text-center leading-tight'>
                     {item.name}
                 </h3>
-                <button
-                    className='absolute right-2 top-2 w-8 h-9 p-1 rounded-md hover:bg-gray-100 hover:scale-110 transition-all duration-200 ease-in-out group'
-                    onClick={() => goToDetail(item.id)}
-                    title="View Details"
-                >
-                    <i className="bx bx-dots-vertical-rounded text-lg text-gray-600 group-hover:text-gray-800 transition-all duration-200" />
-                </button>
             </div>
 
             {/* Content Section */}
-            <div className='flex-1 space-y-3'>
+            <div className='flex-1 space-y-2'>
                 <div className="flex justify-between items-start">
-                    <span className="text-sm font-medium text-gray-600">Created:</span>
-                    <p className="text-sm text-gray-800 text-right max-w-[60%] break-words">
-                        {item.created_at ? new Date(item.created_at).toLocaleDateString() : "N/A"}
+                    <span className="text-gray-500">Tgl. Dibuat</span>
+                    <p className="text-s font-medium text-gray-800 text-right max-w-[60%] break-words">
+                        {DateFormat(item.created_at)}
                     </p>
                 </div>
                 
                 <div className="flex justify-between items-start">
-                    <span className="text-sm font-medium text-gray-600">Updated:</span>
-                    <p className="text-sm text-gray-800 text-right max-w-[60%] break-words">
-                        {item.updated_at ? new Date(item.updated_at).toLocaleDateString() : "N/A"}
+                    <span className="text-gray-500">Tgl. Diubah</span>
+                    <p className="text-sm font-medium text-gray-800 text-right max-w-[60%] break-words">
+                        {DateFormat(item.updated_at)}
                     </p>
                 </div>
             </div>
 
             {/* Action Buttons Section */}
-            <div className='flex justify-end gap-2 pt-3 mt-3 border-t border-gray-100'>
+            <div className='flex justify-end gap-2 pt-3 mt-3'>
                 {canUpdate && (
                     <button
                         className="px-3 py-1.5 bg-cyan-50 hover:bg-cyan-100 text-cyan-600 font-medium rounded-md transition-colors duration-200 text-sm"

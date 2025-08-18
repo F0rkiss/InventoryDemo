@@ -65,7 +65,7 @@ function Login() {
             const role = decoded.role;
     
             // Navigate based on role
-            if (role ) {
+            if (role) {
                 navigate('/dashboard', { replace: true });
             } else {
                 // Handle cases where the role is not recognized

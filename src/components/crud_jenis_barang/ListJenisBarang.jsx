@@ -86,7 +86,7 @@ import useMenuAccess from '../../hooks/useMenuAccess'
     const deleteItems = async (id, name) => {
       try {
         const result = await Swal.fire({
-          title: `Apakah Anda ingin menghapus kategori ini?`,
+          title: `Apakah Anda ingin menghapus jenis barang ini?`,
           icon: 'question',
           showDenyButton: true,
           confirmButtonText: 'Yes',
@@ -125,16 +125,15 @@ import useMenuAccess from '../../hooks/useMenuAccess'
 
     return (
       <Layout title={'List Jenis Barang'}>
-          <SearchBar   
-            values={searchQuery}
-            onChange={handleSearchChange}
-            disable={loading}
-          />
           <Block>
-              <div className='ms-3 mb-6 flex justify-between'>
-                  <p className='text-xl font-bold capitalize'>Data Jenis Barang</p>
-                  {/* <RestoreButton goTo={'/category/restore-category'} /> */}
-              </div>
+              <div className='ms-3 mb-4 flex items-center justify-between'>
+                    <p className='lg:text-3xl text-2xl font-semibold capitalize'>Jenis Barang List</p>
+                    <SearchBar
+                        onChange={handleSearchChange}
+                        disable={loading}
+                        values={searchQuery}
+                    />
+                </div>
                   <Transition contentVisible={contentVisible}>
                     <ScrollPagination fetchMoreItems={fetchMoreItems} loading={loading} nextCursor={nextCursor}>
                     <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>

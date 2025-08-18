@@ -87,7 +87,7 @@ function Notifications() {
         <Layout title={'Notifikasi'}>
             <Block>
                 <Back goHome={() => navigate('/dashboard')} />
-                <p className='text-xl font-bold capitalize ms-3 mb-3'>Daftar Notifikasi</p>
+                <p className='text-2xl lg:text-3xl font-semibold capitalize ms-3 my-4'>Daftar Notifikasi</p>
                 <Transition contentVisible={contentVisible}>
                     <ScrollPagination fetchMoreItems={fetchMoreItems} loading={loading} nextCursor={nextCursor}>
                         {

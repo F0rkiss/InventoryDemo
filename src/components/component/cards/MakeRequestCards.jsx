@@ -6,27 +6,28 @@ const MakeRequestCards = forwardRef(({item, goToDetail, canUpdate, goToUpdate, r
 
     return (
         <div className='rounded-lg bg-white border mb-2 flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow duration-200' ref={ref}>
-            <div className='border-b flex flex-col items-center justify-center py-3 min-h-[64px] relative'>
-                <p className='font-bold text-xl capitalize text-center leading-tight'>
-                    {item.EmpName}
-                </p>
-                <p className='font-regular text-md text-gray-400 text-center'>
-                    {item.kode} - {item.email}
-                </p>
-                {
-                    !restore && (
-                        <button
-                        className='absolute detail-button'
-                        onClick={() => goToDetail(item.id)}
-                        >
-                        <i className="bx bx-dots-vertical-rounded text-xl max-xs:text-xl" />
-                        </button>
-                    )
-                }
+            <div className='border-b flex justify-between items-center py-3 mx-4 min-h-[64px]'>
+                <div className='self-start py-1 space-y-1'>
+                    <p className='font-bold text-xl capitalize '>
+                        {item.EmpName}
+                    </p>
+                    <div className='flex'>
+                        <p className='font-medium text-md pe-2'>
+                            {item.kode}
+                        </p>
+                        {/* <p className='font-regular text-md ps-2'>
+                            {item.email}
+                        </p> */}
+                    </div>
+                </div>
+                <button
+                className=' detail-button'
+                onClick={() => goToDetail(item.id)}
+                >
+                <i className="bx bx-dots-vertical-rounded text-2xl max-xs:text-xl" />
+                </button>
             </div>
-
-
-            <div className="m-3 text-right space-y-1">
+            <div className="m-4 text-right space-y-2">
                 <div className="flex justify-between">
                     <p className='text-gray-500'>Type Request</p> <p className='font-medium'>{item.type_name}</p>
                 </div>
@@ -34,13 +35,12 @@ const MakeRequestCards = forwardRef(({item, goToDetail, canUpdate, goToUpdate, r
                     <p className='text-gray-500'>Jenis</p><p className='font-medium'>{item.jenis}</p>
                 </div>
                 <div className="flex justify-between">
-                    <p className='text-gray-500'>Tgl. Permintaan</p><p className='font-medium'>{item.tanggal}</p>
-                </div>
-                <div className="flex justify-center">
-                    <p className={`mt-2 font-medium ${item.is_full_approval ? 'text-green-600' : 'text-amber-600'}`}>{item.approval_message}</p>
+                    <p className='text-gray-500'>Tgl. Request</p><p className='font-medium'>{DateFormat(item.tanggal)}</p>
                 </div>
             </div>
-
+            <div className={`max-w-max flex self-end rounded-md border mb-2 mx-4 ${item.is_full_approval ? 'bg-green-50 border-green-400' : 'bg-amber-50 border-amber-400'}`} >
+                <p className={`py-1 px-4 text-xs font-medium ${item.is_full_approval ? 'text-green-700' : 'text-amber-600'}`}>{item.approval_message}</p>
+            </div>
             <div className='flex py-2 px-2'>
                 { canUpdate &&
                     <button

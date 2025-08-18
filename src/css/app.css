@@ -88,3 +88,67 @@ body {
 th {
   font-weight: 600;
 }
+
+.update-button {
+  background-color: #f0fdfa; /* bg-cyan-50 */
+  color: #067e9c; /* text-cyan-600 */
+  font-weight: 500; /* font-medium */
+  border-radius: 0.375rem; /* rounded-md */
+  transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter; /* transition-colors */
+  transition-duration: 200ms; /* duration-200 */
+  font-size: 0.875rem; /* text-sm */
+  
+}
+
+.update-button:hover {
+  background-color: #cffefe; /* hover:bg-cyan-100 */
+}
+
+.delete-button {
+  background-color: #fef2f2; /* bg-red-50 */
+  color: #dc2626; /* text-red-600 */
+  font-weight: 500; /* font-medium */
+  border-radius: 0.375rem; /* rounded-md */
+  transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter; /* transition-colors */
+  transition-duration: 200ms; /* duration-200 */
+  font-size: 0.875rem; /* text-sm */
+}
+
+.delete-button:hover {
+  background-color: #fee2e2; /* hover:bg-red-100 */
+}
+
+.detail-button {
+  /* position: absolute; */
+  right: 0.5rem; /* right-2 */
+  top: 0.5rem; /* top-2 */
+  width: 2rem; /* w-8 */
+  height: 2.25rem; /* h-9 */
+  padding: 0.25rem; /* p-1 */
+  border-radius: 0.375rem; /* rounded-md */
+  transition-property: all; /* transition-all */
+  transition-duration: 200ms; /* duration-200 */
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); /* ease-in-out */
+}
+
+.detail-button:hover {
+  background-color: #f3f4f6; /* hover:bg-gray-100 */
+  transform: scale(1.1); /* hover:scale-110 */
+}
+
+.purchase-button {
+  /* Diubah dari bg-cyan-50 ke bg-green-50 */
+  background-color: #f0fdf4; 
+  /* Diubah dari text-cyan-600 ke text-green-700 untuk kontras yang lebih baik */
+  color: #15803d; 
+  font-weight: 500;
+  border-radius: 0.375rem;
+  transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+  transition-duration: 200ms;
+  font-size: 0.875rem;
+}
+
+.purchase-button:hover {
+  /* Diubah dari hover:bg-cyan-100 ke hover:bg-green-100 */
+  background-color: #befdd4; 
+}

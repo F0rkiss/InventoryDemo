@@ -9,12 +9,12 @@ import SearchBar from '../component/SearchBar';
 import Layout from '../component/Layout';
 import ScrollPagination from '../component/ScrollPagination';
 import FlyingButton from '../component/FlyingButton';
-import RestoreButton from '../component/RestoreButton';
 import DataEmpty from '../component/DataEmpty';
 import ModalBarang from '../component/modal/ModalBarang';
 import Swal from 'sweetalert2';
 import { encrypting } from '../../helper/EncryptHelper';
 import useMenuAccess from '../../hooks/useMenuAccess';
+import ImagePreviewModal from '../component/modal/ImagePreviewModal';
 
 function ItemList() {
   const [items, setItems] = useState([]);
@@ -28,6 +28,10 @@ function ItemList() {
   const [empty, setEmpty] = useState(false)
   const navigate = useNavigate()
   const { canCreate, canUpdate, canDelete } = useMenuAccess('Barang');
+
+  // image preview state
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [selectedImageUrl, setSelectedImageUrl] = useState('');
 
   useEffect(() => {
     fetchItems(); 
@@ -130,18 +134,28 @@ function ItemList() {
       }
   };
 
+  const handleClosePreview = () => {
+    setIsPreviewOpen(false);
+    setSelectedImageUrl('');
+  };
+
+  const handleImageClick = (imageUrl) => {
+    setSelectedImageUrl(imageUrl);
+    setIsPreviewOpen(true);
+  };
+
   return (
     <>  
     <Layout title={'List Barang'}>
-        <SearchBar
-          values={searchQuery}
-          onChange={handleSearchChange}
-          disable={loading}
-        />
-        <Block> 
-            <div className='mb-3 flex justify-between'>
-              <p className='ms-3  text-xl font-bold capitalize'>Data Barang</p>
-            </div>
+        <Block>
+          <div className='ms-3 mb-4 flex items-center justify-between'>
+                <p className='lg:text-3xl text-2xl font-semibold capitalize'>Barang List</p>
+                <SearchBar
+                    onChange={handleSearchChange}
+                    disable={loading}
+                    values={searchQuery}
+                />
+          </div>  
             <Transition contentVisible={contentVisible}>
               <ScrollPagination
                 loading={loading}
@@ -156,6 +170,7 @@ function ItemList() {
                         handleDetailClick={handleDetailClick}
                         handleDeleteClick={handleDeleteClick}
                         handleUpdateClick={handleUpdateClick}
+                        handleImageClick={handleImageClick}
                         canDelete={canDelete}
                         canUpdate={canUpdate}
                         key={item.id}
@@ -176,8 +191,13 @@ function ItemList() {
         openState={openModal}
         />
       }
+      <ImagePreviewModal
+        isOpen={isPreviewOpen}
+        onClose={handleClosePreview}
+        imageUrl={selectedImageUrl}
+      />
     </Layout>
-      </> 
+    </> 
   );
 }
 

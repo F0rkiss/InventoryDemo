@@ -123,39 +123,38 @@ import useMenuAccess from '../../hooks/useMenuAccess'
 
     return (
       <Layout title={'List Type Request'}>
-          <SearchBar   
-            values={searchQuery}
-            onChange={handleSearchChange}
-            disable={loading}
-          />
           <Block>
-              <div className='ms-3 mb-6 flex justify-between'>
-                  <p className='text-xl font-bold capitalize'>Data Type Request</p>
-                  {/* <RestoreButton goTo={'/category/restore-category'} /> */}
-              </div>
-                  <Transition contentVisible={contentVisible}>
-                    <ScrollPagination fetchMoreItems={fetchMoreItems} loading={loading} nextCursor={nextCursor}>
-                      <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
-                        {
-                            ( items.map((item) => (
-                                <TypeRequestCards
-                                key={item.id}
-                                item={item}
-                                goToDetail={goToDetail}
-                                deleteItems={deleteItems}
-                                goToUpdate={goToUpdate}
-                                canUpdate={canUpdate}
-                                canDelete={canDelete}
-                                />
-                            )))
-                        }
-                      </div>
-                    </ScrollPagination>
-                    {
-                      items.length <= 0 && !loading && <DataEmpty/>
-                    }
-                  </Transition>
-                  {loading && <Loader Class="mt-44" />}
+            <div className='ms-3 mb-4 flex items-center justify-between'>
+                <p className='lg:text-3xl text-2xl font-semibold capitalize'>Type Request List</p>
+                <SearchBar
+                    onChange={handleSearchChange}
+                    disable={loading}
+                    values={searchQuery}
+                />
+            </div>
+            <Transition contentVisible={contentVisible}>
+              <ScrollPagination fetchMoreItems={fetchMoreItems} loading={loading} nextCursor={nextCursor}>
+                <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
+                  {
+                      ( items.map((item) => (
+                          <TypeRequestCards
+                          key={item.id}
+                          item={item}
+                          goToDetail={goToDetail}
+                          deleteItems={deleteItems}
+                          goToUpdate={goToUpdate}
+                          canUpdate={canUpdate}
+                          canDelete={canDelete}
+                          />
+                      )))
+                  }
+                </div>
+              </ScrollPagination>
+              {
+                items.length <= 0 && !loading && <DataEmpty/>
+              }
+            </Transition>
+            { loading && <Loader Class="mt-44" />}
           </Block>
           {canCreate && <FlyingButton goTo={'/type-request/create-type-request'} />}
       </Layout>
