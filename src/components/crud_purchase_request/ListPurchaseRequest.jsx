@@ -80,21 +80,21 @@ import Swal from 'sweetalert2'
       }, 750);
     };
   
-    const goToUpdate = async(itemid) => {
+    const goToDetail = async(itemid) => {
       const encryptingID = await encrypting(itemid)
       navigate(`/Purchase-request/update-Purchase-request/${encryptingID}`);
     }
     
-    const goToDetail = async (id) => {
+    const goToPR = async (id) => {
       const encryptingID = await encrypting(id)
-      navigate(`/Purchase-request/detail-Purchase-request/${encryptingID}`)
+      navigate(`/purchase-request/create-purchase-request/${encryptingID}`)
     } 
 
     return (
       <Layout title={'List Purchase Request'}>
           <Block>
               <div className='ms-3 mb-4 flex items-center justify-between'>
-                    <p className='lg:text-3xl text-2xl font-semibold capitalize'>Purchase Request List</p>
+                    <p className='lg:text-3xl text-2xl font-semibold capitalize'>Create Purchase Request</p>
                     <SearchBar
                         onChange={handleSearchChange}
                         disable={loading}
@@ -109,6 +109,7 @@ import Swal from 'sweetalert2'
                                 <PurchaseRequestCards
                                 key={item.id}
                                 item={item}
+                                goToPR={goToPR}
                                 goToDetail={goToDetail}
                                 />
                             )))

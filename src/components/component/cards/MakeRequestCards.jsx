@@ -2,7 +2,16 @@ import React, { forwardRef } from 'react'
 import DateFormat from '../../../helper/DateFormatHelper'
 
 const MakeRequestCards = forwardRef(({item, goToDetail, canUpdate, goToUpdate, restoreItems, deleteItems, restore = false}, ref) => {
-
+    // Handle the actual API response structure with nested objects
+    const mainMR = item.makeRequest?.MR || item.MR || {}
+    const empName = mainMR.EmpName || item.EmpName || item.emp_name || item.employee_name || 'N/A'
+    const kode = mainMR.EmpCode || mainMR.kode || item.kode || item.employee_code || item.code || 'N/A'
+    const email = mainMR.email || item.email || item.employee_email || 'N/A'
+    const typeName = mainMR.type_name || item.type_name || item.type_request_name || item.typeRequest?.name || 'N/A'
+    const jenis = mainMR.type_jenis || item.jenis || item.jenis_barang || item.jenisBarang?.name || 'N/A'
+    const tanggal = mainMR.tanggal || item.tanggal || item.tanggal_request || (item.created_at ? DateFormat(item.created_at) : 'N/A')
+    const isFullApproval = item.is_full_approval || item.isFullApproval || false
+    const approvalMessage = item.approval_message || item.approvalMessage || (isFullApproval ? 'Approved' : 'Pending')
 
     return (
         <div className='rounded-lg bg-white border mb-2 flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow duration-200' ref={ref}>
@@ -44,9 +53,9 @@ const MakeRequestCards = forwardRef(({item, goToDetail, canUpdate, goToUpdate, r
             <div className='flex py-2 px-2'>
                 { canUpdate &&
                     <button
-                        className="update-button py-1"
+                        className="px-3 py-1.5 bg-teal-50 hover:bg-teal-100 text-teal-600 font-medium rounded-md transition-colors duration-200 text-sm"
                         onClick={() => goToUpdate(item.id)}
-                        title="View Details"
+                        title="Update Request"
                     >
                         Update
                     </button>

@@ -1,11 +1,14 @@
 import React, { forwardRef } from 'react';
 import DateFormat from '../../../helper/DateFormatHelper';
 
-const PurchaseRequestCards = forwardRef(({ item, goToPR }, ref) => {
+const PurchaseRequestCards = forwardRef(({ item, goToPR, goToDetail }, ref) => {
     const itemCount = item.details?.length || 0;
 
     return (
-        <div className='rounded-lg bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200 p-4 flex flex-col justify-between min-h-[200px]' ref={ref}>
+        <div
+            className="rounded-lg bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200 p-4 flex flex-col justify-between min-h-[200px]"
+            ref={ref}
+        >
             {/* Header Section */}
             <div className='grid grid-cols-3 justify-between mb-3 border-b items-center justify-center pb-2'>
                 <h3 className='col-start-1 col-span-2 font-bold text-xl capitalize'>
