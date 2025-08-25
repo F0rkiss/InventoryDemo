@@ -119,8 +119,8 @@ const CustomSidebar = ({ showProfile = true, navOpen, setNavOpen }) => {
                                 <div className={`transition-max-height duration-300 overflow-hidden ${openAccordions[menu.key] ? 'max-h-96' : 'max-h-0'}`}>
                                     {menu.children.filter(sub => navigation_menu.some(nav => nav.name === sub.key)).map(sub => (
                                         <button key={sub.key} onClick={() => handleNavigation(sub.path)} className='rounded-r-lg'>
-                                            <div className={`flex items-center ms-8 transition-all duration-200 border-l-2 hover:border-transparent hover:rounded-r-lg border-stone-200 py-2 ${isActive(sub.path) ? 'bg-coklat-mi text-white rounded-r-lg hover:border-stone-200' : 'hover:bg-stone-200'}`}>
-                                                <p className='text-lg font-medium ps-10'>{sub.label}</p>
+                                            <div className={`flex text-left items-center ms-8 transition-all duration-200 border-l-2 hover:border-transparent hover:rounded-r-lg border-stone-200 py-2 ${isActive(sub.path) ? 'bg-coklat-mi text-white rounded-r-lg hover:border-stone-200' : 'hover:bg-stone-200'}`}>
+                                                <p className='text-lg font-medium ps-10 pe-4'>{sub.label}</p>
                                             </div>
                                         </button>
                                     ))}
