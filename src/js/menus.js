@@ -20,8 +20,8 @@ const menus = [
         isAccordion: true,
         children: [
             { key: "MakeRequest", label: "Make Request", path: "/make-request/list-make-request" },
-            { key: "ListMakeRequest", label: "Make Purchase Request", path: "/make-purchase-request/list-make-purchase-request" },
-            { key: "ListPurchaseRequest", label: "Make Purchase Order", path: "/make-purchase-order/list-make-purchase-order" },
+            { key: "ListMakeRequest", label: "Create Purchase Request", path: "/make-purchase-request/list-make-purchase-request" },
+            { key: "ListPurchaseRequest", label: "Create Purchase Order", path: "/purchase-order-pr/list-purchase-order-pr" },
             { key: "PurchaseRequest", label: "Purchase Request", path: "/purchase-request/list-purchase-request" },
             { key: "PurchaseOrder", label: "Purchase Order", path: "/purchase-order/list-purchase-order" },
             { key: "TypeRequest", label: "Type Request", path: "/type-request/list-type-request" },

@@ -50,6 +50,7 @@ function DetailItem() {
       <Block>
         <div className="px-4">
           <Back goHome={() => navigate('/barang/list-barang')} />
+          <p className='lg:text-3xl text-2xl font-semibold capitalize my-4'>Detail Barang</p>
           <Transition contentVisible={contentVisible}>
             {/* MOBILE: img on top, all info below */}
             <div className="bg-white border font-inter py-6 mt-3 rounded-lg w-full">

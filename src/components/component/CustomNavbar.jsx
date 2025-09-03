@@ -62,8 +62,9 @@ const CustomNavbar = () => {
                 <i className="bx bx-menu text-black text-3xl ms-4"></i>
               </button>
             )}
-            <span className="ml-3 pl-4 border-l-2 text-xl font-medium max-w-fit whitespace-nowrap">
-              {activeTitle}
+            <span className="ml-3 pl-4 border-l-2 text-xl font-semibold max-w-fit whitespace-nowrap">
+              {/* {activeTitle} */}
+              MI Inventory
             </span>
           </span>
           <Notifications />

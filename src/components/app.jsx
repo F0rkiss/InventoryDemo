@@ -78,13 +78,18 @@ const UpdateApprovalStep = lazy(() => import('./crud_approval_step/UpdateApprova
 const CreateApprovalStep = lazy(() => import('./crud_approval_step/CreateApprovalStep.jsx'))
 
 const ListPurchaseRequest = lazy(() => import('./crud_purchase_request/ListPurchaseRequest.jsx'))
+const CreateListPurchaseRequest = lazy(() => import('./crud_purchase_request/CreateListPurchaseRequest.jsx'))
 const CreatePurchaseRequest = lazy(() => import('./crud_purchase_request/CreatePurchaseRequest.jsx'))
 const DetailPurchaseRequest = lazy(() => import('./crud_purchase_request/DetailPurchaseRequest.jsx'))
+const UpdatePurchaseRequest = lazy(() => import('./crud_purchase_request/UpdatePurchaseRequest.jsx'))
 
 const ListPurchaseOrder = lazy(() => import('./crud_purchase_order/ListPurchaseOrder.jsx'))
-const CreatePurchaseOrder = lazy(() => import('./crud_purchase_order/CreatePurchaseOrder.jsx'))
 const UpdatePurchaseOrder = lazy(() => import('./crud_purchase_order/UpdatePurchaseOrder.jsx'))
 const DetailPurchaseOrder = lazy(() => import('./crud_purchase_order/DetailPurchaseOrder.jsx'))
+
+const ListPurchaseOrderPR = lazy(() => import('./crud_create_purchase_order/ListPurchaseOrderPR.jsx'))
+const DetailPurchaseOrderPR = lazy(() => import('./crud_create_purchase_order/DetailPurchaseOrderPR.jsx'))
+const CreatePurchaseOrderPR = lazy(() => import('./crud_create_purchase_order/CreatePurchaseOrderPR.jsx'))
 
 const ListMakeRequest = lazy(() => import('./crud_make_request/ListMakeRequest.jsx'))
 const DetailMakeRequest = lazy(() => import('./crud_make_request/DetailMakeRequest.jsx'))
@@ -163,15 +168,22 @@ const MyApp = () => {
                   <Route path='/approval-step/update-approval-step/:id' element={<UpdateApprovalStep />} />
                   <Route path='/approval-step/create-approval-step' element={<CreateApprovalStep />} />
 
-                  <Route path='/make-purchase-request/list-make-purchase-request' element={<ListPurchaseRequest />} />
-                  <Route path='/make-purchase-request/create-make-purchase-request/:id' element={<CreatePurchaseRequest />} />
-                  <Route path='/make-purchase-request/detail-make-purchase-request/:id' element={<DetailPurchaseRequest />} />
+                  <Route path='/purchase-request/list-purchase-request' element={<ListPurchaseRequest />} />
+                  <Route path='/purchase-request/detail-purchase-request/:id' element={<DetailPurchaseRequest />} />
+                  <Route path='/purchase-request/update-purchase-request/:id' element={<UpdatePurchaseRequest />} />
 
                   <Route path='/purchase-order/list-purchase-order' element={<ListPurchaseOrder />} />
-                  <Route path='/purchase-order/create-purchase-order' element={<CreatePurchaseOrder />} />
+                  <Route path='/make-purchase-request/list-make-purchase-request' element={<CreateListPurchaseRequest />} />
+                  <Route path='/make-purchase-request/create-purchase-request/:id' element={<CreatePurchaseRequest />} />
+{/* ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ */}
+                  <Route path='/purchase-order/list-purchase-order' element={<ListPurchaseOrder />} />
                   <Route path='/purchase-order/update-purchase-order/:id' element={<UpdatePurchaseOrder/>} />
                   <Route path='/purchase-order/detail-purchase-order/:id' element={<DetailPurchaseOrder />} />
 
+                  <Route path='/purchase-order-pr/list-purchase-order-pr' element={<ListPurchaseOrderPR />} />
+                  <Route path='/purchase-order-pr/create-purchase-order-pr' element={<CreatePurchaseOrderPR />} />
+                  <Route path='/purchase-order-pr/detail-purchase-order-pr/:id' element={<DetailPurchaseOrderPR />} />
+{/* ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ */}
                   <Route path='/make-request/list-make-request' element={<ListMakeRequest />} />
                   <Route path='/make-request/detail-make-request/:id' element={<DetailMakeRequest />} />
                   <Route path='/make-request/update-make-request/:id' element={<UpdateMakeRequest />} />

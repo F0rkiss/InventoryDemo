@@ -13,7 +13,7 @@ function SearchBar({
   // Show shadow if focused or value exists
   const showShadow = isFocused || !!values;
 
-  const containerClass = `bg-white min-w-[5rem] lg:w-[32rem] px-3 py-2 rounded-full flex items-center border border-slate-400/20 hover:border-slate-400/40 font-inter ${showShadow ? 'border-slate-400/40 shadow-md shadow-gray-200 transition-shadow duration-200 ease-in-out' : 'hover:shadow-md hover:shadow-gray-200 transition-all duration-200 ease-in-out'} ${className || ''}`;
+  const containerClass = `bg-white min-w-[5rem] lg:w-[32rem] px-3 py-2 rounded-full flex items-center border hover:bg-gray-50 transition-color duration-200 font-inter  ${className || ''}`;
 
   const blockContent = (
     <div className={containerClass}>

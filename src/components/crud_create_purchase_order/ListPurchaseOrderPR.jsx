@@ -8,13 +8,13 @@ import Transition from '../component/Transition'
 import ScrollPagination from '../component/ScrollPagination'
 import Layout from '../component/Layout'
 import FlyingButton from '../component/FlyingButton'
-import PurchaseRequestCards from '../component/cards/PurchaseRequestCards.jsx'
-import RestoreButton from '../component/RestoreButton'
 import DataEmpty from '../component/DataEmpty'
+import PurchaseOrderPRCards from '../component/cards/PurchaseOrderPRCards'
 import { encrypting } from '../../helper/EncryptHelper'
-import Swal from 'sweetalert2'
+import { useAuth } from '../../auth/AuthContext'
+import useMenuAccess from '../../hooks/useMenuAccess'
 
-  function CreatePurchaseRequestList() {
+  function PurchaseOrderPRList() {
 
     const [items, setItems] = useState([])
     const [loading, setLoading] = useState(false)
@@ -24,17 +24,22 @@ import Swal from 'sweetalert2'
     const [contentVisible, setContentVisible] = useState(false)
     const typingTimeoutRef = useRef(null)
     const navigate = useNavigate()
+    const { role } = useAuth()
+    const { canCreate } = useMenuAccess('PurchaseOrder');
 
     useEffect(() => {
+      setItems([]);
+      setNextCursor(null);
+      setContentVisible(false);
       fetchItems();
     }, [searchTerm] )
 
     const fetchItems = async () => {
       try {
         setLoading(true);
-        const response = await api.get(searchTerm ? `purchaseRequest-makeRequest/${searchTerm}` : 'purchaseRequest-makeRequest');
+        const response = await api.get(searchTerm ? `purchaseOrder-listPurchaseRequest/${searchTerm}` : 'purchaseOrder-listPurchaseRequest');
         const data = response.data.data;
-        setItems(data.data);
+        setItems(Array.isArray(data.data) ? data.data : []);
         setNextCursor(data.next_cursor);
         setLoading(false);
         setTimeout(() => setContentVisible(true), 50);
@@ -47,7 +52,7 @@ import Swal from 'sweetalert2'
       if (!nextCursor || loading) return;
       try {
         setLoading(true);
-        const response = await api.get(searchTerm ? `purchaseRequest-makeRequest/${searchTerm}` : 'purchaseRequest-makeRequest', {
+        const response = await api.get(searchTerm ? `purchaseOrder-listPurchaseRequest/${searchTerm}` : 'purchaseOrder-listPurchaseRequest', {
           params: {
             cursor: nextCursor,
           },
@@ -68,7 +73,6 @@ import Swal from 'sweetalert2'
         setLoading(false);
       }
     };
-  
 
     const handleSearchChange = (query) => {
       setSearchQuery(query);
@@ -79,51 +83,52 @@ import Swal from 'sweetalert2'
         setSearchTerm(query); 
       }, 750);
     };
-  
-    const goToDetail = async(itemid) => {
-      const encryptingID = await encrypting(itemid)
-      navigate(`/Purchase-request/update-Purchase-request/${encryptingID}`);
-    }
     
-    const goToPR = async (id) => {
+    const goToDetail = async (id) => {
       const encryptingID = await encrypting(id)
-      navigate(`/make-purchase-request/create-purchase-request/${encryptingID}`)
+      navigate(`/purchase-order-pr/detail-purchase-order-pr/${encryptingID}`)
+    }
+
+    const goToCreate = async (id) => {
+      const encryptingID = await encrypting(id)
+      navigate(`/purchase-order-pr/create-purchase-order-pr/${encryptingID}`)
     } 
 
     return (
-      <Layout title={'Create List Purchase Request'}>
+      <Layout title={'List Purchase Order'}>
           <Block>
-              <div className='ms-3 mb-4 flex items-center justify-between'>
-                    <p className='lg:text-3xl text-2xl font-semibold capitalize'>Create List Purchase Request</p>
-                    <SearchBar
-                        onChange={handleSearchChange}
-                        disable={loading}
-                        values={searchQuery}
-                    />
-                </div>
-                  <Transition contentVisible={contentVisible}>
-                    <ScrollPagination fetchMoreItems={fetchMoreItems} loading={loading} nextCursor={nextCursor}>
-                      <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
-                        {
-                            ( items.map((item) => (
-                                <PurchaseRequestCards
-                                key={item.id}
-                                item={item}
-                                goToPR={goToPR}
-                                goToDetail={goToDetail}
-                                />
-                            )))
-                        }
-                      </div>
-                    </ScrollPagination>
+            <div className='ms-3 mb-4 flex items-center justify-between gap-1'>
+              <p className='lg:text-3xl text-2xl font-semibold capitalize'>Create Purchase Order List</p>
+              <SearchBar
+                onChange={handleSearchChange}
+                disable={loading}
+                values={searchQuery}
+              />
+            </div>
+            <Transition contentVisible={contentVisible}>
+              <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
+                <ScrollPagination fetchMoreItems={fetchMoreItems} loading={loading} nextCursor={nextCursor}>
                     {
-                      items.length <= 0 && !loading && <DataEmpty/>
+                      ( items.map((item) => (
+                          <PurchaseOrderPRCards
+                          key={item.id}
+                          item={item}
+                          goToDetail={goToDetail}
+                          goToCreate={goToCreate}
+                          />
+                      )))
                     }
-                  </Transition>
-                  {loading && <Loader Class="mt-44" />}
+                </ScrollPagination>
+              </div>
+            </Transition>
+            {
+              items.length === 0 && !loading && contentVisible && <DataEmpty/>
+            }
+            {loading && <Loader Class="mt-44" />}
           </Block>
+        { canCreate && <FlyingButton goTo={'/purchase-order-pr/create-purchase-order-pr'} />}
       </Layout>
     )
   }
 
-  export default CreatePurchaseRequestList;
+  export default PurchaseOrderPRList;

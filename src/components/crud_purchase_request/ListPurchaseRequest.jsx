@@ -22,17 +22,30 @@ import Swal from 'sweetalert2'
     const [searchTerm, setSearchTerm] = useState('')
     const [searchQuery, setSearchQuery] = useState('')
     const [contentVisible, setContentVisible] = useState(false)
+    const [filterToggle, setFilterToggle] = useState(false);
+
     const typingTimeoutRef = useRef(null)
     const navigate = useNavigate()
 
     useEffect(() => {
       fetchItems();
-    }, [searchTerm] )
+    }, [searchTerm, filterToggle]);
+    
 
     const fetchItems = async () => {
       try {
         setLoading(true);
-        const response = await api.get(searchTerm ? `purchaseRequest-makeRequest/${searchTerm}` : 'purchaseRequest-makeRequest');
+        let endpoint = '';
+    
+        if (searchTerm) {
+          endpoint = `purchaseRequest/${searchTerm}`;
+        } else if (filterToggle) {
+          endpoint = `purchaseRequest-toggle?is_completed=1`;
+        } else {
+          endpoint = 'purchaseRequest';
+        }
+    
+        const response = await api.get(endpoint);
         const data = response.data.data;
         setItems(data.data);
         setNextCursor(data.next_cursor);
@@ -42,25 +55,36 @@ import Swal from 'sweetalert2'
         setLoading(false);
       }
     };
+    
 
     const fetchMoreItems = async () => {
       if (!nextCursor || loading) return;
       try {
         setLoading(true);
-        const response = await api.get(searchTerm ? `purchaseRequest-makeRequest/${searchTerm}` : 'purchaseRequest-makeRequest', {
+    
+        let endpoint = '';
+        if (searchTerm) {
+          endpoint = `purchaseRequest/${searchTerm}`;
+        } else if (filterToggle) {
+          endpoint = `purchaseRequest-toggle?is_completed=1`;
+        } else {
+          endpoint = 'purchaseRequest';
+        }
+    
+        const response = await api.get(endpoint, {
           params: {
             cursor: nextCursor,
           },
         });
+    
         const data = response.data.data;
-  
-          setItems(
-            (prevItems) => {
-            const existingIds = new Set(prevItems.map(item => item.id));
-            const newItems = data.data.filter(item => !existingIds.has(item.id));
-            return [...prevItems, ...newItems];
-          }
-        );
+    
+        setItems((prevItems) => {
+          const existingIds = new Set(prevItems.map(item => item.id));
+          const newItems = data.data.filter(item => !existingIds.has(item.id));
+          return [...prevItems, ...newItems];
+        });
+    
         setNextCursor(data.next_cursor);
         setLoading(false);
         setTimeout(() => setContentVisible(true), 50);
@@ -68,6 +92,7 @@ import Swal from 'sweetalert2'
         setLoading(false);
       }
     };
+    
   
 
     const handleSearchChange = (query) => {
@@ -82,24 +107,34 @@ import Swal from 'sweetalert2'
   
     const goToDetail = async(itemid) => {
       const encryptingID = await encrypting(itemid)
-      navigate(`/Purchase-request/update-Purchase-request/${encryptingID}`);
+      navigate(`/make-purchase-request/update-make-purchase-request/${encryptingID}`);
     }
     
     const goToPR = async (id) => {
       const encryptingID = await encrypting(id)
-      navigate(`/purchase-request/create-purchase-request/${encryptingID}`)
+      navigate(`/make-purchase-request/create-make-purchase-request/${encryptingID}`)
     } 
 
     return (
       <Layout title={'List Purchase Request'}>
           <Block>
               <div className='ms-3 mb-4 flex items-center justify-between'>
-                    <p className='lg:text-3xl text-2xl font-semibold capitalize'>Create Purchase Request</p>
-                    <SearchBar
-                        onChange={handleSearchChange}
-                        disable={loading}
-                        values={searchQuery}
+                <div className='flex items-center gap-3'>
+                  <p className='lg:text-3xl text-2xl font-semibold capitalize'>Purchase Request</p>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input 
+                      type="checkbox" 
+                      checked={filterToggle} 
+                      onChange={(e) => setFilterToggle(e.target.checked)} 
                     />
+                    <span>Filter Toggle</span>
+                  </label>
+                </div>
+                  <SearchBar
+                      onChange={handleSearchChange}
+                      disable={loading}
+                      values={searchQuery}
+                  />
                 </div>
                   <Transition contentVisible={contentVisible}>
                     <ScrollPagination fetchMoreItems={fetchMoreItems} loading={loading} nextCursor={nextCursor}>
@@ -111,6 +146,7 @@ import Swal from 'sweetalert2'
                                 item={item}
                                 goToPR={goToPR}
                                 goToDetail={goToDetail}
+                                isList={true}
                                 />
                             )))
                         }
