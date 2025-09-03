@@ -51,27 +51,29 @@ function DetailUser() {
   return (
     <Layout title={'Detail User'}>
         <Block>
-            <Back goHome={() => navigate('/user/list-user')}/>
-                {
-                    loading ?
-                    (
-                        <Loader Class={'mt-20'} />
-                    ) : (
+            <div className='px-4'>
+                <Back goHome={() => navigate('/user/list-user')}/>
+                <p className='lg:text-3xl text-2xl font-semibold capitalize my-4'>Detail User</p>
                     <Transition contentVisible={contentVisible}>
-                        {/* <p>{item.msg}</p> */}
-                    <div className='bg-white rounded shadow-sm overflow-hidden p-6 text-lg mt-8'>
-                        <p className='capitalize'><b>Name : </b>{item.data?.EmpName}</p>
-                        <p className='capitalize'><b>Role : </b>{item.data?.role?.name}</p>
-                        <p><b>Email : </b>{item.data?.email}</p>
-                        <p><b>Phone : </b>{item.data?.EmpPhone}</p>
-                        <p>------</p>
-                        <p><b>Divisi : </b>{item.data?.posisi_name || "Not Assign yet"}</p>
-                        <p><b>Department : </b>{item.data?.str_name || "Not Assign yet"}</p>
-                        <p><b>Tingkatan : </b>{item.data?.level_name || "Not Assign yet"}</p>
+                    <div className='bg-white rounded-md shadow-sm overflow-hidden p-6 text-base mt-8'>
+                        <p className='text-gray-400'>
+                            Name <span className='font-medium'>{item.data?.EmpName}</span>
+                        </p>
+                        <p className='capitalize'>
+                            Role <span className='font-medium'>{item.data?.role?.name}</span>
+                        </p>
+                        <p className='capitalize'>
+                            Email <span className='font-medium'>{item.data?.email}</span>
+                        </p>
+                        <p className='capitalize'>
+                            Phone <span className='font-medium'>{item.data?.EmpPhone}</span>
+                        </p>
+                        <p>Divisi {item.data?.posisi_name || "Not Assign yet"}</p>
+                        <p>Department {item.data?.str_name || "Not Assign yet"}</p>
+                        <p>Tingkatan {item.data?.level_name || "Not Assign yet"}</p>
                     </div>
                     </Transition>
-                    )
-                }
+            </div>
         </Block>        
     </Layout>
   )

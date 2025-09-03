@@ -14,7 +14,7 @@ import ModalPurchaseRequest from '../component/modal/ModalPurchaseRequest';
 // import GenerateBarangSearchField from '../component/GenerateBarangSearchField';
 
 function CreatePurchaseRequest() {
-    const [item, setItem] = useState({});
+    const [item, setItem] = usecState({});
     const mainMR = item.makeRequest?.MR || {};
     const detailMR = item.makeRequest?.detailsMR || [];
     const navigate = useNavigate();
@@ -56,7 +56,6 @@ function CreatePurchaseRequest() {
             const response = await api.get(url);
             setItem(response.data.data);
         } catch (error) {
-            console.error(error);
         } finally {
             setLoading(false);
             setTimeout(() => setContentVisible(true), 50);
@@ -175,7 +174,7 @@ function CreatePurchaseRequest() {
                     <Transition contentVisible={contentVisible}>
                         {/* Header */}
                         <div className="flex items-center justify-between mb-4">
-                            <Back goHome={() => navigate('/purchase-request/list-purchase-request')} />
+                            <Back goHome={() => navigate('/make-purchase-request/list-make-purchase-request')} />
                             <p className={`py-2 px-2 rounded-md ${item.can_be_deleted ? 'text-amber-700 bg-amber-200' : 'text-green-700 bg-green-200'}`}>
                                 {item.is_full_approval}
                             </p>
@@ -265,7 +264,7 @@ function CreatePurchaseRequest() {
                                                                 <img
                                                                     src={`${apiUrl}${item.selectedBarang.image}`}
                                                                     alt={item.selectedBarang.name}
-                                                                    className="w-8 h-8 object-cover rounded-md border"
+                                                                    className="object-cover rounded-md border"
                                                                 />
                                                             )}
                                                             <div>

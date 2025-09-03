@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import DateFormat from '../../../helper/DateFormatHelper'
 
-const ItemCard = forwardRef(({ item, handleDetailClick, handleUpdateClick, handleDeleteClick, handleImageClick,isUser, canUpdate, canDelete }, ref) => {
+const ItemCard = forwardRef(({ item, handleDetailClick, handleUpdateClick, handleDeleteClick, handleImageClick, isUser, canUpdate, canDelete }, ref) => {
   const navigate = useNavigate();
   const apiUrl = import.meta.env.VITE_URL
   const [detail, setDetail] = useState(null);
@@ -13,8 +13,8 @@ const ItemCard = forwardRef(({ item, handleDetailClick, handleUpdateClick, handl
   return (
     <div ref={ref} className={`bg-white rounded-md text-sm mb-3 font-inter border overflow-hidden flex flex-col justify-between h-full ${isUser ? 'pb-1' : ''} shadow-sm hover:shadow-md transition-shadow duration-200`}>
       <div className="content flex-grow flex flex-col">
-        <div className="grid grid-cols-3 justify-between mb-3 border-b items-center justify-center p-3">
-          <div className='col-start-2 capitalize text-center '>
+        <div className="grid grid-cols-3 justify-between mb-3 border-b items-center justify-center p-3 px-4">
+          <div className='col-start-1 capitalize '>
             <h1 className="font-bold capitalize text-xl text-ellipsis whitespace-nowrap overflow-hidden">
               {item.name}
             </h1>
@@ -24,33 +24,30 @@ const ItemCard = forwardRef(({ item, handleDetailClick, handleUpdateClick, handl
               <p className='font-medium'>Non Aset</p>
             }
           </div>
-          <div className='justify-self-end py-1'>
+          <div className='justify-self-end py-1 col-start-3'>
               <button className='detail-button' onClick={() => handleDetailClick(item.id)}>
                   <i className="bx bx-dots-vertical-rounded text-2xl max-xs:text-xl" />
               </button> 
           </div>
         </div>
         <div className={`flex flex-col p-4 gap-2 pt-0 justify-between`}>
-          <div className="text w-full">
-              <div className="flex justify-between">
-                Kode Barang: <p>{item.kode_barang}</p>
+          <div className="text w-full space-y-1">
+              <div className="flex justify-between text-gray-500">
+                Kode Barang <p className='text-black font-medium'>{item.kode_barang}</p>
               </div>
-              {/* <div className="flex justify-between">
-                Jumlah: <p className='text-green-500'>{item.satuan}</p>
-              </div> */}
-              <div className="flex justify-between">
-                Kode Gudang: <p>{item.kode_gudang}</p>
+              <div className="flex justify-between text-gray-500">
+                Kode Gudang <p className='text-black font-medium'>{item.kode_gudang}</p>
               </div>
-              <div className="flex justify-between">
-                Satuan: <p>{item.satuan}</p>
+              <div className="flex justify-between text-gray-500">
+                Satuan <p className='text-black font-medium'>{item.satuan}</p>
               </div>
           <div>
-            <div className='flex justify-between text-gray-400 italic pt-2'>
-              <p>Tanggal dibuat: </p>
+            <div className='flex justify-between text-gray-400  pt-2'>
+              <p>Tgl. dibuat </p>
               <p>{DateFormat(item.created_at)}</p>
             </div>
-            <div className='flex justify-between text-gray-400 italic'>
-              <p>Terakhir diubah: </p>
+            <div className='flex justify-between text-gray-400'>
+              <p>Tgl. diubah </p>
               <p>{DateFormat(item.updated_at)}</p>
             </div>
           </div>

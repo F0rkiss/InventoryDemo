@@ -94,7 +94,6 @@ function DetailMakeRequest() {
           title:'Tidak Dapat Membatalkan Request',
           text:'Ada Kesalahan Dalam Sistem'
       })
-      console.error('Error cancelling request:', error);
     }
   }
   
@@ -104,16 +103,19 @@ function DetailMakeRequest() {
         <div className="px-4">
           {/* Main Info & Detail */}
             <Transition contentVisible={contentVisible}>
-            <div className="flex items-center justify-between mb-4">
-              <Back goHome={() => navigate('/make-request/list-make-request')} />
-                {
-                  role === 'admin' ? 
-                  (
-                    <p className='rounded-md bg-gray-300 p-2 text-gray-700'>{item.is_full_approval}</p>
-                  ) : (
-                    <p className={`${item.can_be_deleted ? 'text-amber-700 bg-amber-100 border border-amber-500 py-2 px-3' : 'text-green-700 bg-green-100 border border-green-500 py-2 px-3'} rounded-md font-medium`}>{item.is_full_approval}</p>
-                  )
-                }
+            <Back goHome={() => navigate('/make-request/list-make-request')} />
+            <div className="flex items-center justify-between my-4">
+                {/* <div className='flex items-center justify-between my-4'> */}
+                <p className='lg:text-3xl text-2xl font-semibold capitalize'>Detail Make Request</p>
+                  {
+                    role === 'admin' ? 
+                    (
+                      <p className='rounded-md bg-gray-300 p-2 text-gray-700'>{item.is_full_approval}</p>
+                    ) : (
+                      <p className={`${item.can_be_deleted ? 'text-amber-700 bg-amber-100 border border-amber-500 py-2 px-3' : 'text-green-700 bg-green-100 border border-green-500 py-2 px-3'} rounded-md font-medium`}>{item.is_full_approval}</p>
+                    )
+                  }
+                {/* </div> */}
             </div>
               <>
               <div className="flex flex-col lg:flex-row gap-4 mt-3">
@@ -183,82 +185,85 @@ function DetailMakeRequest() {
               </div>
 
               {/* Purchase Request Section */}
-              <div className="bg-white border rounded-md p-6 mt-6">
-                <p className="text-xl text-gray-400 font-semibold mb-2">Purchase Request</p>
-                { !purchaseRequest ?
-                  (
-                    <p className="text-gray-400 italic">No purchase request data</p>
-                  ) : (
-                    <>
-                      <p className="font-bold text-lg">{purchaseRequest?.kode}</p>
-                      <p className="">{purchaseRequest?.note}</p>
-                      <p className="mb-4">{purchaseRequest?.tanggal}</p>
-                      <div className="overflow-x-auto">
-                        <table className="w-full text-sm text-left">
-                          <thead>
-                            <tr className="bg-gray-100">
-                              <th className="px-3 py-2 rounded-l-md">No</th>
-                              <th className="px-3 py-2">Name</th>
-                              <th className="px-3 py-1">Kode Barang</th>
-                              <th className="px-3 py-1">Kode Gudang</th>
-                              <th className="px-3 py-1 rounded-r-md">Image</th>
-                              <th className="px-3 py-1">Jenis</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {purchaseDetails?.map((item, i) => (
-                              <tr key={item.id} className={` ${item.id % 2 === 0 ? 'bg-gray-50' : 'bg-white'}`}>
-                                <td className="px-4 py-4 rounded-l-md">{i + 1}</td>
-                                <td className="px-4 py-4">{item.name}</td>
-                                <td className="px-4 py-4">{item.kode_barang}</td>
-                                <td className="px-4 py-4 rounded-r-md">{item.kode_gudang}</td>
-                                <td className="px-4 py-4 rounded-r-md">
-                                  <img src={`${apiUrl}${item.image}`} alt="item image" className="max-w-xs w-full rounded shadow" />
-                                </td>
-                                <td className="px-4 py-4 rounded-r-md">{item.is_asset ? 'Asset' : 'Non-Asset'}</td>
+              {
+                role === 'admin' && purchaseRequest &&
+                <div className="bg-white border rounded-md p-6 mt-6">
+                  <p className="text-xl text-gray-400 font-semibold mb-2">Purchase Request</p>
+                  { !purchaseRequest ?
+                    (
+                      <p className="text-gray-400 italic">No purchase request data</p>
+                    ) : (
+                      <>
+                        <p className="font-bold text-lg">{purchaseRequest?.kode}</p>
+                        <p className="">{purchaseRequest?.note}</p>
+                        <p className="mb-4">{purchaseRequest?.tanggal}</p>
+                        <div className="overflow-x-auto">
+                          <table className="w-full text-sm text-left">
+                            <thead>
+                              <tr className="bg-gray-100">
+                                <th className="px-3 py-2 rounded-l-md">No</th>
+                                <th className="px-3 py-2">Name</th>
+                                <th className="px-3 py-1">Kode Barang</th>
+                                <th className="px-3 py-1">Kode Gudang</th>
+                                <th className="px-3 py-1 rounded-r-md">Image</th>
+                                <th className="px-3 py-1">Jenis</th>
                               </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
-                      { role === 'admin' &&
-                        <div className="mt-6">
-                          <p className="text-xl text-gray-400 font-semibold mb-2">Purchase Order</p>
-      
-                          <div className="overflow-x-auto">
-                            <table className="w-full text-sm text-left">
-                              <thead>
-                                <tr className="bg-gray-100">
-                                  <th className="px-3 py-2 rounded-l-md">Kode Supplier</th>
-                                  <th className="px-3 py-1">Kode</th>
-                                  <th className="px-3 py-1">Alamat</th>
-                                  <th className="px-3 py-1">Harga</th>
-                                  <th className="px-3 py-1">Pembayaran</th>
-                                  <th className="px-3 py-1">Keterangan</th>
-                                  <th className="px-3 py-1">Tgl. PO</th>
-                                  <th className="px-3 py-1 rounded-r-md">Tgl. Penyerahan</th>
+                            </thead>
+                            <tbody>
+                              {purchaseDetails?.map((item, i) => (
+                                <tr key={item.id} className={` ${item.id % 2 === 0 ? 'bg-gray-50' : 'bg-white'}`}>
+                                  <td className="px-4 py-4 rounded-l-md">{i + 1}</td>
+                                  <td className="px-4 py-4">{item.name}</td>
+                                  <td className="px-4 py-4">{item.kode_barang}</td>
+                                  <td className="px-4 py-4 rounded-r-md">{item.kode_gudang}</td>
+                                  <td className="px-4 py-4 rounded-r-md">
+                                    <img src={`${apiUrl}${item.image}`} alt="item image" className="max-w-xs w-full rounded shadow" />
+                                  </td>
+                                  <td className="px-4 py-4 rounded-r-md">{item.is_asset ? 'Asset' : 'Non-Asset'}</td>
                                 </tr>
-                              </thead>
-                              <tbody>
-                                  <tr className={` ${item.id % 2 === 0 ? 'bg-gray-50' : 'bg-white'}`}>
-                                    <td className="px-4 py-4">{purchaseOrders.kode_suplier}</td>
-                                    <td className="px-4 py-4">{purchaseOrders.kode}</td>
-                                    <td className="px-4 py-1">{purchaseOrders.alamat}</td>
-                                    <td className="px-4 py-1 rounded-r-md">{purchaseOrders.harga}</td>
-                                    <td className="px-4 py-1 rounded-r-md">{purchaseOrders.cara_pembayaran}</td>
-                                    <td className="px-4 py-1 rounded-r-md">{purchaseOrders.keterangan}</td>
-                                    <td className="px-4 py-1 rounded-r-md">{purchaseOrders.tanggal_po}</td>
-                                    <td className="px-4 py-1 rounded-r-md">{purchaseOrders.tanggal_penyerahan}</td>
-                                  </tr>
-                              </tbody>
-                            </table>
-                          </div>
+                              ))}
+                            </tbody>
+                          </table>
                         </div>
-                      }
-                    </>
-                  )
-                }
-              </div>
+                        { role === 'admin' && purchaseOrders &&
+                          <div className="mt-6">
+                            <p className="text-xl text-gray-400 font-semibold mb-2">Purchase Order</p>
+        
+                            <div className="overflow-x-auto">
+                              <table className="w-full text-sm text-left">
+                                <thead>
+                                  <tr className="bg-gray-100">
+                                    <th className="px-3 py-2 rounded-l-md">Kode Supplier</th>
+                                    <th className="px-3 py-1">Kode</th>
+                                    <th className="px-3 py-1">Alamat</th>
+                                    <th className="px-3 py-1">Harga</th>
+                                    <th className="px-3 py-1">Pembayaran</th>
+                                    <th className="px-3 py-1">Keterangan</th>
+                                    <th className="px-3 py-1">Tgl. PO</th>
+                                    <th className="px-3 py-1 rounded-r-md">Tgl. Penyerahan</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                    <tr className={` ${item.id % 2 === 0 ? 'bg-gray-50' : 'bg-white'}`}>
+                                      <td className="px-4 py-4">{purchaseOrders.kode_suplier}</td>
+                                      <td className="px-4 py-4">{purchaseOrders.kode}</td>
+                                      <td className="px-4 py-1">{purchaseOrders.alamat}</td>
+                                      <td className="px-4 py-1 rounded-r-md">{purchaseOrders.harga}</td>
+                                      <td className="px-4 py-1 rounded-r-md">{purchaseOrders.cara_pembayaran}</td>
+                                      <td className="px-4 py-1 rounded-r-md">{purchaseOrders.keterangan}</td>
+                                      <td className="px-4 py-1 rounded-r-md">{purchaseOrders.tanggal_po}</td>
+                                      <td className="px-4 py-1 rounded-r-md">{purchaseOrders.tanggal_penyerahan}</td>
+                                    </tr>
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+                        }
+                      </>
+                    )
+                  }
+                </div>
+              }
 
               {/* Approval Histories */}
               <div className="bg-white border rounded-md p-6 mt-6 min-h-[150px]">

@@ -6,8 +6,8 @@ const RoleCards = forwardRef(({item, deleteItems, goToDetail, goToUpdate, restor
     return (
         <div className='rounded-lg bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200 p-4 flex flex-col justify-between min-h-[200px]' ref={ref}>
             {/* Header Section */}
-            <div className='grid grid-cols-3 justify-between mb-3 border-b items-center justify-center pb-2'>
-                <h3 className='col-start-2 font-bold text-xl capitalize text-center leading-tight'>
+            <div className='flex mb-3 border-b items-center pb-3'>
+                <h3 className='font-bold text-xl capitalize leading-tight'>
                     {item.name}
                 </h3>
             </div>

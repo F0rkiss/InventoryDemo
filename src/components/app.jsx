@@ -82,9 +82,12 @@ const CreatePurchaseRequest = lazy(() => import('./crud_purchase_request/CreateP
 const DetailPurchaseRequest = lazy(() => import('./crud_purchase_request/DetailPurchaseRequest.jsx'))
 
 const ListPurchaseOrder = lazy(() => import('./crud_purchase_order/ListPurchaseOrder.jsx'))
-const CreatePurchaseOrder = lazy(() => import('./crud_purchase_order/CreatePurchaseOrder.jsx'))
 const UpdatePurchaseOrder = lazy(() => import('./crud_purchase_order/UpdatePurchaseOrder.jsx'))
 const DetailPurchaseOrder = lazy(() => import('./crud_purchase_order/DetailPurchaseOrder.jsx'))
+
+const ListPurchaseOrderPR = lazy(() => import('./crud_create_purchase_order/ListPurchaseOrderPR.jsx'))
+const DetailPurchaseOrderPR = lazy(() => import('./crud_create_purchase_order/DetailPurchaseOrderPR.jsx'))
+const CreatePurchaseOrderPR = lazy(() => import('./crud_create_purchase_order/CreatePurchaseOrderPR.jsx'))
 
 const ListMakeRequest = lazy(() => import('./crud_make_request/ListMakeRequest.jsx'))
 const DetailMakeRequest = lazy(() => import('./crud_make_request/DetailMakeRequest.jsx'))
@@ -168,9 +171,12 @@ const MyApp = () => {
                   <Route path='/make-purchase-request/detail-make-purchase-request/:id' element={<DetailPurchaseRequest />} />
 
                   <Route path='/purchase-order/list-purchase-order' element={<ListPurchaseOrder />} />
-                  <Route path='/purchase-order/create-purchase-order' element={<CreatePurchaseOrder />} />
                   <Route path='/purchase-order/update-purchase-order/:id' element={<UpdatePurchaseOrder/>} />
                   <Route path='/purchase-order/detail-purchase-order/:id' element={<DetailPurchaseOrder />} />
+
+                  <Route path='/purchase-order-pr/list-purchase-order-pr' element={<ListPurchaseOrderPR />} />
+                  <Route path='/purchase-order-pr/create-purchase-order-pr' element={<CreatePurchaseOrderPR />} />
+                  <Route path='/purchase-order-pr/detail-purchase-order-pr/:id' element={<DetailPurchaseOrderPR />} />
 
                   <Route path='/make-request/list-make-request' element={<ListMakeRequest />} />
                   <Route path='/make-request/detail-make-request/:id' element={<DetailMakeRequest />} />

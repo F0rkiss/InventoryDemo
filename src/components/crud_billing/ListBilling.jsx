@@ -127,26 +127,26 @@ function ListBilling() {
                 <p className='text-xl font-bold capitalize ms-3 mb-3'>Data Billing</p>
             </div>
             <Transition contentVisible={contentVisible}>
-                <ScrollPagination fetchMoreItems={fetchMoreItems} loading={loading} nextCursor={nextCursor}>
-                    {
-                        ( items.map((item) => (
-                            <BillingCards
-                            key={item.id}
-                            item={item}
-                            goToUpdate={goToUpdate}
-                            deleteItems={deleteItems}
-                            goToDetail={goToDetail}
-                            canDelete={canDelete}
-                            canUpdate={canUpdate}
-                            />
-                        )))
-                    }
-                </ScrollPagination>
-                {
-                    items.length <= 0 && !loading && <DataEmpty/>
-                }
+                <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
+                    <ScrollPagination fetchMoreItems={fetchMoreItems} loading={loading} nextCursor={nextCursor}>
+                        {
+                            ( items.map((item) => (
+                                <BillingCards
+                                key={item.id}
+                                item={item}
+                                goToUpdate={goToUpdate}
+                                deleteItems={deleteItems}
+                                goToDetail={goToDetail}
+                                canDelete={canDelete}
+                                canUpdate={canUpdate}
+                                />
+                            )))
+                        }
+                    </ScrollPagination>
+                </div>
             </Transition>
-            {loading && <Loader Class={'mt-40'}/>}
+            { items.length <= 0 && !loading && <DataEmpty/> }
+            { loading && <Loader Class={'mt-40'}/> }
         </Block>
         { canCreate && <FlyingButton goTo={'/billing/create-billing'} />}
     </Layout>
