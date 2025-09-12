@@ -21,7 +21,6 @@ import useMenuAccess from '../../hooks/useMenuAccess'
     const [searchTerm, setSearchTerm] = useState('')
     const [searchQuery, setSearchQuery] = useState('')
     const [contentVisible, setContentVisible] = useState(false)
-    const typingTimeoutRef = useRef(null)
     const { canCreate, canDelete, canUpdate } = useMenuAccess('JenisBarang')
     const navigate = useNavigate()
 
@@ -73,15 +72,20 @@ import useMenuAccess from '../../hooks/useMenuAccess'
       }
     };
   
+    const debounceRef = useRef(null);
+        
     const handleSearchChange = (query) => {
       setSearchQuery(query);
-      if (typingTimeoutRef.current) {
-        clearTimeout(typingTimeoutRef.current); 
-      }
-      typingTimeoutRef.current = setTimeout(() => {
-        setSearchTerm(query); 
-      }, 750);
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+      debounceRef.current = setTimeout(() => {
+        setSearchTerm(query.trim());
+      }, 1200);
     };
+
+    useEffect(() => {
+    // cleanup on unmount
+      return () => debounceRef.current && clearTimeout(debounceRef.current);
+    }, []);
 
     const deleteItems = async (id, name) => {
       try {
@@ -135,7 +139,7 @@ import useMenuAccess from '../../hooks/useMenuAccess'
                     />
                 </div>
                   <Transition contentVisible={contentVisible}>
-                    <ScrollPagination fetchMoreItems={fetchMoreItems} loading={loading} nextCursor={nextCursor}>
+                    <ScrollPagination rootSelector=".page-content" fetchMoreItems={fetchMoreItems} loading={loading} nextCursor={nextCursor}>
                     <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
                       {
                           (items.map((item) => (

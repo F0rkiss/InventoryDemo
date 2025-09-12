@@ -96,7 +96,7 @@ const CustomSidebar = ({ showProfile = true, navOpen, setNavOpen }) => {
                         </div>
                     </div>
                 )}
-                <div className="bottom-nav flex flex-col font-inter mt-1 mb-2">
+                <div className="bottom-nav flex flex-col font-inter mt-1 mb-8">
                     <button className={`rounded-lg my-1 ${isActive('/dashboard') ? 'bg-coklat-mi text-white' : 'hover:bg-stone-200 transition-colors duration-200'}`} onClick={() => handleNavigation('/dashboard')}>
                         <div className={`flex items-center w-60 py-1`}>
                             <i className="bx bxs-dashboard text-3xl ms-5 me-4"></i>

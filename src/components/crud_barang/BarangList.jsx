@@ -23,7 +23,6 @@ function ItemList() {
   const [searchQuery, setSearchQuery] = useState(''); // For input value
   const [searchTerm, setSearchTerm] = useState(''); // For actual search term used in fetching
   const [contentVisible, setContentVisible] = useState(false);
-  const typingTimeoutRef = useRef(null); 
   const [openModal, setOpenModal] = useState(false)
   const [empty, setEmpty] = useState(false)
   const navigate = useNavigate()
@@ -80,15 +79,20 @@ function ItemList() {
     }
   };
   
+  const debounceRef = useRef(null);
+  
   const handleSearchChange = (query) => {
     setSearchQuery(query);
-    if (typingTimeoutRef.current) {
-      clearTimeout(typingTimeoutRef.current);
-    }
-    typingTimeoutRef.current = setTimeout(() => {
-      setSearchTerm(query);
-    }, 750);
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      setSearchTerm(query.trim());
+    }, 1200);
   };
+
+  useEffect(() => {
+  // cleanup on unmount
+    return () => debounceRef.current && clearTimeout(debounceRef.current);
+  }, []);
 
   
   const handleDeleteClick = async (id) => {
@@ -161,6 +165,7 @@ function ItemList() {
                 loading={loading}
                 nextCursor={nextCursor}
                 fetchMoreItems={fetchMoreItems}
+                rootSelector=".page-content"
               >
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   { 

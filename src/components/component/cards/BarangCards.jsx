@@ -11,9 +11,9 @@ const ItemCard = forwardRef(({ item, handleDetailClick, handleUpdateClick, handl
   const isAsset = item.is_asset
   
   return (
-    <div ref={ref} className={`bg-white rounded-md text-sm mb-3 font-inter border overflow-hidden flex flex-col justify-between h-full ${isUser ? 'pb-1' : ''} shadow-sm hover:shadow-md transition-shadow duration-200`}>
-      <div className="content flex-grow flex flex-col">
-        <div className="grid grid-cols-3 justify-between mb-3 border-b items-center justify-center p-3 px-4">
+    <div ref={ref} className={`bg-white rounded-md text-sm p-4 font-inter border overflow-hidden flex flex-col justify-between h-full ${isUser ? 'pb-1' : ''} shadow-sm hover:shadow-md transition-shadow duration-200`}>
+      <div className="content flex-grow flex flex-col mb-4">
+        <div className="grid grid-cols-3 justify-between mb-3 items-center justify-center">
           <div className='col-start-1 capitalize '>
             <h1 className="font-bold capitalize text-xl text-ellipsis whitespace-nowrap overflow-hidden">
               {item.name}
@@ -30,8 +30,8 @@ const ItemCard = forwardRef(({ item, handleDetailClick, handleUpdateClick, handl
               </button> 
           </div>
         </div>
-        <div className={`flex flex-col p-4 gap-2 pt-0 justify-between`}>
-          <div className="text w-full space-y-1">
+        <div className={`flex flex-col border-t pt-3 gap-2 justify-between`}>
+          <div className="text w-full space-y-2">
               <div className="flex justify-between text-gray-500">
                 Kode Barang <p className='text-black font-medium'>{item.kode_barang}</p>
               </div>
@@ -41,16 +41,6 @@ const ItemCard = forwardRef(({ item, handleDetailClick, handleUpdateClick, handl
               <div className="flex justify-between text-gray-500">
                 Satuan <p className='text-black font-medium'>{item.satuan}</p>
               </div>
-          <div>
-            <div className='flex justify-between text-gray-400  pt-2'>
-              <p>Tgl. dibuat </p>
-              <p>{DateFormat(item.created_at)}</p>
-            </div>
-            <div className='flex justify-between text-gray-400'>
-              <p>Tgl. diubah </p>
-              <p>{DateFormat(item.updated_at)}</p>
-            </div>
-          </div>
           </div>
           <div className="max-w-64 self-center sm:self-center">
             { item.image ?
@@ -65,7 +55,7 @@ const ItemCard = forwardRef(({ item, handleDetailClick, handleUpdateClick, handl
           </div>
         </div>
       </div>
-      <div className={`flex gap-1 py-2 px-2`}>
+      <div className={`flex gap-1`}>
       { canUpdate &&
         <button
           className="px-3 py-1.5 update-button"

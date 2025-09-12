@@ -12,7 +12,7 @@ const UserCards = forwardRef(({item, deleteItems, goToDetail, goToUpdate, canUpd
                 </h3>
                 <div className='row-start-2 col-span-3 self-start'>
                     <h3 className='font-medium text-lg capitalize'>
-                        { item.role?.name }
+                        { item.role?.name || item.role_name }
                     </h3>
                 </div>
                 <button

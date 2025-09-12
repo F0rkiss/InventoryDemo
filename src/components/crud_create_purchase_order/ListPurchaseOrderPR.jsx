@@ -22,10 +22,7 @@ import useMenuAccess from '../../hooks/useMenuAccess'
     const [searchTerm, setSearchTerm] = useState('')
     const [searchQuery, setSearchQuery] = useState('')
     const [contentVisible, setContentVisible] = useState(false)
-    const typingTimeoutRef = useRef(null)
     const navigate = useNavigate()
-    const { role } = useAuth()
-    const { canCreate } = useMenuAccess('PurchaseOrder');
 
     useEffect(() => {
       setItems([]);
@@ -74,15 +71,20 @@ import useMenuAccess from '../../hooks/useMenuAccess'
       }
     };
 
+    const debounceRef = useRef(null);
+
     const handleSearchChange = (query) => {
       setSearchQuery(query);
-      if (typingTimeoutRef.current) {
-        clearTimeout(typingTimeoutRef.current); 
-      }
-      typingTimeoutRef.current = setTimeout(() => {
-        setSearchTerm(query); 
-      }, 750);
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+      debounceRef.current = setTimeout(() => {
+        setSearchTerm(query.trim());
+      }, 1200);
     };
+
+    useEffect(() => {
+    // cleanup on unmount
+      return () => debounceRef.current && clearTimeout(debounceRef.current);
+    }, []);
     
     const goToDetail = async (id) => {
       const encryptingID = await encrypting(id)
@@ -107,7 +109,7 @@ import useMenuAccess from '../../hooks/useMenuAccess'
             </div>
             <Transition contentVisible={contentVisible}>
               <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
-                <ScrollPagination fetchMoreItems={fetchMoreItems} loading={loading} nextCursor={nextCursor}>
+                <ScrollPagination rootSelector=".page-content" fetchMoreItems={fetchMoreItems} loading={loading} nextCursor={nextCursor}>
                     {
                       ( items.map((item) => (
                           <PurchaseOrderPRCards
@@ -126,7 +128,6 @@ import useMenuAccess from '../../hooks/useMenuAccess'
             }
             {loading && <Loader Class="mt-44" />}
           </Block>
-        { canCreate && <FlyingButton goTo={'/purchase-order-pr/create-purchase-order-pr'} />}
       </Layout>
     )
   }

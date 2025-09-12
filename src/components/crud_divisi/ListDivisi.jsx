@@ -124,7 +124,7 @@ function ListDivisi() {
           <RestoreButton goTo={'/divisi/restore-divisi'} />
         </div>
         <Transition contentVisible={contentVisible}>
-              <ScrollPagination fetchMoreItems={fetchMoreItems} loading={loading} nextCursor={nextCursor}>
+              <ScrollPagination rootSelector=".page-content" fetchMoreItems={fetchMoreItems} loading={loading} nextCursor={nextCursor}>
                   {
                       ( items.map((item) => (
                           <DivisiCards

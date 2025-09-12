@@ -10,7 +10,6 @@ const ModalPurchaseOrder = ({ onClose, onSave, open, initialData, apiUrl, existi
         qty: '',
         harga: ''
     });
-    console.log(apiUrl)
 
     // Barang search states
     const [searchTerm, setSearchTerm] = useState('');
@@ -162,12 +161,11 @@ const ModalPurchaseOrder = ({ onClose, onSave, open, initialData, apiUrl, existi
 
                     {/* Barang Selection */}
                     <div className="mb-4">
-                        <label className="font-semibold mb-2">Pilih Barang</label>
-                        <div className="relative">
+                        <label className="font-semibold">Pilih Barang</label>
+                        <div className="relative mt-1">
                             {modalData.selectedBarang ? (
                                 <div className="relative border rounded-lg p-3 bg-white flex items-start gap-3 shadow-sm">
                                     <div className="flex items-center gap-3">
-                                        {console.log(`${apiUrl}${modalData.selectedBarang.image}`)}
                                         {modalData.selectedBarang.image && (
                                             <img
                                                 src={`${apiUrl}${modalData.selectedBarang.image}`}
@@ -245,8 +243,8 @@ const ModalPurchaseOrder = ({ onClose, onSave, open, initialData, apiUrl, existi
                     {/* Qty and Harga Inputs */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
                         <div>
-                            <label className="font-semibold mb-2">Jumlah</label>
-                            <div className='bg-white p-2 rounded-md border border-gray-300'>
+                            <label className="font-semibold">Jumlah</label>
+                            <div className='bg-white p-2 rounded-md border border-gray-300 mt-1'>
                                 <input
                                     type="number"
                                     min={1}
@@ -259,8 +257,8 @@ const ModalPurchaseOrder = ({ onClose, onSave, open, initialData, apiUrl, existi
                             </div>
                         </div>
                         <div>
-                            <label className="font-semibold mb-2">Harga Satuan</label>
-                            <div className='bg-white p-2 rounded-md border border-gray-300'>
+                            <label className="font-semibold">Harga Satuan</label>
+                            <div className='bg-white mt-1 p-2 rounded-md border border-gray-300'>
                                 <input
                                     type="number"
                                     min={1}

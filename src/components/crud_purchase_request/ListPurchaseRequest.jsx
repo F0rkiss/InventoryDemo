@@ -137,7 +137,7 @@ import Swal from 'sweetalert2'
                   />
                 </div>
                   <Transition contentVisible={contentVisible}>
-                    <ScrollPagination fetchMoreItems={fetchMoreItems} loading={loading} nextCursor={nextCursor}>
+                    <ScrollPagination rootSelector=".page-content" fetchMoreItems={fetchMoreItems} loading={loading} nextCursor={nextCursor}>
                       <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
                         {
                             ( items.map((item) => (

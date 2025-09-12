@@ -128,7 +128,7 @@ function ListBilling() {
             </div>
             <Transition contentVisible={contentVisible}>
                 <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
-                    <ScrollPagination fetchMoreItems={fetchMoreItems} loading={loading} nextCursor={nextCursor}>
+                    <ScrollPagination rootSelector=".page-content" fetchMoreItems={fetchMoreItems} loading={loading} nextCursor={nextCursor}>
                         {
                             ( items.map((item) => (
                                 <BillingCards

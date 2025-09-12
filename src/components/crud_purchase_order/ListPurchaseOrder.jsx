@@ -7,46 +7,48 @@ import Loader from '../component/Loader'
 import Transition from '../component/Transition'
 import ScrollPagination from '../component/ScrollPagination'
 import Layout from '../component/Layout'
-import FlyingButton from '../component/FlyingButton'
 import DataEmpty from '../component/DataEmpty'
 import PurchaseOrderCards from '../component/cards/PurchaseOrderCards'
 import { encrypting } from '../../helper/EncryptHelper'
-import { useAuth } from '../../auth/AuthContext'
 import useMenuAccess from '../../hooks/useMenuAccess'
+import FilterStatusToggle from '../component/FilterStatusToggle';
 
-  function PurchaseOrderList() {
-
+function PurchaseOrderList() {
     const [items, setItems] = useState([])
     const [loading, setLoading] = useState(false)
     const [nextCursor, setNextCursor] = useState(null)
     const [searchTerm, setSearchTerm] = useState('')
     const [searchQuery, setSearchQuery] = useState('')
     const [contentVisible, setContentVisible] = useState(false)
-    const [sortByCompleted, setSortByCompleted] = useState(false); // 1. State for sorting
-    const typingTimeoutRef = useRef(null)
+    const [filterStatus, setFilterStatus] = useState('all');
     const navigate = useNavigate()
-    const { role } = useAuth()
     const { canUpdate } = useMenuAccess('PurchaseOrder');
+    const onFilterChange = (next) => setFilterStatus(next);
 
     useEffect(() => {
-      // 2. Reset list when sort changes and re-fetch
       setItems([]);
       setNextCursor(null);
       setContentVisible(false);
       fetchItems();
-    }, [searchTerm, sortByCompleted] ) // Added sortByCompleted as a dependency
+    }, [searchTerm, filterStatus] ) // Dependency updated to filterStatus
 
     const fetchItems = async () => {
       try {
         setLoading(true);
-        // 3. Add sort parameter to API call
+        
+        let endpoint = searchTerm ? `purchaseOrder/${searchTerm}` : 'purchaseOrder';
         const params = {};
-        if (sortByCompleted) {
-          // IMPORTANT: Change 'completed' if your API uses a different value
-          params.status = 'purchaseOrder-toggle?is_completed=1';
+
+        // 2. API logic updated to handle three filter states
+        if (filterStatus === 'completed') {
+          endpoint = 'purchaseOrder-toggle';
+          params.is_completed = 1;
+        } else if (filterStatus === 'not_completed') {
+          endpoint = 'purchaseOrder-toggle';
+          params.is_completed = 0; // Filter for not completed
         }
 
-        const response = await api.get(searchTerm ? `purchaseOrder/${searchTerm}` : 'purchaseOrder', { params });
+        const response = await api.get(endpoint, { params });
         const data = response.data.data;
         setItems(Array.isArray(data.data) ? data.data : []);
         setNextCursor(data.next_cursor);
@@ -62,15 +64,21 @@ import useMenuAccess from '../../hooks/useMenuAccess'
       try {
         setLoading(true);
 
-        // 4. Ensure pagination also uses the sort parameter
+        let endpoint = searchTerm ? `purchaseOrder/${searchTerm}` : 'purchaseOrder';
         const params = {
           cursor: nextCursor,
         };
-        if (sortByCompleted) {
-            params.status = 'purchaseOrder-toggle?is_completed=1';
+        
+        // Apply the same logic for pagination
+        if (filterStatus === 'completed') {
+            endpoint = 'purchaseOrder-toggle';
+            params.is_completed = 1;
+        } else if (filterStatus === 'not_completed') {
+            endpoint = 'purchaseOrder-toggle';
+            params.is_completed = 0;
         }
 
-        const response = await api.get(searchTerm ? `purchaseOrder/${searchTerm}` : 'purchaseOrder', { params });
+        const response = await api.get(endpoint, { params });
         const data = response.data.data;
   
           setItems(
@@ -82,27 +90,25 @@ import useMenuAccess from '../../hooks/useMenuAccess'
         );
         setNextCursor(data.next_cursor);
         setLoading(false);
-        setTimeout(() => setContentVisible(true), 50);
       } catch (error) {
         setLoading(false);
       }
     };
-  
-    // 5. Handler to toggle the sort state
-    const handleSortToggle = () => {
-      setSortByCompleted(prev => !prev);
-    };
 
+    const debounceRef = useRef(null);
+    
     const handleSearchChange = (query) => {
       setSearchQuery(query);
-      if (typingTimeoutRef.current) {
-        clearTimeout(typingTimeoutRef.current); 
-      }
-      typingTimeoutRef.current = setTimeout(() => {
-        setSearchTerm(query); 
-      }, 750);
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+      debounceRef.current = setTimeout(() => {
+        setSearchTerm(query.trim());
+      }, 1200);
     };
 
+    useEffect(() => {
+    // cleanup on unmount
+      return () => debounceRef.current && clearTimeout(debounceRef.current);
+    }, []);
     
     const goToUpdate = async(itemid) => {
       const encryptingID = await encrypting(itemid)
@@ -121,17 +127,12 @@ import useMenuAccess from '../../hooks/useMenuAccess'
               <div className="flex justify-between items-center w-full">
                 <p className='lg:text-3xl text-2xl font-semibold capitalize'>Purchase Order List</p>
                 <div className='flex items-center'>
-                  <button
-                      onClick={handleSortToggle}
-                      className={`px-3 py-3 w-fit h-full border text-2xl font-medium rounded-full flex justify-center items-center gap-2 transition-colors duration-200 ${
-                          sortByCompleted 
-                          ? 'bg-green-100 text-green-700 hover:bg-green-200 border-green-300' 
-                          : 'bg-white text-gray-700 hover:bg-gray-50'
-                      }`}
-                      >
-                      <i className='bx bxs-sort-alt'></i>
-                      {/* <span>{sortByCompleted ? 'Selesai' : 'All'}</span> */}
-                  </button>
+                  <FilterStatusToggle
+                    value={filterStatus}
+                    onChange={onFilterChange}
+                    // disabled={loading}
+                    // showText   // uncomment if you want to show the current label text
+                  />
                   <SearchBar
                     onChange={handleSearchChange}
                     disable={loading}
@@ -142,7 +143,7 @@ import useMenuAccess from '../../hooks/useMenuAccess'
             </div>
             <Transition contentVisible={contentVisible}>
               <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 items-start'>
-                <ScrollPagination fetchMoreItems={fetchMoreItems} loading={loading} nextCursor={nextCursor}>
+                <ScrollPagination rootSelector=".page-content" fetchMoreItems={fetchMoreItems} loading={loading} nextCursor={nextCursor}>
                     {
                       ( items.map((item) => (
                           <PurchaseOrderCards
@@ -164,6 +165,6 @@ import useMenuAccess from '../../hooks/useMenuAccess'
           </Block>
       </Layout>
     )
-  }
+}
 
-  export default PurchaseOrderList;
+export default PurchaseOrderList;

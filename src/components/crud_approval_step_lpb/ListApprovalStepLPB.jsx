@@ -8,13 +8,13 @@ import Transition from '../component/Transition'
 import ScrollPagination from '../component/ScrollPagination'
 import Layout from '../component/Layout'
 import FlyingButton from '../component/FlyingButton'
-import PurchaseRequestCards from '../component/cards/PurchaseRequestCards.jsx'
-import RestoreButton from '../component/RestoreButton'
+import ApprovalStepCard from '../component/cards/ApprovalStepCard.jsx'
 import DataEmpty from '../component/DataEmpty'
 import { encrypting } from '../../helper/EncryptHelper'
 import Swal from 'sweetalert2'
+import useMenuAccess from '../../hooks/useMenuAccess'
 
-  function CreatePurchaseRequestList() {
+  function ApprovalStepLPBList() {
 
     const [items, setItems] = useState([])
     const [loading, setLoading] = useState(false)
@@ -24,6 +24,7 @@ import Swal from 'sweetalert2'
     const [contentVisible, setContentVisible] = useState(false)
     const typingTimeoutRef = useRef(null)
     const navigate = useNavigate()
+    const { canUpdate, canDelete, canCreate } = useMenuAccess('ApprovalStepLPB')
 
     useEffect(() => {
       fetchItems();
@@ -32,7 +33,7 @@ import Swal from 'sweetalert2'
     const fetchItems = async () => {
       try {
         setLoading(true);
-        const response = await api.get(searchTerm ? `purchaseRequest-makeRequest/${searchTerm}` : 'purchaseRequest-makeRequest');
+        const response = await api.get(searchTerm ? `approvalStepLPB/${searchTerm}` : 'approvalStepLPB');
         const data = response.data.data;
         setItems(data.data);
         setNextCursor(data.next_cursor);
@@ -47,7 +48,7 @@ import Swal from 'sweetalert2'
       if (!nextCursor || loading) return;
       try {
         setLoading(true);
-        const response = await api.get(searchTerm ? `purchaseRequest-makeRequest/${searchTerm}` : 'purchaseRequest-makeRequest', {
+        const response = await api.get(searchTerm ? `approvalStepLPB/${searchTerm}` : 'approvalStepLPB', {
           params: {
             cursor: nextCursor,
           },
@@ -79,38 +80,65 @@ import Swal from 'sweetalert2'
         setSearchTerm(query); 
       }, 750);
     };
-  
-    const goToDetail = async(itemid) => {
-      const encryptingID = await encrypting(itemid)
-      navigate(`/Purchase-request/update-Purchase-request/${encryptingID}`);
-    }
-    
-    const goToPR = async (id) => {
-      const encryptingID = await encrypting(id)
-      navigate(`/make-purchase-request/create-purchase-request/${encryptingID}`)
-    } 
 
+    const deleteItems = async (id, name) => {
+        try {
+            const result = await Swal.fire({
+                title: `Apakah Anda ingin menghapus approval ini?`,
+                icon: 'question',
+                showDenyButton: true,
+                confirmButtonText: 'Yes',
+                denyButtonText: 'No',
+                customClass: {
+                    actions: 'my-actions',
+                    confirmButton: 'order-2',
+                    denyButton: 'order-3',
+                },
+            });
+
+            if (result.isConfirmed) {
+                await api.delete(`approvalStepLPB-delete/${id}`);
+                setItems(items.filter((item) => item.id !== id));
+                Swal.fire('Terhapus!', '', 'success');
+            }
+        } catch (error) {
+            Swal.fire({
+                icon:'error',
+                title:'Tidak Dapat Menghapus Approval',
+                text:'Ada Kesalahan Dalam Sistem'
+            })
+        }
+    };  
+
+    const goToUpdate = async (id) => {
+      const encryptingID = await encrypting(id)
+      navigate(`/approval-step-lpb/update-approval-step-lpb/${encryptingID}`)
+    } 
+  
     return (
-      <Layout title={'Create List Purchase Request'}>
+      <Layout title={'List Approval Step'}>
           <Block>
               <div className='ms-3 mb-4 flex items-center justify-between'>
-                    <p className='lg:text-3xl text-2xl font-semibold capitalize'>Create List Purchase Request</p>
-                    <SearchBar
-                        onChange={handleSearchChange}
-                        disable={loading}
-                        values={searchQuery}
-                    />
-                </div>
+                <p className='lg:text-3xl text-2xl font-semibold capitalize'>Approval Step LPB List</p>
+                <SearchBar
+                    onChange={handleSearchChange}
+                    disable={loading}
+                    values={searchQuery}
+                />
+              </div> 
                   <Transition contentVisible={contentVisible}>
                     <ScrollPagination rootSelector=".page-content" fetchMoreItems={fetchMoreItems} loading={loading} nextCursor={nextCursor}>
                       <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
                         {
                             ( items.map((item) => (
-                                <PurchaseRequestCards
+                                <ApprovalStepCard
                                 key={item.id}
                                 item={item}
-                                goToPR={goToPR}
-                                goToDetail={goToDetail}
+                                // goToDetail={goToDetail}
+                                deleteItems={deleteItems}
+                                goToUpdate={goToUpdate}
+                                canDelete={canDelete}
+                                canUpdate={canUpdate}
                                 />
                             )))
                         }
@@ -122,8 +150,9 @@ import Swal from 'sweetalert2'
                   </Transition>
                   {loading && <Loader Class="mt-44" />}
           </Block>
+        { canCreate && <FlyingButton goTo={'/approval-step-lpb/create-approval-step-lpb'} />}
       </Layout>
     )
   }
 
-  export default CreatePurchaseRequestList;
+  export default ApprovalStepLPBList;

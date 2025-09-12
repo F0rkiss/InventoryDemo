@@ -109,7 +109,6 @@ function UpdatePurchaseOrder() {
         try {
             const response = await api.get(`purchaseOrder-detail/${decryptedId}`);
             const data = response.data.data;
-            console.log(data)  
             const fetchedItems = {
                 purchase_request : data.purchase_request ? { value: data.purchase_request?.id, label: data.purchase_request?.kode } : null,
                 tanggal : data.tanggal,
@@ -269,7 +268,7 @@ function UpdatePurchaseOrder() {
 
                         <div className="md:grid md:grid-cols-2 md:gap-x-4">
                             {/* Kode Supplier Input */}
-                            <div>
+                            <div className='mb-4'>
                                 <label className='font-semibold'>Kode Supplier</label>
                                 <div className='bg-white p-2 rounded-md border-solid border-gray-300 border mt-2'>
                                 <input 

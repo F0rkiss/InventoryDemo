@@ -38,17 +38,21 @@ const MakeRequestCards = forwardRef(({item, goToDetail, canUpdate, goToUpdate, r
             </div>
             <div className="m-4 text-right space-y-2">
                 <div className="flex justify-between">
-                    <p className='text-gray-500'>Type Request</p> <p className='font-medium'>{item.type_name}</p>
+                    <p className='text-gray-500'>Type Request</p> <p className='font-medium'>{item.type_name || item.nameTypeRequest}</p>
                 </div>
                 <div className="flex justify-between">
-                    <p className='text-gray-500'>Jenis</p><p className='font-medium'>{item.jenis}</p>
+                    <p className='text-gray-500'>Jenis</p><p className='font-medium'>{item.jenis || item.jenisTypeRequest}</p>
                 </div>
                 <div className="flex justify-between">
                     <p className='text-gray-500'>Tgl. Request</p><p className='font-medium'>{DateFormat(item.tanggal)}</p>
                 </div>
             </div>
             <div className={`max-w-max flex self-end rounded-md border mb-2 mx-4 ${item.is_full_approval ? 'bg-green-50 border-green-400' : 'bg-amber-50 border-amber-400'}`} >
-                <p className={`py-1 px-4 text-xs font-medium ${item.is_full_approval ? 'text-green-700' : 'text-amber-600'}`}>{item.approval_message}</p>
+                { item.approval_message ?
+                    <p className={`py-1 px-4 text-xs font-medium ${item.is_full_approval ? 'text-green-700' : 'text-amber-600'}`}>{item.approval_message}</p>
+                    :
+                    <p className={`py-1 px-4 text-xs font-medium ${item.is_full_approval ? 'text-green-700' : 'text-amber-600'}`}>{item.is_full_approval ? 'Approval selesai' : 'Approval belum selesai'}</p>
+                }
             </div>
             <div className='flex py-2 px-2'>
                 { canUpdate &&

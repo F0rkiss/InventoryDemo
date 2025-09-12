@@ -42,9 +42,8 @@ const PurchaseOrderPRCards = forwardRef(({ item, goToCreate, goToDetail }, ref) 
             {/* Action Buttons Section */}
             <div className='flex justify-end gap-2 mt-3'>
                 <button
-                    className="px-3 py-1.5 purchase-button cursor-not-allowed"
+                    className="px-3 py-1.5 purchase-button "
                     onClick={() => goToCreate(item.id)}
-                    disabled
                 >
                     Create Purchase Order
                 </button>

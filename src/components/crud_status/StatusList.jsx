@@ -23,7 +23,6 @@ function StatusList() {
     const [contentVisible, setContentVisible] = useState(false)
     const navigate = useNavigate();
     const { canCreate, canUpdate, canDelete } = useMenuAccess('Status')
-    const typingTimeoutRef = useRef(null)
 
     useEffect(() => {
         fetchItems()
@@ -72,15 +71,20 @@ function StatusList() {
         }
     }
 
+    const debounceRef = useRef(null);
+            
     const handleSearchChange = (query) => {
         setSearchQuery(query);
-        if (typingTimeoutRef.current) {
-            clearTimeout(typingTimeoutRef.current);
-        }
-        typingTimeoutRef.current = setTimeout(() => {
-            setSearchTerm(query);
-        }, 750);
+        if (debounceRef.current) clearTimeout(debounceRef.current);
+        debounceRef.current = setTimeout(() => {
+        setSearchTerm(query.trim());
+        }, 1200);
     };
+
+    useEffect(() => {
+    // cleanup on unmount
+        return () => debounceRef.current && clearTimeout(debounceRef.current);
+    }, []);
 
     const deleteItems = async (id, name) => {
         try {
@@ -134,7 +138,7 @@ function StatusList() {
                 </div>              
                 <Transition contentVisible={contentVisible}>
                     <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
-                        <ScrollPagination fetchMoreItems={fetchMoreItems} loading={loading} nextCursor={nextCursor}>
+                        <ScrollPagination rootSelector=".page-content" fetchMoreItems={fetchMoreItems} loading={loading} nextCursor={nextCursor}>
                             {
                                 ( items?.map((item) => (
                                     <StatusCards
