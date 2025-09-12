@@ -4,10 +4,8 @@ import DateFormat from '../../../helper/DateFormatHelper';
 const PurchaseRequestCards = forwardRef(
     ({ item, goToPR, goToDetail, isList = false }, ref) => {
         const itemCount = item.details?.length || 0;
-        const isCompleted =
-        String(item?.is_completed ?? '').toLowerCase() === '1' ||
-        item?.is_completed === 1 ||
-        item?.is_completed === true;
+        const PO = item.purchase_orders?.length;
+          
 
         return (
         <div
@@ -80,7 +78,7 @@ const PurchaseRequestCards = forwardRef(
 
             {/* Action Buttons Section */}
             {isList ? (
-            !isCompleted ? (
+            PO === 0  ? (
                 <div className="flex justify-end gap-2 pt-3 mt-3">
                 <button
                     className="px-3 py-1.5 update-button"

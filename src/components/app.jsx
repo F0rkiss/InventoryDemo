@@ -91,6 +91,13 @@ const ListPurchaseOrderPR = lazy(() => import('./crud_create_purchase_order/List
 const DetailPurchaseOrderPR = lazy(() => import('./crud_create_purchase_order/DetailPurchaseOrderPR.jsx'))
 const CreatePurchaseOrderPR = lazy(() => import('./crud_create_purchase_order/CreatePurchaseOrderPR.jsx'))
 
+// const ListPOtoLPB = lazy(() => import('./crud_create_purchase_order/ListPurchaseOrderPR.jsx'))
+// const CreateLPB = lazy(() => import('./crud_create_purchase_order/CreatePurchaseOrderPR.jsx'))
+
+const ListLPB = lazy(() => import('./crud_lpb/ListLPB'))
+const DetailLPB = lazy(() => import('./crud_lpb/DetailLPB.jsx'))
+const UpdateLPB = lazy(() => import('./crud_lpb/updateLPB.jsx'))
+
 const ListMakeRequest = lazy(() => import('./crud_make_request/ListMakeRequest.jsx'))
 const DetailMakeRequest = lazy(() => import('./crud_make_request/DetailMakeRequest.jsx'))
 const UpdateMakeRequest = lazy(() => import('./crud_make_request/UpdateMakeRequest.jsx'))
@@ -172,10 +179,9 @@ const MyApp = () => {
                   <Route path='/purchase-request/detail-purchase-request/:id' element={<DetailPurchaseRequest />} />
                   <Route path='/purchase-request/update-purchase-request/:id' element={<UpdatePurchaseRequest />} />
 
-                  <Route path='/purchase-order/list-purchase-order' element={<ListPurchaseOrder />} />
                   <Route path='/make-purchase-request/list-make-purchase-request' element={<CreateListPurchaseRequest />} />
                   <Route path='/make-purchase-request/create-purchase-request/:id' element={<CreatePurchaseRequest />} />
-{/* ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ */}
+
                   <Route path='/purchase-order/list-purchase-order' element={<ListPurchaseOrder />} />
                   <Route path='/purchase-order/update-purchase-order/:id' element={<UpdatePurchaseOrder/>} />
                   <Route path='/purchase-order/detail-purchase-order/:id' element={<DetailPurchaseOrder />} />
@@ -183,7 +189,14 @@ const MyApp = () => {
                   <Route path='/purchase-order-pr/list-purchase-order-pr' element={<ListPurchaseOrderPR />} />
                   <Route path='/purchase-order-pr/create-purchase-order-pr' element={<CreatePurchaseOrderPR />} />
                   <Route path='/purchase-order-pr/detail-purchase-order-pr/:id' element={<DetailPurchaseOrderPR />} />
-{/* ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ */}
+
+                  {/* <Route path='/lpb/list-lpb-po' element={<ListPurchaseOrderPR />} />
+                  <Route path='/lpb/create-lpb' element={<CreatePurchaseOrderPR />} /> */}
+
+                  <Route path='/lpb/list-lpb' element={<ListLPB />} />
+                  <Route path='/lpb/detail-lpb/:id' element={<DetailLPB />} />
+                  <Route path='/lpb/update-lpb/:id' element={<DetailPurchaseOrderPR />} />
+
                   <Route path='/make-request/list-make-request' element={<ListMakeRequest />} />
                   <Route path='/make-request/detail-make-request/:id' element={<DetailMakeRequest />} />
                   <Route path='/make-request/update-make-request/:id' element={<UpdateMakeRequest />} />

@@ -140,7 +140,7 @@ const ModalPurchaseRequest = ({ onClose, onSave, open, initialData, apiUrl, exis
                     {modalData.selectedBarang ? (
                         <div className="relative border rounded-lg p-3 bg-white flex items-start gap-3 shadow-sm">
                             <div className="flex items-center gap-3">
-                                {console.log(`${apiUrl}${modalData.selectedBarang.image}`)}
+                                {/* {console.log(`${apiUrl}${modalData.selectedBarang.image}`)} */}
                                 {modalData.selectedBarang.image && (
                                     <img
                                         src={`${apiUrl}${modalData.selectedBarang.image}`}

@@ -130,7 +130,13 @@ const Notifications = () => {
                                         <div className="flex-1">
                                             <div className="flex justify-between items-center">
                                                 <h4 className="text-sm font-medium text-gray-800">
-                                                    {notif.username}
+                                                    {/* {notif.username} */}
+                                                    {notif.jenis_request === "MR"
+                                                        ? notif.username
+                                                        : notif.jenis_request === "LPB"
+                                                            ? notif.penerima
+                                                            : notif.penerima}
+                                                    {/* {notif.kode || notif.penerima} */}
                                                 </h4>
                                                 <p className="text-xs text-gray-400 ml-2">
                                                     {dayjs(notif.created_at).fromNow()}
@@ -141,7 +147,8 @@ const Notifications = () => {
                                                 <p className="text-xs text-gray-400">
                                                     {notif.should_approve ? 'Perlu approval' : 'Tidak perlu approval'}
                                                 </p>
-                                                <p className="text-xs text-gray-400">{notif.kode_mr}</p>
+                                                <p className="text-xs text-gray-400">{notif.jenis_request}</p>
+                                                {/* <p className="text-xs text-gray-400">{notif.kode}</p> */}
                                             </div>
                                         </div>
                                     </div>

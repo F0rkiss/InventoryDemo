@@ -49,7 +49,7 @@ function DetailApprovalStep() {
     }
 
   return (
-    <Layout title={'Detail User'}>
+    <Layout title={'Detail Approval Step'}>
         <Block>
             <Back goHome={() => navigate('/approval-step/list-approval-step')}/>
                 {
@@ -58,14 +58,68 @@ function DetailApprovalStep() {
                         <Loader Class={'mt-20'} />
                     ) : (
                     <Transition contentVisible={contentVisible}>
-                        {/* <p>{item.msg}</p> */}
-                    <div className='bg-white rounded shadow-sm overflow-hidden p-6 text-lg mt-8'>
-                        <p className='capitalize'><b>Name : </b>{item.user?.EmpName}</p>
-                        <p><b>Email : </b>{item.user?.email}</p>
-                        <p><b>Type Request : </b>{item.type_request?.name}</p>
-                        <p><b>Phone : </b>{item.Emp}</p>
+                        <div className='bg-white rounded-xl shadow overflow-hidden p-6 mt-8'>
+                            <div className='flex items-center gap-4 pb-5 border-b border-slate-100'>
+                            <div className='h-12 w-12 capitalize rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-lg font-semibold'>
+                            {(item.user?.EmpName || '-')
+                                .split(' ')
+                                .slice(0, 2) // ambil max 2 kata
+                                .map(word => word[0])
+                                .join('')}
+                            </div>
+                            <div className='min-w-0'>
+                                    <p className='text-xl font-semibold text-slate-900 truncate capitalize'>
+                                        {item.user?.EmpName || '-'}
+                                    </p>
+                                    <div className='flex flex-wrap items-center gap-2 mt-1'>
+                                        <span className='px-2 py-0.5 rounded-full text-xs bg-blue-50 text-blue-700 border border-blue-100'>
+                                            Step: {item.approval_step || '-'}
+                                        </span>
+                                        {item.type_request?.name && (
+                                            <span className='px-2 py-0.5 rounded-full text-xs bg-emerald-50 text-emerald-700 border border-emerald-100'>
+                                                {item.type_request.name}
+                                            </span>
+                                        )}
+                                        {item.type_request?.jenis && (
+                                            <span className='px-2 py-0.5 rounded-full text-xs bg-amber-50 text-amber-700 border border-amber-100'>
+                                                {item.type_request.jenis}
+                                            </span>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
 
-                    </div>
+                            <div className='grid grid-cols-1 md:grid-cols-2 gap-4 pt-5'>
+                                <div className='p-4 rounded-lg bg-slate-50 border border-slate-100'>
+                                    <p className='text-xs uppercase tracking-wide text-slate-500'>Approval Step</p>
+                                    <p className='mt-1 text-slate-900'>{item.approval_step || '-'}</p>
+                                </div>
+                                <div className='p-4 rounded-lg bg-slate-50 border border-slate-100'>
+                                    <p className='text-xs uppercase tracking-wide text-slate-500'>Type Request</p>
+                                    <p className='mt-1 text-slate-900'>{item.type_request?.name || '-'}</p>
+                                </div>
+                                <div className='p-4 rounded-lg bg-slate-50 border border-slate-100'>
+                                    <p className='text-xs uppercase tracking-wide text-slate-500'>Jenis Type Request</p>
+                                    <p className='mt-1 text-slate-900'>{item.type_request?.jenis || '-'}</p>
+                                </div>
+                                <div className='p-4 rounded-lg bg-slate-50 border border-slate-100'>
+                                    <p className='text-xs uppercase tracking-wide text-slate-500'>Phone</p>
+                                    <p className='mt-1 text-slate-900'>{item.Emp || '-'}</p>
+                                </div>
+                                <div className='md:col-span-2 p-4 rounded-lg bg-slate-50 border border-slate-100'>
+                                    <p className='text-xs uppercase tracking-wide text-slate-500'>Deskripsi Type Request</p>
+                                    <p className='mt-1 text-slate-900 whitespace-pre-wrap'>
+                                        {item.type_request?.description || '-'}
+                                    </p>
+                                </div>
+                                <div className='md:col-span-2 p-4 rounded-lg bg-indigo-50 border border-indigo-100'>
+                                    <p className='text-xs uppercase tracking-wide text-indigo-700'>Note</p>
+                                    <p className='mt-1 text-slate-900 whitespace-pre-wrap'>
+                                        {item.note || '-'}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
                     </Transition>
                     )
                 }
