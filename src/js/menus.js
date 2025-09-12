@@ -28,7 +28,8 @@ const menus = [
         ]
     },
     { key: "JenisMemo", label: "Jenis Memo", icon: "bx bx-note", path: "/jenismemo/list-jenismemo" },
-    { key: "Status", label: "Status", icon: "bx bx-checkbox-checked", path: "/status/list-status" },
+    { key: "LPB", label: "LPB", icon: "bx ", path: "/lpb/list-lpb" },
+    { key: "Status", label: "Status", icon: "bx bxs-checkbox-checked", path: "/status/list-status" },
     { key: "NavigationGroup", label: "Navigation Group", icon: "bx bx-navigation", path: "/navigation-groups/list-navigation-groups" },
     { key: "Role", label: "Role", icon: "bx bx-tag", path: "/role/list-role" },
     { key: "Billing", label: "Billing", icon: "bx bx-spreadsheet", path: "/billing/list-billing" },

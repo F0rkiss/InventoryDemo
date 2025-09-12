@@ -12,10 +12,6 @@ function UpdateRole() {
         name : '',
     })
     const [decryptedId, setDecryptedId] = useState('')
-    const role = ([
-        {value : 'admin', label : 'Admin'},
-        {value : 'user', label : 'User'}
-    ])
     const [error, setError] = useState(0)
     const [disabled, setDisabled] = useState(false)
     const {id} = useParams()
@@ -37,11 +33,14 @@ function UpdateRole() {
 
     const fetchItems = async () => {
         try {
-            const response = await api.get(`role-detail/${decryptedId}`);
+            const response = await api.get(`inventApprovalStep-detail/${decryptedId}`);
             const data = response.data.data;
             setItems({
-                name: data?.name || '',
-                role: data?.role?.id
+                approval_step: null,
+                user_id: null,
+                invent_type_request_id: null,
+                is_upline: null,
+                note: ""
             });
         } catch (error) {
 
@@ -55,11 +54,14 @@ function UpdateRole() {
             if (disabled) return;
     
             setDisabled(true);
-            await api.put(`role-update/${decryptedId}`, {
-                name : items.name,
-                role : items.role
+            await api.put(`inventApprovalStep-update/${decryptedId}`, {
+                approval_step: null,
+                user_id: null,
+                invent_type_request_id: null,
+                is_upline: null,
+                note: ""
             });
-            navigate('/role/list-role');
+            navigate('/approval-step/list-approval-step');
         } catch (error) {
             console.error('Submit Error:', error);
     
@@ -75,19 +77,79 @@ function UpdateRole() {
   return (
         <Layout title={'Update User'}>
             <Block>
-                <Back goHome={() => navigate('/role/list-role')} />
+                <Back goHome={() => navigate('/approval-step/list-approval-step')} />
                 <div className='bg-white rounded shadow-sm p-3 mt-4'>
                     <form onSubmit={handleSubmit}>
                         <div className="mb-5">
-                            <label>Nama Role:</label>
+                            <label>User:</label>
                             <div className='bg-white p-2 rounded-md border-solid border-gray-300 border'>
                                 <input 
                                     type="text" 
                                     name="name" 
-                                    value={items.name} 
+                                    value={items.approval_step} 
                                     onChange={e => setItems({ ...items, name: e.target.value })}
                                     maxLength={50}
                                     placeholder='Nama'
+                                    className="w-full p-2 border rounded placeholder:text-gray-400 placeholder:font-inter placeholder:font-light capitalize"
+                                    required
+                                />
+                            </div>
+                        </div>
+                        <div className="mb-5">
+                            <label>Approval Step:</label>
+                            <div className='bg-white p-2 rounded-md border-solid border-gray-300 border'>
+                                <input 
+                                    type="text" 
+                                    name="name" 
+                                    value={items.appro} 
+                                    onChange={e => setItems({ ...items, name: e.target.value })}
+                                    maxLength={50}
+                                    placeholder='Approval Step'
+                                    className="w-full p-2 border rounded placeholder:text-gray-400 placeholder:font-inter placeholder:font-light capitalize"
+                                    required
+                                />
+                            </div>
+                        </div>
+                        <div className="mb-5">
+                            <label>Type Request:</label>
+                            <div className='bg-white p-2 rounded-md border-solid border-gray-300 border'>
+                                <input 
+                                    type="text" 
+                                    name="name" 
+                                    value={items.appro} 
+                                    onChange={e => setItems({ ...items, name: e.target.value })}
+                                    maxLength={50}
+                                    placeholder='Type Request'
+                                    className="w-full p-2 border rounded placeholder:text-gray-400 placeholder:font-inter placeholder:font-light capitalize"
+                                    required
+                                />
+                            </div>
+                        </div>
+                        <div className="mb-5">
+                            <label>Atasan:</label>
+                            <div className='bg-white p-2 rounded-md border-solid border-gray-300 border'>
+                                <input 
+                                    type="text" 
+                                    name="name" 
+                                    value={items.appro} 
+                                    onChange={e => setItems({ ...items, name: e.target.value })}
+                                    maxLength={50}
+                                    placeholder='Atasan Keberapa'
+                                    className="w-full p-2 border rounded placeholder:text-gray-400 placeholder:font-inter placeholder:font-light capitalize"
+                                    required
+                                />
+                            </div>
+                        </div>
+                        <div className="mb-5">
+                            <label>Note:</label>
+                            <div className='bg-white p-2 rounded-md border-solid border-gray-300 border'>
+                                <input 
+                                    type="text" 
+                                    name="name" 
+                                    value={items.appro} 
+                                    onChange={e => setItems({ ...items, name: e.target.value })}
+                                    maxLength={50}
+                                    placeholder='Note'
                                     className="w-full p-2 border rounded placeholder:text-gray-400 placeholder:font-inter placeholder:font-light capitalize"
                                     required
                                 />

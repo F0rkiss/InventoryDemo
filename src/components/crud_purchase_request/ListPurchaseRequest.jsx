@@ -13,6 +13,7 @@ import RestoreButton from '../component/RestoreButton'
 import DataEmpty from '../component/DataEmpty'
 import { encrypting } from '../../helper/EncryptHelper'
 import Swal from 'sweetalert2'
+import { width } from 'dom7'
 
   function PurchaseRequestList() {
 
@@ -107,12 +108,12 @@ import Swal from 'sweetalert2'
   
     const goToDetail = async(itemid) => {
       const encryptingID = await encrypting(itemid)
-      navigate(`/make-purchase-request/update-make-purchase-request/${encryptingID}`);
+      navigate(`/purchase-request/detail-purchase-request/${encryptingID}`);
     }
     
     const goToPR = async (id) => {
       const encryptingID = await encrypting(id)
-      navigate(`/make-purchase-request/create-make-purchase-request/${encryptingID}`)
+      navigate(`/purchase-request/update-purchase-request/${encryptingID}`)
     } 
 
     return (
@@ -122,12 +123,25 @@ import Swal from 'sweetalert2'
                 <div className='flex items-center gap-3'>
                   <p className='lg:text-3xl text-2xl font-semibold capitalize'>Purchase Request</p>
                   <label className="flex items-center gap-2 cursor-pointer">
-                    <input 
+                  <button
+                    onClick={() => setFilterToggle(!filterToggle)} 
+                    className={`px-3 py-3 w-fit h-full border text-base font-medium rounded-full flex justify-center items-center gap-2 transition-colors duration-200 ${
+                      filterToggle 
+                        ? 'bg-green-100 text-green-700 hover:bg-green-200 border-green-300' 
+                        : 'bg-white text-gray-700 hover:bg-gray-50'
+                    }`}
+                  >
+                    <i className="bx bxs-sort-alt"></i>
+                    {/* {(width < 768) ? <span>{filterToggle ? 'Selesai' : 'Semua'}</span>:
+                    <></>
+                    } */}
+                  </button>
+                    {/* <input 
                       type="checkbox" 
                       checked={filterToggle} 
                       onChange={(e) => setFilterToggle(e.target.checked)} 
                     />
-                    <span>Filter Toggle</span>
+                    <span>Filter Toggle</span> */}
                   </label>
                 </div>
                   <SearchBar

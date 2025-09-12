@@ -15,18 +15,26 @@ const NotifCards = forwardRef(({ item, goToPage, restoreItems, restore = false, 
             <div className="p-4 flex flex-col border-b w-full">
                 <div className="flex justify-between items-center mb-1">
                     <h4 className="text-sm font-medium text-gray-800 truncate">
-                        {item.username}
+                    {item.jenis_request === "MR"
+                        ? item.username
+                        : item.jenis_request === "LPB"
+                            ? item.penerima
+                            : item.penerima}
                     </h4>
                     <p className="text-xs text-gray-400 ml-2 whitespace-nowrap">
                         {dayjs(item.created_at).format('DD-MM-YYYY, [pukul] HH:mm')}
                     </p>
                 </div>
                 <p className="text-sm text-gray-600 mb-1">{item.message_approval}</p>
+
                 <div className="flex justify-between items-center">
                     <p className="text-xs text-gray-400">
                         {item.should_approve ? 'Perlu approval' : 'Tidak perlu approval'}
                     </p>
-                    <p className="text-xs text-gray-400">{item.kode}</p>
+                    <p className="text-xs text-gray-400">
+                        {item.kode}
+                        <p className="">Type : {item.jenis_request}</p>
+                        </p>
                 </div>
             </div>
             

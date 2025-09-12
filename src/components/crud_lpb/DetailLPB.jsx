@@ -148,6 +148,15 @@ function DetailPurchaseRequest() {
                 {/* HEADER */}
                 <div className="flex items-center justify-between mb-4">
                 <Back goHome={() => navigate('/purchase-request/list-purchase-request')} />
+                <p
+                    className={`py-2 px-2 rounded-md ${
+                    item.make_request?.is_full_approval
+                        ? 'text-green-700 bg-green-200'
+                        :'text-amber-700 bg-amber-200'
+                    }`}
+                >
+                    {item.make_request?.is_full_approval ? 'Approved':'Pending'  }
+                </p>
                 </div>
 
                 <div className="flex flex-col lg:flex-row gap-4 mt-3">
@@ -162,21 +171,23 @@ function DetailPurchaseRequest() {
                 <InfoRow label="Employee Code" value={item.user?.EmpCode} />
                 <InfoRow label="Employee Email" value={item.user?.email} />
                 <InfoRow label="Status Purchase Order" value={<p
-                    className={`py-1 px-4 text-xs font-medium rounded ${item.can_be_deleted? 'text-amber-600 bg-amber-100': 'text-green-700 bg-green-200'}`}>
+                    className={`py-1 px-4 text-xs font-medium rounded ${
+                    item.can_be_deleted
+                        ? 'text-amber-600 bg-amber-100'
+                        : 'text-green-700 bg-green-200'
+                    }`}
+                >
                     {item.can_be_deleted
                     ? 'Belum Masuk Purchase Order'
                     : 'Sudah Masuk Purchase Order'}
-                    </p>}/>
+                </p>} />
                 </div>
 
                 </div>
 
                 {/* MR INFO */}
                 <div className="bg-white border rounded-md p-6 flex-1 min-h-[200px]">
-                    <div className='flex justify-between'>
-                        <p className="font-semibold text-gray-400 mb-2 text-xl">Make Request Information</p>
-                        <p className={`py-2 px-2 rounded-md ${item.make_request?.is_full_approval? 'text-green-700 bg-green-200':'text-amber-700 bg-amber-200'}`}>{item.make_request?.is_full_approval ? 'Approved':'Pending'  }</p>
-                    </div>
+                <p className="font-semibold text-gray-400 mb-2 text-xl">Make Request Information</p>
                 <p className="text-lg font-bold">{mainMR.kode}</p>
                 <p className="text-sm text-gray-500 mb-4">{DateFormat(mainMR.tanggal, false)}</p>
 
