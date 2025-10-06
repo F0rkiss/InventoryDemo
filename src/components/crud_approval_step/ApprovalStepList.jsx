@@ -83,7 +83,7 @@ function ApprovalStepList() {
     navigate(`/approval-step/update-approval-step/${encryptingID}`)
   }
 
-  const deleteItems = async (id, name) => {
+  const deleteItems = async (id) => {
     try {
       const result = await Swal.fire({
         title: `Apakah Anda Yakin Menghapus Approval Step Ini?`,
@@ -125,14 +125,14 @@ function ApprovalStepList() {
             <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
               {items.map((item) => (
                 <ApprovalStepCard
-                  key={item.id}
-                  item={item}
-                  goToDetail={goToDetail}
-                  goToUpdate={goToUpdate}
-                  onDelete={deleteItems}
-                  canUpdate={canUpdate}
-                  canDelete={canDelete}
-                />
+                key={item.id}
+                item={item}
+                goToDetail={goToDetail}
+                goToUpdate={goToUpdate}
+                deleteItems={deleteItems}
+                canUpdate={canUpdate}
+                canDelete={canDelete}
+              />
               ))}
             </div>
           </ScrollPagination>

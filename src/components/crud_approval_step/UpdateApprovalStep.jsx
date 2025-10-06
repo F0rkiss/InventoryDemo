@@ -6,10 +6,20 @@ import { useParams } from 'react-router-dom';
 import Back from '../component/Back';
 import Layout from '../component/Layout';
 import { DecryptID } from '../../helper/EncryptHelper';
+import Swal from 'sweetalert2';
 
 function UpdateRole() {
     const [items, setItems] = useState({
-        name : '',
+        approval_step: '',
+        user_id: '',
+        invent_type_request_id: '',
+        is_upline: '',
+        note: '',
+        // Display values
+        user_name: '',
+        type_request_name: '',
+        type_request_jenis: '',
+        type_request_description: ''
     })
     const [decryptedId, setDecryptedId] = useState('')
     const [error, setError] = useState(0)
@@ -36,14 +46,19 @@ function UpdateRole() {
             const response = await api.get(`inventApprovalStep-detail/${decryptedId}`);
             const data = response.data.data;
             setItems({
-                approval_step: null,
-                user_id: null,
-                invent_type_request_id: null,
-                is_upline: null,
-                note: ""
+                approval_step: data.approval_step || '',
+                user_id: data.user_id || '',
+                invent_type_request_id: data.invent_type_request_id || '',
+                is_upline: data.is_upline === 1 ? 'yes' : 'no',
+                note: data.note || '',
+                // Display values
+                user_name: data.user?.EmpName || '',
+                type_request_name: data.type_request?.name || '',
+                type_request_jenis: data.type_request?.jenis || '',
+                type_request_description: data.type_request?.description || ''
             });
         } catch (error) {
-
+            console.error('Error fetching approval step:', error);
         }
     };
     // console.log(data)
@@ -55,15 +70,29 @@ function UpdateRole() {
     
             setDisabled(true);
             await api.put(`inventApprovalStep-update/${decryptedId}`, {
-                approval_step: null,
-                user_id: null,
-                invent_type_request_id: null,
-                is_upline: null,
-                note: ""
+                approval_step: parseInt(items.approval_step),
+                user_id: parseInt(items.user_id),
+                invent_type_request_id: parseInt(items.invent_type_request_id),
+                is_upline: items.is_upline === 'yes' ? 1 : 0,
+                note: items.note
             });
+
+            Swal.fire({
+                title: 'Approval Step berhasil diperbarui!',
+                icon: 'success',
+                timer: 2000,
+                showConfirmButton: false,
+            });
+
             navigate('/approval-step/list-approval-step');
         } catch (error) {
             console.error('Submit Error:', error);
+
+            Swal.fire({
+                icon: 'error',
+                title: 'Gagal Update Approval Step',
+                text: err.response?.data?.msg || 'Ada kesalahan dalam sistem',
+            });
     
             // Cek error yang aman
             const statusCode = error?.response?.data?.statusCode || 500;
@@ -75,7 +104,7 @@ function UpdateRole() {
     
     
   return (
-        <Layout title={'Update User'}>
+        <Layout title={'Update Approval Step'}>
             <Block>
                 <Back goHome={() => navigate('/approval-step/list-approval-step')} />
                 <div className='bg-white rounded shadow-sm p-3 mt-4'>
@@ -85,11 +114,11 @@ function UpdateRole() {
                             <div className='bg-white p-2 rounded-md border-solid border-gray-300 border'>
                                 <input 
                                     type="text" 
-                                    name="name" 
-                                    value={items.approval_step} 
-                                    onChange={e => setItems({ ...items, name: e.target.value })}
+                                    name="user_name" 
+                                    value={items.user_name} 
+                                    onChange={e => setItems({ ...items, user_name: e.target.value })}
                                     maxLength={50}
-                                    placeholder='Nama'
+                                    placeholder='Employee Name'
                                     className="w-full p-2 border rounded placeholder:text-gray-400 placeholder:font-inter placeholder:font-light capitalize"
                                     required
                                 />
@@ -99,12 +128,14 @@ function UpdateRole() {
                             <label>Approval Step:</label>
                             <div className='bg-white p-2 rounded-md border-solid border-gray-300 border'>
                                 <input 
-                                    type="text" 
-                                    name="name" 
-                                    value={items.appro} 
-                                    onChange={e => setItems({ ...items, name: e.target.value })}
-                                    maxLength={50}
-                                    placeholder='Approval Step'
+                                    type="number" 
+                                    name="approval_step" 
+                                    value={items.approval_step} 
+                                    onChange={e => setItems({ ...items, approval_step: e.target.value })}
+                                    min="1"
+                                    max="10"
+                                    step="1"
+                                    placeholder='Approval Step Number'
                                     className="w-full p-2 border rounded placeholder:text-gray-400 placeholder:font-inter placeholder:font-light capitalize"
                                     required
                                 />
@@ -115,29 +146,60 @@ function UpdateRole() {
                             <div className='bg-white p-2 rounded-md border-solid border-gray-300 border'>
                                 <input 
                                     type="text" 
-                                    name="name" 
-                                    value={items.appro} 
-                                    onChange={e => setItems({ ...items, name: e.target.value })}
+                                    name="type_request_name" 
+                                    value={items.type_request_name} 
+                                    onChange={e => setItems({ ...items, type_request_name: e.target.value })}
                                     maxLength={50}
-                                    placeholder='Type Request'
+                                    placeholder='Type Request Name'
+                                    className="w-full p-2 border rounded placeholder:text-gray-400 placeholder:font-inter placeholder:font-light capitalize"
+                                    required
+                                />
+                            </div>
+                        </div>
+                        {/* <div className="mb-5">
+                            <label>Jenis Request:</label>
+                            <div className='bg-white p-2 rounded-md border-solid border-gray-300 border'>
+                                <input 
+                                    type="text" 
+                                    name="type_request_jenis" 
+                                    value={items.type_request_jenis} 
+                                    onChange={e => setItems({ ...items, type_request_jenis: e.target.value })}
+                                    maxLength={50}
+                                    placeholder='Jenis Request'
                                     className="w-full p-2 border rounded placeholder:text-gray-400 placeholder:font-inter placeholder:font-light capitalize"
                                     required
                                 />
                             </div>
                         </div>
                         <div className="mb-5">
-                            <label>Atasan:</label>
+                            <label>Description:</label>
                             <div className='bg-white p-2 rounded-md border-solid border-gray-300 border'>
                                 <input 
                                     type="text" 
-                                    name="name" 
-                                    value={items.appro} 
-                                    onChange={e => setItems({ ...items, name: e.target.value })}
+                                    name="type_request_description" 
+                                    value={items.type_request_description} 
+                                    onChange={e => setItems({ ...items, type_request_description: e.target.value })}
                                     maxLength={50}
-                                    placeholder='Atasan Keberapa'
+                                    placeholder='Description'
                                     className="w-full p-2 border rounded placeholder:text-gray-400 placeholder:font-inter placeholder:font-light capitalize"
                                     required
                                 />
+                            </div>
+                        </div> */}
+                        <div className="mb-5">
+                            <label>Is Upline:</label>
+                            <div className=''>
+                                <select 
+                                    name="is_upline" 
+                                    value={items.is_upline} 
+                                    onChange={e => setItems({ ...items, is_upline: e.target.value })}
+                                    className="w-full p-2 border rounded placeholder:text-gray-400 placeholder:font-inter placeholder:font-light capitalize bg-white p-2 rounded-md border-solid border-gray-300 border"
+                                    required
+                                >
+                                    <option value="">Select Option</option>
+                                    <option value="yes">Yes</option>
+                                    <option value="no">No</option>
+                                </select>
                             </div>
                         </div>
                         <div className="mb-5">
@@ -145,9 +207,9 @@ function UpdateRole() {
                             <div className='bg-white p-2 rounded-md border-solid border-gray-300 border'>
                                 <input 
                                     type="text" 
-                                    name="name" 
-                                    value={items.appro} 
-                                    onChange={e => setItems({ ...items, name: e.target.value })}
+                                    name="note" 
+                                    value={items.note} 
+                                    onChange={e => setItems({ ...items, note: e.target.value })}
                                     maxLength={50}
                                     placeholder='Note'
                                     className="w-full p-2 border rounded placeholder:text-gray-400 placeholder:font-inter placeholder:font-light capitalize"
@@ -156,7 +218,7 @@ function UpdateRole() {
                             </div>
                         </div>
                         <div className="flex">
-                            <button disabled={disabled} type="submit" className="bg-cyan-400 text-white p-2 rounded w-1/2 me-3">Update User</button>
+                            <button disabled={disabled} type="submit" className="bg-cyan-400 text-white p-2 rounded w-1/2 me-3">Update Approval Step</button>
                             <button type="button" onClick={fetchItems} className="bg-red-400 text-white p-2 rounded w-1/2">Clear</button>
                         </div>
                     </form>

@@ -97,7 +97,7 @@ function CreatePurchaseRequest() {
                 showConfirmButton: false,
             });
 
-            setTimeout(() => navigate('/purchase-request/list-make-purchase-request'), 1200);
+            setTimeout(() => navigate('/make-purchase-request/list-make-purchase-request'), 1200);
         } catch (err) {
             console.error('Error creating purchase request:', err);
             Swal.fire({
@@ -209,6 +209,7 @@ function CreatePurchaseRequest() {
                                         Belum ada barang dipilih
                                     </p>
                                 ) : (
+                                    <div className='overflow-x-auto'>
                                     <table className="w-full text-sm text-left">
                                         <thead>
                                             <tr className="bg-gray-100">
@@ -280,6 +281,7 @@ function CreatePurchaseRequest() {
                                             ))}
                                         </tbody>
                                     </table>
+                                    </div>
                                 )}
                             </div>
 
@@ -303,6 +305,7 @@ function CreatePurchaseRequest() {
                                     </p>
                                 )}
                             </div>
+
                         </div>
 
                         {/* === Action Buttons === */}

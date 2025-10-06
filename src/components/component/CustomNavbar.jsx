@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import CustomSidebar from './CustomSidebar';
 import { useAuth } from '../../auth/AuthContext';
-import Notifications from '../../components/component/notifications';
+import Notifications from '../informationPage/Notifications';
 import menus from '../../js/menus';
 
 const CustomNavbar = ({ scrollRootSelector, scrollRootRef }) => {

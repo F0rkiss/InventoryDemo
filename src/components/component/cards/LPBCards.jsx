@@ -2,11 +2,13 @@ import React, { forwardRef, useEffect, useState } from 'react'
 import DateFormat from '../../../helper/DateFormatHelper'
 // import PriceFormat from '../../../helper/PriceFormatHelper'
 
-const LPBCards = forwardRef(({ item, goToUpdate, goToDetail, canUpdate, desktop = false }, ref) => {
+const LPBCards = forwardRef(({ item, goToUpdate, goToDetail,isList, goToCreate, desktop = false }, ref) => {
     const [detail, setDetail] = useState(null)
 
     const infoPO = item?.purchase_order ?? {}
     const infoPR = item?.purchase_request ?? item?.purchase_order?.purchase_request ?? {}
+    const UpdatedBool = item.canBeUpdated ? 1 : 0 ;
+    const FullApprove = item.is_full_approval ? 1 : 0 ;
 
 
     useEffect(() => {
@@ -31,10 +33,13 @@ const LPBCards = forwardRef(({ item, goToUpdate, goToDetail, canUpdate, desktop 
                 <p className="font-semibold text-[16px] pe-2">{item.penerima}</p>
             </div>
             </div>
-            <button className="detail-button" onClick={() => goToDetail(item.id)}>
-            <i className="bx bx-dots-vertical-rounded text-2xl max-xs:text-xl" />
+            {isList ?
+            <button className="detail-button max-w-full overflow-hidden" onClick={() => goToDetail(item.id)}>
+                <i className="bx bx-dots-vertical-rounded text-2xl max-xs:text-xl" />
             </button>
-            
+            : 
+            <></>
+            }
         </div>
 
         {/* Info */}
@@ -44,28 +49,29 @@ const LPBCards = forwardRef(({ item, goToUpdate, goToDetail, canUpdate, desktop 
             <p className="font-medium">{item.penerima}</p>
             </div> */}
             <div className="flex justify-between">
-            <p className="text-gray-500">Pembayaran</p>
-            <p className="font-medium capitalize">{infoPO.cara_pembayaran}</p>
+                <p className="text-gray-500">Pembayaran</p>
+                <p className="font-medium capitalize">{(isList ? infoPO.cara_pembayaran : item.cara_pembayaran )}</p>
             </div>
             <div className="flex justify-between">
-            <p className="text-gray-500">Keterangan</p>
-            <p className="font-medium">{item.note}</p>
+                <p className="text-gray-500">Keterangan</p>
+                <p className="font-medium">{(isList ? item.note : item.keterangan)}</p>
             </div>
             {/* <div className="flex justify-between">
-            <p className="text-gray-500">Keterangan</p>
-            <p className="font-medium">{item.keterangan}</p>
+                <p className="text-gray-500">Keterangan</p>
+                <p className="font-medium">{item.keterangan}</p>
             </div> */}
             <div className="flex justify-between">
-            <p className="text-gray-500">Tanggal</p>
-            <p className="font-medium">{DateFormat(item.tanggal)}</p>
+                <p className="text-gray-500">Tanggal Penyerahan</p>
+                <p className="font-medium">{DateFormat(item.tanggal)}</p>
             </div>
             <div className="flex justify-between">
-            <p className="text-gray-500">Tgl. Penyerahan</p>
-            <p className="font-medium">{DateFormat(item.created_at)}</p>
+                <p className="text-gray-500">Tgl Pembuatan Laporan</p>
+                <p className="font-medium">{DateFormat(item.created_at)}</p>
             </div>
         </div>
-
+            
         {/* Status + Toggle Button */}
+         { isList ? 
         <div className="flex justify-between items-center mb-2 mx-4 gap-2">
             {!desktop && infoPR && (
             <button
@@ -74,7 +80,7 @@ const LPBCards = forwardRef(({ item, goToUpdate, goToDetail, canUpdate, desktop 
                 }`}
                 onClick={() => toggleDetail(item.id)}
             >
-                <span>View Related PR & PO</span>
+                <span>View Purchase Order</span>
                 {detail === item.id ? (
                 <i className="bx bx-chevron-up text-2xl"></i>
                 ) : (
@@ -89,101 +95,98 @@ const LPBCards = forwardRef(({ item, goToUpdate, goToDetail, canUpdate, desktop 
             </p>
             </div>
         </div>
-
-        {/* Purchase Request Detail */}
-        <div
-            className={`overflow-hidden transition-all ease-in-out duration-300 rounded-lg mx-4 mb-2 ${
-            detail === item.id ? 'max-h-[500px] py-3 border bg-gray-50' : 'max-h-0'
-            }`}
-        >
-            {infoPR && (
-            <div className="mx-3 text-right space-y-2 ">
-                <div className="flex gap-2 justify-between mb-3">
-                <p className="font-semibold text-left text-[16px]">Purchase Request</p>
-                <div className="flex justify-end">
-                    <div
-                    className={`max-h-max max-w-max rounded-md border ${
-                        infoPR.is_completed ? 'bg-green-50 border-green-400' : 'bg-amber-50 border-amber-400'
-                    }`}
-                    >
-                    <p
-                        className={`py-1 px-2 flex gap-1 text-left items-center text-xs font-medium ${
-                        infoPR.is_completed ? 'text-green-700' : 'text-amber-600'
-                        }`}
-                    >
-                        <i className="bx bxs-check-circle text-sm"></i>
-                        {infoPR.is_completed ? 'Purchase request telah selesai' : 'Belum selesai'}
-                    </p>
-                    </div>
-                </div>
-                </div>
-                <div className="flex justify-between">
-                <p className="text-gray-500">Kode</p>
-                <p className="font-medium">{infoPR.kode}</p>
-                </div>
-                <div className="flex justify-between">
-                <p className="text-gray-500">Note</p>
-                <p className="font-medium">{infoPR.note}</p>
-                </div>
-                <div className="flex justify-between">
-                <p className="text-gray-500">Tanggal</p>
-                <p className="font-medium">{DateFormat(infoPR.tanggal)}</p>
-                </div>
-            </div>
-            )}
-        </div>
+        : <></> }
 
         <div
             className={`overflow-hidden transition-all ease-in-out duration-300 rounded-lg mx-4 mb-2 ${
             detail === item.id ? 'max-h-[500px] py-3 border bg-gray-50' : 'max-h-0'
             }`}
         >
-
-            {infoPO && (
-            <div className="mx-3 text-right space-y-2 ">
-                <div className="flex gap-2 justify-between mb-3">
-                <p className="font-semibold text-left text-[16px]">Purchase Order</p>
-                <div className="flex justify-end">
-                    <div
-                    className={`max-h-max max-w-max rounded-md border ${
-                        infoPO.is_completed ? 'bg-green-50 border-green-400' : 'bg-amber-50 border-amber-400'
-                    }`}
-                    >
-                    <p
-                        className={`py-1 px-2 flex gap-1 text-left items-center text-xs font-medium ${
-                        infoPO.is_completed ? 'text-green-700' : 'text-amber-600'
+            
+                {infoPO && (
+                <div className="mx-3 text-right space-y-2 ">
+                    <div className="flex gap-2 justify-between mb-3">
+                    <p className="font-semibold text-left text-[16px]">Purchase Order</p>
+                    <div className="flex justify-end">
+                        <div
+                        className={`max-h-max max-w-max rounded-md border ${
+                            infoPO.is_completed ? 'bg-green-50 border-green-400' : 'bg-amber-50 border-amber-400'
                         }`}
-                    >
-                        <i className="bx bxs-check-circle text-sm"></i>
-                        {infoPO.is_completed ? 'Purchase Order telah selesai' : 'Belum selesai'}
-                    </p>
+                        >
+                        <p
+                            className={`py-1 px-2 flex gap-1 text-left items-center text-xs font-medium ${
+                            infoPO.is_completed ? 'text-green-700' : 'text-amber-600'
+                            }`}
+                        >
+                            <i className="bx bxs-check-circle text-sm"></i>
+                            {infoPO.is_completed ? 'Purchase Order telah selesai' : 'Belum selesai'}
+                        </p>
+                        </div>
+                    </div>
+                    </div>
+                    <div className="flex justify-between">
+                        <p className="text-gray-500">Kode</p>
+                        <p className="font-medium">{infoPO.kode}</p>
+                    </div>
+                    <div className="flex justify-between">
+                        <p className="text-gray-500">Note</p>
+                        <p className="font-medium">{infoPO.keterangan}</p>
+                    </div>
+                    <div className="flex justify-between">
+                        <p className="text-gray-500">Tanggal</p>
+                        <p className="font-medium">{DateFormat(infoPO.tanggal)}</p>
                     </div>
                 </div>
-                </div>
-                <div className="flex justify-between">
-                    <p className="text-gray-500">Kode</p>
-                    <p className="font-medium">{infoPO.kode}</p>
-                </div>
-                <div className="flex justify-between">
-                    <p className="text-gray-500">Note</p>
-                    <p className="font-medium">{infoPO.keterangan}</p>
-                </div>
-                <div className="flex justify-between">
-                    <p className="text-gray-500">Tanggal</p>
-                    <p className="font-medium">{DateFormat(infoPO.tanggal)}</p>
-                </div>
-            </div>
-            )}
+                )}
         </div>
 
         {/* Actions */}
-        <div className="flex gap-2 py-2 px-2 mx-2 mb-2">
-            {canUpdate && (
-            <button className="px-3 py-1.5 update-button" onClick={() => goToUpdate(item.id)}>
-                <p>Update</p>
-            </button>
+        {isList ? (
+                UpdatedBool ? (
+                    <div className="flex gap-2 py-2 px-2 mx-2 mb-2">
+                    <button
+                        className="px-3 py-1.5 update-button"
+                        onClick={() => goToUpdate(item.id)}
+                    >
+                        Update
+                    </button>
+                    </div>
+                ) : (
+                    ( FullApprove ? 
+                        (
+                        <div className="flex gap-2 py-2 px-2 mx-2 mb-2">
+                        <button
+                            className="px-3 py-1.5 rounded-md bg-gray-400 text-white opacity-70 cursor-not-allowed"
+                            disabled
+                        >
+                            Full Approved
+                        </button>
+                        </div>
+                        ) : (
+                            <div className="flex gap-2 py-2 px-2 mx-2 mb-2">
+                            <button
+                                className="px-3 py-1.5 rounded-md bg-gray-400 text-white opacity-70 cursor-not-allowed"
+                                disabled
+                            >
+                                Approve oleh lebih dari 1 orang
+                            </button>
+                            </div> 
+                        )
+                    )
+                )
+            ) : (
+            <div className="flex gap-2 py-2 px-2 mx-2 mb-2">
+                <button
+                    className="px-3 py-1.5 update-button"
+                    onClick={() => {
+                        // console.log("Klik Buat Laporan:", item.id)
+                        goToCreate(item.id)
+                    }}
+                    >
+                    Buat Laporan
+                </button>
+            </div>
             )}
-        </div>
         </div>
     )
 })

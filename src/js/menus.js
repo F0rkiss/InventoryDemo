@@ -30,7 +30,16 @@ const menus = [
     { key: "Categories", label: "Category", icon: "bx bx-category-alt", path: "/category/list-category" },
     { key: "User", label: "Data User", icon: "bx bxs-user-badge", path: "/user/list-user" },
     { key: "JenisMemo", label: "Jenis Memo", icon: "bx bx-note", path: "/jenismemo/list-jenismemo" },
-    { key: "LPB", label: "LPB", icon: "bx ", path: "/lpb/list-lpb" },
+    {
+        key: "LPB",
+        label: "LPB",
+        icon: "bx bx-file",
+        isAccordion: true,
+        children: [
+            { key: "ListPurchaseOrder", label: "Create LPB", path: "/lpb/list-create-lpb" },
+            { key: "LPB", label: "LPB", path: "/lpb/list-lpb" },
+        ]
+    },
     { key: "Status", label: "Status", icon: "bx bxs-checkbox-checked", path: "/status/list-status" },
     { key: "NavigationGroup", label: "Navigation Group", icon: "bx bx-navigation", path: "/navigation-groups/list-navigation-groups" },
     { key: "Role", label: "Role", icon: "bx bx-tag", path: "/role/list-role" },
@@ -43,6 +52,16 @@ const menus = [
         children: [
             { key: "ApprovalStep", label: "Approval Step", icon: "bx bx-user-check", path: "/approval-step/list-approval-step" },
             { key: "ApprovalStepLPB", label: "Approval Step LPB", path: "/approval-step-lpb/list-approval-step-lpb" },
+        ]
+    },
+    {
+        key: "InventMutasi" || "InventLog",
+        label: "Information",
+        icon: "bx bx-info-circle",
+        isAccordion: true,
+        children: [
+            { key: "InventMutasi", label: "Mutasi", path: "/mutasi" },
+            { key: "InventLog", label: "Log", path: "/log" }
         ]
     }
 ];

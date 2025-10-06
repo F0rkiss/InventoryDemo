@@ -1,5 +1,6 @@
 import React, { forwardRef } from 'react';
 import DateFormat from '../../../helper/DateFormatHelper';
+import InfoRow from '../infoRow';
 
 const PurchaseRequestCards = forwardRef(
     ({ item, goToPR, goToDetail, isList = false }, ref) => {
@@ -57,6 +58,12 @@ const PurchaseRequestCards = forwardRef(
                         {DateFormat(item.updated_at)}
                     </p>
                 </div>
+                <InfoRow label="Status Purchase Order" value={<p
+                    className={`flex py-2 px-3 items-center lg:text-[14px] xs:text-xs text-center gap-1 rounded-md font-medium ${!PO === 0 ? 'text-green-700 bg-green-100 border border-green-500' : 'text-amber-700 bg-amber-100 border border-amber-500'}`}>
+                    {PO === 0
+                    ? 'Belum Masuk Purchase Order'
+                    : 'Sudah Masuk Purchase Order'}
+                    </p>}/>
                 </>
             ) : (
                 <>
@@ -74,6 +81,8 @@ const PurchaseRequestCards = forwardRef(
                 </div>
                 </>
             )}
+
+            
             </div>
 
             {/* Action Buttons Section */}
@@ -84,7 +93,7 @@ const PurchaseRequestCards = forwardRef(
                     className="px-3 py-1.5 update-button"
                     onClick={() => goToPR(item.id)}
                 >
-                    Edit
+                    Update
                 </button>
                 </div>
             ) : (
