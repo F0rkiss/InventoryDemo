@@ -10,6 +10,7 @@ import Layout from '../component/Layout'
 import LPBCards from '../component/cards/LPBCards.jsx'
 import DataEmpty from '../component/DataEmpty'
 import { encrypting } from '../../helper/EncryptHelper'
+import FilterStatusToggle from '../component/FilterStatusToggle'
 
 function ListLPB() {
   const [items, setItems] = useState([])
@@ -18,65 +19,85 @@ function ListLPB() {
   const [searchTerm, setSearchTerm] = useState('')
   const [searchQuery, setSearchQuery] = useState('')
   const [contentVisible, setContentVisible] = useState(false)
-  const [filterToggle, setFilterToggle] = useState(false)
+
+  const [filterStatus, setFilterStatus] = useState('all')
+  const onFilterChange = (next) => setFilterStatus(next)
 
   const typingTimeoutRef = useRef(null)
   const navigate = useNavigate()
+  const boolToInt = (val) => (val ? 1 : 0)
 
   useEffect(() => {
-    fetchItems()
-  }, [searchTerm, filterToggle])
+  fetchItems()
+}, [searchTerm, filterStatus]) // samain nama biar konsisten, bukan filterToggle
 
-  const buildEndpoint = () => {
-    if (searchTerm) {
-      return `laporanPenerimaanBarang/${searchTerm}`
-    } else if (filterToggle) {
-      return `laporanPenerimaanBarang-toggle?is_completed=1`
-    } else {
-      return 'laporanPenerimaanBarang'
+const fetchItems = async () => {
+  try {
+    setLoading(true)
+
+    let endpoint = searchTerm
+      ? `laporanPenerimaanBarang/${searchTerm}`
+      : 'laporanPenerimaanBarang'
+    const params = {}
+
+    if (filterStatus === 'completed') {
+      endpoint = 'laporanPenerimaanBarang-toggle'
+      params.is_full_approval = 1
+    } else if (filterStatus === 'not_completed') {
+      endpoint = 'laporanPenerimaanBarang-toggle'
+      params.is_full_approval = 0
     }
+
+    const response = await api.get(endpoint, { params })
+    const data = response.data.data
+
+    setItems(Array.isArray(data.data) ? data.data : [])
+    setNextCursor(data.next_cursor)
+    setTimeout(() => setContentVisible(true), 50)
+  } catch (error) {
+    console.error(error)
+  } finally {
+    setLoading(false)
   }
+}
 
-  const fetchItems = async () => {
-    try {
-      setLoading(true)
-      const endpoint = buildEndpoint()
-      const response = await api.get(endpoint)
-      const data = response.data.data
+const fetchMoreItems = async () => {
+  if (!nextCursor || loading) return
+  try {
+    setLoading(true)
 
-      setItems(data.data)
-      setNextCursor(data.next_cursor)
-      setLoading(false)
-      setTimeout(() => setContentVisible(true), 50)
-    } catch (error) {
-      setLoading(false)
+    let endpoint = searchTerm
+      ? `laporanPenerimaanBarang/${searchTerm}`
+      : 'laporanPenerimaanBarang'
+    const params = { cursor: nextCursor }
+
+    if (filterStatus === 'completed') {
+      endpoint = 'laporanPenerimaanBarang-toggle'
+      params.is_full_approval = 1
+    } else if (filterStatus === 'not_completed') {
+      endpoint = 'laporanPenerimaanBarang-toggle'
+      params.is_full_approval = 0
     }
+
+    const response = await api.get(endpoint, { params })
+    const data = response.data.data
+
+    setItems((prevItems) => {
+      const existingIds = new Set(prevItems.map((item) => item.id))
+      const newItems = (data.data || []).filter(
+        (item) => !existingIds.has(item.id)
+      )
+      return [...prevItems, ...newItems]
+    })
+
+    setNextCursor(data.next_cursor)
+  } catch (error) {
+    console.error(error)
+  } finally {
+    setLoading(false)
   }
+}
 
-  const fetchMoreItems = async () => {
-    if (!nextCursor || loading) return
-    try {
-      setLoading(true)
-      const endpoint = buildEndpoint()
-
-      const response = await api.get(endpoint, {
-        params: { cursor: nextCursor },
-      })
-      const data = response.data.data
-
-      setItems((prevItems) => {
-        const existingIds = new Set(prevItems.map((item) => item.id))
-        const newItems = data.data.filter((item) => !existingIds.has(item.id))
-        return [...prevItems, ...newItems]
-      })
-
-      setNextCursor(data.next_cursor)
-      setLoading(false)
-      setTimeout(() => setContentVisible(true), 50)
-    } catch (error) {
-      setLoading(false)
-    }
-  }
 
   const handleSearchChange = (query) => {
     setSearchQuery(query)
@@ -106,18 +127,11 @@ function ListLPB() {
             <p className="lg:text-3xl text-2xl font-semibold capitalize">
               List Laporan Penerimaan Barang
             </p>
-            <button
-              onClick={() => setFilterToggle(!filterToggle)}
-              className={`px-3 py-2 w-fit border text-base font-medium rounded-full flex justify-center items-center gap-2 transition-colors duration-200 ${
-                filterToggle
-                  ? 'bg-green-100 text-green-700 hover:bg-green-200 border-green-300'
-                  : 'bg-white text-gray-700 hover:bg-gray-50'
-              }`}
-            >
-              <i className="bx bxs-sort-alt"></i>
-              {/* <span>{filterToggle ? 'Selesai' : 'Semua'}</span> */}
-            </button>
           </div>
+          <FilterStatusToggle
+                value={filterStatus}
+                onChange={onFilterChange}
+              />
           <SearchBar
             onChange={handleSearchChange}
             disable={loading}
@@ -137,7 +151,8 @@ function ListLPB() {
                 key={item.id} 
                 item={item} 
                 isList={true} 
-                canUpdate={goToUpdate}
+                goToUpdate={goToUpdate}
+                goToDetail={goToDetail}
                 />
               ))}
             </div>

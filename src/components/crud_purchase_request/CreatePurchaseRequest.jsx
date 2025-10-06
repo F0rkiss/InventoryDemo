@@ -97,7 +97,7 @@ function CreatePurchaseRequest() {
                 showConfirmButton: false,
             });
 
-            setTimeout(() => navigate('/purchase-request/list-make-purchase-request'), 1200);
+            setTimeout(() => navigate('/make-purchase-request/list-make-purchase-request'), 1200);
         } catch (err) {
             console.error('Error creating purchase request:', err);
             Swal.fire({
@@ -209,6 +209,7 @@ function CreatePurchaseRequest() {
                                         Belum ada barang dipilih
                                     </p>
                                 ) : (
+                                    <div className='overflow-x-auto'>
                                     <table className="w-full text-sm text-left">
                                         <thead>
                                             <tr className="bg-gray-100">
@@ -280,6 +281,7 @@ function CreatePurchaseRequest() {
                                             ))}
                                         </tbody>
                                     </table>
+                                    </div>
                                 )}
                             </div>
 
@@ -304,25 +306,6 @@ function CreatePurchaseRequest() {
                                 )}
                             </div>
 
-                            {/* Kode Field */}
-                            <div className="mt-6">
-                                <label
-                                    htmlFor="kode"
-                                    className="block text-sm font-medium text-gray-700 mb-2"
-                                >
-                                    Kode
-                                </label>
-                                <input
-                                    type="text"
-                                    id="kode"
-                                    value={kodeValue}
-                                    onChange={e => setKodeValue(e.target.value)}
-                                    placeholder="Masukkan kode..."
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
-                                        focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 
-                                        placeholder-gray-400"
-                                />
-                            </div>
                         </div>
 
                         {/* === Action Buttons === */}

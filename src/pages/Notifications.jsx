@@ -26,9 +26,14 @@ const Notifications = () => {
     fetchItems();
   }, []);
 
-  const goTo = (id) => {
-    // Navigate to approval detail page
-    navigate(`/approval/${id}`);
+  const goTo = (item) => {
+    if (item.jenis_request === "MR") {
+      navigate(`/approval-mr/${item.id}`);
+    } else if(item.jenis_request === "LPB") {
+      navigate(`/approval-lpb/${item.id}`);
+    } else {
+      console.log("not set yet")
+    }
   };
 
   return (
@@ -53,7 +58,7 @@ const Notifications = () => {
               <NotifCards 
                 key={item.id} 
                 item={item} 
-                goTo={goTo}
+                goTo={() => goTo(item)} 
               />
             ))}
           </div>
@@ -63,4 +68,4 @@ const Notifications = () => {
   );
 };
 
-export default Notifications; 
+export default Notifications;

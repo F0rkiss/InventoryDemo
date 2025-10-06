@@ -7,7 +7,7 @@ import ApprovalActions from '../ApprovalActions'
 
 dayjs.extend(relativeTime)
 
-const NotifCards = forwardRef(({ item, goToPage, restoreItems, restore = false, onApprove, onDecline }, ref) => {
+const NotifCards = forwardRef(({ item, goToPage }, ref) => {
     const navigate = useNavigate()
 
     return (
@@ -33,15 +33,15 @@ const NotifCards = forwardRef(({ item, goToPage, restoreItems, restore = false, 
                     </p>
                     <p className="text-xs text-gray-400">
                         {item.kode}
-                        <p className="">Type : {item.jenis_request}</p>
-                        </p>
+                        <span className="">Type : {item.jenis_request}</span>
+                    </p>
                 </div>
             </div>
             
             
             <div className='flex justify-end px-4 py-2'>
                 <button className='text-cyan-500 font-semibold text-sm'
-                    onClick={() => goToPage(item.id)}
+                    onClick={() => goToPage(item)}
                 >
                     Lihat Detail
                 </button>

@@ -10,7 +10,7 @@ import { DecryptID } from '../../helper/EncryptHelper'
 import Transition from '../component/Transition'
 import ImagePreviewModal from '../component/modal/ImagePreviewModal'
 
-function UpdateLPB() {
+function CreateLPB() {
     const [items, setItems] = useState({
         purchase_order: null,
         tanggal: '',
@@ -32,9 +32,7 @@ function UpdateLPB() {
     const [errors, setErrors] = useState({})
     const [isPreviewOpen, setIsPreviewOpen] = useState(false)
     const [selectedImageUrl, setSelectedImageUrl] = useState('')
-    const [loading, setLoading] = useState(false)
-    const [purchaseOrderId, setPurchaseOrderId] = useState(null)
-    const [lpbData, setLpbData] = useState(null)
+    const [poMeta, setPoMeta] = useState({ totalSelectable: 0, totalDetails: 0 })
 
     useEffect(() => {
         const decryptedIds = DecryptID(id)
@@ -53,7 +51,7 @@ function UpdateLPB() {
     // Fungsi validasi
     const validate = () => {
         const newErrors = {}
-        if (!items.purchase_order_id) newErrors.purchase_order_id = 'Purchase Order wajib diisi.'
+        if (!items.purchase_order) newErrors.purchase_order = 'Purchase Order wajib diisi.'
         if (!items.tanggal) newErrors.tanggal = 'Tanggal wajib diisi.'
         if (!items.penerima) newErrors.penerima = 'Penerima wajib diisi.'
         if (!items.note) newErrors.note = 'Keterangan wajib diisi.'
@@ -65,48 +63,19 @@ function UpdateLPB() {
 
     const fetchItem = async () => {
         try {
-            setLoading(true)
-            const response = await api.get(`/laporanPenerimaanBarang-detail/${decryptedId}`)
+            const response = await api.get(`laporanPenerimaanBarang-purchaseOrder/detail/${decryptedId}`)
             const data = response.data.data
-            const PODetails = response.data.data.purchase_order?.details
-            // console.log('=== DEBUG UPDATE LPB ===')
-            // console.log('Full LPB Response:', response.data.data)
-            // console.log('Purchase Order:', response.dat?a.data.purchase_order)
-            // console.log('PODetails:', PODetails)
-            
-            // Populate form fields with existing LPB data
             const fetchedItems = {
-                purchase_order_kode: data.purchase_order?.kode || null,
-                purchase_order_id: data.purchase_order?.id || '',
-                tanggal: data.tanggal || '',
-                penerima: data.penerima || '',
-                note: data.note || '',
+                purchase_order : data.kode || '',
+                tanggal: '',
+                penerima: '',
+                note: '',
             }
-            
-            // Load existing detail items
-            const existingDetails = data.details || []
-            
-            // Extract purchase order ID from the LPB data
-            const poId = data.purchase_order?.id || data.purchase_order_id
-            // console.log('LPB Data:', data);
-            // console.log('Extracted Purchase Order ID:', poId);
-            // console.log('Purchase Order Object:', data.purchase_order);
-            
             setItems(fetchedItems)
-            setDetails(existingDetails)
             setOriginalItems(fetchedItems)
-            setOriginalDetails(existingDetails)
-            setPurchaseOrderId(poId)
-            setLpbData(data) // Store the full LPB data instead of just PODetails
         } catch (error) {
             console.error('Fetch error:', error)
-            Swal.fire({
-                icon: 'error',
-                title: 'Gagal Memuat Data',
-                text: 'Terjadi kesalahan saat memuat data LPB'
-            })
         } finally { 
-            setLoading(false)
             setTimeout(() => setContentVisible(true), 50)
         }
     }
@@ -124,7 +93,6 @@ function UpdateLPB() {
             setDisabled(true)
 
             const payload = {
-                invent_purchase_order_id: items.purchase_order_id || items.purchase_order,
                 tanggal: items.tanggal,
                 penerima: items.penerima,
                 note: items.note,
@@ -135,27 +103,27 @@ function UpdateLPB() {
             console.log("Payload dikirim:", payload)
             console.log("Payload dikirim:", JSON.stringify(payload, null, 2))
 
-            const res = await api.put(`laporanPenerimaanBarang-update/${decryptedId}`, payload)
+            const res = await api.post(`laporanPenerimaanBarang-create/${decryptedId}`, payload)
 
             Swal.fire({
-                title:'LPB berhasil diperbarui!',
+                title:'Laporan Penerimaan Barang berhasil dibuat!',
                 icon:'success', 
                 timer: 2000,
                 showConfirmButton: false
             })
-            navigate('/lpb/list-lpb')
+            navigate('/lpb/list-create-lpb')
             
         } catch (err) {
 
-            console.error("===== DEBUG ERROR =====")
-            console.error("Full error object:", err)
-            console.error("Response data:", err?.response?.data)
-            console.error("Response status:", err?.response?.status)
-            console.error("Response headers:", err?.response?.headers)
+            // console.error("===== DEBUG ERROR =====")
+            // console.error("Full error object:", err)
+            // console.error("Response data:", err?.response?.data)
+            // console.error("Response status:", err?.response?.status)
+            // console.error("Response headers:", err?.response?.headers)
 
             Swal.fire({ 
                 icon:'error',
-                title:'Gagal Memperbarui LPB',
+                title:'Gagal Membuat Laporan',
                 text: err?.response?.data?.msg || 'Kesalahan pada sistem'
             })
             console.error('Submit error:', err?.response?.data || err)
@@ -182,7 +150,7 @@ function UpdateLPB() {
             setItems(originalItems)
             setDetails(originalDetails)
         } else {
-            setItems({ purchase_order: null, tanggal: '', penerima:'', note:'' })
+            setItems({ tanggal: '', penerima:'', note:'' })
             setDetails([])
         }
         setErrors({})
@@ -199,11 +167,11 @@ function UpdateLPB() {
     }
 
     return (
-    <Layout title={'Update LPB'}>
+    <Layout title={'Create Purchase Order'}>
         <Block>
             <div className='px-4'>
-                <Back goHome={() => navigate('/lpb/list-lpb')} />
-                <p className='lg:text-3xl text-2xl font-semibold capitalize my-4'>Update LPB</p>
+                <Back goHome={() => navigate('/lpb/list-create-lpb')} />
+                <p className='lg:text-3xl text-2xl font-semibold capitalize my-4'>Buat Laporan Penerimaan Barang</p>
                 <Transition contentVisible={contentVisible}>
                     <div className="p-8 bg-white shadow-sm rounded-lg border">
                         <form onSubmit={handleSubmit} className='space-y-5'>
@@ -217,28 +185,11 @@ function UpdateLPB() {
                                     <input 
                                         type="text" 
                                         name="purchase_order" 
-                                        value={items.purchase_order_kode || ''} 
+                                        value={items.purchase_order || ''} 
                                         onChange={handleChange}
                                         className="w-full p-2 placeholder:text-gray-400"
                                         placeholder='Purchase Order'
                                         disabled
-                                    />
-                                </div>
-                            </div>
-
-                            {/* Tanggal */}
-                            <div className="mb-4">
-                                <div className="flex justify-between items-center">
-                                    <label className='font-semibold'>Tanggal</label>
-                                    {errors.tanggal && <span className="text-red-500 text-sm">{errors.tanggal}</span>}
-                                </div>
-                                <div className={`bg-white p-2 rounded-md border mt-2 ${errors.tanggal ? 'border-red-500' : 'border-gray-300'}`}>
-                                    <input 
-                                        type="date" 
-                                        name="tanggal" 
-                                        value={items.tanggal} 
-                                        onChange={handleChange}
-                                        className="w-full p-2 placeholder:text-gray-400"
                                     />
                                 </div>
                             </div>
@@ -258,6 +209,23 @@ function UpdateLPB() {
                                         className="w-full p-2 placeholder:text-gray-400"
                                         maxLength={80}
                                         placeholder='Sebutkan nama penerima'
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Tanggal */}
+                            <div className="mb-4">
+                                <div className="flex justify-between items-center">
+                                    <label className='font-semibold'>Tanggal</label>
+                                    {errors.tanggal && <span className="text-red-500 text-sm">{errors.tanggal}</span>}
+                                </div>
+                                <div className={`bg-white p-2 rounded-md border mt-2 ${errors.tanggal ? 'border-red-500' : 'border-gray-300'}`}>
+                                    <input 
+                                        type="date" 
+                                        name="tanggal" 
+                                        value={items.tanggal} 
+                                        onChange={handleChange}
+                                        className="w-full p-2 placeholder:text-gray-400"
                                     />
                                 </div>
                             </div>
@@ -308,13 +276,21 @@ function UpdateLPB() {
                                                 </div>
                                             )}
                                         </div>
+                                        
 
                                         <div className="flex flex-col items-start h-full md:contents">
-                                            <div className="flex flex-col">
-                                                <p className="font-medium text-gray-900">{item.barangs?.name || 'Nama Barang'}</p>
-                                                <p className="text-xs text-gray-500">{item.barangs?.kode_barang || 'Kode Barang'}</p>
-                                                <p className="text-xs text-gray-400">Gudang: {item.barangs?.kode_gudang}</p>
+                                            <div className="flex-1 min-w-0">
+                                                <h3 className="font-medium text-gray-900 text-lg">
+                                                    {item.barangs?.name}
+                                                </h3>
+                                                <p className="text-sm text-gray-500">
+                                                    {item.barangs?.kode_barang}
+                                                </p>
+                                                <p className="text-xs text-gray-400">
+                                                    Gudang: {item.barangs?.kode_gudang}
+                                                </p>
                                             </div>
+                                            <div className="hidden md:block" />
                                             <div className="font-medium tabular-nums md:text-right">
                                                 <span className="text-sm text-gray-400 ">Diterima: </span>
                                                 {item.qty} {item.barangs?.satuan}
@@ -353,13 +329,18 @@ function UpdateLPB() {
                             <div className="flex mt-4">
                                 <button
                                     type="button"
-                                    className="w-full rounded-lg py-2 px-4 flex items-center font-medium bg-blue-50 text-blue-600 hover:bg-blue-100"
+                                    className="w-full rounded-lg py-2 px-4 flex items-center font-medium bg-blue-50 text-blue-600 hover:bg-blue-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    disabled={poMeta.totalSelectable > 0 && details.length >= poMeta.totalSelectable}
                                     onClick={() => {
                                         setOpenModal(!openModal)
                                         setEditIndex(null)
                                     }}>
                                     <i className='bx bx-plus mr-2 font-semibold text-base'></i>
-                                    <span>{ details.length === 0 ? 'Tambah detail penerimaan' : 'Edit detail penerimaan'}</span>
+                                    <span>{
+                                        poMeta.totalSelectable > 0 && details.length >= poMeta.totalSelectable
+                                            ? 'Semua Barang Sudah Ditambahkan'
+                                            : (details.length === 0 ? 'Tambah detail penerimaan' : 'Edit detail penerimaan')
+                                    }</span>
                                 </button>
                             </div>
 
@@ -389,10 +370,10 @@ function UpdateLPB() {
                     <ModalLPB
                         apiUrl={apiUrl}
                         open={openModal}
-                        purchaseOrderId={purchaseOrderId}
-                        lpbData={lpbData}
+                        purchaseOrderId={decryptedId}
                         existingItems={details}
                         initialData={editIndex !== null ? details[editIndex] : null}
+                        onDetailsMetaChange={(meta) => setPoMeta(meta)}
                         onClose={() => {
                             setOpenModal(false)
                             setEditIndex(null)
@@ -428,4 +409,4 @@ function UpdateLPB() {
     )
 }
 
-export default UpdateLPB
+export default CreateLPB

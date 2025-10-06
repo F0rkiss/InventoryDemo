@@ -32,7 +32,7 @@ const ApprovalStepCard = forwardRef(({item, goToDetail, canUpdate, canDelete, go
           </div>
           <button
             className="detail-button col-start-3 justify-self-end"
-            onClick={() => setOpen((v) => !v)}
+            onClick={() => goToDetail(item.id)}
             title="User Info"
           >
             <i className="bx bx-dots-vertical-rounded text-2xl group-hover:text-gray-800 transition-all duration-200" />
@@ -74,7 +74,7 @@ const ApprovalStepCard = forwardRef(({item, goToDetail, canUpdate, canDelete, go
           )}
           {canDelete && (
             <button
-              onClick={() => deleteItems(item.id, item.name)}
+              onClick={() => deleteItems(item.id)}
               className="px-3 py-1.5 delete-button"
             >
               Delete

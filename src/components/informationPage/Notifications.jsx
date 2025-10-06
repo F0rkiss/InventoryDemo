@@ -24,7 +24,7 @@ const Notifications = () => {
             }));
 
             setItems(withReadStatus);
-            setNextCursor(data.next_cursor);
+            setNextCursor(response.data.next_cursor);
         } catch (error) {
             console.error('Error fetching notifications:', error);
         } finally {
@@ -52,7 +52,7 @@ const Notifications = () => {
                 return [...prevItems, ...uniqueNew];
             });
 
-            setNextCursor(data.next_cursor);
+            setNextCursor(response.data.next_cursor);
         } catch (error) {
             console.error('Error fetching more notifications:', error);
         } finally {
@@ -64,9 +64,13 @@ const Notifications = () => {
         setIsDropdownOpen(!isDropdownOpen);
     };
 
-    const handleNotificationClick = async (id) => {
-        const encryptingID = await encrypting(id)
-        navigate(`/approvalStepHistory-makeRequest/detail/${encryptingID}`)
+    const handleNotificationClick = (notif) => {
+        const encryptedId = encrypting(notif.id);
+        if (notif.jenis_request === 'MR') {
+            navigate(`/approvalStepHistory-makeRequest/detail/${encryptedId}`);
+        } else {
+            navigate(`/approvalStepHistory-lpb/detail/${encryptedId}`);
+        }
     };
 
     useEffect(() => {
@@ -121,7 +125,7 @@ const Notifications = () => {
                             items.map((notif) => (
                                 <div
                                     key={notif.id}
-                                    onClick={() => handleNotificationClick(notif.id)}
+                                    onClick={() => handleNotificationClick(notif)}
                                     className={`px-4 py-3 border-b border-gray-100 cursor-pointer ${
                                         notif.isRead ? 'bg-gray-100' : 'bg-white hover:bg-gray-50'
                                     }`}

@@ -11,14 +11,10 @@ import { useAuth } from '../../auth/AuthContext';
 import ApprovalActions from '../component/ApprovalActions';
 import Swal from 'sweetalert2';
 
-function DetailMakeRequest() {
+function ApprovalMR() {
     const [item, setItem] = useState({})
     const mainMR = item.makeRequest?.MR || {};
     const detailMR = item.makeRequest?.detailsMR || []
-    const approvalSteps = item.approvalStepHistories || []
-    const purchaseRequest = item.purchaseRequest?.PR;
-    const purchaseDetails = item.purchaseRequest?.detailsPR || [];
-    const purchaseOrders = item.purchaseOrder;
     const navigate = useNavigate();
     const { id } = useParams();
     const { role } = useAuth()
@@ -260,7 +256,7 @@ function DetailMakeRequest() {
                         )}
                     </div>
                     </div>
-                    <div className="mt-6 px-4">
+                    <div className="mt-4 px-4">
                     <ApprovalActions
                         itemId={decryptedId}
                         onApprove={handleApprove}
@@ -281,4 +277,4 @@ function DetailMakeRequest() {
     );
 }  
 
-export default DetailMakeRequest;
+export default ApprovalMR;

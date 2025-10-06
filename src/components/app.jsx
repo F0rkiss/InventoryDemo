@@ -14,8 +14,9 @@ import '../css/app.css';
 import Loader from './component/Loader.jsx';
 
 // Lazy load components
-const Notifications = lazy(() => import('./component/NotificationsPages'));
+const Notifications = lazy(() => import('./informationPage/NotificationsPages'));
 const ApprovalMakeRequest = lazy(() => import('./approval-page/approvalMR'));
+const ApprovalLPB = lazy(() => import('./approval-page/approvalLPB'));
 
 const BarangList = lazy(() => import('./crud_barang/BarangList.jsx'));
 const CreateBarang = lazy(() => import('./crud_barang/CreateBarang.jsx'));
@@ -41,6 +42,8 @@ const RestoreCategory = lazy(() => import('./crud-category/RestoreCategory.jsx')
 
 const Dashboard = lazy(() => import('./dashboard/Dashboard.jsx'));
 
+const Mutasi = lazy(() => import('./informationPage/Mutasi.jsx'));
+const Log = lazy(() => import('./informationPage/Log.jsx'));
 
 const UserList = lazy(() => import('./crud_user/UserList.jsx'));
 const DetailUser = lazy(() => import('./crud_user/DetailUser.jsx'));
@@ -96,8 +99,8 @@ const ListPurchaseOrderPR = lazy(() => import('./crud_create_purchase_order/List
 const DetailPurchaseOrderPR = lazy(() => import('./crud_create_purchase_order/DetailPurchaseOrderPR.jsx'))
 const CreatePurchaseOrderPR = lazy(() => import('./crud_create_purchase_order/CreatePurchaseOrderPR.jsx'))
 
-// const ListPOtoLPB = lazy(() => import('./crud_create_purchase_order/ListPurchaseOrderPR.jsx'))
-// const CreateLPB = lazy(() => import('./crud_create_purchase_order/CreatePurchaseOrderPR.jsx'))
+const ListPOtoLPB = lazy(() => import('./crud_lpb/CreateListLPB'))
+const CreateLPB = lazy(() => import('./crud_lpb/CreateLPB'))
 
 const ListLPB = lazy(() => import('./crud_lpb/ListLPB'))
 const DetailLPB = lazy(() => import('./crud_lpb/DetailLPB.jsx'))
@@ -140,9 +143,12 @@ const MyApp = () => {
                   <Route path="*" element={<Navigate to="/dashboard" replace />} />
                   <Route path="/login" element={<Navigate to="/dashboard" replace />} />
                   <Route path='/edit-profile' element={<EditProfile />} />
+                  <Route path='/mutasi' element={<Mutasi />} />
+                  <Route path='/log' element={<Log />} />
 
                   <Route path="/notifications" element={<Notifications />} />
                   <Route path="/approvalStepHistory-makeRequest/detail/:id" element={<ApprovalMakeRequest />} />
+                  <Route path="/approvalStepHistory-lpb/detail/:id" element={<ApprovalLPB />} />
 
                   <Route path="/barang/list-barang" element={<BarangList />} />
                   <Route path="/barang/detail-barang/:id" element={<DetailBarang />} />
@@ -200,12 +206,12 @@ const MyApp = () => {
                   <Route path='/purchase-order-pr/create-purchase-order-pr/:id' element={<CreatePurchaseOrderPR />} />
                   <Route path='/purchase-order-pr/detail-purchase-order-pr/:id' element={<DetailPurchaseOrderPR />} />
 
-                  {/* <Route path='/lpb/list-lpb-po' element={<ListPurchaseOrderPR />} />
-                  <Route path='/lpb/create-lpb' element={<CreatePurchaseOrderPR />} /> */}
+                  <Route path='/lpb/list-create-lpb' element={<ListPOtoLPB />} />
+                  <Route path='/lpb/create-lpb/:id' element={<CreateLPB />} />
 
                   <Route path='/lpb/list-lpb' element={<ListLPB />} />
                   <Route path='/lpb/detail-lpb/:id' element={<DetailLPB />} />
-                  <Route path='/lpb/update-lpb/:id' element={<DetailPurchaseOrderPR />} />
+                  <Route path='/lpb/update-lpb/:id' element={<UpdateLPB />} />
 
                   <Route path='/make-request/list-make-request' element={<ListMakeRequest />} />
                   <Route path='/make-request/detail-make-request/:id' element={<DetailMakeRequest />} />
