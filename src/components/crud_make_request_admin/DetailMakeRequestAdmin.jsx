@@ -11,7 +11,7 @@ import { useAuth } from '../../auth/AuthContext';
 import Swal from 'sweetalert2';
 import ImagePreviewModal from '../component/modal/ImagePreviewModal';
 
-function DetailMakeRequest() {
+function DetailMakeRequestAdmin() {
   const [item, setItem] = useState({})
   const mainMR = item.makeRequest?.MR || {};
   const detailMR = item.makeRequest?.detailsMR || []
@@ -48,9 +48,7 @@ function DetailMakeRequest() {
   const fetchItems = async () => {
     try {
       setLoading(true);
-      const url = role === 'admin' ?
-        (`/inventMakeRequest-admin/detail/${decryptedId}`)
-        : (`/inventMakeRequest-detail/${decryptedId}`)
+      const url = `/inventMakeRequest-admin/detail/${decryptedId}`;
       const response = await api.get(url);
       const data = response.data.data;
       setItem(data);
@@ -72,44 +70,44 @@ function DetailMakeRequest() {
     setIsPreviewOpen(true);
   };
 
-  const cancelRequest = async () => {
-    try {
-      const result = await Swal.fire({
-        title: `Apakah Anda Yakin Ingin Membatalkan Request Ini?`,
-        icon: 'question',
-        showDenyButton: true,
-        confirmButtonText: 'Yes',
-        denyButtonText: 'No',
-        customClass: {
-          actions: 'my-actions',
-          confirmButton: 'order-2',
-          denyButton: 'order-3',
-        },
-      });
-      if (result.isConfirmed) {
-        // console.log('Request cancelled:', id);
-        const response = await api.delete(`/inventMakeRequest-delete/${decryptedId}`);
+//   const cancelRequest = async () => {
+//     try {
+//       const result = await Swal.fire({
+//         title: `Apakah Anda Yakin Ingin Membatalkan Request Ini?`,
+//         icon: 'question',
+//         showDenyButton: true,
+//         confirmButtonText: 'Yes',
+//         denyButtonText: 'No',
+//         customClass: {
+//           actions: 'my-actions',
+//           confirmButton: 'order-2',
+//           denyButton: 'order-3',
+//         },
+//       });
+//       if (result.isConfirmed) {
+//         // console.log('Request cancelled:', id);
+//         const response = await api.delete(`/inventMakeRequest-delete/${decryptedId}`);
         
-        // Cek jika respons mengandung pesan error walau status 200
-        if (response?.data?.status === 'error' || response?.data?.message?.toLowerCase().includes('tidak ditemukan')) {
-          Swal.fire({
-            icon: 'error',
-            title: 'Gagal Membatalkan',
-            text: response.data.message || 'Data tidak ditemukan'
-          });
-        } else {
-          Swal.fire('Request Dibatalkan!', '', 'success');
-          navigate('/make-request/list-make-request');
-        }
-      }
-    } catch (error) {
-      Swal.fire({
-          icon:'error',
-          title:'Tidak Dapat Membatalkan Request',
-          text:'Ada Kesalahan Dalam Sistem'
-      })
-    }
-  }
+//         // Cek jika respons mengandung pesan error walau status 200
+//         if (response?.data?.status === 'error' || response?.data?.message?.toLowerCase().includes('tidak ditemukan')) {
+//           Swal.fire({
+//             icon: 'error',
+//             title: 'Gagal Membatalkan',
+//             text: response.data.message || 'Data tidak ditemukan'
+//           });
+//         } else {
+//           Swal.fire('Request Dibatalkan!', '', 'success');
+//           navigate('/make-request-admin/list-make-request-admin');
+//         }
+//       }
+//     } catch (error) {
+//       Swal.fire({
+//           icon:'error',
+//           title:'Tidak Dapat Membatalkan Request',
+//           text:'Ada Kesalahan Dalam Sistem'
+//       })
+//     }
+//   }
   
   return (
     <Layout title={'Detail Make Request'}>
@@ -117,7 +115,7 @@ function DetailMakeRequest() {
         <div className="xs:px-0 md:px-4">
           {/* Main Info & Detail */}
             <Transition contentVisible={contentVisible}>
-            <Back goHome={() => navigate('/make-request/list-make-request')} />
+            <Back goHome={() => navigate('/make-request-admin/list-make-request-admin')} />
             <div className="flex items-center justify-between my-4">
                 {/* <div className='flex items-center justify-between my-4'> */}
                 <p className='lg:text-3xl text-2xl font-semibold capitalize'>Detail Make Request</p>
@@ -353,12 +351,12 @@ function DetailMakeRequest() {
                     )}
                   </div>
               }
-              {
+              {/* {
                 item.can_be_deleted &&
                 <div className='flex justify-end mt-5'>
                   <button onClick={() => cancelRequest()} className='bg-red-500 hover:bg-red-600 transition-color duration-200 max-w-xs py-2 rounded-md text-white font-medium'>Cancel Request</button>
                 </div>
-              }
+              } */}
               </>
           </Transition>
         </div>
@@ -373,4 +371,4 @@ function DetailMakeRequest() {
 
 }
 
-export default DetailMakeRequest;
+export default DetailMakeRequestAdmin;

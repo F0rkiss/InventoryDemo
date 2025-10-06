@@ -23,6 +23,9 @@ const UpdateBarang = lazy(() => import('./crud_barang/UpdateBarang.jsx'));
 const DetailBarang = lazy(() => import('./crud_barang/DetailBarang.jsx'));
 // const RestoreBarang = lazy(() => import('./crud_barang/RestoreBarang.jsx'))
 
+const StokList = lazy(() => import('./crud_stok/ListStok.jsx'));
+const DetailStok = lazy(() => import('./crud_stok/DetailStok.jsx'));
+
 const ListJenisBarang = lazy(() => import('./crud_jenis_barang/ListJenisBarang.jsx'));
 const CreateJenisBarang = lazy(() => import('./crud_jenis_barang/CreateJenisBarang.jsx'));
 const UpdateJenisBarang = lazy(() => import('./crud_jenis_barang/UpdateJenisBarang.jsx'));
@@ -58,7 +61,6 @@ const UpdateStatus = lazy(() => import('./crud_status/UpdateStatus.jsx'));
 const JenisMemoList = lazy(() => import('./crud_jenis_memo/JenisMemoList.jsx'));
 const CreateJenisMemo = lazy(() => import('./crud_jenis_memo/CreateJenisMemo.jsx'));
 const UpdateJenisMemo = lazy(() => import('./crud_jenis_memo/UpdateJenisMemo.jsx'));
-
 
 const NavigationGroupList = lazy(() => import('./crud_navigations/crud_navigation_groups/ListNavigationGroups.jsx'));
 const CreateNavigationGroup = lazy(() => import('./crud_navigations/crud_navigation_groups/CreateNavigationGroups.jsx'));
@@ -108,6 +110,9 @@ const DetailMakeRequest = lazy(() => import('./crud_make_request/DetailMakeReque
 const UpdateMakeRequest = lazy(() => import('./crud_make_request/UpdateMakeRequest.jsx'))
 const CreateMakeRequest = lazy(() => import('./crud_make_request/CreateMakeRequest.jsx'))
 
+const ListMakeRequestAdmin = lazy(() => import('./crud_make_request_admin/ListMakeRequestAdmin.jsx'))
+const DetailMakeRequestAdmin = lazy(() => import('./crud_make_request_admin/DetailMakeRequestAdmin.jsx'))
+
 const ListBilling = lazy(() => import('./crud_billing/ListBilling.jsx'))
 const CreateBilling = lazy(() => import('./crud_billing/CreateBilling.jsx'))
 const UpdateBilling = lazy(() => import('./crud_billing/UpdateBilling.jsx'))
@@ -116,7 +121,7 @@ const DetailBilling = lazy(() => import('./crud_billing/DetailBilling.jsx'))
 // const TableMR = lazy(() => import('./Table/TableMR/TabelMR.jsx'))
 const TableBilling = lazy(() => import('./Table/TableBilling/TableBilling.jsx'))
 
-const EditProfile = lazy(() => import('./profile/EditProfile.jsx'));
+const Profile = lazy(() => import('./profile/Profile.jsx'));
 
 const MyApp = () => {
   const f7params = {
@@ -139,7 +144,7 @@ const MyApp = () => {
                   <Route path='/dashboard' element={<Dashboard />} />
                   <Route path="*" element={<Navigate to="/dashboard" replace />} />
                   <Route path="/login" element={<Navigate to="/dashboard" replace />} />
-                  <Route path='/edit-profile' element={<EditProfile />} />
+                  <Route path='/profile' element={<Profile />} />
 
                   <Route path="/notifications" element={<Notifications />} />
                   <Route path="/approvalStepHistory-makeRequest/detail/:id" element={<ApprovalMakeRequest />} />
@@ -148,6 +153,9 @@ const MyApp = () => {
                   <Route path="/barang/detail-barang/:id" element={<DetailBarang />} />
                   <Route path="/barang/create-barang" element={<CreateBarang />} />
                   <Route path="/barang/update-barang/:id" element={<UpdateBarang />} />
+
+                  <Route path='/stok/list-stok' element={<StokList/>} />
+                  <Route path='/stok/detail-stok/:id' element={<DetailStok/>} />
 
                   <Route path='/jenis-barang/list-jenis-barang' element={<ListJenisBarang/>} />
                   <Route path='/jenis-barang/create-jenis-barang' element={<CreateJenisBarang/>} />
@@ -212,6 +220,9 @@ const MyApp = () => {
                   <Route path='/make-request/update-make-request/:id' element={<UpdateMakeRequest />} />
                   <Route path='/make-request/create-make-request' element={<CreateMakeRequest />} />
 
+                  <Route path='/make-request-admin/list-make-request-admin' element={<ListMakeRequestAdmin />} />
+                  <Route path='/make-request-admin/detail-make-request-admin/:id' element={<DetailMakeRequestAdmin />} />
+                  
                   <Route path='/table-billing' element={<TableBilling/>} />
 
                   <Route path='/user/list-user' element={<UserList />} />

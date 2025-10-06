@@ -85,6 +85,10 @@ body {
   /* color: oklch(0.278 0.033 256.848); */
 }
 
+/* p {
+  color:rgba(30, 30, 30, 1);
+} */
+
 th {
   font-weight: 600;
 }

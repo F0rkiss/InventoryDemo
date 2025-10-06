@@ -52,7 +52,7 @@ function MiModal({ onClose, children, disableScroll = false, title, contentClass
             onClick={handleModalClose}
         >
             <div
-                className={`content w-full bg-gray-100 shadow-xl shadow-black/5 rounded-lg flex flex-col ${contentClass} max-w-[40%] max-lg:max-w-[90%] max-h-[95%] overflow-hidden transition-opacity duration-300 ${transition ? 'opacity-100' : 'opacity-0'} ${disableScroll ? 'overflow-y-hidden' : ''}`}
+                className={`content w-full bg-gray-100 shadow-xl shadow-black/5 rounded-lg flex flex-col ${contentClass} max-w-[40%] max-lg:max-w-[90%] max-h-[90%] min-h-[60%] overflow-hidden transition-opacity duration-300 ${transition ? 'opacity-100' : 'opacity-0'} ${disableScroll ? 'overflow-y-hidden' : ''}`}
             >
                 {children}
             </div>

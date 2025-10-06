@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import MiModal from '../MiModal';
 import api from '../../../api/api';
 import Swal from 'sweetalert2';
@@ -16,43 +16,56 @@ const ModalPurchaseOrder = ({ onClose, onSave, open, initialData, apiUrl, existi
     const [availableBarang, setAvailableBarang] = useState([]);
     const [barangLoading, setBarangLoading] = useState(false);
     const [showResults, setShowResults] = useState(false);
+    
+    const debounceTimeout = useRef(null);
+    useEffect(() => {
+        return () => {
+            clearTimeout(debounceTimeout.current);
+        };
+    }, []);
 
     useEffect(() => {
         if (open) {
-            // Check if it's an edit operation by looking for initialData with a barangs object
-            if (initialData && initialData.barangs) {
-                // If editing, calculate the unit price from the subtotal and quantity
+            // FIXED: Check for 'barang_detail' (from API) or 'selectedBarang' (from a previous unsaved edit)
+            const existingBarang = initialData?.barang_detail || initialData?.selectedBarang;
+            if (initialData && existingBarang) {
+                // If editing, populate from initialData
                 setModalData({
-                    selectedBarang: initialData.barangs,
-                    qty: initialData.qty,
-                    harga: initialData.harga_sub_total
+                    selectedBarang: existingBarang,
+                    qty: initialData.requested_qty || initialData.qty, // Handle both API and local state names
+                    harga: initialData.harga_sub_total || initialData.harga_satuan // Use sub_total as it is the price for PO
                 });
-                setSearchTerm(initialData.barangs.name);
+                setSearchTerm(existingBarang.name);
             } else {
                 // Reset for a new entry
                 setModalData({ selectedBarang: null, qty: '', harga: '' });
                 setSearchTerm('');
+                fetchAvailableBarang();
             }
         }
     }, [open, initialData]);
 
+    const searchContainerRef = useRef(null);
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (searchContainerRef.current && !searchContainerRef.current.contains(event.target)) {
+                setShowResults(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+            clearTimeout(debounceTimeout.current);
+        };
+    }, []);
+
     // Fetch available barang
-    const fetchAvailableBarang = async (searchTerm = '') => {
-        if (!searchTerm.trim()) {
-            setAvailableBarang([]);
-            return;
-        }
-        
+    const fetchAvailableBarang = async (term = '') => {
+        setBarangLoading(true);
+        const endpoint = term.trim() ? `/inventBarang/${term.trim()}` : '/inventBarang';
         try {
-            setBarangLoading(true);
-            const response = await api.get(`/inventBarang/${searchTerm}`);
-            const data = response.data.data;
-            // console.log(data)
-            const filteredBarang = data.data.filter(barang =>
-                barang.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                barang.kode_barang.toLowerCase().includes(searchTerm.toLowerCase())
-            );
-            setAvailableBarang(filteredBarang);
+            const response = await api.get(endpoint);
+            setAvailableBarang(response.data.data.data || []);
         } catch (error) {
             console.error('Error fetching barang:', error);
             setAvailableBarang([]);
@@ -61,25 +74,20 @@ const ModalPurchaseOrder = ({ onClose, onSave, open, initialData, apiUrl, existi
         }
     };
 
-    const handleSearchChange = (searchTerm) => {
-        setSearchTerm(searchTerm);
+     const handleSearchChange = (term) => {
+        setSearchTerm(term);
+        setShowResults(true);
 
-        if (searchTerm.trim()) {
-            setShowResults(true);
-            // Debounce search to avoid excessive API calls
-            setTimeout(() => {
-                fetchAvailableBarang(searchTerm);
-            }, 300);
-        } else {
-            setShowResults(false);
-            setAvailableBarang([]);
-        }
+        clearTimeout(debounceTimeout.current);
+        debounceTimeout.current = setTimeout(() => {
+            fetchAvailableBarang(term);
+        }, 1200);
     };
 
     const handleBarangSelect = (barang) => {
-        // Check if barang is already selected (excluding current edit item)
         const isAlreadySelected = existingItems.some(item => 
-            item.barangs && item.barangs.id === barang.id && initialData?.barangs?.id !== barang.id
+            (item.selectedBarang?.id === barang.id || item.barang_detail?.id === barang.id) && 
+            (initialData?.selectedBarang?.id !== barang.id && initialData?.barang_detail?.id !== barang.id)
         );
         
         if (isAlreadySelected) {
@@ -97,8 +105,9 @@ const ModalPurchaseOrder = ({ onClose, onSave, open, initialData, apiUrl, existi
     };
 
     const handleRemoveBarang = () => {
-        setModalData(prev => ({ ...prev, selectedBarang: null }));
+        setModalData(prev => ({ ...prev, selectedBarang: null, qty: '', harga: '' }));
         setSearchTerm('');
+        fetchAvailableBarang();
     };
 
     const handleSubmit = async (e) => {
@@ -124,14 +133,13 @@ const ModalPurchaseOrder = ({ onClose, onSave, open, initialData, apiUrl, existi
 
             const qty = parseInt(modalData.qty);
             const harga = parseInt(modalData.harga);
-            const subtotal = harga;
 
-            // Construct the data object to match the parent's state structure
+            // FIXED: Return a consistent data structure with 'selectedBarang'
             onSave({
-                barangs: modalData.selectedBarang,
+                selectedBarang: modalData.selectedBarang,
                 qty: qty,
-                harga_satuan: harga, // Keep unit price for future edits
-                harga_sub_total: subtotal // Provide calculated subtotal
+                harga_satuan: harga, // This can be used for display or future edits
+                harga_sub_total: harga // For PO, the price entered is the subtotal
             });
 
             // Reset state and close modal
@@ -155,14 +163,13 @@ const ModalPurchaseOrder = ({ onClose, onSave, open, initialData, apiUrl, existi
                 <form className='w-full flex flex-col p-2' onSubmit={handleSubmit}>
                     <div className='mb-6'>
                         <p className='text-2xl text-center font-semibold'>
-                            {initialData && initialData.barangs ? 'Edit Detail Purchase Order' : 'Tambah Detail Purchase Order'}
+                            {initialData && (initialData.barang_detail || initialData.selectedBarang) ? 'Edit Detail Purchase Order' : 'Tambah Detail Purchase Order'}
                         </p>
                     </div>
-
                     {/* Barang Selection */}
                     <div className="mb-4">
                         <label className="font-semibold">Pilih Barang</label>
-                        <div className="relative mt-1">
+                        <div className="relative mt-1" ref={searchContainerRef}>
                             {modalData.selectedBarang ? (
                                 <div className="relative border rounded-lg p-3 bg-white flex items-start gap-3 shadow-sm">
                                     <div className="flex items-center gap-3">
@@ -198,9 +205,9 @@ const ModalPurchaseOrder = ({ onClose, onSave, open, initialData, apiUrl, existi
                                             type="text"
                                             value={searchTerm}
                                             onChange={(e) => handleSearchChange(e.target.value)}
+                                            onFocus={() => setShowResults(true)} // BARU: Tampilkan hasil saat input di-klik
                                             placeholder="Cari berdasarkan nama atau kode barang"
                                             className="w-full focus:outline-none placeholder-gray-400"
-                                            autoFocus
                                         />
                                     </div>
 
@@ -210,7 +217,8 @@ const ModalPurchaseOrder = ({ onClose, onSave, open, initialData, apiUrl, existi
                                                 <div className="p-4 text-center"><Loader /></div>
                                             ) : availableBarang.length === 0 ? (
                                                 <div className="p-4 text-center text-gray-500">
-                                                    {searchTerm ? 'Barang tidak ditemukan' : 'Mulai ketik untuk mencari'}
+                                                    {/* DIUBAH: Pesan yang lebih sesuai */}
+                                                    {searchTerm ? 'Barang tidak ditemukan' : 'Tidak ada barang tersedia'}
                                                 </div>
                                             ) : (
                                                 availableBarang.map((barang) => (
@@ -257,7 +265,7 @@ const ModalPurchaseOrder = ({ onClose, onSave, open, initialData, apiUrl, existi
                             </div>
                         </div>
                         <div>
-                            <label className="font-semibold">Harga Satuan</label>
+                            <label className="font-semibold">Harga Sub Total</label>
                             <div className='bg-white mt-1 p-2 rounded-md border border-gray-300'>
                                 <input
                                     type="number"
@@ -265,7 +273,7 @@ const ModalPurchaseOrder = ({ onClose, onSave, open, initialData, apiUrl, existi
                                     className='w-full focus:outline-none'
                                     onChange={e => setModalData({ ...modalData, harga: e.target.value })}
                                     value={modalData.harga}
-                                    placeholder="Masukkan harga satuan"
+                                    placeholder="Masukkan harga sub total"
                                     required
                                 />
                             </div>

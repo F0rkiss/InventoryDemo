@@ -13,7 +13,7 @@ import ImagePreviewModal from '../component/modal/ImagePreviewModal';
 
 function DetailPurchaseOrderPR() {
   const [item, setItem] = useState({})
-  const details = item.details || []
+  const details = item.details || [];
   const makeRequest = item.make_request;
   const navigate = useNavigate();
   const { id } = useParams();
@@ -172,7 +172,7 @@ function DetailPurchaseOrderPR() {
                details &&
                 <div className="bg-white border rounded-md p-6 mt-6">
                   <div className='flex justify-between items-center mb-4'>
-                    <p className="text-xl text-gray-400 font-semibold mb-2">Purchase Request</p>
+                    <p className="text-xl text-gray-400 font-semibold mb-2">Details</p>
                   </div>
                   { !details ?
                     (
@@ -185,25 +185,29 @@ function DetailPurchaseOrderPR() {
                               <tr className="bg-gray-100">
                                 <th className="px-3 py-2 rounded-l-md">No</th>
                                 <th className="px-3 py-1">Barang</th>
-                                <th className="px-3 py-1 rounded-r-md">Quantity</th>
+                                <th className="px-3 py-1 ">Req. Quantity</th>
+                                <th className="px-3 py-1">Used</th>
+                                <th className="px-3 py-1 rounded-r-md">Sisa</th>
                               </tr>
                             </thead>
                             <tbody>
-                              {details?.map((item, i) => (
-                                <tr key={item.id} className={` ${item.id % 2 === 0 ? 'bg-gray-50' : 'bg-white'}`}>
+                              {details?.map((items, i) => (
+                                <tr key={items.id} className={` ${item.id % 2 === 0 ? 'bg-gray-50' : 'bg-white'}`}>
                                   <td className="px-4 py-4 rounded-l-md">{i + 1}</td>
                                   <td className="px-4 py-4 rounded-r-md">
                                     <div className='flex items-center gap-3'>
-                                      <img src={`${apiUrl}${item.barangs?.image}`} alt="item image" className="max-w-[10rem] object-cover rounded shadow cursor-pointer"
-                                        onClick={() => handleImageClick(`${apiUrl}${item.barangs?.image}`)}
+                                      <img src={`${apiUrl}${items.barang_detail?.image}`} alt="item image" className="max-w-[10rem] object-cover rounded shadow cursor-pointer"
+                                        onClick={() => handleImageClick(`${apiUrl}${items.barangs?.image}`)}
                                       />
                                       <div>
-                                          <p className="font-medium text-gray-900">{item.barangs?.name}</p>
-                                          <p className="text-xs text-gray-500">{item.barangs?.kode_barang}</p>
+                                          <p className="font-medium text-gray-900">{items.barang_detail?.name}</p>
+                                          <p className="text-xs text-gray-500">{items.barang_detail?.kode_barang}</p>
                                       </div>
                                     </div>
                                   </td>
-                                  <td className="px-4 py-4 rounded-r-md">{item.qty}</td>
+                                  <td className="px-4 py-4">{items.requested_qty}</td>
+                                  <td className="px-4 py-4">{items.used_qty}</td>
+                                  <td className="px-4 py-4 rounded-r-md">{items.sisa}</td>
                                 </tr>
                               ))}
                             </tbody>

@@ -45,20 +45,20 @@ export default function FilterStatusToggle({
   const iconClassName = iconMap[value] ?? iconMap.all;
 
   return (
-    <button
-      type="button"
-      title={title}
-      aria-label={title}
-      aria-pressed={value !== 'all'}
-      onClick={handleClick}
-      disabled={disabled}
-      data-testid={dataTestId}
-      className={`px-4 py-3 w-fit h-fit border rounded-full flex justify-center items-center gap-2 transition-colors duration-200
-                  ${statusToClass(value)} ${disabled ? 'opacity-60 cursor-not-allowed' : ''} ${className}`}
-    >
-      <i className={iconClassName}></i>
-      {showText && <span>{labels[value] || value}</span>}
-    </button>
+      <button
+        type="button"
+        title={title}
+        aria-label={title}
+        aria-pressed={value !== 'all'}
+        onClick={handleClick}
+        disabled={disabled}
+        data-testid={dataTestId}
+        className={`px-4 py-3 w-fit h-fit border rounded-full flex justify-center items-center gap-2 transition-colors duration-200
+                    ${statusToClass(value)} ${disabled ? 'opacity-60 cursor-not-allowed' : ''} ${className}`}
+      >
+        <i className={iconClassName}></i>
+        {showText && <span>{labels[value] || value}</span>}
+      </button>
   );
 }
 

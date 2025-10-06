@@ -83,7 +83,7 @@ function CreatePurchaseRequest() {
 
             await api.post(`/purchaseRequest-create/${decryptedId}`, {
                 make_request_id: decryptedId,
-                kode: kodeValue,
+                // kode: kodeValue,
                 note: 'Purchase request created from make request',
                 tanggal: new Date().toISOString().split('T')[0],
                 barangIds: selectedItems.map(it => it.selectedBarang?.id).filter(Boolean),
@@ -302,26 +302,6 @@ function CreatePurchaseRequest() {
                                         Maksimal {item.details?.length || 0} barang sesuai detail make request
                                     </p>
                                 )}
-                            </div>
-
-                            {/* Kode Field */}
-                            <div className="mt-6">
-                                <label
-                                    htmlFor="kode"
-                                    className="block text-sm font-medium text-gray-700 mb-2"
-                                >
-                                    Kode
-                                </label>
-                                <input
-                                    type="text"
-                                    id="kode"
-                                    value={kodeValue}
-                                    onChange={e => setKodeValue(e.target.value)}
-                                    placeholder="Masukkan kode..."
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
-                                        focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 
-                                        placeholder-gray-400"
-                                />
                             </div>
                         </div>
 

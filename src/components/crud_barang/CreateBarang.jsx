@@ -153,9 +153,9 @@ function CreateBarang() {
                       name="name"
                       value={items.name}
                       onChange={(e) => setItems({ ...items, name: e.target.value })}
-                      className="w-full p-2 placeholder:text-gray-400 placeholder:font-inter placeholder:font-light"
+                      className="w-full p-2 placeholder:text-gray-400 "
                       maxLength={80}
-                      placeholder="Name"
+                      placeholder="Nama Barang"
                       required
                     />
                   </div>
@@ -171,7 +171,7 @@ function CreateBarang() {
                         name="kode_barang"
                         value={items.kode_barang}
                         onChange={(e) => setItems({ ...items, kode_barang: e.target.value })}
-                        className="w-full p-2 placeholder:text-gray-400 placeholder:font-inter placeholder:font-light"
+                        className="w-full p-2 placeholder:text-gray-400 "
                         maxLength={80}
                         placeholder="Kode Barang"
                         required
@@ -186,7 +186,7 @@ function CreateBarang() {
                         name="kode_gudang"
                         value={items.kode_gudang}
                         onChange={(e) => setItems({ ...items, kode_gudang: e.target.value })}
-                        className="w-full p-2 placeholder:text-gray-400 placeholder:font-inter placeholder:font-light"
+                        className="w-full p-2 placeholder:text-gray-400 "
                         maxLength={80}
                         placeholder="Kode Gudang"
                         required
@@ -205,7 +205,7 @@ function CreateBarang() {
                         name="satuan"
                         value={items.satuan}
                         onChange={(e) => setItems({ ...items, satuan: e.target.value })}
-                        className="w-full p-2 placeholder:text-gray-400 placeholder:font-inter placeholder:font-light"
+                        className="w-full p-2 placeholder:text-gray-400 "
                         maxLength={80}
                         placeholder="Satuan"
                         required

@@ -17,13 +17,13 @@ const PurchaseOrderPRCards = forwardRef(({ item, goToCreate, goToDetail }, ref) 
                 <h3 className='row-start-2 col-span-3 font-medium text-lg capitalize self-start'>
                     {DateFormat(item.tanggal)}
                 </h3>
-                <button
+                {/* <button
                     className='detail-button col-start-3 justify-self-end'
                     onClick={() => goToDetail(item.id)}
                     title="View Details"
                 >
                     <i className="bx bx-dots-vertical-rounded text-2xl group-hover:text-gray-800 transition-all duration-200" />
-                </button>
+                </button> */}
             </div>
 
             {/* Content Section */}

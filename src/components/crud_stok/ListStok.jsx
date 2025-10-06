@@ -13,10 +13,10 @@ import DataEmpty from '../component/DataEmpty';
 import ModalBarang from '../component/modal/ModalBarang';
 import Swal from 'sweetalert2';
 import { encrypting } from '../../helper/EncryptHelper';
-import useMenuAccess from '../../hooks/useMenuAccess';
+// import useMenuAccess from '../../hooks/useMenuAccess';
 import ImagePreviewModal from '../component/modal/ImagePreviewModal';
 
-function ListBarang() {
+function StokList() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
   const [nextCursor, setNextCursor] = useState(null);
@@ -26,7 +26,7 @@ function ListBarang() {
   const [openModal, setOpenModal] = useState(false)
   const [empty, setEmpty] = useState(false)
   const navigate = useNavigate()
-  const { canCreate, canUpdate, canDelete } = useMenuAccess('Barang');
+//   const { canCreate, canUpdate, canDelete } = useMenuAccess('InventStok');
 
   // image preview state
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
@@ -39,16 +39,15 @@ function ListBarang() {
   const fetchItems = async () => {
     setLoading(true);
     try {
-        const response = await api.get(searchTerm ? `/inventBarang/${searchTerm}` : '/inventBarang');
+        const response = await api.get(searchTerm ? `/inventStok/${searchTerm}` : '/inventStok');
         const data = response.data.data;
-        console.log(data)
-        if (data.length == 0) {
+        if (data.data.length <= 0) {
           setEmpty(true)
         } else {
           setEmpty(false)
-          setItems(data.data);
-          setNextCursor(data.next_cursor);
         }
+        setItems(data.data);
+        setNextCursor(data.next_cursor);
     } catch (error) {
       
     } finally {
@@ -61,7 +60,7 @@ function ListBarang() {
     if (!nextCursor || loading) return;
     setLoading(true);
     try {
-      const response = await api.get(searchTerm ? `/inventBarang/${searchTerm}` : '/inventBarang', {
+      const response = await api.get(searchTerm ? `/inventStok/${searchTerm}` : '/inventStok', {
         params: {
           cursor: nextCursor,
         },
@@ -96,46 +95,46 @@ function ListBarang() {
   }, []);
 
   
-  const handleDeleteClick = async (id) => {
-    try {
-      const result = await Swal.fire({
-        title: `Apakah Anda Mau Menghapus Barang ini?`,
-        icon: 'question',
-        showDenyButton: true,
-        confirmButtonText: 'Yes',
-        denyButtonText: 'No',
-        customClass: {
-          actions: 'my-actions',
-          confirmButton: 'order-2',
-          denyButton: 'order-3',
-        },
-      });
+//   const handleDeleteClick = async (id) => {
+//     try {
+//       const result = await Swal.fire({
+//         title: `Apakah Anda Mau Menghapus Barang ini?`,
+//         icon: 'question',
+//         showDenyButton: true,
+//         confirmButtonText: 'Yes',
+//         denyButtonText: 'No',
+//         customClass: {
+//           actions: 'my-actions',
+//           confirmButton: 'order-2',
+//           denyButton: 'order-3',
+//         },
+//       });
 
-      if (result.isConfirmed) {
-        const response = await api.delete(`/inventBarang-delete/${id}`);
-        setItems((prevItems) => prevItems.filter((item) => item.id !== id));
-        await Swal.fire('Terhapus!', '', 'success');
-      }
-    } catch (error) {
-      Swal.fire({
-        icon:'error',
-        title:'Tidak Dapat Menghapus Barang',
-        text:'Ada Kesalahan Dalam Sistem'
-    })
-    }
-  };
+//       if (result.isConfirmed) {
+//         const response = await api.delete(`/inventBarang-delete/${id}`);
+//         setItems((prevItems) => prevItems.filter((item) => item.id !== id));
+//         await Swal.fire('Terhapus!', '', 'success');
+//       }
+//     } catch (error) {
+//       Swal.fire({
+//         icon:'error',
+//         title:'Tidak Dapat Menghapus Barang',
+//         text:'Ada Kesalahan Dalam Sistem'
+//     })
+//     }
+//   };
 
-  const handleUpdateClick = async (id) => {
-    const encryptingID = await encrypting(id)
-    if (encryptingID){
-      navigate(`/barang/update-barang/${encryptingID}`);
-    }
-  };
+//   const handleUpdateClick = async (id) => {
+//     const encryptingID = await encrypting(id)
+//     if (encryptingID){
+//       navigate(`/barang/update-barang/${encryptingID}`);
+//     }
+//   };
 
   const handleDetailClick = async (id) => {
       const encryptedId = await encrypting(id)
       if (encryptedId) {
-        navigate(`/barang/detail-barang/${encryptedId}`)
+        navigate(`/stok/detail-stok/${encryptedId}`)
       }
   };
 
@@ -149,12 +148,13 @@ function ListBarang() {
     setIsPreviewOpen(true);
   };
 
+
   return (
     <>  
-    <Layout title={'List Barang'}>
+    <Layout title={'List Stok'}>
         <Block>
           <div className='ms-3 mb-4 flex items-center justify-between'>
-                <p className='lg:text-3xl text-2xl font-semibold capitalize'>Barang List</p>
+                <p className='lg:text-3xl text-2xl font-semibold capitalize'>Stok Barang List</p>
                 <SearchBar
                     onChange={handleSearchChange}
                     disable={loading}
@@ -162,35 +162,29 @@ function ListBarang() {
                 />
           </div>  
             <Transition contentVisible={contentVisible}>
-              <ScrollPagination
-                loading={loading}
-                nextCursor={nextCursor}
-                fetchMoreItems={fetchMoreItems}
-                rootSelector=".page-content"
-              >
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  { 
-                    items.map((item) => (
-                      <BarangCards
-                        item={item}
-                        handleDetailClick={handleDetailClick}
-                        handleDeleteClick={handleDeleteClick}
-                        handleUpdateClick={handleUpdateClick}
-                        handleImageClick={handleImageClick}
-                        canDelete={canDelete}
-                        canUpdate={canUpdate}
-                        key={item.id}
-                        initial={'Barang'}
-                      />
-                    ))
-                  }
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 items-start">
+                    <ScrollPagination
+                        loading={loading}
+                        nextCursor={nextCursor}
+                        fetchMoreItems={fetchMoreItems}
+                        rootSelector=".page-content"
+                    >
+                        { 
+                            items.map((item) => (
+                            <BarangCards
+                                item={item}
+                                handleDetailClick={handleDetailClick}
+                                handleImageClick={handleImageClick}
+                                key={item.id}
+                                initial={'Stok'}
+                            />
+                            ))
+                        }
+                    </ScrollPagination>
                 </div>
-              </ScrollPagination>
             </Transition>
-        {loading && <Loader Class="mt-20" />}
-        {/* === PERUBAHAN DI BARIS INI === */}
-        { empty && !loading && <DataEmpty /> } 
-        {canCreate && <FlyingButton goTo={'/barang/create-barang'}/>}
+        { loading && <Loader Class="mt-20" />}
+        { items.length <= 0 && !loading &&  <DataEmpty/>}
       </Block>
       <ImagePreviewModal
         isOpen={isPreviewOpen}
@@ -202,4 +196,4 @@ function ListBarang() {
   );
 }
 
-export default ListBarang;
+export default StokList;

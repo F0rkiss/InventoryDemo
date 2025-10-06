@@ -13,7 +13,7 @@ import RestoreButton from '../component/RestoreButton'
 import DataEmpty from '../component/DataEmpty'
 import { encrypting } from '../../helper/EncryptHelper'
 import Swal from 'sweetalert2'
-import { width } from 'dom7'
+import FilterStatusToggle from '../component/FilterStatusToggle';
 
   function PurchaseRequestList() {
 
@@ -23,30 +23,33 @@ import { width } from 'dom7'
     const [searchTerm, setSearchTerm] = useState('')
     const [searchQuery, setSearchQuery] = useState('')
     const [contentVisible, setContentVisible] = useState(false)
-    const [filterToggle, setFilterToggle] = useState(false);
-
+    const [filterStatus, setFilterStatus] = useState('all');
+    const onFilterChange = (next) => setFilterStatus(next);
     const typingTimeoutRef = useRef(null)
     const navigate = useNavigate()
 
     useEffect(() => {
+      setItems([]);
+      setNextCursor(null);
+      setContentVisible(false);
       fetchItems();
-    }, [searchTerm, filterToggle]);
-    
+    }, [searchTerm, filterStatus]);
 
     const fetchItems = async () => {
       try {
         setLoading(true);
-        let endpoint = '';
-    
-        if (searchTerm) {
-          endpoint = `purchaseRequest/${searchTerm}`;
-        } else if (filterToggle) {
-          endpoint = `purchaseRequest-toggle?is_completed=1`;
-        } else {
-          endpoint = 'purchaseRequest';
+        let endpoint = searchTerm ? `purchaseRequest/${searchTerm}` : 'purchaseRequest';
+        const params = {};
+
+        if (filterStatus === 'completed') {
+          endpoint = 'purchaseRequest-toggle';
+          params.is_completed = 1;
+        } else if (filterStatus === 'not_completed') {
+          endpoint = 'purchaseRequest-toggle';
+          params.is_completed = 0;
         }
-    
-        const response = await api.get(endpoint);
+
+        const response = await api.get(endpoint, { params });
         const data = response.data.data;
         setItems(data.data);
         setNextCursor(data.next_cursor);
@@ -54,56 +57,55 @@ import { width } from 'dom7'
         setTimeout(() => setContentVisible(true), 50);
       } catch (error) {
         setLoading(false);
+      } finally {
+        setTimeout(() => setContentVisible(true), 50);
       }
     };
-    
 
     const fetchMoreItems = async () => {
       if (!nextCursor || loading) return;
       try {
         setLoading(true);
-    
-        let endpoint = '';
-        if (searchTerm) {
-          endpoint = `purchaseRequest/${searchTerm}`;
-        } else if (filterToggle) {
-          endpoint = `purchaseRequest-toggle?is_completed=1`;
-        } else {
-          endpoint = 'purchaseRequest';
+
+        let endpoint = searchTerm ? `purchaseRequest/${searchTerm}` : 'purchaseRequest';
+        const params = {
+          cursor: nextCursor,
+        };
+        
+        if (filterStatus === 'completed') {
+            endpoint = 'purchaseRequest-toggle';
+            params.is_completed = 1;
+        } else if (filterStatus === 'not_completed') {
+            endpoint = 'purchaseRequest-toggle';
+            params.is_completed = 0;
         }
-    
-        const response = await api.get(endpoint, {
-          params: {
-            cursor: nextCursor,
-          },
-        });
-    
+
+        const response = await api.get(endpoint, { params });
         const data = response.data.data;
-    
+
         setItems((prevItems) => {
           const existingIds = new Set(prevItems.map(item => item.id));
           const newItems = data.data.filter(item => !existingIds.has(item.id));
           return [...prevItems, ...newItems];
         });
-    
+
         setNextCursor(data.next_cursor);
         setLoading(false);
-        setTimeout(() => setContentVisible(true), 50);
       } catch (error) {
         setLoading(false);
+      } finally {
+        setTimeout(() => setContentVisible(true), 50);
       }
     };
-    
-  
 
+    const debounceRef = useRef(null);
+       
     const handleSearchChange = (query) => {
       setSearchQuery(query);
-      if (typingTimeoutRef.current) {
-        clearTimeout(typingTimeoutRef.current); 
-      }
-      typingTimeoutRef.current = setTimeout(() => {
-        setSearchTerm(query); 
-      }, 750);
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+      debounceRef.current = setTimeout(() => {
+        setSearchTerm(query.trim());
+      }, 1200);
     };
   
     const goToDetail = async(itemid) => {
@@ -119,58 +121,41 @@ import { width } from 'dom7'
     return (
       <Layout title={'List Purchase Request'}>
           <Block>
-              <div className='ms-3 mb-4 flex items-center justify-between'>
-                <div className='flex items-center gap-3'>
-                  <p className='lg:text-3xl text-2xl font-semibold capitalize'>Purchase Request</p>
-                  <label className="flex items-center gap-2 cursor-pointer">
-                  <button
-                    onClick={() => setFilterToggle(!filterToggle)} 
-                    className={`px-3 py-3 w-fit h-full border text-base font-medium rounded-full flex justify-center items-center gap-2 transition-colors duration-200 ${
-                      filterToggle 
-                        ? 'bg-green-100 text-green-700 hover:bg-green-200 border-green-300' 
-                        : 'bg-white text-gray-700 hover:bg-gray-50'
-                    }`}
-                  >
-                    <i className="bx bxs-sort-alt"></i>
-                    {/* {(width < 768) ? <span>{filterToggle ? 'Selesai' : 'Semua'}</span>:
-                    <></>
-                    } */}
-                  </button>
-                    {/* <input 
-                      type="checkbox" 
-                      checked={filterToggle} 
-                      onChange={(e) => setFilterToggle(e.target.checked)} 
-                    />
-                    <span>Filter Toggle</span> */}
-                  </label>
+            <div className='ms-3 mb-4 flex items-center justify-between'>
+              <p className='lg:text-3xl text-2xl font-semibold capitalize'>Purchase Request</p>
+              <div className='flex items-center'>
+                <FilterStatusToggle
+                  value={filterStatus}
+                  onChange={onFilterChange}
+                />
+                <SearchBar
+                    onChange={handleSearchChange}
+                    disable={loading}
+                    values={searchQuery}
+                />
+              </div>
+            </div>
+            <Transition contentVisible={contentVisible}>
+              <ScrollPagination rootSelector=".page-content" fetchMoreItems={fetchMoreItems} loading={loading} nextCursor={nextCursor}>
+                <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
+                  {
+                      ( items.map((item) => (
+                          <PurchaseRequestCards
+                          key={item.id}
+                          item={item}
+                          goToPR={goToPR}
+                          goToDetail={goToDetail}
+                          isList={true}
+                          />
+                      )))
+                  }
                 </div>
-                  <SearchBar
-                      onChange={handleSearchChange}
-                      disable={loading}
-                      values={searchQuery}
-                  />
-                </div>
-                  <Transition contentVisible={contentVisible}>
-                    <ScrollPagination rootSelector=".page-content" fetchMoreItems={fetchMoreItems} loading={loading} nextCursor={nextCursor}>
-                      <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
-                        {
-                            ( items.map((item) => (
-                                <PurchaseRequestCards
-                                key={item.id}
-                                item={item}
-                                goToPR={goToPR}
-                                goToDetail={goToDetail}
-                                isList={true}
-                                />
-                            )))
-                        }
-                      </div>
-                    </ScrollPagination>
-                    {
-                      items.length <= 0 && !loading && <DataEmpty/>
-                    }
-                  </Transition>
-                  {loading && <Loader Class="mt-44" />}
+              </ScrollPagination>
+              {
+                items.length <= 0 && !loading && <DataEmpty/>
+              }
+            </Transition>
+            {loading && <Loader Class="mt-44" />}
           </Block>
       </Layout>
     )

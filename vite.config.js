@@ -4,6 +4,7 @@ import { defineConfig } from 'vite';
 import tailwindcss from 'tailwindcss';
 import autoprefixer from 'autoprefixer';
 import dotenv from 'dotenv';
+import basicSsl from '@vitejs/plugin-basic-ssl';
 
 const SRC_DIR = path.resolve(__dirname, './src');
 const PUBLIC_DIR = path.resolve(__dirname, './public');

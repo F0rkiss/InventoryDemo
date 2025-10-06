@@ -16,7 +16,7 @@ function Login() {
         password: ''
     });
     const [errorMessage, setErrorMessage] = useState('');
-    const [disabled, setDisabled] = useState(false)
+    const [isSubmitting, setIsSubmitting] = useState(false)
 
     useEffect(() => {
         const token = localStorage.getItem('authToken');
@@ -38,10 +38,10 @@ function Login() {
         e.preventDefault();
         
         try {
-            if (disabled) {
+            if (isSubmitting) {
                 return;
             }
-            setDisabled(true)
+            setIsSubmitting(true)
             // Post login credentials to the API
             const response = await api.post('/login', {
                 EmpCode: credential.employee_code,
@@ -75,58 +75,65 @@ function Login() {
             // Handle errors during login
             setErrorMessage('Login failed: ' + (error.response?.data?.message || error.message));
             if (error.response.status === 401) {
-                setErrorMessage('Email Atau Password Anda Salah')
+                setErrorMessage('Email atau Password Anda salah')
             }
         } finally {
-            setDisabled(false)
+            setIsSubmitting(false)
         }
     };
+
+    const isFormInvalid = !credential.employee_code || !credential.password;
     
     return (
       <div className="min-h-screen flex items-center justify-center bg-white font-inter">
-        <div className="bg-[#212121] rounded-2xl shadow-2xl p-10 w-full max-w-sm">
-        <div className="flex justify-center mb-6">
-            <img src={gambar} alt="Logo" className="h-14 object-contain" />
-        </div>
-        <h2 className="text-2xl font-bold text-center text-white mb-6">Sign In</h2>
-        <form onSubmit={handleSubmit}>
-            <div className='mb-6 border-b'>
-            <label className='block text-gray-200 text-sm font-light mb-2 px-0'>Employee Code</label>
-            <input
-                type="text"
-                className='bg-white border-b-2 border-gray-600 w-full !pb-1 !text-white placeholder:text-gray-500 focus:outline-none focus:border-gray-200 transition-colors'
-                placeholder='Enter employee code'
-                value={credential.employee_code}
-                onChange={handleInputChange('employee_code')}
-                required
-            />
+        <div className="bg-stone-900 rounded-2xl shadow-2xl p-10 w-full max-w-sm mx-3">
+            <div className="flex justify-center mb-6">
+                <img src={gambar} alt="Logo" className="h-14 object-contain" />
             </div>
-            <div className='mb-6 border-b'>
-            <label className='block text-gray-200 text-sm font-light mb-2 px-0'>Password</label>
-            <input
-                type="password"
-                placeholder='Enter password'
-                value={credential.password}
-                onChange={handleInputChange('password')}
-                className='bg-transparent border-b-2  w-full py-2 !pb-1 !text-white placeholder:text-gray-500 focus:outline-none focus:border-gray-200 transition-colors'
-                required
-            />
-            </div>
-            {errorMessage && (
-            <div className='mb-6 text-red-500 text-sm text-center'>
-                {errorMessage}
-            </div>
-            )}
-            <div className="mt-8">
-            <button
-                type='submit'
-                disabled={disabled}
-                className='w-full bg-gray-200 text-black font-semibold py-3 rounded-lg hover:bg-gray-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-base tracking-wider'
-            >
-                Sign In
-            </button>
-            </div>
-        </form>
+            <h2 className="text-2xl font-bold text-center text-white mb-6">Sign In</h2>
+            <form onSubmit={handleSubmit}>
+                <div className='mb-6'>
+                    <label className='text-gray-200 text-xs mb-2 px-0'>Employee Code</label>
+                    <div className='mt-1 py-2 px-3 bg-stone-800 focus-within:bg-stone-700/50 border-2 border-stone-900 rounded-md transition-colors focus-within:border-stone-500'>
+                        <input
+                            type="text"
+                            className='w-full !text-white placeholder:text-stone-400'
+                            placeholder='Masukkan employee code'
+                            value={credential.employee_code}
+                            onChange={handleInputChange('employee_code')}
+                            required
+                            autoFocus
+                        />
+                    </div>
+                </div>
+                <div className='mb-6'>
+                    <label className='text-gray-200 text-xs mb-2 px-0'>Password</label>
+                    <div className='mt-1 py-2 px-3 bg-stone-800 focus-within:bg-stone-700/50 border-2 border-stone-900 rounded-md transition-colors focus-within:border-stone-500'>
+                        <input
+                            type="password"
+                            placeholder='Masukkan password'
+                            value={credential.password}
+                            onChange={handleInputChange('password')}
+                            className='w-full !text-white placeholder:text-stone-400'
+                            required
+                        />
+                    </div>
+                </div>
+                {errorMessage && (
+                    <div className='mb-6 text-red-500 text-sm text-center'>
+                        {errorMessage}
+                    </div>
+                )}
+                <div className="mt-8">
+                    <button
+                        type='submit'
+                        disabled={isFormInvalid || isSubmitting}
+                        className='w-full bg-stone-100 text-stone-800 font-semibold py-3 rounded-lg hover:bg-stone-300 transition-color duration-200 disabled:bg-stone-500 text-base'
+                    >
+                        Sign In
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 

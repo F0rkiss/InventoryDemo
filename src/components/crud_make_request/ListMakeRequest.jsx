@@ -13,6 +13,7 @@ import DataEmpty from '../component/DataEmpty'
 import { encrypting } from '../../helper/EncryptHelper'
 import { useAuth } from '../../auth/AuthContext'
 import useMenuAccess from '../../hooks/useMenuAccess'
+import FilterStatusToggle from '../component/FilterStatusToggle';
 
   function MakeRequestList() {
 
@@ -26,57 +27,100 @@ import useMenuAccess from '../../hooks/useMenuAccess'
     const { role } = useAuth()
     const { canCreate, canUpdate } = useMenuAccess('MakeRequest');
 
-    useEffect(() => {
-      fetchItems();
-    }, [searchTerm] )
+    const [filterStatus, setFilterStatus] = useState('all');
+    const onFilterChange = (next) => setFilterStatus(next);
 
+    useEffect(() => {
+      setItems([]);
+      setNextCursor(null);
+      setContentVisible(false);
+      fetchItems();
+    }, [searchTerm, filterStatus] )
+
+    // 1) One helper to build URL + params consistently
+    const buildReq = (cursor) => {
+      // const isAdmin = role === 'admin';
+      const isFiltered = filterStatus !== 'all';
+      const isSearching = !!searchTerm; // Check if there's an active search term
+
+      let url;
+      // const baseAdminUrl = 'inventMakeRequest-admin';
+      const baseUserUrl = 'inventMakeRequest';
+
+      // Determine the URL based on whether a search is active
+      if (isSearching) {
+        // For search queries, append the search term directly to the URL path
+        url = `${baseUserUrl}/${searchTerm}`;
+      } else if (isFiltered) {
+        // For filtering without a search
+        url = 'inventMakeRequest-personal-toggle';
+      } else {
+        // Default URL for listing all items
+        url = baseUserUrl;
+      }
+
+      // Build query parameters
+      const params = {};
+      if (cursor) params.cursor = cursor;
+
+      // The filter parameter is needed whether searching or not
+      if (isFiltered) {
+        params.is_full_approval = (filterStatus === 'completed' ? 1 : 0);
+      }
+
+      // We no longer add 'search' to the params because it's now part of the URL path
+      return { url, params };
+    };
+
+    // 2) First page
     const fetchItems = async () => {
       try {
         setLoading(true);
-        const url = role === 'admin'
-          ? (searchTerm ? `inventMakeRequest-admin/${searchTerm}` : 'inventMakeRequest-admin')
-          : (searchTerm ? `inventMakeRequest/${searchTerm}` : 'inventMakeRequest');
+        const { url, params } = buildReq(null);
+        const res = await api.get(url, { params });
+        const page = res.data.data;
 
-        const response = await api.get(url);
-        const data = response.data.data;
-        setItems(Array.isArray(data.data) ? data.data : []);
-        setNextCursor(data.next_cursor);
+        const list = Array.isArray(page?.data) ? page.data : [];
+        setItems(list);
+        setNextCursor(page?.next_cursor ?? null);
+      } finally {
         setLoading(false);
         setTimeout(() => setContentVisible(true), 50);
-      } catch (error) {
-        setLoading(false);
       }
     };
 
+    // 3) Next pages
     const fetchMoreItems = async () => {
       if (!nextCursor || loading) return;
       try {
         setLoading(true);
-        const url = role === 'admin'
-          ? (searchTerm ? `inventMakeRequest-admin/${searchTerm}` : 'inventMakeRequest-admin')
-          : (searchTerm ? `inventMakeRequest/${searchTerm}` : 'inventMakeRequest');
-        const response = await api.get(url, {
-          params: {
-            cursor: nextCursor,
-          },
+        const { url, params } = buildReq(nextCursor);
+        const res = await api.get(url, { params });
+        const page = res.data.data;
+
+        const newList = Array.isArray(page?.data) ? page.data : [];
+
+        // stop if no results or stuck cursor
+        if (!newList.length || page?.next_cursor === nextCursor) {
+          setNextCursor(null);
+          return;
+        }
+
+        setItems(prev => {
+          const ids = new Set(prev.map(it => it.id));
+          const uniq = newList.filter(it => !ids.has(it.id));
+          return [...prev, ...uniq];
         });
-        const data = response.data.data;
-  
-          setItems(
-            (prevItems) => {
-            const existingIds = new Set(prevItems.map(item => item.id));
-            const newItems = data.data.filter(item => !existingIds.has(item.id));
-            return [...prevItems, ...newItems];
-          }
-        );
-        setNextCursor(data.next_cursor);
-        setLoading(false);
-        setTimeout(() => setContentVisible(true), 50);
-      } catch (error) {
+
+        setNextCursor(page?.next_cursor ?? null);
+      } catch (e) {
+        console.error('Error fetching more items:', e);
+      } finally {
         setLoading(false);
       }
     };
-  
+
+
     const debounceRef = useRef(null);
         
     const handleSearchChange = (query) => {
@@ -92,7 +136,6 @@ import useMenuAccess from '../../hooks/useMenuAccess'
       return () => debounceRef.current && clearTimeout(debounceRef.current);
     }, []);
 
-    
     const goToUpdate = async(itemid) => {
       const encryptingID = await encrypting(itemid)
       navigate(`/make-request/update-make-request/${encryptingID}`);
@@ -107,12 +150,22 @@ import useMenuAccess from '../../hooks/useMenuAccess'
       <Layout title={'List Make Request'}>
           <Block>
             <div className='ms-3 mb-4 flex items-center justify-between'>
-              <p className='lg:text-3xl text-2xl font-semibold capitalize'>Make Request List</p>
-              <SearchBar
-                  onChange={handleSearchChange}
-                  disable={loading}
-                  values={searchQuery}
-              />
+              <div className="flex justify-between items-center w-full">
+                <p className='md:text-3xl text-lg font-semibold capitalize me-1'>Personal Make Request List</p>
+                <div className='flex items-center'>
+                  <FilterStatusToggle
+                    value={filterStatus}
+                    onChange={onFilterChange}
+                    // disabled={loading}
+                    // showText   // uncomment if you want to show the current label text
+                  />
+                  <SearchBar
+                    onChange={handleSearchChange}
+                    disable={loading}
+                    values={searchQuery}
+                  />
+                </div>
+              </div>
             </div>
             <Transition contentVisible={contentVisible}>
               <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
@@ -125,6 +178,7 @@ import useMenuAccess from '../../hooks/useMenuAccess'
                           goToDetail={goToDetail}
                           goToUpdate={goToUpdate}
                           canUpdate={canUpdate}
+                          filterStatus={filterStatus}
                           />
                       )))
                     }

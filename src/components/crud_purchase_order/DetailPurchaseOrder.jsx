@@ -167,16 +167,16 @@ function DetailPurchaseOrder() {
                               <td className="px-4 py-4 rounded-l-md">{i + 1}</td>
                               <td className="px-4 py-4 rounded-r-md">
                                 <div className='flex items-center gap-3'>
-                                  <img src={`${apiUrl}${item.barangs?.image}`} alt="item image" className="max-w-[10rem] object-cover rounded shadow cursor-pointer" 
-                                    onClick={() => handleImageClick(`${apiUrl}${item.barangs?.image}`)}
+                                  <img src={`${apiUrl}${item.barang_detail?.image}`} alt="item image" className="max-w-[10rem] object-cover rounded shadow cursor-pointer" 
+                                    onClick={() => handleImageClick(`${apiUrl}${item.barang_detail?.image}`)}
                                   />
                                   <div>
-                                      <p className="font-medium text-gray-900">{item.barangs?.name}</p>
-                                      <p className="text-xs text-gray-500">{item.barangs?.kode_barang}</p>
+                                      <p className="font-medium text-gray-900">{item.barang_detail?.name}</p>
+                                      <p className="text-xs text-gray-500">{item.barang_detail?.kode_barang}</p>
                                   </div>
                                 </div>
                               </td>
-                              <td className="px-4 py-4 rounded-r-md">{item.qty}</td>
+                              <td className="px-4 py-4 rounded-r-md">{item.requested_qty}</td>
                               <td className="px-4 py-4 rounded-r-md">{PriceFormat(item.harga_sub_total)}</td>
                             </tr>
                           ))}
@@ -275,7 +275,7 @@ function DetailPurchaseOrder() {
                 {
                   item.can_be_deleted &&
                   <div className='flex justify-end mt-5'>
-                    <button onClick={() => cancelOrder()} className='bg-red-500 hover:bg-red-600 transition-color duration-200 max-w-xs py-2 rounded-md text-white font-medium'>Delete Order</button>
+                    <button onClick={() => cancelOrder()} className='bg-red-500 hover:bg-red-600 transition-color duration-200 max-w-xs py-2 rounded-lg text-white font-medium'>Delete Order</button>
                   </div>
                 }
               </>

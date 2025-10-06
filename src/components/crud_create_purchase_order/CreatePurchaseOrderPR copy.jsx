@@ -12,10 +12,8 @@ import Transition from '../component/Transition'
 import { useAuth } from '../../auth/AuthContext'
 import PriceFormat from '../../helper/PriceFormatHelper'
 import ImagePreviewModal from '../component/modal/ImagePreviewModal'
-import DateFormat from '../../helper/DateFormatHelper' // Import DateFormat helper
 
 function CreatePurchaseOrderPR() {
-    // State for the creation form
     const [items, setItems] = useState({
         purchase_request: null,
         tanggal: '',
@@ -26,12 +24,8 @@ function CreatePurchaseOrderPR() {
         cara_pembayaran: '',
         tanggal_penyerahan: '',
     }) 
-    const [details, setDetails] = useState([]); // Details for the new PO being created
-
-    // State for displaying the source PR details
-    const [prInfo, setPrInfo] = useState(null)
-
     const { id } = useParams()
+    const [details, setDetails] = useState([]);
     const [editIndex, setEditIndex] = useState(null);
     const [contentVisible, setContentVisible] = useState(false)
     const [openModal, setOpenModal] = useState(false)
@@ -58,29 +52,17 @@ function CreatePurchaseOrderPR() {
 
     useEffect(() => {
         if (decryptedId) {
-            fetchPrDetails() // Fetch details of the source PR
+            fetchItem()
         }
     }, [decryptedId])
-    
-    // Fetch details of the source Purchase Request to display them
-    const fetchPrDetails = async () => {
-        try {
-            const response = await api.get(`purchaseOrder-listPurchaseRequest/detail/${decryptedId}`);
-            const data = response.data.data;
-            setPrInfo(data); // Set data for the informational display
-        } catch (error) {
-            console.error("Error fetching PR Details: ", error)
-            Swal.fire({ icon:'error', title:'Gagal Memuat Detail PR', text: 'Data Purchase Request tidak dapat ditemukan.' });
-        } finally { 
-            setTimeout(() => setContentVisible(true), 50)
-         }
-    };
 
     // Fungsi untuk validasi input
     const validate = () => {
         const newErrors = {};
+        if (!items.purchase_request) newErrors.purchase_request = 'Purchase Request wajib diisi.';
         if (!items.tanggal) newErrors.tanggal = 'Tanggal wajib diisi.';
         if (!items.kode_suplier) newErrors.kode_suplier = 'Kode Supplier wajib diisi.';
+        // if (!items.kode) newErrors.kode = 'Kode wajib diisi.';
         if (!items.alamat) newErrors.alamat = 'Alamat wajib diisi.';
         if (!items.tanggal_penyerahan) newErrors.tanggal_penyerahan = 'Tanggal Penyerahan wajib diisi.';
         if (!items.keterangan) newErrors.keterangan = 'Keterangan wajib diisi.';
@@ -88,12 +70,30 @@ function CreatePurchaseOrderPR() {
         if (details.length === 0) newErrors.details = 'Tambahkan minimal satu detail barang.';
         
         setErrors(newErrors);
+        // Mengembalikan true jika tidak ada error, false jika ada
         return Object.keys(newErrors).length === 0;
+    };
+
+    const fetchItem = async () => {
+        try {
+            const response = await api.get(`purchaseRequest-detail/${decryptedId}`);
+            const data = response.data.data;
+            const fetchedItems = {
+                purchase_request : data.kode,
+            };
+            setItems(fetchedItems);
+        } catch (error) {
+
+        } finally { 
+            setTimeout(() => setContentVisible(true), 50)
+         }
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        // Jalankan validasi
         if (!validate()) {
+            // Jika validasi gagal, tampilkan peringatan dan jangan lanjutkan
             Swal.fire({ icon:'warning', title:'Form Tidak Lengkap', text:'Harap isi semua field yang wajib diisi.' });
             return;
         }
@@ -104,13 +104,14 @@ function CreatePurchaseOrderPR() {
             setDisabled(true);
 
             const payload = {
+                invent_purchase_request_id: items.purchase_request.value,
                 tanggal: items.tanggal,
                 kode_suplier: items.kode_suplier,
                 alamat: items.alamat,
                 tanggal_penyerahan: items.tanggal_penyerahan,
                 keterangan: items.keterangan,
                 cara_pembayaran: items.cara_pembayaran,
-                invent_barangs_id: details.map(d => d.selectedBarang?.id ),
+                invent_barangs_id: details.map(d => d.barangs?.id ),
                 qty: details.map(d => d.qty ),
                 harga_sub_total: details.map(d => d.harga_sub_total)
             };
@@ -138,9 +139,11 @@ function CreatePurchaseOrderPR() {
         }
     };
     
+    // Fungsi untuk menangani perubahan input dan menghapus error saat user mengetik
     const handleChange = (e) => {
         const { name, value } = e.target;
         setItems(prevItems => ({ ...prevItems, [name]: value }));
+        // Hapus error untuk field yang sedang diisi
         if (errors[name]) {
             setErrors(prevErrors => {
                 const newErrors = { ...prevErrors };
@@ -161,6 +164,7 @@ function CreatePurchaseOrderPR() {
         }
     };
 
+
     const resetValue = () => {
         if (originalItems && originalDetails) {
             setItems(originalItems);
@@ -169,7 +173,7 @@ function CreatePurchaseOrderPR() {
             setItems({ purchase_request: null, tanggal: '' });
             setDetails([]);
         }
-        setErrors({});
+        setErrors({}); // Reset error juga
     }
 
     const handleClosePreview = () => {
@@ -185,118 +189,10 @@ function CreatePurchaseOrderPR() {
     return (
     <Layout title={'Create Purchase Order'}>
         <Block>
-            <div className='xs:px-0 md:px-4'>
+            <div className='px-4'>
                 <Back goHome={() => navigate('/purchase-order-pr/list-purchase-order-pr')} />
-                
+                <p className='lg:text-3xl text-2xl font-semibold capitalize my-4'>Create Purchase Order</p>
                 <Transition contentVisible={contentVisible}>
-                    {/* --- MOVED INFORMATION DISPLAY FROM DetailPurchaseOrderPR.jsx --- */}
-                    {prInfo && (
-                        <div className='mb-8'>
-                            <div className="flex items-center justify-between my-4">
-                                <p className='lg:text-3xl text-2xl font-semibold capitalize'>Detail Purchase Request</p>
-                                <p className={`flex py-2 px-3 items-center lg:text-[14px] xs:text-xs text-center gap-1 rounded-md font-medium ${prInfo.is_completed ? 'text-green-700 bg-green-100 border border-green-500' : 'text-amber-700 bg-amber-100 border border-amber-500'}`}>
-                                    {prInfo.is_completed ? <><i className='bx bxs-check-circle lg/md:text-sm xs:text-lg pe-1'></i>Selesai</> : <><i className='bx bxs-time lg/md:text-sm xs:text-lg pe-1'></i>Belum selesai</> }</p>
-                            </div>
-                            
-                            <div className="flex flex-col lg:flex-row gap-4 mt-3">
-                                <div className="bg-white border rounded-md p-6 flex-1 min-h-[200px]">
-                                    <p className="font-semibold text-gray-400 mb-2 text-xl">Main Information</p>
-                                    <p className="text-xl font-bold capitalize">{prInfo.kode}</p>
-                                    <p className="text-lg mb-4">{DateFormat(prInfo.tanggal)}</p>
-                                    <div className="text-right space-y-3">
-                                        <div className="flex  justify-between">
-                                            <p className='text-gray-500'>Note</p><p className='font-medium'>{prInfo.note}</p>
-                                        </div>
-                                        <div className="flex justify-between">
-                                            <p className='text-gray-500'>Tgl. Dibuat</p><p className='font-medium'>{DateFormat(prInfo.created_at)}</p>
-                                        </div>
-                                        <div className="flex justify-between">
-                                            <p className='text-gray-500'>Tgl. Diubah</p><p className='font-medium'>{DateFormat(prInfo.updated_at)}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                {prInfo.make_request &&
-                                <div className="bg-white border rounded-md p-6 flex-1 min-h-[200px]">
-                                    <div className='flex justify-between items-center mb-2 gap-2'>
-                                        <p className="text-xl text-gray-400 font-semibold">Make Request</p>
-                                    </div>
-                                    <p className="font-bold text-lg">{prInfo.make_request?.kode}</p>
-                                    <p className="">{prInfo.make_request?.note}</p>
-                                    <p className="mb-4">{prInfo.make_request?.tanggal}</p>
-                                    <div className='space-y-3 text-right'>
-                                        <div className="flex justify-between">
-                                            <span className="text-gray-500">Employee Name</span>
-                                            <span className='font-medium'>{prInfo.make_request?.user?.EmpName}</span>
-                                        </div>
-                                        <div className="flex justify-between">
-                                            <span className="text-gray-500">Employee Code</span>
-                                            <span className='font-medium'>{prInfo.make_request?.user?.EmpCode}</span>
-                                        </div>
-                                        <div className="flex justify-between">
-                                            <span className="text-gray-500">Employee Email</span>
-                                            <span className='font-medium'>{prInfo.make_request?.user?.email}</span>
-                                        </div>
-                                        <p className={`flex place-self-end w-fit py-2 px-3 items-center justify-center text-sm gap-1 rounded-md font-medium ${
-                                            prInfo.make_request.is_full_approval 
-                                            ? 'text-green-700 bg-green-100 border border-green-500' 
-                                            : 'text-amber-700 bg-amber-100 border border-amber-500'
-                                        }`}>
-                                            <i className={`bx ${prInfo.make_request.is_full_approval ? 'bxs-check-circle' : 'bxs-time'}`}></i>
-                                            <span>
-                                            {prInfo.make_request.is_full_approval ? 'Approval sudah selesai' : 'Approval belum selesai'}
-                                            </span>
-                                        </p>
-                                    </div>
-                                </div> }
-                            </div>
-                            
-                            {prInfo.details &&
-                                <div className="bg-white border rounded-md p-6 mt-6">
-                                <div className='flex justify-between items-center mb-4'>
-                                    <p className="text-xl text-gray-400 font-semibold mb-2">Details</p>
-                                </div>
-                                <div className="overflow-x-auto">
-                                    <table className="w-full text-sm text-left">
-                                    <thead>
-                                        <tr className="bg-gray-100">
-                                        <th className="px-3 py-2 rounded-l-md">No</th>
-                                        <th className="px-3 py-1">Barang</th>
-                                        <th className="px-3 py-1 ">Req. Quantity</th>
-                                        <th className="px-3 py-1">Used</th>
-                                        <th className="px-3 py-1 rounded-r-md">Sisa</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {prInfo.details?.map((item, i) => (
-                                        <tr key={item.id} className={` ${item.id % 2 === 0 ? 'bg-gray-50' : 'bg-white'}`}>
-                                            <td className="px-4 py-4 rounded-l-md">{i + 1}</td>
-                                            <td className="px-4 py-4 rounded-r-md">
-                                            <div className='flex items-center gap-3'>
-                                                <img src={`${apiUrl}${item.barang_detail?.image}`} alt="item image" className="max-w-[10rem] object-cover rounded shadow cursor-pointer"
-                                                onClick={() => handleImageClick(`${apiUrl}${item.barangs?.image}`)}
-                                                />
-                                                <div>
-                                                    <p className="font-medium text-gray-900">{item.barang_detail?.name}</p>
-                                                    <p className="text-xs text-gray-500">{item.barang_detail?.kode_barang}</p>
-                                                </div>
-                                            </div>
-                                            </td>
-                                            <td className="px-4 py-4">{item.requested_qty}</td>
-                                            <td className="px-4 py-4">{item.used_qty}</td>
-                                            <td className="px-4 py-4 rounded-r-md">{item.sisa}</td>
-                                        </tr>
-                                        ))}
-                                    </tbody>
-                                    </table>
-                                </div>
-                                </div>
-                            }
-                        </div>
-                    )}
-                    {/* --- END OF MOVED SECTION --- */}
-
-                    {/* --- ORIGINAL CREATE FORM --- */}
-                    <p className='lg:text-3xl text-2xl font-semibold capitalize my-4 pt-4 border-t'>Create Purchase Order</p>
                     <div className="p-8 bg-white shadow-sm rounded-lg border">
                         <form onSubmit={handleSubmit} className='space-y-5'>
                             <div className="mb-4">
@@ -415,13 +311,14 @@ function CreatePurchaseOrderPR() {
                                     items-center gap-x-4
                                     "
                                 >
+                                {/* Image */}
                                 <div className="overflow-hidden rounded-lg bg-gray-50 w-full aspect-[4/3]">
-                                {item.selectedBarang?.image ? (
+                                {item.barangs?.image ? (
                                     <img
-                                    src={`${apiUrl}${item.selectedBarang?.image}`}
-                                    alt={item.selectedBarang?.name ?? 'barang'}
+                                    src={`${apiUrl}${item.barangs.image}`}
+                                    alt={item.barangs?.name ?? 'barang'}
                                     className="w-full h-full object-cover"
-                                    onClick={() => handleImageClick(`${apiUrl}${item.selectedBarang?.image}`)}                                
+                                    onClick={() => handleImageClick(`${apiUrl}${item.barangs?.image}`)}                                
                                     />
                                 ) : (
                                     <div className="w-full h-full flex items-center justify-center text-xs text-gray-400">
@@ -430,26 +327,33 @@ function CreatePurchaseOrderPR() {
                                 )}
                                 </div>
 
+                                {/* Wrapper for all other content. Stacks vertically on mobile. */}
                                 <div className="flex flex-col items-start h-full md:contents">
+                                    {/* Spacer (for desktop layout) */}
                                     <div className="hidden md:block" />
+                                    {/* Wrapper for Qty & Price text */}
                                     <div className="md:contents">
-                                        <div className="md:text-right">
+                                        {/* Qty */}
+                                        <div className="font-medium tabular-nums md:text-right">
                                             <span className="text-sm text-gray-400 ">Qty: </span>
                                             {item.qty}
                                         </div>
 
-                                        <div className="mt-1 md:mt-0 md:text-right">
+                                        {/* Price */}
+                                        <div className="mt-1 font-medium md:mt-0 md:text-right">
                                             <span className="text-sm text-gray-400">Subtotal: </span>
                                             {PriceFormat(item.harga_sub_total)}
                                         </div>
                                     </div>
 
+                                    {/* Actions */}
                                     <div className="flex items-center gap-2 mt-2 w-full justify-end md:w-auto md:mt-0 md:justify-self-end md:border-l-2 md:pl-3">
                                         <button
                                             type="button"
                                             onClick={e => {
                                             e.preventDefault();
                                             setEditIndex(id);
+                                            // setInitialDetails(details[id]); // This should be handled inside ModalPO if needed
                                             setOpenModal(true);
                                             }}
                                         >
@@ -461,6 +365,7 @@ function CreatePurchaseOrderPR() {
                                             e.preventDefault();
                                             const newDetails = details.filter((_, i) => i !== id);
                                             setDetails(newDetails);
+                                            // Also clear details error if it was there and now details are not empty
                                             if (newDetails.length > 0 && errors.details) {
                                                 setErrors(prev => ({...prev, details: undefined}))
                                             }
@@ -473,6 +378,8 @@ function CreatePurchaseOrderPR() {
                             </div>
                             ))}
                             </div>
+
+                                {/* This is the "Add another detail" button at the bottom */}
                                 <div className="flex mt-4">
                                     <button
                                         type="button"
@@ -489,7 +396,7 @@ function CreatePurchaseOrderPR() {
                                 <button 
                                     disabled={isSubmitting} 
                                     type='submit' 
-                                    className='py-2 px-4 w-full rounded-lg font-medium bg-blue-500 hover:bg-blue-600 transition-color duration-200 text-white disabled:bg-blue-200'
+                                    className='py-2 px-4 w-full rounded-lg font-medium bg-blue-500 hover:bg-blue-600 transition-color duration-200 text-white disabled:bg-blue-300'
                                 >
                                     {isSubmitting ? 'Submitting...' : 'Submit'}
                                 </button>
@@ -512,6 +419,7 @@ function CreatePurchaseOrderPR() {
                         } else {
                             setDetails([...details, data]);
                         }
+                        // Clear details error after adding an item
                         if(errors.details) {
                              setErrors(prev => ({...prev, details: undefined}))
                         }

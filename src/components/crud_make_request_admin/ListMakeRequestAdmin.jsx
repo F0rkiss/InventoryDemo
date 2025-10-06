@@ -7,22 +7,27 @@ import Loader from '../component/Loader'
 import Transition from '../component/Transition'
 import ScrollPagination from '../component/ScrollPagination'
 import Layout from '../component/Layout'
+import FlyingButton from '../component/FlyingButton'
+import MakeRequestCards from '../component/cards/MakeRequestCards'
 import DataEmpty from '../component/DataEmpty'
-import PurchaseOrderCards from '../component/cards/PurchaseOrderCards'
 import { encrypting } from '../../helper/EncryptHelper'
+import { useAuth } from '../../auth/AuthContext'
 import useMenuAccess from '../../hooks/useMenuAccess'
 import FilterStatusToggle from '../component/FilterStatusToggle';
 
-function PurchaseOrderList() {
+  function MakeRequestAdminList() {
+
     const [items, setItems] = useState([])
     const [loading, setLoading] = useState(false)
     const [nextCursor, setNextCursor] = useState(null)
     const [searchTerm, setSearchTerm] = useState('')
     const [searchQuery, setSearchQuery] = useState('')
     const [contentVisible, setContentVisible] = useState(false)
-    const [filterStatus, setFilterStatus] = useState('all');
     const navigate = useNavigate()
-    const { canUpdate } = useMenuAccess('PurchaseOrder');
+    const { role } = useAuth()
+    const { canCreate, canUpdate } = useMenuAccess('MakeRequest');
+
+    const [filterStatus, setFilterStatus] = useState('all');
     const onFilterChange = (next) => setFilterStatus(next);
 
     useEffect(() => {
@@ -30,73 +35,92 @@ function PurchaseOrderList() {
       setNextCursor(null);
       setContentVisible(false);
       fetchItems();
-    }, [searchTerm, filterStatus] ) // Dependency updated to filterStatus
+    }, [searchTerm, filterStatus] )
 
+    // 1) One helper to build URL + params consistently
+    const buildReq = (cursor) => {
+      const isFiltered = filterStatus !== 'all';
+      const isSearching = !!searchTerm; // Check if there's an active search term
+
+      let url;
+      const baseAdminUrl = 'inventMakeRequest-admin';
+
+      // Determine the URL based on whether a search is active
+      if (isSearching) {
+        // For search queries, append the search term directly to the URL path
+        url = `${baseAdminUrl}/${searchTerm}`;
+      } else if (isFiltered) {
+        // For filtering without a search
+        url = 'inventMakeRequest-admin-toggle';
+      } else {
+        // Default URL for listing all items
+        url = baseAdminUrl;
+      }
+
+      // Build query parameters
+      const params = {};
+      if (cursor) params.cursor = cursor;
+
+      // The filter parameter is needed whether searching or not
+      if (isFiltered) {
+        params.is_full_approval = (filterStatus === 'completed' ? 1 : 0);
+      }
+
+      // We no longer add 'search' to the params because it's now part of the URL path
+      return { url, params };
+    };
+
+    // 2) First page
     const fetchItems = async () => {
       try {
         setLoading(true);
-        
-        let endpoint = searchTerm ? `purchaseOrder/${searchTerm}` : 'purchaseOrder';
-        const params = {};
+        const { url, params } = buildReq(null);
+        const res = await api.get(url, { params });
+        const page = res.data.data;
 
-        // 2. API logic updated to handle three filter states
-        if (filterStatus === 'completed') {
-          endpoint = 'purchaseOrder-toggle';
-          params.is_completed = 1;
-        } else if (filterStatus === 'not_completed') {
-          endpoint = 'purchaseOrder-toggle';
-          params.is_completed = 0; // Filter for not completed
-        }
-
-        const response = await api.get(endpoint, { params });
-        const data = response.data.data;
-        setItems(Array.isArray(data.data) ? data.data : []);
-        setNextCursor(data.next_cursor);
+        const list = Array.isArray(page?.data) ? page.data : [];
+        setItems(list);
+        setNextCursor(page?.next_cursor ?? null);
+      } finally {
         setLoading(false);
         setTimeout(() => setContentVisible(true), 50);
-      } catch (error) {
-        setLoading(false);
       }
     };
 
+    // 3) Next pages
     const fetchMoreItems = async () => {
       if (!nextCursor || loading) return;
       try {
         setLoading(true);
+        const { url, params } = buildReq(nextCursor);
+        const res = await api.get(url, { params });
+        const page = res.data.data;
 
-        let endpoint = searchTerm ? `purchaseOrder/${searchTerm}` : 'purchaseOrder';
-        const params = {
-          cursor: nextCursor,
-        };
-        
-        // Apply the same logic for pagination
-        if (filterStatus === 'completed') {
-            endpoint = 'purchaseOrder-toggle';
-            params.is_completed = 1;
-        } else if (filterStatus === 'not_completed') {
-            endpoint = 'purchaseOrder-toggle';
-            params.is_completed = 0;
+        const newList = Array.isArray(page?.data) ? page.data : [];
+
+        // stop if no results or stuck cursor
+        if (!newList.length || page?.next_cursor === nextCursor) {
+          setNextCursor(null);
+          return;
         }
 
-        const response = await api.get(endpoint, { params });
-        const data = response.data.data;
-  
-        setItems(
-          (prevItems) => {
-          const existingIds = new Set(prevItems.map(item => item.id));
-          const newItems = data.data.filter(item => !existingIds.has(item.id));
-          return [...prevItems, ...newItems];
-        }
-      );
-        setNextCursor(data.next_cursor);
-        setLoading(false);
-      } catch (error) {
+        setItems(prev => {
+          const ids = new Set(prev.map(it => it.id));
+          const uniq = newList.filter(it => !ids.has(it.id));
+          return [...prev, ...uniq];
+        });
+
+        setNextCursor(page?.next_cursor ?? null);
+      } catch (e) {
+        console.error('Error fetching more items:', e);
+      } finally {
         setLoading(false);
       }
     };
 
+
     const debounceRef = useRef(null);
-    
+        
     const handleSearchChange = (query) => {
       setSearchQuery(query);
       if (debounceRef.current) clearTimeout(debounceRef.current);
@@ -109,23 +133,18 @@ function PurchaseOrderList() {
     // cleanup on unmount
       return () => debounceRef.current && clearTimeout(debounceRef.current);
     }, []);
-    
-    const goToUpdate = async(itemid) => {
-      const encryptingID = await encrypting(itemid)
-      navigate(`/purchase-order/update-purchase-order/${encryptingID}`);
-    }
-    
+
     const goToDetail = async (id) => {
       const encryptingID = await encrypting(id)
-      navigate(`/purchase-order/detail-purchase-order/${encryptingID}`)
+      navigate(`/make-request-admin/detail-make-request-admin/${encryptingID}`)
     } 
 
     return (
-      <Layout title={'List Purchase Order'}>
+      <Layout title={'List Make Request'}>
           <Block>
             <div className='ms-3 mb-4 flex items-center justify-between'>
               <div className="flex justify-between items-center w-full">
-                <p className='lg:text-3xl text-2xl font-semibold capitalize'>Purchase Order List</p>
+                <p className='md:text-3xl text-lg font-semibold capitalize me-1'>All Make Request List</p>
                 <div className='flex items-center'>
                   <FilterStatusToggle
                     value={filterStatus}
@@ -142,16 +161,17 @@ function PurchaseOrderList() {
               </div>
             </div>
             <Transition contentVisible={contentVisible}>
-              <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 items-start'>
+              <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
                 <ScrollPagination rootSelector=".page-content" fetchMoreItems={fetchMoreItems} loading={loading} nextCursor={nextCursor}>
                     {
                       ( items.map((item) => (
-                          <PurchaseOrderCards
+                          <MakeRequestCards
                           key={item.id}
                           item={item}
                           goToDetail={goToDetail}
-                          goToUpdate={goToUpdate}
-                          canUpdate={canUpdate}
+                        //   goToUpdate={goToUpdate}
+                        //   canUpdate={canUpdate}
+                          filterStatus={filterStatus}
                           />
                       )))
                     }
@@ -163,8 +183,9 @@ function PurchaseOrderList() {
             }
             {loading && <Loader Class="mt-44" />}
           </Block>
+          {/* { canCreate && <FlyingButton goTo={'/make-request/create-make-request'} />} */}
       </Layout>
     )
-}
+  }
 
-export default PurchaseOrderList;
+  export default MakeRequestAdminList;

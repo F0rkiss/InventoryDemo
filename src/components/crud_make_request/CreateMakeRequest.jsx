@@ -1,105 +1,131 @@
-import React, { useEffect, useState } from 'react'
-import { Page, Block } from 'framework7-react'
-import { useNavigate } from 'react-router-dom'
-import api from '../../api/api'
-import Back from '../component/Back'
-import Layout from '../component/Layout'
-import Swal from 'sweetalert2'
-import SelectPaginate from '../component/SelectPaginate'
-import Transition from '../component/Transition'
+import React, { useEffect, useState } from 'react';
+import { Block } from 'framework7-react';
+import { useNavigate } from 'react-router-dom';
+import api from '../../api/api';
+import Back from '../component/Back';
+import Layout from '../component/Layout';
+import Swal from 'sweetalert2';
+import SelectPaginate from '../component/SelectPaginate';
+import Transition from '../component/Transition';
+import ModalDetailRequest from '../component/modal/ModalMR';
+import ImagePreviewModal from '../component/modal/ImagePreviewModal';
 
 function CreateMakeRequest() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const apiUrl = import.meta.env.VITE_URL; // BARU: Ambil apiUrl jika diperlukan oleh modal
 
   const [items, setItems] = useState({
     type_request: null,
     tanggal: '',
-  })
-  const [details, setDetails] = useState([])
+  });
 
-  const [editIndex, setEditIndex] = useState(null)
-  const [initialDetails, setInitialDetails] = useState({
-    note_barang: '',
-    qty: '',
-  })
+  // BARU: State untuk melacak jenis request (stok atau bukan)
+  const [isStockRequest, setIsStockRequest] = useState(null); // null, true, atau false
 
-  const [openModal, setOpenModal] = useState(false)
-  const [disabled, setDisabled] = useState(false)
-  const [contentVisible, setContentVisible] = useState(false)
+  const [details, setDetails] = useState([]);
+  const [editIndex, setEditIndex] = useState(null);
+  const [initialDetails, setInitialDetails] = useState(null);
+  const [openModal, setOpenModal] = useState(false);
+  const [disabled, setDisabled] = useState(false);
+  const [contentVisible, setContentVisible] = useState(false);
+
+  // Image preview state
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [selectedImageUrl, setSelectedImageUrl] = useState('');
 
   useEffect(() => {
-    // small entrance animation like UpdatePurchaseOrder
-    const t = setTimeout(() => setContentVisible(true), 50)
-    return () => clearTimeout(t)
-  }, [])
+    const t = setTimeout(() => setContentVisible(true), 50);
+    return () => clearTimeout(t);
+  }, []);
 
+  const handleTypeRequestChange = (selectedOption) => {
+    setItems({ ...items, type_request: selectedOption });
+    
+    // BARU: Set status is_stock berdasarkan pilihan. Reset detail jika tipe berubah.
+    if (selectedOption) {
+      const isStock = selectedOption.is_stok === 1;
+      if (isStockRequest !== isStock) {
+        setDetails([]); // Kosongkan detail jika tipe request berubah
+      }
+      setIsStockRequest(isStock);
+    } else {
+      setIsStockRequest(null);
+      setDetails([]);
+    }
+  };
+
+  // Image preview functions
+  const handleClosePreview = () => {
+      setIsPreviewOpen(false);
+      setSelectedImageUrl('');
+  };
+  const handleImageClick = (imageUrl) => {
+      setSelectedImageUrl(imageUrl);
+      setIsPreviewOpen(true);
+  };
+  
   const handleSubmit = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
+    if (disabled) return;
+    setDisabled(true);
+
     try {
-      if (disabled) return
-      setDisabled(true)
-
-      if (!items.type_request || !items.tanggal) {
-        Swal.fire({
-          icon: 'warning',
-          title: 'Data belum lengkap',
-          text: 'Silakan lengkapi type request dan tanggal!',
-        })
-        setDisabled(false)
-        return
+      if (!items.type_request || !items.tanggal || details.length === 0) {
+        Swal.fire({ icon: 'warning', title: 'Data belum lengkap', text: 'Silakan lengkapi semua field dan tambahkan minimal satu detail.' });
+        setDisabled(false);
+        return;
       }
 
-      if (details.length === 0) {
-        Swal.fire({
-          icon: 'warning',
-          title: 'Detail kosong',
-          text: 'Tambahkan minimal satu detail barang.',
-        })
-        setDisabled(false)
-        return
-      }
-
-      await api.post('inventMakeRequest-create', {
+      // DIUBAH: Membuat payload secara dinamis
+      const payload = {
         invent_type_request_id: items.type_request?.value,
         tanggal: items.tanggal,
-        note_barang: details.map((d) => d.note_barang),
         qty: details.map((d) => d.qty),
-      })
+      };
 
-      Swal.fire({
-        title: 'Make request berhasil dibuat!',
-        icon: 'success',
-        timer: 2000,
-        showConfirmButton: false,
-      })
-      navigate('/make-request/list-make-request')
-      resetValue()
+      if (isStockRequest) {
+        payload.invent_barang_id = details.map((d) => d.selectedBarang?.id || d.selectedBarang?.invent_barangs_id || d.invent_barang_id);
+      } else {
+        payload.note_barang = details.map((d) => d.note_barang);
+      }
+
+      await api.post('inventMakeRequest-create', payload);
+
+      Swal.fire({ title: 'Make request berhasil dibuat!', icon: 'success', timer: 2000, showConfirmButton: false });
+      navigate('/make-request/list-make-request');
+
     } catch (error) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Tidak dapat membuat make request',
-        text: 'Ada Kesalahan Dalam Sistem',
-      })
-      resetValue()
+      Swal.fire({ icon: 'error', title: 'Gagal membuat request', text: error?.response?.data?.message || 'Terjadi kesalahan pada sistem.' });
     } finally {
-      setDisabled(false)
+      setDisabled(false);
     }
-  }
+  };
+  
+  const handleSaveDetail = (data) => {
+    if (editIndex !== null) {
+      setDetails(details.map((it, idx) => (idx === editIndex ? data : it)));
+    } else {
+      setDetails([...details, data]);
+    }
+    setOpenModal(false);
+    setEditIndex(null);
+  };
 
   const resetValue = () => {
-    setItems({ type_request: null, tanggal: '' })
-    setDetails([])
-  }
+    setItems({ type_request: null, tanggal: '' });
+    setDetails([]);
+    setIsStockRequest(null);
+  };
 
   return (
     <Layout title={'Create Make Request'}>
       <Block>
-        <div className="px-4">
+        <div className="xs:px-0 md:px-4">
           <Back goHome={() => navigate('/make-request/list-make-request')} />
           <p className="lg:text-3xl text-2xl font-semibold capitalize my-4">Create Make Request</p>
 
           <Transition contentVisible={contentVisible}>
-            <div className="p-8 bg-white shadow-sm rounded-lg border">
+            <div className="p-7 bg-white shadow-lg shadow-gray-200 rounded-lg border border-gray-300">
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div className="mb-5 space-y-2">
                   <label className="font-semibold">Type Request</label>
@@ -108,7 +134,7 @@ function CreateMakeRequest() {
                     selectValue={items.type_request}
                     selectName={'Type request'}
                     itemLabel={['name']}
-                    handleSelectChange={(type_request) => setItems({ ...items, type_request })}
+                    handleSelectChange={handleTypeRequestChange} // DIUBAH: Gunakan handler baru
                     required
                   />
                 </div>
@@ -117,117 +143,95 @@ function CreateMakeRequest() {
                   <label className="font-semibold">Tanggal</label>
                   <div className="bg-white p-2 rounded-md border border-gray-300 mt-2">
                     <input
-                      type="date"
-                      name="tanggal"
-                      value={items.tanggal}
-                      onChange={(e) => setItems({ ...items, tanggal: e.target.value })}
-                      className="w-full p-2 placeholder:text-gray-400 placeholder:font-inter placeholder:font-light"
-                      placeholder="Tanggal"
-                      required
-                    />
+                    type="date" 
+                    value={items.tanggal} 
+                    onChange={(e) => setItems({ ...items, tanggal: e.target.value })} 
+                    className="w-full p-2 active:outline-sky-500" 
+                    required />
                   </div>
                 </div>
 
-                <div className="mt-2 pt-3">
-                  <p className="text-lg font-semibold">Detail</p>
-                </div>
-                <div className="space-y-3 my-3">
-                  {
-                    details.map((item, id) => (
-                      <div
-                        key={id}
-                        className="border border-gray-300 rounded-lg p-3 flex justify-between items-center"
-                      >
-                        <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-                          <span className="font-medium">{item.note_barang}</span>
-                          <span className="font-medium sm:px-3">Qty: {item.qty}</span>
+                {/* DIUBAH: Hanya tampilkan bagian detail jika Type Request sudah dipilih */}
+                {isStockRequest !== null && (
+                  <>
+                    <div className="mt-2 pt-3">
+                      <p className="text-lg font-semibold">Detail</p>
+                    </div>
+                    <div className="space-y-3 my-3">
+                      {details.map((item, id) => (
+                        <div key={id} className="border rounded-lg p-3 flex justify-between items-center">
+                          <div className="flex items-center gap-4">
+                            { isStockRequest && item.selectedBarang?.gambarBarang && (
+                              <img
+                                src={`${apiUrl}${item.selectedBarang.gambarBarang}`}
+                                alt={item.selectedBarang.namaBarang}
+                                className="w-22 h-20 object-cover rounded-md cursor-pointer"
+                                onClick={() => handleImageClick(`${apiUrl}${item.selectedBarang.gambarBarang}`)}
+                              />
+                            )}
+                            { isStockRequest ?
+                              (<div className='grid'>
+                                <p className="font-medium">
+                                  {item.selectedBarang?.name || item.selectedBarang?.namaBarang}
+                                </p>
+                                <p className="font-base text-gray-500">
+                                  {item.selectedBarang?.kode || item.selectedBarang?.kodeBarang}
+                                </p>
+                              </div>
+                              ) : (
+                                <p className="font-medium">{item.note_barang}</p>
+                              )
+                            }
+                          </div>
+                          
+                          <div className="flex items-center">
+                            <p className="text-sm text-gray-600 mr-4">Qty: <span className='font-medium text-black'>{item.qty}</span></p>
+                            <div className="flex space-x-2 border-l-2 pl-3">
+                              <button type="button" onClick={() => { setInitialDetails(item); setEditIndex(id); setOpenModal(true); }}>
+                                <i className="bx bx-edit text-xl text-cyan-600"></i>
+                              </button>
+                              <button type="button" onClick={() => setDetails(details.filter((_, i) => i !== id))}>
+                                <i className="bx bx-trash text-xl text-red-500"></i>
+                              </button>
+                            </div>
+                          </div>
                         </div>
-
-                        <div className="flex space-x-2 border-l-2 pl-3">
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.preventDefault()
-                              setInitialDetails(details[id])
-                              setEditIndex(id)
-                              setOpenModal(true)
-                            }}
-                          >
-                            <i className="bx bx-edit text-xl text-cyan-600"></i>
-                          </button>
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.preventDefault()
-                              setDetails(details.filter((_, i) => i !== id))
-                            }}
-                          >
-                            <i className="bx bx-trash text-xl text-red-500"></i>
-                          </button>
-                        </div>
-                      </div>
-                    )
-                  )}
-                </div>
-
-                <div className="flex mt-4">
-                  <button
-                    type="button"
-                    className="w-full rounded-lg py-2 px-4 flex items-center font-medium bg-blue-50 text-blue-600 hover:bg-blue-100 transition-color duration-200"
-                    onClick={() => {
-                      setOpenModal(true)
-                      setEditIndex(null)
-                      setInitialDetails({ note_barang: '', qty: '' })
-                    }}
-                  >
-                    <i className="bx bx-plus mr-2 font-semibold text-base"></i>
-                    <span>{details.length === 0 ? 'Tambah detail' : 'Tambah detail lain'}</span>
-                  </button>
-                </div>
-
+                      ))}
+                    </div>
+                    <div className="flex mt-4">
+                      <button type="button" className="w-full rounded-lg py-2 px-4 flex items-center transition-color duration-200 font-medium bg-blue-50 text-blue-600 hover:bg-blue-100" onClick={() => { setOpenModal(true); setEditIndex(null); setInitialDetails(null); }}>
+                        <i className="bx bx-plus mr-2 font-semibold text-base"></i>
+                        <span>{details.length === 0 ? 'Tambah detail' : 'Tambah detail lain'}</span>
+                      </button>
+                    </div>
+                  </>
+                )}
                 <div className="flex flex-col items-center justify-self-center mt-10 max-w-full w-[25rem] space-y-2 text-center">
-                  <button
-                    disabled={disabled}
-                    type="submit"
-                    className="py-2 px-2 rounded-lg font-medium bg-blue-500/85 hover:bg-blue-500 transition-color duration-200 text-white disabled:bg-blue-200"
-                  >
-                    Submit
-                  </button>
-                  <button
-                    className="py-2 px-2 rounded-lg font-medium border border-red-200 bg-red-50 hover:bg-red-100 transition-color duration-200 text-red-600"
-                    onClick={resetValue}
-                    type="button"
-                  >
-                    Reset
-                  </button>
+                  <button disabled={disabled} type="submit" className='py-2 px-4 w-full rounded-lg font-medium bg-blue-500 hover:bg-blue-600 transition-color duration-200 text-white disabled:bg-blue-300'>Submit</button>
+                  <button className='py-2 px-4 w-full rounded-lg font-medium border border-red-200 bg-red-50 hover:bg-red-100 transition-color duration-200 text-red-600' onClick={resetValue} type="button">Reset</button>
                 </div>
               </form>
             </div>
-
-            {openModal && (
-              <ModalMR
+            { openModal && (
+              <ModalDetailRequest
                 open={openModal}
                 initialData={initialDetails}
-                onClose={() => {
-                  setOpenModal(false)
-                  setEditIndex(null)
-                }}
-                onSave={(data) => {
-                  if (editIndex !== null) {
-                    setDetails(details.map((it, idx) => (idx === editIndex ? data : it)))
-                  } else {
-                    setDetails([...details, data])
-                  }
-                  setOpenModal(false)
-                  setEditIndex(null)
-                }}
+                isStock={isStockRequest}
+                apiUrl={apiUrl}
+                onClose={() => { setOpenModal(false); setEditIndex(null); }}
+                onSave={handleSaveDetail}
               />
             )}
           </Transition>
         </div>
       </Block>
+      <ImagePreviewModal
+      isOpen={isPreviewOpen}
+      onClose={handleClosePreview}
+      imageUrl={selectedImageUrl}
+      />
     </Layout>
-  )
+  );
 }
 
-export default CreateMakeRequest
+export default CreateMakeRequest;

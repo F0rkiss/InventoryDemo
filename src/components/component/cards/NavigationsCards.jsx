@@ -15,13 +15,13 @@ const NavigationGroupCards = forwardRef(({ item, deleteItems, goToDetail, goToUp
                         : item.navigation_menu
                         }
                 </h3>
-                <button
+                {/* <button
                     className='detail-button col-start-3 justify-self-end'
                     onClick={() => goToDetail(item.id)}
                     title="View Details"
                 >
                     <i className="bx bx-dots-vertical-rounded text-2xl group-hover:text-gray-800 transition-all duration-200" />
-                </button>
+                </button> */}
             </div>
 
             {/* Content Section */}

@@ -73,20 +73,20 @@ const CustomSidebar = ({ showProfile = true, navOpen, setNavOpen }) => {
                                 <i className='bx bxs-user-circle place-self-center text-4xl'></i>
                                 <div className="name flex flex-col ms-3 translate-y">
                                     <p className="self-start font-inter font-semibold text-base capitalize text-ellipsis whitespace-nowrap overflow-hidden max-w-40">{name}</p>
-                                    <p className="self-start font-inter font-regular text-sm text-ellipsis whitespace-nowrap overflow-hidden max-w-40">{email}</p>
+                                    <p className="self-start capitalize font-inter font-regular text-sm text-ellipsis whitespace-nowrap overflow-hidden max-w-40">{role}</p>
                                 </div>
                             </div>
                             <i className={`bx bx-chevron-${isOpenProfile ? 'up' : 'down'} text-4xl text-button-mi ios-chevron`}></i>
                         </button>
                         <div className={`transition-max-height duration-1000 ease-in-out overflow-hidden ${isOpenProfile ? 'max-h-96' : 'max-h-0'}`}>
                             <div className={`bg-coklat-mi space-y-2 rounded-md px-3 pb-4 transition-opacity duration-300 ${isOpenProfile ? 'opacity-100' : 'opacity-0'}`}>
-                                <button className="px-4 py-1 text-white rounded-lg transition-color duration-200 hover:bg-stone-900 w-full" onClick={() => handleNavigation('/edit-profile')}>
+                                <button className="px-4 py-1 text-white rounded-md transition-color duration-200 hover:bg-stone-900 w-full" onClick={() => handleNavigation('/profile')}>
                                     <div className='flex items-center rounded-lg'>
-                                        <i className="bx bxs-user-detail text-2xl me-2" />
+                                        <i className="bx bx-user text-2xl me-2" />
                                         <span className="text-lg leading-8">Profile</span>
                                     </div>
                                 </button>
-                                <button className="px-4 py-1 text-white rounded-lg hover:bg-stone-900 w-full" onClick={logout}>
+                                <button className="px-4 py-1 transition-color duration-200 text-white rounded-md bg-red-800 hover:bg-red-900 w-full" onClick={logout}>
                                     <div className='flex items-center rounded-lg'>
                                         <i className="bx bx-log-out text-2xl me-2" />
                                         <span className="text-lg leading-8">Log out</span>
@@ -120,7 +120,7 @@ const CustomSidebar = ({ showProfile = true, navOpen, setNavOpen }) => {
                                     {menu.children.filter(sub => navigation_menu.some(nav => nav.name === sub.key)).map(sub => (
                                         <button key={sub.key} onClick={() => handleNavigation(sub.path)} className='rounded-r-lg'>
                                             <div className={`flex text-left items-center ms-8 transition-all duration-200 border-l-2 hover:border-transparent hover:rounded-r-lg border-stone-200 py-2 ${isActive(sub.path) ? 'bg-coklat-mi text-white rounded-r-lg hover:border-stone-200' : 'hover:bg-stone-200'}`}>
-                                                <p className='text-lg font-medium ps-10 pe-4'>{sub.label}</p>
+                                                <p className='text-base font-medium ps-10 pe-4'>{sub.label}</p>
                                             </div>
                                         </button>
                                     ))}

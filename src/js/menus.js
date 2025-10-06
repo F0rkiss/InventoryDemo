@@ -1,25 +1,13 @@
 const menus = [
     { key: "Dashboard", label: "Dashboard", icon: "bx bxs-dashboard", path: "/dashboard" },
     {
-        key: "Barang",
-        label: "Barang",
-        icon: "bx bx-package",
-        isAccordion: true,
-        children: [
-            { key: "Barang", label: "List Barang", path: "/barang/list-barang" },
-            { key: "JenisBarang", label: "Jenis Barang", path: "/jenis-barang/list-jenis-barang" },
-            { key: "SumberBarang", label: "Sumber Barang", path: "/sumber-barang/list-sumber-barang" },
-        ]
-    },
-    { key: "Categories", label: "Category", icon: "bx bx-category-alt", path: "/category/list-category" },
-    { key: "User", label: "Data User", icon: "bx bxs-user-badge", path: "/user/list-user" },
-    {
-        key: "MakeRequest",
+        key: "MakeRequest" || "MakeRequestAdmin" || "ListMakeRequest" || "ListPurchaseRequest" || "PurchaseRequest" || "PurchaseOrder" || "TypeRequest",
         label: "Request",
         icon: "bx bx-message-add",
         isAccordion: true,
         children: [
-            { key: "MakeRequest", label: "Make Request", path: "/make-request/list-make-request" },
+            { key: "MakeRequestAdmin", label: "All Make Request", path: "/make-request-admin/list-make-request-admin" },
+            { key: "MakeRequest", label: "Personal Make Request", path: "/make-request/list-make-request" },
             { key: "ListMakeRequest", label: "Create Purchase Request", path: "/make-purchase-request/list-make-purchase-request" },
             { key: "ListPurchaseRequest", label: "Create Purchase Order", path: "/purchase-order-pr/list-purchase-order-pr" },
             { key: "PurchaseRequest", label: "Purchase Request", path: "/purchase-request/list-purchase-request" },
@@ -27,6 +15,20 @@ const menus = [
             { key: "TypeRequest", label: "Type Request", path: "/type-request/list-type-request" },
         ]
     },
+    {
+        key: "Barang" || "JenisBarang" || "SumberBarang",
+        label: "Barang",
+        icon: "bx bx-package",
+        isAccordion: true,
+        children: [
+            { key: "InventStok", label: "List Stok", path: "/stok/list-stok" },
+            { key: "Barang", label: "List Barang", path: "/barang/list-barang" },
+            { key: "JenisBarang", label: "Jenis Barang", path: "/jenis-barang/list-jenis-barang" },
+            { key: "SumberBarang", label: "Sumber Barang", path: "/sumber-barang/list-sumber-barang" },
+        ]
+    },
+    { key: "Categories", label: "Category", icon: "bx bx-category-alt", path: "/category/list-category" },
+    { key: "User", label: "Data User", icon: "bx bxs-user-badge", path: "/user/list-user" },
     { key: "JenisMemo", label: "Jenis Memo", icon: "bx bx-note", path: "/jenismemo/list-jenismemo" },
     { key: "LPB", label: "LPB", icon: "bx ", path: "/lpb/list-lpb" },
     { key: "Status", label: "Status", icon: "bx bxs-checkbox-checked", path: "/status/list-status" },
@@ -34,7 +36,7 @@ const menus = [
     { key: "Role", label: "Role", icon: "bx bx-tag", path: "/role/list-role" },
     { key: "Billing", label: "Billing", icon: "bx bx-spreadsheet", path: "/billing/list-billing" },
     {
-        key: "ApprovalStep",
+        key: "ApprovalStep" || "ApprovalStepLPB",
         label: "Approval Step",
         icon: "bx bx-user-check",
         isAccordion: true,
