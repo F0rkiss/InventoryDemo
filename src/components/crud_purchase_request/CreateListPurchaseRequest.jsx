@@ -32,7 +32,11 @@ import Swal from 'sweetalert2'
     const fetchItems = async () => {
       try {
         setLoading(true);
-        const response = await api.get(searchTerm ? `purchaseRequest-makeRequest/${searchTerm}` : 'purchaseRequest-makeRequest');
+        const params = {};
+        if (searchTerm) {
+          params.search = searchTerm;
+        }
+        const response = await api.get('purchaseRequest-makeRequest', { params });
         const data = response.data.data;
         setItems(data.data);
         setNextCursor(data.next_cursor);
@@ -47,11 +51,13 @@ import Swal from 'sweetalert2'
       if (!nextCursor || loading) return;
       try {
         setLoading(true);
-        const response = await api.get(searchTerm ? `purchaseRequest-makeRequest/${searchTerm}` : 'purchaseRequest-makeRequest', {
-          params: {
-            cursor: nextCursor,
-          },
-        });
+        const params = {
+          cursor: nextCursor,
+        }
+        if (searchTerm) {
+          params.search = searchTerm;
+        }
+        const response = await api.get('purchaseRequest-makeRequest', { params });
         const data = response.data.data;
   
           setItems(

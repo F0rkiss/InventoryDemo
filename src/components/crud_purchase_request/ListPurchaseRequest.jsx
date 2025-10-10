@@ -38,8 +38,12 @@ function PurchaseRequestList() {
     try {
       setLoading(true)
 
-      let endpoint = searchTerm ? `purchaseRequest/${searchTerm}` : 'purchaseRequest'
+      let endpoint = 'purchaseRequest'
       const params = {}
+
+      if (searchTerm) {
+        params.search = searchTerm
+      }
 
       if (filterStatus === 'completed') {
         endpoint = 'purchaseRequest-toggle'
@@ -67,8 +71,11 @@ function PurchaseRequestList() {
     try {
       setLoading(true)
 
-      let endpoint = searchTerm ? `purchaseRequest/${searchTerm}` : 'purchaseRequest'
+      let endpoint = 'purchaseRequest'
       const params = { cursor: nextCursor }
+      if (searchTerm) {
+        params.search = searchTerm
+      }
 
       if (filterStatus === 'completed') {
         endpoint = 'purchaseRequest-toggle'
