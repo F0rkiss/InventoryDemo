@@ -62,9 +62,23 @@ const ModalPurchaseOrder = ({ onClose, onSave, open, initialData, apiUrl, existi
     // Fetch available barang
     const fetchAvailableBarang = async (term = '') => {
         setBarangLoading(true);
-        const endpoint = term.trim() ? `/inventBarang/${term.trim()}` : '/inventBarang';
+        // The endpoint is now always the same.
+        const endpoint = '/inventBarang';
+        
+        // We will build a configuration object for the API call.
+        const config = {};
+
+        // If a search term exists, add it to the 'params' object.
+        // This will be converted to "?search=term" in the URL.
+        if (term.trim()) {
+            config.params = {
+                search: term.trim()
+            };
+        }
+
         try {
-            const response = await api.get(endpoint);
+            // Pass the endpoint and the config object to the API call.
+            const response = await api.get(endpoint, config);
             setAvailableBarang(response.data.data.data || []);
         } catch (error) {
             console.error('Error fetching barang:', error);
