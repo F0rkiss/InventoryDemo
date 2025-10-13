@@ -16,7 +16,7 @@ const menus = [
         ]
     },
     {
-        key: "Barang" || "JenisBarang" || "SumberBarang",
+        key: "InventStok" || "Barang" || "JenisBarang" || "SumberBarang",
         label: "Barang",
         icon: "bx bx-package",
         isAccordion: true,
@@ -27,9 +27,6 @@ const menus = [
             { key: "SumberBarang", label: "Sumber Barang", path: "/sumber-barang/list-sumber-barang" },
         ]
     },
-    { key: "Categories", label: "Category", icon: "bx bx-category-alt", path: "/category/list-category" },
-    { key: "User", label: "Data User", icon: "bx bxs-user-badge", path: "/user/list-user" },
-    { key: "JenisMemo", label: "Jenis Memo", icon: "bx bx-note", path: "/jenismemo/list-jenismemo" },
     {
         key: "LPB",
         label: "LPB",
@@ -40,6 +37,9 @@ const menus = [
             { key: "LPB", label: "LPB", path: "/lpb/list-lpb" },
         ]
     },
+    { key: "Categories", label: "Category", icon: "bx bx-category-alt", path: "/category/list-category" },
+    { key: "User", label: "Data User", icon: "bx bxs-user-badge", path: "/user/list-user" },
+    { key: "JenisMemo", label: "Jenis Memo", icon: "bx bx-note", path: "/jenismemo/list-jenismemo" },
     { key: "Status", label: "Status", icon: "bx bxs-checkbox-checked", path: "/status/list-status" },
     { key: "NavigationGroup", label: "Navigation Group", icon: "bx bx-navigation", path: "/navigation-groups/list-navigation-groups" },
     { key: "Role", label: "Role", icon: "bx bx-tag", path: "/role/list-role" },

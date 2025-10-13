@@ -109,7 +109,7 @@ const PurchaseOrderCards = forwardRef(({item, goToUpdate, goToDetail, canUpdate,
                 </div>
             }
             <div className='flex gap-2 py-2 px-2 mx-2 mb-2'>
-                { canUpdate &&
+                { (item.canBeUpdated && canUpdate) &&
                     <button
                     className="px-3 py-1.5 update-button"
                     onClick={() => goToUpdate(item.id)}

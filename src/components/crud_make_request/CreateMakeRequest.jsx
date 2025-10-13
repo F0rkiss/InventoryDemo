@@ -217,7 +217,7 @@ function CreateMakeRequest() {
                                   </div>
 
                                   {/* Buttons Section */}
-                                  <div className="col-start-2 flex items-center justify-center w-full gap-2 mt-2 divide-x-2 md:col-auto md:divide-x-0 md:mt-0 md:justify-self-end md:border-l-2 md:pl-3">
+                                  <div className="flex items-center gap-2 mt-2 md:mt-0 md:ml-auto">
                                       <button type="button" onClick={() => { setInitialDetails(item); setEditIndex(id); setOpenModal(true); }}>
                                           <i className="bx bx-edit text-xl text-cyan-600"></i>
                                       </button>

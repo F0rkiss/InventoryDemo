@@ -148,6 +148,11 @@ import ExportButton from '../component/ExportSheets';
     return (
       <Layout title={'List Make Request'}>
           <Block>
+            <SearchBar
+              onChange={handleSearchChange}
+              disable={loading}
+              values={searchQuery}
+            />
             <div className='ms-3 mb-4 flex items-center justify-between'>
               <div className="flex justify-between items-center w-full">
                 <p className='md:text-3xl text-lg font-semibold capitalize me-1'>Personal Make Request List</p>
@@ -157,11 +162,6 @@ import ExportButton from '../component/ExportSheets';
                     onChange={onFilterChange}
                     // disabled={loading}
                     // showText   // uncomment if you want to show the current label text
-                  />
-                  <SearchBar
-                    onChange={handleSearchChange}
-                    disable={loading}
-                    values={searchQuery}
                   />
                   <ExportButton/>
                 </div>

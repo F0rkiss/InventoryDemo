@@ -120,7 +120,7 @@ const ModalMR = ({ open, onClose, onSave, initialData, isStock, apiUrl }) => {
     if (!open) return null;
 
     return (
-        <MiModal onClose={onClose} contentClass="max-w-2xl w-full min-h-fit">
+        <MiModal onClose={onClose} contentClass="max-w-2xl w-full min-h-auto">
             <div className='pb-16 pt-12 px-6'>
                 <form className='w-full flex flex-col p-2' onSubmit={handleSubmit}>
                     <p className='text-2xl text-center font-semibold mb-6'>

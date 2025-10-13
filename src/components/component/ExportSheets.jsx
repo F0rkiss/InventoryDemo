@@ -59,7 +59,7 @@ function ExportButton() {
     <button
       onClick={handleExport}
       disabled={loading}
-      className="ml-2 py-2 px-4 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:opacity-50 flex items-center justify-center"
+      className="ml-2 py-2 px-4 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:opacity-50 flex items-center justify-center transition-colors duration-200"
       title="Export to Excel"
     >
       {loading ? (
@@ -68,7 +68,10 @@ function ExportButton() {
           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
         </svg>
       ) : (
-        <i className="bx bx-export text-xl"></i>
+        <div className="flex items-center space-x-2">
+          <p className="font-medium">Export</p>
+          <i className="bx bx-export text-lg"></i>
+        </div>
       )}
     </button>
   );

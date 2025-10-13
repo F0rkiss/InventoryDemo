@@ -331,10 +331,21 @@ const handleSubmit = async (e) => {
                                 </div>
                             </div>
                             <div className="mb-4">
-                            <PaymentMethodSelect
-                                value={items.cara_pembayaran}
-                                onChange={(val) => setItems({ ...items, cara_pembayaran: val })}
-                            />
+                                {/* <div className="flex justify-between items-center">
+                                    {errors.cara_pembayaran && <span className="text-red-500 text-sm">{errors.cara_pembayaran}</span>}
+                                    </div> */}
+                                <label className='font-semibold'>Metode Pembayaran</label>
+                                <div className={`bg-white p-3 rounded-md border mt-2 border-gray-300`}>
+                                <input 
+                                    type="text" 
+                                    name="cara_pembayaran" 
+                                    value={items.cara_pembayaran} 
+                                    onChange={e => setItems({ ...items, cara_pembayaran: e.target.value })}
+                                    className="w-full p-2 placeholder:text-gray-400"
+                                    maxLength={80}
+                                    placeholder='Metode Pembayaran'
+                                />
+                                </div>
                             </div>
                             <div className="mt-2 pt-3">
                             <p className='text-lg font-semibold'>Detail</p>

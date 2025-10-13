@@ -13,7 +13,7 @@ function SearchBar({
   // Show shadow if focused or value exists
   const showShadow = isFocused || !!values;
 
-  const containerClass = `bg-white min-w-[5rem] lg:w-[32rem] px-3 py-2 rounded-full flex items-center border hover:bg-gray-50 transition-color duration-200 font-inter  ${className || ''}`;
+  const containerClass = `bg-white min-w-[5rem] lg:w-full px-3 py-2 rounded-full flex items-center border hover:bg-gray-50 transition-color duration-200 font-inter  ${className || ''}`;
 
   const blockContent = (
     <div className={containerClass}>

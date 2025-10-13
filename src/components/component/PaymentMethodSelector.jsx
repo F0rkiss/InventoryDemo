@@ -1,7 +1,7 @@
 // src/component/PaymentMethodSelect.jsx
 import React from "react";
 
-const methods = ["cash", "e-wallet", "credit"];
+const methods = ["cash", "credit"];
 
 export default function PaymentMethodSelect({ value, onChange }) {
   return (
