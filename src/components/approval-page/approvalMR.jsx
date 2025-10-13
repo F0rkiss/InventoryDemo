@@ -10,6 +10,7 @@ import DateFormat from '../../helper/DateFormatHelper'
 import { useAuth } from '../../auth/AuthContext';
 import ApprovalActions from '../component/ApprovalActions';
 import Swal from 'sweetalert2';
+import ImagePreviewModal from '../component/modal/ImagePreviewModal';
 
 function ApprovalMR() {
     const [item, setItem] = useState({})
@@ -24,6 +25,10 @@ function ApprovalMR() {
     const [actionLoading, setActionLoading] = useState(false)
     const [message, setMessage] = useState('')
     const apiUrl = import.meta.env.VITE_URL
+    
+    // Image preview states
+    const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+    const [selectedImageUrl, setSelectedImageUrl] = useState('');
     
     // Helper function to get today's date in YYYY-MM-DD format
     const getToday = () => {
@@ -51,9 +56,8 @@ function ApprovalMR() {
         const fetchItems = async () => {
         try {
             setLoading(true);
-            const url = role === 'admin' ?
-            (`/inventMakeRequest-admin/detail/${decryptedId}`)
-            : (`/inventMakeRequest-detail/${decryptedId}`)
+            const url = (`/inventMakeRequest-admin/detail/${decryptedId}`)
+            
             const response = await api.get(url);
             const data = response.data.data;
             setItem(data);
@@ -173,6 +177,12 @@ function ApprovalMR() {
         }
         }
         
+        // Handle image click for preview
+        const handleImageClick = (imageUrl) => {
+            setSelectedImageUrl(imageUrl);
+            setIsPreviewOpen(true);
+        };
+        
         return (
         <Layout title={'Detail Make Request'}>
             <Block>
@@ -235,24 +245,60 @@ function ApprovalMR() {
                         { detailMR.length === 0 ? (
                         <p className="text-gray-400 italic">No detail data</p>
                         ) : (
-                        <table className="w-full text-sm text-left">
-                            <thead>
-                            <tr className="bg-gray-100">
-                                <th className="px-3 py-2 rounded-l-md">No</th>
-                                <th className="px-3 py-1">Note Barang</th>
-                                <th className="px-3 py-1 rounded-r-md">Quantity</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {detailMR.map((d, i) => (
-                                <tr key={d.id} className={` ${(i + 1) % 2 === 0 ? 'bg-gray-50' : 'bg-white'}`}>
-                                <td className="px-4 py-4 rounded-l-md">{i + 1}</td>
-                                <td className="px-4 py-4">{d.note_barang}</td>
-                                <td className="px-4 py-4 rounded-r-md">{d.qty}</td>
+                        <div className={Number(mainMR?.is_stok) === 1 ? "overflow-x-auto" : ""}>
+                            <table className="w-full text-sm text-left">
+                                <thead>
+                                <tr className="bg-gray-100">
+                                    <th className="px-3 py-2 rounded-l-md ">No</th>
+                                    {Number(mainMR?.is_stok) === 1 ? (
+                                        <>
+                                            <th className="px-3 py-1">Barang</th>
+                                            <th className="px-3 py-1">Kode Barang</th>
+                                            <th className="px-3 py-1">Kode Gudang</th>
+                                            <th className="px-3 py-1">Asset</th>
+                                        </>
+                                    ) : (
+                                        <th className="px-3 py-1">Note Barang</th>
+                                    )}
+                                    <th className="px-3 py-1 rounded-r-md">Quantity</th>
                                 </tr>
-                            ))}
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                {detailMR.map((d, i) => (
+                                    <tr key={d.id} className={` ${(i + 1) % 2 === 0 ? 'bg-gray-50' : 'bg-white'}`}>
+                                    <td className="px-4 py-4 rounded-l-md">{i + 1}</td>
+                                    {Number(mainMR?.is_stok) === 1 ? (
+                                        <>
+                                            <td className="px-4 py-4">
+                                                <div className="flex items-center gap-3">
+                                                    {d?.image && (
+                                                        <img
+                                                            src={`${apiUrl}${d?.image}`}
+                                                            alt={d?.nameBarang || 'barang'}
+                                                            className="md:max-w-[10rem] xs:max-w-[6rem] object-cover rounded shadow cursor-pointer"
+                                                            onClick={() => handleImageClick(`${apiUrl}${d?.image}`)}
+                                                        />
+                                                    )}
+                                                    <div className="min-w-0">
+                                                        <div className="font-medium truncate">
+                                                            {d?.nameBarang || '-'}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td className="px-4 py-4">{d?.kodeBarang || '-'}</td>
+                                            <td className="px-4 py-4">{d?.kodeGudang || '-'}</td>
+                                            <td className="px-4 py-4">{d?.is_asset ? 'Asset' : 'Non-Asset'}</td>
+                                        </>
+                                    ) : (
+                                        <td className="px-4 py-4">{d?.note_barang || '-'}</td>
+                                    )}
+                                    <td className="px-4 py-4 rounded-r-md">{d.qty}</td>
+                                    </tr>
+                                ))}
+                                </tbody>
+                            </table>
+                        </div>
                         )}
                     </div>
                     </div>
@@ -273,6 +319,13 @@ function ApprovalMR() {
                 </Transition>
             </div>
             </Block>
+            
+            {/* Image Preview Modal */}
+            <ImagePreviewModal
+                isOpen={isPreviewOpen}
+                onClose={() => setIsPreviewOpen(false)}
+                imageUrl={selectedImageUrl}
+            />
         </Layout>
     );
 }  

@@ -46,7 +46,7 @@ const LPBCards = forwardRef(({ item, goToUpdate, goToDetail,isList, goToCreate, 
         <div className="m-4 text-right space-y-2">
             <div className="flex justify-between">
                 <p className="text-gray-500">Pembayaran</p>
-                <p className="font-medium capitalize">{(isList ? infoPO.cara_pembayaran : item.cara_pembayaran )}</p>
+                <p className="font-medium capitalize">{item.cara_pembayaran}</p>
             </div>
             <div className="flex justify-between">
                 <p className="text-gray-500">Keterangan</p>
@@ -102,16 +102,16 @@ const LPBCards = forwardRef(({ item, goToUpdate, goToDetail,isList, goToCreate, 
                     <div className="flex justify-end">
                         <div
                         className={`max-h-max max-w-max rounded-md border ${
-                            item.is_full_approval ? 'bg-green-50 border-green-400' : 'bg-amber-50 border-amber-400'
+                            item.isCompletedPo ? 'bg-green-50 border-green-400' : 'bg-amber-50 border-amber-400'
                         }`}
                         >
                         <p
                             className={`py-1 px-2 flex gap-1 text-left items-center text-xs font-medium ${
-                            item.is_full_approval ? 'text-green-700' : 'text-amber-600'
+                            item.isCompletedPo ? 'text-green-700' : 'text-amber-600'
                             }`}
                         >
                             <i className="bx bxs-check-circle text-sm"></i>
-                            {item.is_full_approval? 'Purchase Order telah selesai' : 'Belum selesai'}
+                            {item.isCompletedPo? 'Purchase Order telah selesai' : 'Belum selesai'}
                         </p>
                         </div>
                     </div>

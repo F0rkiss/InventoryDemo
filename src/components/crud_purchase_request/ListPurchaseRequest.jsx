@@ -41,16 +41,18 @@ function PurchaseRequestList() {
       let endpoint = 'purchaseRequest'
       const params = {}
 
+      // Prioritize search term over filters
       if (searchTerm) {
         params.search = searchTerm
-      }
-
-      if (filterStatus === 'completed') {
-        endpoint = 'purchaseRequest-toggle'
-        params.is_completed = 1
-      } else if (filterStatus === 'not_completed') {
-        endpoint = 'purchaseRequest-toggle'
-        params.is_completed = 0
+      } else {
+        // Only apply filters when there's no search term
+        if (filterStatus === 'completed') {
+          endpoint = 'purchaseRequest-toggle'
+          params.is_completed = 1
+        } else if (filterStatus === 'not_completed') {
+          endpoint = 'purchaseRequest-toggle'
+          params.is_completed = 0
+        }
       }
 
       const response = await api.get(endpoint, { params })
@@ -73,16 +75,19 @@ function PurchaseRequestList() {
 
       let endpoint = 'purchaseRequest'
       const params = { cursor: nextCursor }
+
+      // Prioritize search term over filters
       if (searchTerm) {
         params.search = searchTerm
-      }
-
-      if (filterStatus === 'completed') {
-        endpoint = 'purchaseRequest-toggle'
-        params.is_completed = 1
-      } else if (filterStatus === 'not_completed') {
-        endpoint = 'purchaseRequest-toggle'
-        params.is_completed = 0
+      } else {
+        // Only apply filters when there's no search term
+        if (filterStatus === 'completed') {
+          endpoint = 'purchaseRequest-toggle'
+          params.is_completed = 1
+        } else if (filterStatus === 'not_completed') {
+          endpoint = 'purchaseRequest-toggle'
+          params.is_completed = 0
+        }
       }
 
       const response = await api.get(endpoint, { params })

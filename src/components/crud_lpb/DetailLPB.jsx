@@ -204,8 +204,9 @@ function DetailLPB() {
                                         <tr className="bg-gray-100">
                                             <th className="px-3 py-2 rounded-l-md">No</th>
                                             <th className="px-3 py-1">Barang</th>
+                                            <th className="px-3 py-1">Jumlah Diterima</th>
                                             <th className="px-3 py-1">Jumlah Diminta</th>
-                                            <th className="px-3 py-1">Jumlah Barang Masuk</th>
+                                            <th className="px-3 py-1">Jumlah Sudah Masuk</th>
                                             <th className="px-3 py-1 rounded-r-md">Jumlah Belum Datang</th>
                                         </tr>
                                     </thead>
@@ -229,6 +230,7 @@ function DetailLPB() {
                                                         </div>
                                                     </div>
                                                 </td>
+                                                <td className="px-4 py-4">{pr?.qty ?? '-'}</td>
                                                 <td className="px-4 py-4">{getQty(pr, 'requested_qty')}</td>
                                                 <td className="px-4 py-4">{getQty(pr, 'used_qty')}</td>
                                                 <td className="px-4 py-4 rounded-r-md">{getQty(pr, 'sisa')}</td>
