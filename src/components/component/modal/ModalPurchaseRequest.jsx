@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import MiModal from '../MiModal'
 import api from '../../../api/api'
 import Swal from 'sweetalert2'
 import Loader from '../Loader'
 
-const ModalPurchaseRequest = ({ onClose, onSave, open, initialData, apiUrl, existingItems = [], maxItems = null }) => {
+const ModalPurchaseRequest = ({ onClose, onSave, open, initialData, apiUrl, existingItems = [], maxItems = null, makeRequestDetails = [] }) => {
     const [modalData, setModalData] = useState({
         selectedBarang: null,
         qty: '',
@@ -14,6 +14,7 @@ const ModalPurchaseRequest = ({ onClose, onSave, open, initialData, apiUrl, exis
     const [availableBarang, setAvailableBarang] = useState([]);
     const [barangLoading, setBarangLoading] = useState(false);
     const [showResults, setShowResults] = useState(false);
+    const debounceTimeout = useRef(null);
 
     useEffect(() => {
         if (open) {
@@ -27,15 +28,21 @@ const ModalPurchaseRequest = ({ onClose, onSave, open, initialData, apiUrl, exis
         }
     }, [open, initialData]);
 
-    const fetchAvailableBarang = async (term = '') => {
-        if (!term.trim()) {
-            setAvailableBarang([]);
-            return;
-        }
-        
+    // Cleanup timeout on unmount
+    useEffect(() => {
+        return () => {
+            if (debounceTimeout.current) {
+                clearTimeout(debounceTimeout.current);
+            }
+        };
+    }, []);
+
+    const fetchAvailableBarang = async (term = '', showAll = false) => {
         setBarangLoading(true);
         const endpoint = '/inventBarang';
-        const config = {
+        
+        // If showAll is true, fetch all barang without search filter
+        const config = showAll ? {} : {
             params: {
                 search: term.trim()
             }
@@ -43,8 +50,23 @@ const ModalPurchaseRequest = ({ onClose, onSave, open, initialData, apiUrl, exis
 
         try {
             const response = await api.get(endpoint, config);
-            // Directly use the API response. No more client-side filtering needed.
-            setAvailableBarang(response.data.data.data || []);
+            const allBarang = response.data.data.data || [];
+            
+            if (showAll) {
+                // Show all barang when focused
+                setAvailableBarang(allBarang);
+            } else {
+                // Filter based on search term if provided
+                if (term.trim()) {
+                    const filteredBarang = allBarang.filter(barang =>
+                        barang.name.toLowerCase().includes(term.toLowerCase()) ||
+                        barang.kode_barang.toLowerCase().includes(term.toLowerCase())
+                    );
+                    setAvailableBarang(filteredBarang);
+                } else {
+                    setAvailableBarang([]);
+                }
+            }
         } catch (error) {
             console.error('Error fetching barang:', error);
             setAvailableBarang([]);
@@ -61,15 +83,20 @@ const ModalPurchaseRequest = ({ onClose, onSave, open, initialData, apiUrl, exis
         clearTimeout(debounceTimeout.current);
 
         if (term.trim()) {
-            // Set a new timeout
+            // Set a new timeout for search
             debounceTimeout.current = setTimeout(() => {
-                fetchAvailableBarang(term);
-            }, 500); // 500ms is a good debounce delay
+                fetchAvailableBarang(term, false);
+            }, 300); // 300ms debounce delay for better responsiveness
         } else {
-            // If the search term is cleared, hide results immediately
-            setShowResults(false);
-            setAvailableBarang([]);
+            // If the search term is cleared, show all barang again
+            fetchAvailableBarang('', true);
         }
+    };
+
+    const handleSearchFocus = () => {
+        setShowResults(true);
+        // Show all barang when focused
+        fetchAvailableBarang('', true);
     };
 
     const handleBarangSelect = (barang) => {
@@ -118,6 +145,22 @@ const ModalPurchaseRequest = ({ onClose, onSave, open, initialData, apiUrl, exis
                 });
                 return;
             }
+
+            // Validate quantity against make request details
+            if (makeRequestDetails.length > 0) {
+                const mrDetail = makeRequestDetails.find(detail => 
+                    detail.invent_barang_id === modalData.selectedBarang.id
+                );
+                
+                if (mrDetail && parseInt(modalData.qty) > mrDetail.qty) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Jumlah Quantity Melebihi Permintaan',
+                        text: `Quantity yang dimasukkan (${modalData.qty}) melebihi permintaan make request (${mrDetail.qty}) untuk barang "${modalData.selectedBarang.name}".`,
+                    });
+                    return;
+                }
+            }
         } catch (error) {
             console.log(error)
         } finally {
@@ -133,11 +176,10 @@ const ModalPurchaseRequest = ({ onClose, onSave, open, initialData, apiUrl, exis
     return (
         <MiModal
             onClose={onClose}
-            contentClass="max-h-[90vh] max-w-[95vw] w-full p-4"
+            contentClass="w-full p-4 flex flex-col items-center justify-center"
             closeModal={false}
         >
-            <div className='flex flex-col items-center justify-start w-full h-full relative'>
-                <form className='w-full flex flex-col items-center gap-4 overflow-auto' onSubmit={handleSubmit}>
+            <form className='w-full flex flex-col items-center gap-4' onSubmit={handleSubmit}>
                     <p className='text-xl sm:text-2xl font-semibold text-center'>Pilih Barang & Jumlah</p>
                     
                     {/* Barang Selection */}
@@ -176,6 +218,7 @@ const ModalPurchaseRequest = ({ onClose, onSave, open, initialData, apiUrl, exis
                                             type="text"
                                             value={searchTerm}
                                             onChange={(e) => handleSearchChange(e.target.value)}
+                                            onFocus={handleSearchFocus}
                                             placeholder="Cari barang..."
                                             className="w-full focus:outline-none text-sm sm:text-base"
                                             autoFocus
@@ -192,7 +235,7 @@ const ModalPurchaseRequest = ({ onClose, onSave, open, initialData, apiUrl, exis
                                                 <div className="p-4 text-center text-gray-500 text-sm">
                                                     {searchTerm
                                                         ? 'Tidak ada barang ditemukan'
-                                                        : 'Mulai ketik untuk mencari barang'}
+                                                        : 'Tidak ada barang tersedia'}
                                                 </div>
                                             ) : (
                                                 availableBarang.map((barang) => (
@@ -236,6 +279,16 @@ const ModalPurchaseRequest = ({ onClose, onSave, open, initialData, apiUrl, exis
                                 required
                             />
                         </div>
+                        {modalData.selectedBarang && makeRequestDetails.length > 0 && (() => {
+                            const mrDetail = makeRequestDetails.find(detail => 
+                                detail.invent_barang_id === modalData.selectedBarang.id
+                            );
+                            return mrDetail ? (
+                                <p className="text-xs text-gray-500 mt-1">
+                                    Maksimal quantity sesuai make request: {mrDetail.qty}
+                                </p>
+                            ) : null;
+                        })()}
                     </div>
 
                     <div className='flex flex-col w-full items-center mt-3 gap-2'>
@@ -247,8 +300,7 @@ const ModalPurchaseRequest = ({ onClose, onSave, open, initialData, apiUrl, exis
                             Save
                         </button>
                     </div>
-                </form>
-            </div>
+            </form>
         </MiModal>
     )
 }

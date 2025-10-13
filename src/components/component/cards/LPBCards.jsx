@@ -44,10 +44,6 @@ const LPBCards = forwardRef(({ item, goToUpdate, goToDetail,isList, goToCreate, 
 
         {/* Info */}
         <div className="m-4 text-right space-y-2">
-            {/* <div className="flex justify-between">
-            <p className="text-gray-500">Penerima </p>
-            <p className="font-medium">{item.penerima}</p>
-            </div> */}
             <div className="flex justify-between">
                 <p className="text-gray-500">Pembayaran</p>
                 <p className="font-medium capitalize">{(isList ? infoPO.cara_pembayaran : item.cara_pembayaran )}</p>
@@ -56,10 +52,6 @@ const LPBCards = forwardRef(({ item, goToUpdate, goToDetail,isList, goToCreate, 
                 <p className="text-gray-500">Keterangan</p>
                 <p className="font-medium">{(isList ? item.note : item.keterangan)}</p>
             </div>
-            {/* <div className="flex justify-between">
-                <p className="text-gray-500">Keterangan</p>
-                <p className="font-medium">{item.keterangan}</p>
-            </div> */}
             <div className="flex justify-between">
                 <p className="text-gray-500">Tanggal Penyerahan</p>
                 <p className="font-medium">{DateFormat(item.tanggal)}</p>
@@ -73,7 +65,7 @@ const LPBCards = forwardRef(({ item, goToUpdate, goToDetail,isList, goToCreate, 
         {/* Status + Toggle Button */}
          { isList ? 
         <div className="flex justify-between items-center mb-2 mx-4 gap-2">
-            {!desktop && infoPR && (
+            {!desktop && (
             <button
                 className={`flex w-auto items-center justify-between rounded-md border border-gray-300 px-4 py-1 text-left font-medium text-gray-700 transition-color duration-100 ${
                 detail === item.id ? 'bg-gray-50' : ''
@@ -110,31 +102,31 @@ const LPBCards = forwardRef(({ item, goToUpdate, goToDetail,isList, goToCreate, 
                     <div className="flex justify-end">
                         <div
                         className={`max-h-max max-w-max rounded-md border ${
-                            infoPO.is_completed ? 'bg-green-50 border-green-400' : 'bg-amber-50 border-amber-400'
+                            item.is_full_approval ? 'bg-green-50 border-green-400' : 'bg-amber-50 border-amber-400'
                         }`}
                         >
                         <p
                             className={`py-1 px-2 flex gap-1 text-left items-center text-xs font-medium ${
-                            infoPO.is_completed ? 'text-green-700' : 'text-amber-600'
+                            item.is_full_approval ? 'text-green-700' : 'text-amber-600'
                             }`}
                         >
                             <i className="bx bxs-check-circle text-sm"></i>
-                            {infoPO.is_completed ? 'Purchase Order telah selesai' : 'Belum selesai'}
+                            {item.is_full_approval? 'Purchase Order telah selesai' : 'Belum selesai'}
                         </p>
                         </div>
                     </div>
                     </div>
                     <div className="flex justify-between">
                         <p className="text-gray-500">Kode</p>
-                        <p className="font-medium">{infoPO.kode}</p>
+                        <p className="font-medium">{item.kodePO}</p>
                     </div>
                     <div className="flex justify-between">
                         <p className="text-gray-500">Note</p>
-                        <p className="font-medium">{infoPO.keterangan}</p>
+                        <p className="font-medium">{item.keterangan}</p>
                     </div>
                     <div className="flex justify-between">
                         <p className="text-gray-500">Tanggal</p>
-                        <p className="font-medium">{DateFormat(infoPO.tanggal)}</p>
+                        <p className="font-medium">{item.tanggalPO}</p>
                     </div>
                 </div>
                 )}
@@ -177,7 +169,7 @@ const LPBCards = forwardRef(({ item, goToUpdate, goToDetail,isList, goToCreate, 
             ) : (
             <div className="flex gap-2 py-2 px-2 mx-2 mb-2">
                 <button
-                    className="px-3 py-1.5 update-button"
+                    className="px-3 py-1.5 purchase-button"
                     onClick={() => {
                         // console.log("Klik Buat Laporan:", item.id)
                         goToCreate(item.id)

@@ -12,6 +12,7 @@ import DataEmpty from '../component/DataEmpty'
 import { encrypting } from '../../helper/EncryptHelper'
 import Swal from 'sweetalert2'
 import useMenuAccess from '../../hooks/useMenuAccess'
+import FlyingButton from '../component/FlyingButton'
 
 function ApprovalStepList() {
   const [items, setItems] = useState([])
@@ -142,6 +143,7 @@ function ApprovalStepList() {
 
         {loading && <Loader Class='mt-44' />}
       </Block>
+      <FlyingButton goTo={'/approval-step/create-approval-step'} />
     </Layout>
   )
 }

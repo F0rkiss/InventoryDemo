@@ -7,8 +7,10 @@ import Back from '../component/Back';
 import Layout from '../component/Layout';
 import { DecryptID } from '../../helper/EncryptHelper';
 import Swal from 'sweetalert2';
+import SelectPaginate from '../component/SelectPaginate';
+import useAuth from '../../hooks/useAuth';
 
-function UpdateRole() {
+function UpdateApprovalStep() {
     const [items, setItems] = useState({
         approval_step: '',
         user_id: '',
@@ -21,6 +23,8 @@ function UpdateRole() {
         type_request_jenis: '',
         type_request_description: ''
     })
+
+    const { user, type_request } = useAuth();
     const [decryptedId, setDecryptedId] = useState('')
     const [error, setError] = useState(0)
     const [disabled, setDisabled] = useState(false)
@@ -91,7 +95,7 @@ function UpdateRole() {
             Swal.fire({
                 icon: 'error',
                 title: 'Gagal Update Approval Step',
-                text: err.response?.data?.msg || 'Ada kesalahan dalam sistem',
+                text: error.response?.data?.msg || 'Ada kesalahan dalam sistem',
             });
     
             // Cek error yang aman
@@ -110,19 +114,24 @@ function UpdateRole() {
                 <div className='bg-white rounded shadow-sm p-3 mt-4'>
                     <form onSubmit={handleSubmit}>
                         <div className="mb-5">
-                            <label>User:</label>
-                            <div className='bg-white p-2 rounded-md border-solid border-gray-300 border'>
-                                <input 
-                                    type="text" 
-                                    name="user_name" 
-                                    value={items.user_name} 
-                                    onChange={e => setItems({ ...items, user_name: e.target.value })}
-                                    maxLength={50}
-                                    placeholder='Employee Name'
-                                    className="w-full p-2 border rounded placeholder:text-gray-400 placeholder:font-inter placeholder:font-light capitalize"
-                                    required
-                                />
-                            </div>
+                        <SelectPaginate 
+                            selectValue={
+                            items.user_id
+                                ? {label: items.user_name } // default selected
+                                : null
+                            }
+                            source={'inventUser'}
+                            selectName={'User'}
+                            itemLabel={['EmpName']}
+                            handleSelectChange={selectedUser =>
+                            setItems({
+                                ...items,
+                                user_id: selectedUser?.value || '',
+                                user_name: selectedUser?.label || ''
+                            })
+                            }
+                            required
+                        />
                         </div>
                         <div className="mb-5">
                             <label>Approval Step:</label>
@@ -143,18 +152,26 @@ function UpdateRole() {
                         </div>
                         <div className="mb-5">
                             <label>Type Request:</label>
-                            <div className='bg-white p-2 rounded-md border-solid border-gray-300 border'>
-                                <input 
-                                    type="text" 
-                                    name="type_request_name" 
-                                    value={items.type_request_name} 
-                                    onChange={e => setItems({ ...items, type_request_name: e.target.value })}
-                                    maxLength={50}
-                                    placeholder='Type Request Name'
-                                    className="w-full p-2 border rounded placeholder:text-gray-400 placeholder:font-inter placeholder:font-light capitalize"
-                                    required
-                                />
-                            </div>
+                            <SelectPaginate 
+                                selectValue={
+                                    items.invent_type_request_id
+                                        ? { label: items.type_request_name, value: items.invent_type_request_id }
+                                        : null
+                                }
+                                source={'inventTypeRequest'}
+                                selectName={'Type Request'}
+                                itemLabel={['name']}
+                                handleSelectChange={selectedType => 
+                                    setItems({ 
+                                        ...items,
+                                        invent_type_request_id: selectedType?.value || '',
+                                        type_request_name: selectedType?.label || ''
+                                    })
+                                }
+                                required
+                            />
+
+
                         </div>
                         {/* <div className="mb-5">
                             <label>Jenis Request:</label>
@@ -228,4 +245,4 @@ function UpdateRole() {
   )
 }
 
-export default UpdateRole
+export default UpdateApprovalStep

@@ -98,7 +98,7 @@ function ApprovalLPB() {
             Swal.fire({ title: 'Berhasil di Reject!', icon: 'success', timer: 2000, showConfirmButton: false });
             setTimeout(() => navigate('/notifications'), 1200);
         } catch {
-            Swal.fire({ title: 'Tidak berhasil di Reject!', icon: 'error', timer: 2000, showConfirmButton: false });
+            Swal.fire({ title: 'Tidak berhasil di Tolak!', icon: 'error', timer: 2000, showConfirmButton: false });
         } finally {
             setActionLoading(false);
         }

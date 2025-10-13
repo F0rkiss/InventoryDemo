@@ -68,6 +68,47 @@ function CreatePurchaseRequest() {
         }
     };
 
+    // === Validation Functions ===
+    const validateItemCount = () => {
+        const maxItems = item.details?.length || 0;
+        if (selectedItems.length !== maxItems) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Jumlah Detail Barang Tidak Sesuai',
+                text: `Jumlah detail barang harus sesuai dengan make request. Saat ini: ${selectedItems.length} dari ${maxItems} barang yang diperlukan.`,
+            });
+            return false;
+        }
+        return true;
+    };
+
+    const validateQuantity = () => {
+        // Create a map of make request details for quantity validation
+        const mrDetailsMap = new Map();
+        (item.details || []).forEach(detail => {
+            if (detail.invent_barang_id) {
+                mrDetailsMap.set(String(detail.invent_barang_id), detail.qty);
+            }
+        });
+
+        // Check each selected item's quantity against make request
+        for (const selectedItem of selectedItems) {
+            const barangId = selectedItem.selectedBarang?.id;
+            if (barangId) {
+                const mrQty = mrDetailsMap.get(String(barangId));
+                if (mrQty && selectedItem.qty > mrQty) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Jumlah Quantity Tidak Sesuai',
+                        text: `Quantity untuk barang "${selectedItem.selectedBarang.name}" (${selectedItem.qty}) melebihi permintaan make request (${mrQty}).`,
+                    });
+                    return false;
+                }
+            }
+        }
+        return true;
+    };
+
     // === Handlers ===
     const handleCreatePurchaseRequest = async () => {
         if (selectedItems.length === 0) {
@@ -76,6 +117,16 @@ function CreatePurchaseRequest() {
                 title: 'Tidak ada barang dipilih',
                 text: 'Silakan pilih minimal satu barang untuk purchase request.',
             });
+        }
+
+        // Validate item count
+        if (!validateItemCount()) {
+            return;
+        }
+
+        // Validate quantity
+        if (!validateQuantity()) {
+            return;
         }
 
         try {
@@ -133,18 +184,10 @@ function CreatePurchaseRequest() {
                         {/* === Header === */}
                         <div className="flex items-center justify-between mb-4">
                             <Back goHome={() => navigate('/make-purchase-request/list-make-purchase-request')} />
-                            <p
-                                className={`py-2 px-2 rounded-md ${
-                                item.is_full_approval
-                                    ?
-                                    'text-green-700 bg-green-200'
-                                    :
-                                    'text-amber-700 bg-amber-200'
-                                }`}
-                            >
-                                {item.is_full_approval ? 'Approved': 'Pending'}
-                            </p>
                         </div>
+                            <p className="text-xl sm:text-2xl lg:text-3xl font-semibold capitalize">
+                                Create Purchase Request
+                            </p>
 
                         {/* === Main & Detail === */}
                         <div className="flex flex-col lg:flex-row gap-4 mt-3">
@@ -199,6 +242,9 @@ function CreatePurchaseRequest() {
                                 <p className="text-xl text-gray-400 font-semibold">Pilih Barang</p>
                                 <div className="text-sm text-gray-500">
                                     {selectedItems.length} dari {item.details?.length || 0} barang dipilih
+                                    {selectedItems.length === (item.details?.length || 0) && (
+                                        <span className="ml-2 text-green-600 font-medium">✓ Lengkap</span>
+                                    )}
                                 </div>
                             </div>
 
@@ -286,21 +332,22 @@ function CreatePurchaseRequest() {
                             </div>
 
                             {/* Add Item Button */}
-                            <div className="flex justify-center mt-5">
+                            <div className="flex mt-5">
                                 {selectedItems.length < (item.details?.length || 0) ? (
                                     <button
                                         type="button"
-                                        className="text-3xl font-light text-gray-700 hover:text-gray-900"
+                                        className="w-full rounded-lg py-2 px-4 flex items-center justify-center font-medium bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors duration-200"
                                         onClick={() => {
                                             setOpenModal(true);
                                             setEditIndex(null);
                                             setInitialModalData({ selectedBarang: null, qty: '' });
                                         }}
                                     >
-                                        <i className="bx bx-plus"></i>
+                                        <i className='bx bx-plus mr-2 font-semibold text-base'></i>
+                                        <span>{ selectedItems.length === 0 ? 'Tambah detail' : 'Tambah detail lain'}</span>
                                     </button>
                                 ) : (
-                                    <p className="text-sm text-gray-500 italic">
+                                    <p className="text-sm text-gray-500 italic w-full text-center">
                                         Maksimal {item.details?.length || 0} barang sesuai detail make request
                                     </p>
                                 )}
@@ -352,6 +399,7 @@ function CreatePurchaseRequest() {
                     apiUrl={apiUrl}
                     existingItems={selectedItems}
                     maxItems={item.details?.length || 0}
+                    makeRequestDetails={item.details || []}
                 />
             )}
         </Layout>
