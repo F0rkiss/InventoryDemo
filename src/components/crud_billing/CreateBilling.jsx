@@ -77,95 +77,123 @@ function CreateBilling() {
     <Layout title={'Create Billing'}>
         <Block>
             <Back goHome={() => navigate('/billing/list-billing')}/>
-            <div className="content bg-white shadow-sm p-3 rounded-md mt-3">
+            <div className='bg-white rounded shadow-sm p-3 mt-4'>
                 <form onSubmit={handleSubmit}>
-                    <div className='user-select mb-3'>
+                    <div className="mb-5">
                         <label>User</label>
                         <SelectPaginate
-                        source={'billing-getUser'}
-                        handleSelectChange={user => setItems({...items, user})}
-                        itemLabel={['EmpName' || 'name']}
-                        selectName={'User'}
-                        required={true}
+                            source={'billing-getUser'}
+                            handleSelectChange={user => setItems({...items, user})}
+                            itemLabel={['EmpName' || 'name']}
+                            selectName={'User'}
+                            required={true}
                         />
                     </div>
-                    <div className='pj-select mb-3'>
+                    
+                    <div className="mb-5">
                         <label>Penanggung Jawab</label>
-                        <div className='bg-white p-2 rounded-md border-solid border-gray-300 border text-gray-600 font-light font-inter'>
-                        <input 
-                            type="text"
-                            className='w-full'
-                            onChange={e => setItems({...items, penanggung_jawab : e.target.value})}
-                            required
-                            maxLength={40}
-                            />
-                        </div>
-                    </div>
-                    <div className="tgl-berlangganan mb-3">
-                        <label>Tanggal Berlangganan</label>
-                        <div className='bg-white p-2 rounded-md border-solid border-gray-300 border text-gray-400 font-light font-inter'>
-                            <input 
-                            type="date"
-                            className='w-full '
-                            onChange={e => setItems({...items, tgl_berlangganan : e.target.value})}
-                            required
-                            />
-                        </div>
-                    </div>
-                    <div className="tgl-selesai-berlangganan mb-3">
-                        <label>Tanggal Selesai Berlangganan</label>
-                        <div className='bg-white p-2 rounded-md border-solid border-gray-300 border text-gray-400 font-light font-inter'>
-                            <input 
-                            type="date"
-                            className='w-full '
-                            onChange={e => setItems({...items, tgl_selesai_berlangganan : e.target.value})}
-                            required
-                            />
-                        </div>
-                    </div>
-                    <div className="tgl-pembayaran mb-3">
-                        <label>Tanggal Pembayaran</label>
-                        <div className='bg-white p-2 rounded-md border-solid border-gray-300 border text-gray-400 font-light font-inter'>
-                            <input 
-                            type="date"
-                            className='w-full '
-                            onChange={e => setItems({...items, tgl_pembayaran : e.target.value})}
-                            />
-                        </div>
-                    </div>
-                    <div className="status mb-3">
-                        <label>Status</label>
-                        <Select
-                        options={status}
-                        onChange={status => setItems({...items, status})}
-                        required
-                        />
-                    </div>
-                    <div className="biaya mb-3">
-                        <label>Biaya</label>
-                        <div className='bg-white p-2 rounded-md border-solid border-gray-300 border text-gray-600 font-light font-inter'>
+                        <div className='bg-white p-2 rounded-md border-solid border-gray-300 border'>
                             <input 
                                 type="text"
-                                className='w-full '
+                                className='w-full p-2 border rounded placeholder:text-gray-400 placeholder:font-inter placeholder:font-light capitalize'
+                                placeholder='Masukkan Penanggung Jawab'
+                                onChange={e => setItems({...items, penanggung_jawab : e.target.value})}
+                                required
+                                maxLength={40}
+                            />
+                        </div>
+                    </div>
+                    
+                    <div className="mb-5">
+                        <label>Tanggal Berlangganan</label>
+                        <div className='bg-white p-2 rounded-md border-solid border-gray-300 border'>
+                            <input 
+                                type="date"
+                                className='w-full p-2 border rounded placeholder:text-gray-400 placeholder:font-inter placeholder:font-light'
+                                onChange={e => setItems({...items, tgl_berlangganan : e.target.value})}
+                                required
+                            />
+                        </div>
+                    </div>
+                    
+                    <div className="mb-5">
+                        <label>Tanggal Selesai Berlangganan</label>
+                        <div className='bg-white p-2 rounded-md border-solid border-gray-300 border'>
+                            <input 
+                                type="date"
+                                className='w-full p-2 border rounded placeholder:text-gray-400 placeholder:font-inter placeholder:font-light'
+                                onChange={e => setItems({...items, tgl_selesai_berlangganan : e.target.value})}
+                                required
+                            />
+                        </div>
+                    </div>
+                    
+                    <div className="mb-5">
+                        <label>Tanggal Pembayaran</label>
+                        <div className='bg-white p-2 rounded-md border-solid border-gray-300 border'>
+                            <input 
+                                type="date"
+                                className='w-full p-2 border rounded placeholder:text-gray-400 placeholder:font-inter placeholder:font-light'
+                                onChange={e => setItems({...items, tgl_pembayaran : e.target.value})}
+                            />
+                        </div>
+                    </div>
+                    
+                    <div className="mb-5">
+                        <label>Status</label>
+                            <Select
+                                options={status}
+                                onChange={status => setItems({...items, status})}
+                                placeholder="Pilih Status"
+                                className="w-full"
+                                required
+                            />
+                    </div>
+                    
+                    <div className="mb-5">
+                        <div className="flex justify-between">
+                            <label>Biaya</label>
+                            <p className='text-xs text-red-500 mt-1'>* Hanya Menerima Nomor</p>
+                        </div>
+                        <div className='bg-white p-2 rounded-md border-solid border-gray-300 border'>
+                            <input 
+                                type="text"
+                                className='w-full p-2 border rounded placeholder:text-gray-400 placeholder:font-inter placeholder:font-light'
+                                placeholder='Masukkan Biaya'
                                 value={items.biaya || ''}
                                 onChange={e => setItems({...items, biaya : e.target.value.replace(/\D/g, "")})}
                                 maxLength={12}
                                 required
-                                />
+                            />
                         </div>
                     </div>
-                    <div className="note mb-3">
+                    
+                    <div className="mb-5">
                         <label>Note</label>
-                        <div className='bg-white p-2 rounded-md border-solid border-gray-300 border text-gray-600 font-light font-inter mt-3'>
+                        <div className='bg-white p-2 rounded-md border-solid border-gray-300 border'>
                             <textarea 
-                            className='w-full h-16'
-                            onChange={e => setItems({...items, note : e.target.value})}
-                            required />
+                                className='w-full h-16 p-2 border rounded placeholder:text-gray-400 placeholder:font-inter placeholder:font-light'
+                                placeholder='Masukkan Catatan'
+                                onChange={e => setItems({...items, note : e.target.value})}
+                                required 
+                            />
                         </div>
                     </div>
-                    <div className="tombol">
-                        <button type='submit' className='bg-cyan-400 text-white text-center p-2 rounded-md mt-3'>
-                            Submit
+                    
+                    <div className="flex">
+                        <button type='submit' className="bg-cyan-400 text-white p-2 rounded w-1/2 me-3">
+                            Create Billing
+                        </button>
+                        <button type='button' onClick={() => setItems({
+                            user: null,
+                            penanggung_jawab: null,
+                            tgl_berlangganan: '',
+                            tgl_selesai_berlangganan: '',
+                            tgl_pembayaran: '',
+                            biaya: '',
+                            note: '',
+                        })} className="bg-red-400 text-white p-2 rounded w-1/2">
+                            Clear
                         </button>
                     </div>
                 </form>

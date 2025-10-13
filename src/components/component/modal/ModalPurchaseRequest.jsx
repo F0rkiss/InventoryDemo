@@ -176,7 +176,7 @@ const ModalPurchaseRequest = ({ onClose, onSave, open, initialData, apiUrl, exis
     return (
         <MiModal
             onClose={onClose}
-            contentClass="w-full p-4 flex flex-col items-center justify-center"
+            contentClass="w-full p-4 flex flex-col items-center justify-center min-h-[500px]"
             closeModal={false}
         >
             <form className='w-full flex flex-col items-center gap-4' onSubmit={handleSubmit}>

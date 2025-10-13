@@ -9,13 +9,13 @@ const CategoryCards = forwardRef(({item, goToDetail, goToUpdate, deleteItems, ca
                 <h3 className='col-start-1 font-semibold text-xl capitalize leading-tight'>
                     {item.name}
                 </h3>
-                <button
+                {/* <button
                     className='detail-button col-start-3 justify-self-end'
                     onClick={() => goToDetail(item.id)}
                     title="View Details"
                 >
                     <i className="bx bx-dots-vertical-rounded text-2xl group-hover:text-gray-800 transition-all duration-200" />
-                </button>
+                </button> */}
             </div>
             <div>
                 <p>{item.description}</p>

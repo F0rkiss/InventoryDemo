@@ -54,31 +54,70 @@ function DetailBilling() {
     return (
     <Layout title={'Detail Billing'}>
         <Block>
-            <Back goHome={() => navigate('/billing/list-billing')}/>
+            <div className="px-4">
+                <Back goHome={() => navigate('/billing/list-billing')}/>
+                <p className='lg:text-3xl text-2xl font-semibold capitalize my-4'>Detail Billing</p>
                 {
                     loading ?
                     (
                         <Loader Class={'mt-20'} />
                     ) : (
                     <Transition contentVisible={contentVisible}>
-                        {/* <p>{item.msg}</p> */}
-                    <div className='bg-white rounded-2vw shadow-sm overflow-hidden p-6 text-lg mt-8'>
-                        <div className='flex justify-between'>
-                        <p className='capitalize'><b>Name : </b>{item.user?.EmpName || "TIDAK ADA"}</p>
-                        <i className={`bx bxs-circle ${item.status === 'aktif' ? 'text-green-500' : item.status === 'diproses' ? 'text-yellow-500' :'text-red-500'}`}></i>
-                        </div>
-                        <p className='capitalize'><b>Penanggung Jawab : </b>{item.penanggungJawab}</p>
+                        <div className="w-full font-inter grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            {/* KARTU 1: INFORMASI UTAMA */}
+                            <div className="bg-white border rounded-lg p-6 flex flex-col">
+                                <div className="flex items-center justify-between mb-4">
+                                    <h2 className="font-bold capitalize text-2xl">{item.user?.EmpName || "TIDAK ADA"}</h2>
+                                    <div className="flex items-center gap-2">
+                                        <i className={`bx bxs-circle ${item.status === 'aktif' ? 'text-green-500' : item.status === 'diproses' ? 'text-yellow-500' :'text-red-500'}`}></i>
+                                        <span className={`text-sm font-medium capitalize ${item.status === 'aktif' ? 'text-green-600' : item.status === 'diproses' ? 'text-yellow-600' :'text-red-600'}`}>
+                                            {item.status}
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                <div className="space-y-3">
+                                    <div className="flex justify-between">
+                                        <span className="text-gray-500">Penanggung Jawab</span>
+                                        <span className="font-medium capitalize">{item.penanggungJawab}</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span className="text-gray-500">Biaya</span>
+                                        <span className="font-medium text-green-600">Rp {new Intl.NumberFormat().format(item.biaya).replace(/,/g, '.')}</span>
+                                    </div>
+                                </div>
+                            </div>
 
-                        {/* <p><b>Phone : </b>{item.data?.EmpPhone}</p> */}
-                        <p><b>Biaya :</b>{new Intl.NumberFormat().format(item.biaya).replace(/,/g, '.')}</p>
-                        <p><b>Note :</b>{item.note}</p>
-                        <p><b>Tanggal Berlangganan :</b>{DateFormatToIDN(item.tanggal_berlangganan, false)}</p>
-                        <p><b>Tanggal Selesai Berlangganan :</b>{DateFormatToIDN(item.tanggal_selesai_berlangganan, false)}</p>
-                        <p><b>Tanggal Pembayaran Berlangganan :</b>{DateFormatToIDN(item.tanggal_pembayaran,false)}</p>
-                    </div>
+                            {/* KARTU 2: TANGGAL & DETAIL */}
+                            <div className="bg-white border rounded-lg p-6 flex flex-col">
+                                <h3 className="text-lg font-semibold text-gray-700 mb-4">Informasi Tanggal</h3>
+                                <div className="space-y-3">
+                                    <div className="flex justify-between">
+                                        <span className="text-gray-500">Tanggal Berlangganan</span>
+                                        <span className="font-medium">{DateFormatToIDN(item.tanggal_berlangganan, false)}</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span className="text-gray-500">Tanggal Selesai</span>
+                                        <span className="font-medium">{DateFormatToIDN(item.tanggal_selesai_berlangganan, false)}</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span className="text-gray-500">Tanggal Pembayaran</span>
+                                        <span className="font-medium">{DateFormatToIDN(item.tanggal_pembayaran, false)}</span>
+                                    </div>
+                                </div>
+                                
+                                {item.note && (
+                                    <div className="mt-6 pt-4 border-t">
+                                        <h4 className="text-sm font-medium text-gray-500 mb-2">Catatan</h4>
+                                        <p className="text-sm text-gray-700 bg-gray-50 p-3 rounded-md">{item.note}</p>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
                     </Transition>
                     )
                 }
+            </div>
         </Block>        
     </Layout>
   )
