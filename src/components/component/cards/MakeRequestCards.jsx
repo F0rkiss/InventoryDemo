@@ -34,26 +34,26 @@ const MakeRequestCards = forwardRef(({item, filterStatus, goToDetail, canUpdate,
                     <p className='text-gray-500'>Tanggal</p><p className='font-medium'>{DateFormat(item.tanggal)}</p>
                 </div>
                 <div className="flex justify-between">
-                    <p className='text-gray-500'>Type Request</p> <p className='font-medium'>{item.nameTypeRequest || typeRequest.name}</p>
+                    <p className='text-gray-500'>Type Request</p> <p className='font-medium'>{item.nameTypeRequest || item.type_name}</p>
                 </div>
                 <div className="flex justify-between">
-                    <p className='text-gray-500'>Jenis</p><p className='font-medium'>{item.jenisTypeRequest || typeRequest.jenis}</p>
+                    <p className='text-gray-500'>Jenis</p><p className='font-medium'>{item.jenisTypeRequest || item.type_jenis}</p>
                 </div>
-                { (item.deskripsiTypeRequest || typeRequest.description) &&
+                { (item.deskripsiTypeRequest) &&
                 <div className="flex justify-between space-x-4">
-                    <p className='text-gray-500'>Deskripsi</p><p className='font-medium'>{item.deskripsiTypeRequest || typeRequest.description}</p>
+                    <p className='text-gray-500'>Deskripsi</p><p className='font-medium'>{item.deskripsiTypeRequest || item.description}</p>
                 </div>
                 }
             </div>
-            <div className={`max-w-max flex self-end rounded-md border mb-2 mx-4 ${item.is_full_approval ? 'bg-green-50 border-green-400' : 'bg-amber-50 border-amber-400'}`} >
+            <div className={`max-w-max flex self-end rounded-md border mb-4 mx-4 ${item.is_full_approval ? 'bg-green-50 border-green-400' : 'bg-amber-50 border-amber-400'}`} >
                 { item.approval_message ?
                     <p className={`py-1 px-4 text-xs font-medium ${item.is_full_approval ? 'text-green-700' : 'text-amber-600'}`}>{item.approval_message}</p>
                     :
                     <p className={`py-1 px-4 text-xs font-medium ${item.is_full_approval ? 'text-green-700' : 'text-amber-600'}`}>{item.is_full_approval ? 'Approval selesai' : 'Approval belum selesai'}</p>
                 }
             </div>
-            <div className='flex py-2 px-2'>
-                { canUpdate &&
+            <div className='flex pb-2 px-2 mx-2 mb-2'>
+            { (canUpdate && item.canBeUpdated) &&
                     <button
                         className="px-3 py-1.5 bg-teal-50 hover:bg-teal-100 text-teal-600 font-medium rounded-md transition-colors duration-200 text-sm"
                         onClick={() => goToUpdate(item.id)}
@@ -61,7 +61,7 @@ const MakeRequestCards = forwardRef(({item, filterStatus, goToDetail, canUpdate,
                     >
                         Update
                     </button>
-                }
+            }
             </div>
         </div>
     )

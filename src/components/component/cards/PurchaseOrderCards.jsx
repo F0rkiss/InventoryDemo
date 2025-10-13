@@ -23,7 +23,7 @@ const PurchaseOrderCards = forwardRef(({item, goToUpdate, goToDetail, canUpdate,
         <div className='rounded-lg bg-white border mb-2 flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow duration-200' ref={ref}>
             <div className='border-b flex justify-between items-center py-3 mx-4 min-h-[64px]'>
                 <div className='self-start py-1 space-y-1'>
-                    <p className='flex font-bold text-xl capitalize items-center'>
+                    <p className='flex font-bold text-lg lg:text-xl capitalize items-center'>
                         {item.kode}
                     </p>
                     <div className='flex'>
@@ -50,10 +50,10 @@ const PurchaseOrderCards = forwardRef(({item, goToUpdate, goToDetail, canUpdate,
                 <div className="flex justify-between">
                     <p className='text-gray-500'>Pembayaran</p><p className='font-medium'>{item.cara_pembayaran}</p>
                 </div>
-                <div className="flex justify-between overflow-hidden">
+                <div className="flex justify-between overflow-hidden gap-3">
                     <p className='text-gray-500'>Alamat</p><p className='font-medium'>{item.alamat}</p>
                 </div>
-                <div className="flex justify-between">
+                <div className="flex justify-between gap-3">
                     <p className='text-gray-500'>Keterangan</p><p className='font-medium'>{item.keterangan}</p>
                 </div>
                 <div className="flex justify-between">

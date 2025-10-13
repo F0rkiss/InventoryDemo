@@ -14,6 +14,7 @@ import { encrypting } from '../../helper/EncryptHelper'
 import { useAuth } from '../../auth/AuthContext'
 import useMenuAccess from '../../hooks/useMenuAccess'
 import FilterStatusToggle from '../component/FilterStatusToggle';
+import ExportButton from '../component/ExportSheets';
 
   function MakeRequestList() {
 
@@ -48,10 +49,7 @@ import FilterStatusToggle from '../component/FilterStatusToggle';
       const baseUserUrl = 'inventMakeRequest';
 
       // Determine the URL based on whether a search is active
-      if (isSearching) {
-        // For search queries, append the search term directly to the URL path
-        url = `${baseUserUrl}/${searchTerm}`;
-      } else if (isFiltered) {
+      if (isFiltered) {
         // For filtering without a search
         url = 'inventMakeRequest-personal-toggle';
       } else {
@@ -63,12 +61,13 @@ import FilterStatusToggle from '../component/FilterStatusToggle';
       const params = {};
       if (cursor) params.cursor = cursor;
 
-      // The filter parameter is needed whether searching or not
+      if (isSearching) {
+        params.search = searchTerm
+      }
       if (isFiltered) {
         params.is_full_approval = (filterStatus === 'completed' ? 1 : 0);
       }
 
-      // We no longer add 'search' to the params because it's now part of the URL path
       return { url, params };
     };
 
@@ -164,6 +163,7 @@ import FilterStatusToggle from '../component/FilterStatusToggle';
                     disable={loading}
                     values={searchQuery}
                   />
+                  <ExportButton/>
                 </div>
               </div>
             </div>

@@ -158,45 +158,76 @@ function CreateMakeRequest() {
                       <p className="text-lg font-semibold">Detail</p>
                     </div>
                     <div className="space-y-3 my-3">
-                      {details.map((item, id) => (
-                        <div key={id} className="border rounded-lg p-3 flex justify-between items-center">
-                          <div className="flex items-center gap-4">
-                            { isStockRequest && item.selectedBarang?.gambarBarang && (
-                              <img
-                                src={`${apiUrl}${item.selectedBarang.gambarBarang}`}
-                                alt={item.selectedBarang.namaBarang}
-                                className="w-22 h-20 object-cover rounded-md cursor-pointer"
-                                onClick={() => handleImageClick(`${apiUrl}${item.selectedBarang.gambarBarang}`)}
-                              />
-                            )}
-                            { isStockRequest ?
-                              (<div className='grid'>
-                                <p className="font-medium">
-                                  {item.selectedBarang?.name || item.selectedBarang?.namaBarang}
-                                </p>
-                                <p className="font-base text-gray-500">
-                                  {item.selectedBarang?.kode || item.selectedBarang?.kodeBarang}
-                                </p>
+                      {details.length === 0 ? (
+                          <p className="text-center py-2 text-gray-400">Belum ada data.</p>
+                      ) : (
+                          details.map((item, id) => (
+                              <div
+                                  key={id}
+                                  className="
+                                  border border-gray-300 rounded-xl p-3
+                                  grid grid-cols-[80px,1fr] md:grid-cols-[160px,1fr,80px,160px,64px]
+                                  items-center gap-x-4
+                                  "
+                              >
+                                  {/* Image Section */}
+                                  <div className="overflow-hidden rounded-lg bg-gray-50 w-full aspect-[4/3]">
+                                      {isStockRequest && item.selectedBarang?.gambarBarang ? (
+                                          <div className="flex items-center">
+                                              <img
+                                                  src={`${apiUrl}${item.selectedBarang.gambarBarang}`}
+                                                  alt={item.selectedBarang.namaBarang}
+                                                  className="w-full h-full object-cover cursor-pointer"
+                                                  onClick={() => handleImageClick(`${apiUrl}${item.selectedBarang.gambarBarang}`)}
+                                              />
+                                          </div>
+                                      ) : (
+                                          <div className="w-full h-full flex items-center justify-center text-xs text-gray-400">
+                                              No Image
+                                          </div>
+                                      )}
+                                  </div>
+
+                                  {/* Item Details Section */}
+                                  <div className="flex flex-col justify-between flex-grow p-1 md:p-0 md:contents">
+                                      <div>
+                                          {isStockRequest ? (
+                                              <div className="font-semibold text-gray-800">
+                                                  {item.selectedBarang?.name || item.selectedBarang?.namaBarang}
+                                              </div>
+                                          ) : (
+                                              <div className="font-semibold text-gray-800">
+                                                  {item.note_barang}
+                                              </div>
+                                          )}
+                                          {isStockRequest && (
+                                              <div className="font-normal text-sm text-gray-400">
+                                                  Kode: {item.selectedBarang?.kode || item.selectedBarang?.kodeBarang}
+                                              </div>
+                                          )}
+                                      </div>
+
+                                      {/* Quantity Section */}
+                                      <div className="flex flex-col items-start mt-2 md:mt-0 md:contents">
+                                          <div className="font-medium md:text-right">
+                                              <span className="font-normal text-sm text-gray-400">Qty: </span>
+                                              {item.qty}
+                                          </div>
+                                      </div>
+                                  </div>
+
+                                  {/* Buttons Section */}
+                                  <div className="col-start-2 flex items-center justify-center w-full gap-2 mt-2 divide-x-2 md:col-auto md:divide-x-0 md:mt-0 md:justify-self-end md:border-l-2 md:pl-3">
+                                      <button type="button" onClick={() => { setInitialDetails(item); setEditIndex(id); setOpenModal(true); }}>
+                                          <i className="bx bx-edit text-xl text-cyan-600"></i>
+                                      </button>
+                                      <button type="button" onClick={() => setDetails(details.filter((_, i) => i !== id))} className="pl-2">
+                                          <i className="bx bx-trash text-xl text-red-500"></i>
+                                      </button>
+                                  </div>
                               </div>
-                              ) : (
-                                <p className="font-medium">{item.note_barang}</p>
-                              )
-                            }
-                          </div>
-                          
-                          <div className="flex items-center">
-                            <p className="text-sm text-gray-600 mr-4">Qty: <span className='font-medium text-black'>{item.qty}</span></p>
-                            <div className="flex space-x-2 border-l-2 pl-3">
-                              <button type="button" onClick={() => { setInitialDetails(item); setEditIndex(id); setOpenModal(true); }}>
-                                <i className="bx bx-edit text-xl text-cyan-600"></i>
-                              </button>
-                              <button type="button" onClick={() => setDetails(details.filter((_, i) => i !== id))}>
-                                <i className="bx bx-trash text-xl text-red-500"></i>
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
+                          ))
+                      )}
                     </div>
                     <div className="flex mt-4">
                       <button type="button" className="w-full rounded-lg py-2 px-4 flex items-center transition-color duration-200 font-medium bg-blue-50 text-blue-600 hover:bg-blue-100" onClick={() => { setOpenModal(true); setEditIndex(null); setInitialDetails(null); }}>

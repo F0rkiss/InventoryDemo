@@ -14,6 +14,7 @@ dotenv.config();
 export default defineConfig({
   plugins: [
     react(),
+    // basicSsl()
   ],
   root: SRC_DIR,
   base: './',
@@ -37,6 +38,7 @@ export default defineConfig({
   },
   server: {
     host: true,
+    // https: true,
     historyApiFallback: true, // Ensure all routes are handled by SPA
   },
   css: {

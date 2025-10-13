@@ -37,7 +37,6 @@ import FilterStatusToggle from '../component/FilterStatusToggle';
       fetchItems();
     }, [searchTerm, filterStatus] )
 
-    // 1) One helper to build URL + params consistently
     const buildReq = (cursor) => {
       const isFiltered = filterStatus !== 'all';
       const isSearching = !!searchTerm; // Check if there's an active search term
@@ -46,10 +45,7 @@ import FilterStatusToggle from '../component/FilterStatusToggle';
       const baseAdminUrl = 'inventMakeRequest-admin';
 
       // Determine the URL based on whether a search is active
-      if (isSearching) {
-        // For search queries, append the search term directly to the URL path
-        url = `${baseAdminUrl}/${searchTerm}`;
-      } else if (isFiltered) {
+      if (isFiltered) {
         // For filtering without a search
         url = 'inventMakeRequest-admin-toggle';
       } else {
@@ -61,12 +57,13 @@ import FilterStatusToggle from '../component/FilterStatusToggle';
       const params = {};
       if (cursor) params.cursor = cursor;
 
-      // The filter parameter is needed whether searching or not
+      if (isSearching) {
+        params.search = searchTerm;
+      }
       if (isFiltered) {
         params.is_full_approval = (filterStatus === 'completed' ? 1 : 0);
       }
 
-      // We no longer add 'search' to the params because it's now part of the URL path
       return { url, params };
     };
 
@@ -149,8 +146,6 @@ import FilterStatusToggle from '../component/FilterStatusToggle';
                   <FilterStatusToggle
                     value={filterStatus}
                     onChange={onFilterChange}
-                    // disabled={loading}
-                    // showText   // uncomment if you want to show the current label text
                   />
                   <SearchBar
                     onChange={handleSearchChange}

@@ -212,7 +212,7 @@ function UpdateMakeRequest() {
                     <Back goHome={() => navigate('/make-request/list-make-request')} />
                     <p className='lg:text-3xl text-2xl font-semibold capitalize my-4'>Update Make Request</p>
                     <Transition contentVisible={contentVisible}>
-                        <div className="p-7 bg-white shadow-sm rounded-lg border">
+                        <div className="p-7 bg-white shadow-lg shadow-gray-200 rounded-lg border">
                             <form onSubmit={handleSubmit}>
                                 <div className="mb-5 space-y-2">
                                     <label className='font-semibold'>Type Request</label>
@@ -233,53 +233,77 @@ function UpdateMakeRequest() {
                                             <p className='text-lg font-semibold'>Detail</p>
                                         </div>
                                         <div className="space-y-3 my-3">
-                                            {details.length === 0 ? (
-                                                <p className="text-center py-2 text-gray-400">Belum ada data.</p>
-                                            ) : (
-                                                details.map((item, id) => (
-                                                <div key={id} className="border rounded-lg p-3 flex justify-between items-center">
-                                                    <div className="flex items-center gap-4">
-                                                        {console.log(item)}
-                                                        {isStockRequest && (item.selectedBarang?.gambarBarang || item.selectedBarang?.image) && (
-                                                            <div>
+                                        {details.length === 0 ? (
+                                            <p className="text-center py-2 text-gray-400">Belum ada data.</p>
+                                        ) : (
+                                            details.map((item, id) => (
+                                                <div
+                                                    key={id}
+                                                    className="
+                                                    border border-gray-300 rounded-xl p-3
+                                                    grid grid-cols-[80px,1fr] md:grid-cols-[160px,1fr,80px,160px,64px]
+                                                    items-center gap-x-4
+                                                    "
+                                                >
+                                                    {/* Image Section */}
+                                                    <div className="overflow-hidden rounded-lg bg-gray-50 w-full aspect-[4/3]">
+                                                        {isStockRequest && (item.selectedBarang?.gambarBarang || item.selectedBarang?.image) ? (
+                                                            <div className="flex items-center">
                                                                 <img
-                                                                    src={`${apiUrl}${item.selectedBarang?.gambarBarang || item.selectedBarang?.image}`}
-                                                                    alt={item.selectedBarang?.name || item.selectedBarang?.namaBarang} 
-                                                                    className="w-22 h-20 object-cover rounded-md border bg-gray-100"
-                                                                    onClick={() => handleImageClick(`${apiUrl}${item.selectedBarang?.gambarBarang || item.selectedBarang?.image}`)}
+                                                                    src={`${apiUrl}${item.selectedBarang.gambarBarang || item.selectedBarang.image}`}
+                                                                    alt={item.selectedBarang.name || item.selectedBarang.namaBarang}
+                                                                    className="w-full h-full object-cover cursor-pointer"
+                                                                    onClick={() => handleImageClick(`${apiUrl}${item.selectedBarang.gambarBarang || item.selectedBarang.image}`)}
                                                                 />
                                                             </div>
-                                                        )}
-                                                        {/* For non-stock requests or items without images, you can add a placeholder if needed */}
-                                                        { isStockRequest ?
-                                                            (<div className='grid'>
-                                                                <p className="font-medium">
-                                                                {item.selectedBarang?.name || item.selectedBarang?.namaBarang}
-                                                                </p>
-                                                                <p className="font-base text-gray-500">
-                                                                {item.selectedBarang?.kode_barang || item.selectedBarang?.kodeBarang}
-                                                                </p>
+                                                        ) : (
+                                                            <div className="w-full h-full flex items-center justify-center text-xs text-gray-400">
+                                                                No Image
                                                             </div>
-                                                            ) : (
-                                                                <p className="font-medium">{item.note_barang}</p>
-                                                            )
-                                                        }
+                                                        )}
                                                     </div>
-                                                    <div className="flex items-center ms-2">
-                                                        <p className="text-sm text-gray-600 mr-4">Qty: <span className='font-medium text-black'>{item.qty}</span></p>
-                                                        <div className="flex space-x-2 border-l-2 pl-3">
-                                                            <button type="button" onClick={() => { setInitialDetails(item); setEditIndex(id); setOpenModal(true); }}>
-                                                                <i className='bx bx-edit text-xl text-cyan-600'></i>
-                                                            </button>
-                                                            <button type="button" onClick={() => setDetails(details.filter((_, i) => i !== id))}>
-                                                                <i className='bx bx-trash text-xl text-red-500'></i>
-                                                            </button>
+
+                                                    {/* Item Details Section */}
+                                                    <div className="flex flex-col justify-between flex-grow p-1 md:p-0 md:contents">
+                                                        <div>
+                                                            {isStockRequest ? (
+                                                                <div className="font-semibold text-gray-800">
+                                                                    {item.selectedBarang?.name || item.selectedBarang?.namaBarang}
+                                                                </div>
+                                                            ) : (
+                                                                <div className="font-semibold text-gray-800">
+                                                                    {item.note_barang}
+                                                                </div>
+                                                            )}
+                                                            {isStockRequest && (
+                                                                <div className="font-normal text-sm text-gray-400">
+                                                                    Kode: {item.selectedBarang?.kode_barang || item.selectedBarang?.kodeBarang}
+                                                                </div>
+                                                            )}
                                                         </div>
+
+                                                        {/* Quantity Section */}
+                                                        <div className="flex flex-col items-start mt-2 md:mt-0 md:contents">
+                                                            <div className="font-medium md:text-right">
+                                                                <span className="font-normal text-sm text-gray-400">Qty: </span>
+                                                                {item.qty}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Buttons Section */}
+                                                    <div className="col-start-2 flex items-center justify-center w-full gap-2 mt-2 divide-x-2 md:col-auto md:divide-x-0 md:mt-0 md:justify-self-end md:border-l-2 md:pl-3">
+                                                        <button type="button" onClick={() => { setInitialDetails(item); setEditIndex(id); setOpenModal(true); }}>
+                                                            <i className='bx bx-edit text-xl text-cyan-600'></i>
+                                                        </button>
+                                                        <button type="button" onClick={() => setDetails(details.filter((_, i) => i !== id))} className="pl-2">
+                                                            <i className='bx bx-trash text-xl text-red-500'></i>
+                                                        </button>
                                                     </div>
                                                 </div>
                                             ))
-                                            )}
-                                        </div>
+                                        )}
+                                    </div>
                                         <div className="flex mt-4">
                                             <button type="button" className="w-full rounded-lg py-2 px-4 flex items-center font-medium bg-blue-50 text-blue-600 hover:bg-blue-100" onClick={() => { setOpenModal(true); setEditIndex(null); setInitialDetails(null); }}>
                                                 <i className='bx bx-plus mr-2 font-semibold text-base'></i>
@@ -290,7 +314,7 @@ function UpdateMakeRequest() {
                                 )}
                                 <div className="flex flex-col items-center justify-self-center mt-10 max-w-full w-[25rem] space-y-2 text-center">
                                     <button disabled={disabled || isUnchanged} type='submit' className='py-2 px-4 w-full rounded-lg font-medium bg-blue-500 hover:bg-blue-600 transition-color duration-200 text-white disabled:bg-blue-300'>Update</button>
-                                    <button className='py-2 px-6 mt-2 rounded-lg font-medium border bg-red-50 hover:bg-red-100 text-red-600' onClick={resetValue} type='button'>Reset</button>
+                                    <button className='py-2 px-6 mt-2 rounded-lg font-medium border border-red-200 bg-red-50 hover:bg-red-100 text-red-600' onClick={resetValue} type='button'>Reset</button>
                                 </div>
                             </form>
                         </div>

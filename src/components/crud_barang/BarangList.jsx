@@ -33,39 +33,46 @@ function ListBarang() {
   const [selectedImageUrl, setSelectedImageUrl] = useState('');
 
   useEffect(() => {
+    setNextCursor(null);
+    setContentVisible(false);
     fetchItems(); 
   }, [searchTerm]);
 
   const fetchItems = async () => {
-    setLoading(true);
     try {
-        const response = await api.get(searchTerm ? `/inventBarang/${searchTerm}` : '/inventBarang');
-        const data = response.data.data;
-        console.log(data)
-        if (data.length == 0) {
-          setEmpty(true)
-        } else {
-          setEmpty(false)
-          setItems(data.data);
-          setNextCursor(data.next_cursor);
-        }
+      setLoading(true);
+      const params = {};
+        if (searchTerm) {
+          params.search = searchTerm;
+      }
+      const response = await api.get('/inventBarang', { params });
+      const data = response.data.data;
+      if (data.length == 0) {
+        setEmpty(true)
+      } else {
+        setEmpty(false)
+        setItems(data.data);
+        setNextCursor(data.next_cursor);
+      }
     } catch (error) {
       
     } finally {
       setLoading(false);
-      setTimeout(() => setContentVisible(true), 100);
+      setTimeout(() => setContentVisible(true), 50);
     }
   };
 
   const fetchMoreItems = async () => {
     if (!nextCursor || loading) return;
-    setLoading(true);
     try {
-      const response = await api.get(searchTerm ? `/inventBarang/${searchTerm}` : '/inventBarang', {
-        params: {
-          cursor: nextCursor,
-        },
-      });
+      setLoading(true);
+      const params = {
+        cursor: nextCursor,
+      };
+      if (searchTerm) {
+        params.search = searchTerm;
+      }
+      const response = await api.get('/inventBarang', { params });
       const data = response.data.data;
       setItems((prevItems) => {
         const existingIds = new Set(prevItems.map(item => item.id));
@@ -188,7 +195,6 @@ function ListBarang() {
               </ScrollPagination>
             </Transition>
         {loading && <Loader Class="mt-20" />}
-        {/* === PERUBAHAN DI BARIS INI === */}
         { empty && !loading && <DataEmpty /> } 
         {canCreate && <FlyingButton goTo={'/barang/create-barang'}/>}
       </Block>

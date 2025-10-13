@@ -36,7 +36,7 @@ function PurchaseOrderList() {
       try {
         setLoading(true);
         
-        let endpoint = searchTerm ? `purchaseOrder/${searchTerm}` : 'purchaseOrder';
+        let endpoint = 'purchaseOrder';
         const params = {};
 
         // 2. API logic updated to handle three filter states
@@ -48,6 +48,9 @@ function PurchaseOrderList() {
           params.is_completed = 0; // Filter for not completed
         }
 
+        if (searchTerm) {
+          params.search = searchTerm;
+        }
         const response = await api.get(endpoint, { params });
         const data = response.data.data;
         setItems(Array.isArray(data.data) ? data.data : []);
@@ -68,6 +71,9 @@ function PurchaseOrderList() {
         const params = {
           cursor: nextCursor,
         };
+        if (searchTerm) {
+          params.search = searchTerm;
+        }
         
         // Apply the same logic for pagination
         if (filterStatus === 'completed') {
@@ -106,7 +112,6 @@ function PurchaseOrderList() {
     };
 
     useEffect(() => {
-    // cleanup on unmount
       return () => debounceRef.current && clearTimeout(debounceRef.current);
     }, []);
     

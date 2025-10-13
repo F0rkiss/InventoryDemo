@@ -70,45 +70,6 @@ function DetailMakeRequestAdmin() {
     setIsPreviewOpen(true);
   };
 
-//   const cancelRequest = async () => {
-//     try {
-//       const result = await Swal.fire({
-//         title: `Apakah Anda Yakin Ingin Membatalkan Request Ini?`,
-//         icon: 'question',
-//         showDenyButton: true,
-//         confirmButtonText: 'Yes',
-//         denyButtonText: 'No',
-//         customClass: {
-//           actions: 'my-actions',
-//           confirmButton: 'order-2',
-//           denyButton: 'order-3',
-//         },
-//       });
-//       if (result.isConfirmed) {
-//         // console.log('Request cancelled:', id);
-//         const response = await api.delete(`/inventMakeRequest-delete/${decryptedId}`);
-        
-//         // Cek jika respons mengandung pesan error walau status 200
-//         if (response?.data?.status === 'error' || response?.data?.message?.toLowerCase().includes('tidak ditemukan')) {
-//           Swal.fire({
-//             icon: 'error',
-//             title: 'Gagal Membatalkan',
-//             text: response.data.message || 'Data tidak ditemukan'
-//           });
-//         } else {
-//           Swal.fire('Request Dibatalkan!', '', 'success');
-//           navigate('/make-request-admin/list-make-request-admin');
-//         }
-//       }
-//     } catch (error) {
-//       Swal.fire({
-//           icon:'error',
-//           title:'Tidak Dapat Membatalkan Request',
-//           text:'Ada Kesalahan Dalam Sistem'
-//       })
-//     }
-//   }
-  
   return (
     <Layout title={'Detail Make Request'}>
       <Block>
@@ -116,25 +77,16 @@ function DetailMakeRequestAdmin() {
           {/* Main Info & Detail */}
             <Transition contentVisible={contentVisible}>
             <Back goHome={() => navigate('/make-request-admin/list-make-request-admin')} />
-            <div className="flex items-center justify-between my-4">
-                {/* <div className='flex items-center justify-between my-4'> */}
-                <p className='lg:text-3xl text-2xl font-semibold capitalize'>Detail Make Request</p>
-                  {
-                    role === 'admin' ? 
-                    (
-                      <p className='rounded-md bg-gray-300 p-2 text-gray-700'>{item.is_full_approval}</p>
-                    ) : (
-                      <p className={`${item.can_be_deleted ? 'text-amber-700 bg-amber-100 border border-amber-500 py-2 px-3' : 'text-green-700 bg-green-100 border border-green-500 py-2 px-3'} rounded-md font-medium`}>{item.is_full_approval}</p>
-                    )
-                  }
-                {/* </div> */}
+            <div className="flex items-center justify-between my-4 gap-2">
+              <p className='lg:text-3xl text-lg font-semibold capitalize'>Detail Make Request</p>
+              <p className='rounded-md bg-gray-300 lg:p-2 p-2 text-center lg:text-sm text-xs text-gray-700'>{item.is_full_approval}</p>
             </div>
               <>
               <div className="flex flex-col lg:flex-row gap-4 mt-3">
                 <div className="bg-white border rounded-md p-6 flex-1 min-h-[200px]">
                   <p className="font-semibold text-gray-400 mb-2 text-xl">Main Information</p>
-                  <p className="text-xl font-bold capitalize">{mainMR.kode}</p>
-                  <p className="text-lg mb-4">{DateFormat(mainMR.tanggal, false)}</p>
+                  <p className="lg:text-xl text-lg font-bold capitalize">{mainMR.kode}</p>
+                  <p className="text-md font-medium mb-4">{DateFormat(mainMR.tanggal, false)}</p>
                   <div className="space-y-3">
                     <div className="flex justify-between">
                       <span className="text-gray-500">Employee Name</span>
@@ -158,11 +110,11 @@ function DetailMakeRequestAdmin() {
                         <span className='font-medium'>{mainMR.type_jenis}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-gray-500">Tanggal dibuat</span>
+                        <span className="text-gray-500">Tgl. dibuat</span>
                         <span className="text-right font-medium">{DateFormat(mainMR.created_at, true)}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-gray-500">Tanggal diubah</span>
+                        <span className="text-gray-500">Tgl. diubah</span>
                         <span className="text-right font-medium">{DateFormat(mainMR.updated_at, true)}</span>
                       </div>
                     </div>
@@ -320,9 +272,9 @@ function DetailMakeRequestAdmin() {
                         <table className="w-full text-sm text-left border-collapse">
                           <thead>
                             <tr className="bg-gray-100">
-                              <th className="p-3  rounded-l-md">Approver Info.</th>
-                              <th className="p-3 ">Notes</th>
-                              <th className="p-3">Approval Step Number</th>
+                              <th className="p-3 rounded-l-md">Approver Info.</th>
+                              <th className="p-3">Notes</th>
+                              <th className="p-3">Approval Step No.</th>
                               <th className="p-3">Approval Step Note</th>
                               <th className="p-3 rounded-r-md">Status</th>
                             </tr>
@@ -335,7 +287,7 @@ function DetailMakeRequestAdmin() {
                                   <div className="mt-1">{step.approver_code || '-'}</div>
                                   <div className="mt-1">{step.approver_email || '-'}</div>
                                 </td>
-                                <td className="p-3 w-1/3 whitespace-pre-line">
+                                <td className="p-3 whitespace-pre-line">
                                   <div className="mt-1">{step.note || '-'}</div>
                                 </td>
                                 <td className="p-3">{step.approval_step_number}</td>

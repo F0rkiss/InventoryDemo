@@ -42,21 +42,14 @@ function DetailItem() {
         api.get(`/inventBarang-detail/${decryptedId}`),
         api.get(`/inventHistory/${decryptedId}`)
       ]);
-      
-      // Update state after both requests are successful
       setItem(itemResponse.data.data);
       setHistory(historyResponse.data.data.data);
     } catch (error) {
-      console.error("Failed to fetch data:", error); // Log any errors
     } finally {
       setLoading(false); // Set loading to false once, after everything is done
       setTimeout(() => setContentVisible(true), 50);
     }
   };
-
-  console.log(history)
-  console.log(item)
-
 
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [selectedImageUrl, setSelectedImageUrl] = useState('');
@@ -163,8 +156,6 @@ function DetailItem() {
             { isAsset !== 0 && Array.isArray(history) && (
               <div className="bg-white border rounded-md p-6 mt-6 min-h-[150px]">
                 <h2 className="text-xl font-semibold text-gray-400 mb-3">History</h2>
-
-                {/* Gunakan satu ternary operator untuk memilih antara tabel atau pesan kosong */}
                 {history.length === 0 ? (
                   // Tampilan jika history adalah array kosong
                   <p className="text-gray-400 italic">No usage history</p>

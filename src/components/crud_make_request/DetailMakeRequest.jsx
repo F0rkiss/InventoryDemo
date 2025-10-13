@@ -48,9 +48,7 @@ function DetailMakeRequest() {
   const fetchItems = async () => {
     try {
       setLoading(true);
-      const url = role === 'admin' ?
-        (`/inventMakeRequest-admin/detail/${decryptedId}`)
-        : (`/inventMakeRequest-detail/${decryptedId}`)
+      const url = `/inventMakeRequest-detail/${decryptedId}`
       const response = await api.get(url);
       const data = response.data.data;
       setItem(data);
@@ -134,9 +132,11 @@ function DetailMakeRequest() {
               <>
               <div className="flex flex-col lg:flex-row gap-4 mt-3">
                 <div className="bg-white border rounded-md p-6 flex-1 min-h-[200px]">
-                  <p className="font-semibold text-gray-400 mb-2 text-xl">Main Information</p>
-                  <p className="text-xl font-bold capitalize">{mainMR.kode}</p>
-                  <p className="text-lg mb-4">{DateFormat(mainMR.tanggal, false)}</p>
+                  <div className="overflow-x-clip">
+                    <p className="font-semibold text-gray-400 mb-2 text-xl">Main Information</p>
+                    <p className="lg:text-xl text-lg font-bold capitalize">{mainMR.kode}</p>
+                    <p className="text-md mb-4">{DateFormat(mainMR.tanggal, false)}</p>
+                  </div>
                   <div className="space-y-3">
                     <div className="flex justify-between">
                       <span className="text-gray-500">Employee Name</span>
@@ -355,7 +355,7 @@ function DetailMakeRequest() {
               }
               {
                 item.can_be_deleted &&
-                <div className='flex justify-end mt-5'>
+                <div className='flex lg:justify-end justify-center mt-5'>
                   <button onClick={() => cancelRequest()} className='bg-red-500 hover:bg-red-600 transition-color duration-200 max-w-xs py-2 rounded-md text-white font-medium'>Cancel Request</button>
                 </div>
               }

@@ -14,6 +14,9 @@ import { DecryptID } from '../../helper/EncryptHelper';
 function DetailUser() {
 
     const [item, setItems] = useState({})
+    // Membuat alias untuk mempermudah akses, sama seperti di Profile.jsx
+    const user = item.data; 
+
     const {id} = useParams();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false)
@@ -51,29 +54,103 @@ function DetailUser() {
   return (
     <Layout title={'Detail User'}>
         <Block>
-            <div className='px-4'>
+        {loading ? (
+          <Loader Class="mt-72" />
+        ) : (
+            <div className='xs:px-0 md:px-4'>
                 <Back goHome={() => navigate('/user/list-user')}/>
                 <p className='lg:text-3xl text-2xl font-semibold capitalize my-4'>Detail User</p>
                     <Transition contentVisible={contentVisible}>
-                    <div className='bg-white rounded-md shadow-sm overflow-hidden p-6 text-base mt-8'>
-                        <p className='text-gray-400'>
-                            Name <span className='font-medium'>{item.data?.EmpName}</span>
-                        </p>
-                        <p className='capitalize'>
-                            Role <span className='font-medium'>{item.data?.role?.name}</span>
-                        </p>
-                        <p className='capitalize'>
-                            Email <span className='font-medium'>{item.data?.email}</span>
-                        </p>
-                        <p className='capitalize'>
-                            Phone <span className='font-medium'>{item.data?.EmpPhone}</span>
-                        </p>
-                        <p>Divisi {item.data?.posisi_name || "Not Assign yet"}</p>
-                        <p>Department {item.data?.str_name || "Not Assign yet"}</p>
-                        <p>Tingkatan {item.data?.level_name || "Not Assign yet"}</p>
+                    {/* Mengadopsi struktur grid dari Profile.jsx */}
+                    <div className='grid grid-cols-1 md:grid-cols-2 bg-white border border-gray-300 shadow-xl shadow-gray-200 rounded-2xl mt-6 p-6 gap-x-8'>
+                        {/* Kolom 1: Personal Information */}
+                        <div className="col-start-1">
+                            <h3 className="text-lg font-semibold text-gray-700 mb-4">
+                                Personal Information
+                            </h3>
+                            <div className="space-y-3">
+                                <div>
+                                    <p className="text-gray-500 text-sm">Employee Name</p>
+                                    <p className="text-gray-900 font-medium capitalize">
+                                        {user?.EmpName || '-'}
+                                    </p>
+                                </div>
+                                <div>
+                                    <p className="text-gray-500 text-sm">Date of Birth</p>
+                                    <p className="text-gray-900 font-medium capitalize">
+                                        {user?.DOB || '-'}
+                                    </p>
+                                </div>
+                                <div>
+                                    <p className="text-gray-500 text-sm">Role</p>
+                                    <p className="text-gray-900 font-medium capitalize">
+                                        {item?.role || '-'}
+                                    </p>
+                                </div>
+                                <div>
+                                    <p className="text-gray-500 text-sm">Employee Code</p>
+                                    <p className="text-gray-900 font-medium capitalize">
+                                        {user?.EmpCode || '-'}
+                                    </p>
+                                </div>
+                                <div>
+                                    <p className="text-gray-500 text-sm">Email</p>
+                                    <p className={`font-medium ${user?.email_verified_at ? 'text-gray-900' : 'text-yellow-600'}`}>
+                                        {user?.email || '-'}
+                                    </p>
+                                </div>
+                                <div>
+                                    <p className="text-gray-500 text-sm">Phone</p>
+                                    <p className="text-gray-900 font-medium">{user?.EmpPhone || '-'}</p>
+                                </div>
+                            </div>
+                        </div>
+                        {/* Kolom 2: Employee Information */}
+                        <div className="col-start-1 md:col-start-2 mt-6 md:mt-0">
+                            <h3 className="text-lg font-semibold text-gray-700 mb-4">
+                                Employee Information
+                            </h3>
+                            <div className="space-y-3">
+                                <div>
+                                    <p className="text-gray-500 text-sm">Tingkat</p>
+                                    <p className="text-gray-900 font-medium capitalize">
+                                        {user?.level_name || '-'}
+                                    </p>
+                                </div>
+                                <div>
+                                    <p className="text-gray-500 text-sm">Posisi</p>
+                                    <p className="text-gray-900 font-medium capitalize">
+                                        {user?.posisi_name || '-'}
+                                    </p>
+                                </div>
+                                <div>
+                                    <p className="text-gray-500 text-sm">Posisi Atasan 1</p>
+                                    <p className="text-gray-900 font-medium capitalize">
+                                        {user?.posisi_upline_name || '-'}
+                                    </p>
+                                </div>
+                                <div>
+                                    <p className="text-gray-500 text-sm">Posisi Atasan 2</p>
+                                    <p className="text-gray-900 font-medium capitalize">
+                                        {user?.posisi_upline2_name || '-'}
+                                    </p>
+                                </div>
+                                <div>
+                                    <p className="text-gray-500 text-sm">Departmen</p>
+                                    <p className="text-gray-900 font-medium">{user?.str_name || '-'}</p>
+                                </div>
+                                <div>
+                                    <p className="text-gray-500 text-sm">Divisi</p>
+                                    <p className="text-gray-900 font-medium capitalize">
+                                        {user?.str_upline_name || '-'}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     </Transition>
             </div>
+        )}
         </Block>        
     </Layout>
   )

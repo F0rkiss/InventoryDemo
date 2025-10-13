@@ -121,11 +121,15 @@ function ListBilling() {
 
   return (
     <Layout title={'List Billing'}>
-        <SearchBar disable={loading} onChange={handleSearchChange} values={searchQuery} />
         <Block>
-            <div className='flex justify-between mb-3'>
-                <p className='text-xl font-bold capitalize ms-3 mb-3'>Data Billing</p>
-            </div>
+            <div className='ms-3 mb-4 flex items-center justify-between'>
+                <p className='lg:text-3xl text-2xl font-semibold capitalize'>Billing List</p>
+                <SearchBar
+                    onChange={handleSearchChange}
+                    disable={loading}
+                    values={searchQuery}
+                />
+          </div>
             <Transition contentVisible={contentVisible}>
                 <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
                     <ScrollPagination rootSelector=".page-content" fetchMoreItems={fetchMoreItems} loading={loading} nextCursor={nextCursor}>

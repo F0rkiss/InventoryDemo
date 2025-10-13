@@ -399,8 +399,3 @@ const ModalLPB = ({ onClose, onSave, open, initialData, apiUrl, existingItems = 
 };
 
 export default ModalLPB;
-
-export default ModalLPB;
-export default ModalLPB;
-export default ModalLPB;
-export default ModalLPB;

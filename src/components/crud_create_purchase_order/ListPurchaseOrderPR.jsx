@@ -34,7 +34,11 @@ import useMenuAccess from '../../hooks/useMenuAccess'
     const fetchItems = async () => {
       try {
         setLoading(true);
-        const response = await api.get(searchTerm ? `purchaseOrder-listPurchaseRequest/${searchTerm}` : 'purchaseOrder-listPurchaseRequest');
+        const params = {};
+        if (searchTerm) {
+          params.search = searchTerm;
+        }
+        const response = await api.get('purchaseOrder-listPurchaseRequest', { params });
         const data = response.data.data;
         setItems(Array.isArray(data.data) ? data.data : []);
         setNextCursor(data.next_cursor);
@@ -49,11 +53,13 @@ import useMenuAccess from '../../hooks/useMenuAccess'
       if (!nextCursor || loading) return;
       try {
         setLoading(true);
-        const response = await api.get(searchTerm ? `purchaseOrder-listPurchaseRequest/${searchTerm}` : 'purchaseOrder-listPurchaseRequest', {
-          params: {
-            cursor: nextCursor,
-          },
-        });
+         const params = {
+          cursor: nextCursor,
+        };
+        if (searchTerm) {
+          params.search = searchTerm;
+        }
+        const response = await api.get('purchaseOrder-listPurchaseRequest', { params });
         const data = response.data.data;
   
           setItems(
@@ -100,7 +106,7 @@ import useMenuAccess from '../../hooks/useMenuAccess'
       <Layout title={'List Purchase Order'}>
           <Block>
             <div className='ms-3 mb-4 flex items-center justify-between gap-1'>
-              <p className='lg:text-3xl text-2xl font-semibold capitalize'>Create Purchase Order List</p>
+              <p className='lg:text-3xl text-xl font-semibold capitalize'>Create Purchase Order List</p>
               <SearchBar
                 onChange={handleSearchChange}
                 disable={loading}

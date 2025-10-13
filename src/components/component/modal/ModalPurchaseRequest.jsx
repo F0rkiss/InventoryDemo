@@ -17,28 +17,34 @@ const ModalPurchaseRequest = ({ onClose, onSave, open, initialData, apiUrl, exis
 
     useEffect(() => {
         if (open) {
-            if (initialData) setModalData(initialData);
-            else setModalData({ selectedBarang: null, qty: '' });
+            if (initialData && initialData.selectedBarang) {
+                 setModalData(initialData);
+                 setSearchTerm(initialData.selectedBarang.name);
+            } else {
+                 setModalData({ selectedBarang: null, qty: '' });
+                 setSearchTerm('');
+            }
         }
-    }, [open, initialData])
+    }, [open, initialData]);
 
-    const fetchAvailableBarang = async (searchTerm = '') => {
-        if (!searchTerm.trim()) {
+    const fetchAvailableBarang = async (term = '') => {
+        if (!term.trim()) {
             setAvailableBarang([]);
             return;
         }
+        
+        setBarangLoading(true);
+        const endpoint = '/inventBarang';
+        const config = {
+            params: {
+                search: term.trim()
+            }
+        };
 
         try {
-            setBarangLoading(true);
-            const response = await api.get(`/inventBarang/${searchTerm}`);
-            const data = response.data.data;
-
-            const filteredBarang = data.data.filter(barang =>
-                barang.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                barang.kode_barang.toLowerCase().includes(searchTerm.toLowerCase())
-            );
-
-            setAvailableBarang(filteredBarang);
+            const response = await api.get(endpoint, config);
+            // Directly use the API response. No more client-side filtering needed.
+            setAvailableBarang(response.data.data.data || []);
         } catch (error) {
             console.error('Error fetching barang:', error);
             setAvailableBarang([]);
@@ -47,15 +53,20 @@ const ModalPurchaseRequest = ({ onClose, onSave, open, initialData, apiUrl, exis
         }
     };
 
-    const handleSearchChange = (searchTerm) => {
-        setSearchTerm(searchTerm);
+    const handleSearchChange = (term) => {
+        setSearchTerm(term);
+        setShowResults(true);
 
-        if (searchTerm.trim()) {
-            setShowResults(true);
-            setTimeout(() => {
-                fetchAvailableBarang(searchTerm);
-            }, 300);
+        // Clear the previous timeout to prevent multiple requests
+        clearTimeout(debounceTimeout.current);
+
+        if (term.trim()) {
+            // Set a new timeout
+            debounceTimeout.current = setTimeout(() => {
+                fetchAvailableBarang(term);
+            }, 500); // 500ms is a good debounce delay
         } else {
+            // If the search term is cleared, hide results immediately
             setShowResults(false);
             setAvailableBarang([]);
         }
