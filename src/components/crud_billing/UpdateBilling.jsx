@@ -108,126 +108,157 @@ function UpdateBilling() {
     return (
     <Layout title={'Update Billing'}>
         <Block>
-            <Back goHome={() => navigate(-1)}/>
-            <div className='bg-white rounded shadow-sm p-3 mt-4'>
-                <form onSubmit={handleSubmit}>
-                    <div className="mb-5">
-                        <label>User</label>
-                        <SelectPaginate
-                            source={'billing-getUser'}
-                            handleSelectChange={user => setItems({...items, user})}
-                            itemLabel={['EmpName' || 'name']}
-                            selectName={'User'}
-                            selectValue={items.user}
-                            required={true}
-                        />
-                    </div>
-                    
-                    <div className="mb-5">
-                        <label>Penanggung Jawab</label>
-                        <div className='bg-white p-2 rounded-md border-solid border-gray-300 border'>
-                            <input 
-                                type="text"
-                                className='w-full p-2 border rounded placeholder:text-gray-400 placeholder:font-inter placeholder:font-light capitalize'
-                                placeholder='Masukkan Penanggung Jawab'
-                                value={items.penanggung_jawab || ''}
-                                onChange={e => setItems({...items, penanggung_jawab : e.target.value})}
-                                required
-                                maxLength={40}
+            <div className="px-4">
+                <Back goHome={() => navigate(-1)}/>
+                <p className="lg:text-3xl text-2xl font-semibold capitalize my-4">Update Billing</p>
+
+                <div className="p-8 bg-white shadow-sm rounded-lg border">
+                    <form onSubmit={handleSubmit} className="space-y-5">
+                        {/* User Selection */}
+                        <div className="mb-5 space-y-2">
+                            <label className="font-semibold">User</label>
+                            <SelectPaginate
+                                source={'billing-getUser'}
+                                handleSelectChange={user => setItems({...items, user})}
+                                itemLabel={['EmpName' || 'name']}
+                                selectName={'User'}
+                                selectValue={items.user}
+                                required={true}
                             />
                         </div>
-                    </div>
-                    
-                    <div className="mb-5">
-                        <label>Tanggal Berlangganan</label>
-                        <div className='bg-white p-2 rounded-md border-solid border-gray-300 border'>
-                            <input 
-                                type="date"
-                                className='w-full p-2 border rounded placeholder:text-gray-400 placeholder:font-inter placeholder:font-light'
-                                value={items.tgl_berlangganan}
-                                onChange={e => setItems({...items, tgl_berlangganan : e.target.value})}
-                                required
-                            />
+                        
+                        {/* Penanggung Jawab */}
+                        <div className="mb-4">
+                            <label className="font-semibold">Penanggung Jawab</label>
+                            <div className="bg-white p-2 rounded-md border border-gray-300 mt-2">
+                                <input 
+                                    type="text"
+                                    className="w-full p-2 placeholder:text-gray-400"
+                                    placeholder="Masukkan Penanggung Jawab"
+                                    value={items.penanggung_jawab || ''}
+                                    onChange={e => setItems({...items, penanggung_jawab : e.target.value})}
+                                    required
+                                    maxLength={40}
+                                />
+                            </div>
                         </div>
-                    </div>
-                    
-                    <div className="mb-5">
-                        <label>Tanggal Selesai Berlangganan</label>
-                        <div className='bg-white p-2 rounded-md border-solid border-gray-300 border'>
-                            <input 
-                                type="date"
-                                className='w-full p-2 border rounded placeholder:text-gray-400 placeholder:font-inter placeholder:font-light'
-                                value={items.tgl_selesai_berlangganan}
-                                onChange={e => setItems({...items, tgl_selesai_berlangganan : e.target.value})}
-                                required
-                            />
+                        
+                        {/* Date Fields Grid */}
+                        <div className="md:grid md:grid-cols-3 md:gap-x-4">
+                            {/* Tanggal Berlangganan */}
+                            <div className="mb-4">
+                                <label className="font-semibold">Tanggal Berlangganan</label>
+                                <div className="bg-white p-2 rounded-md border border-gray-300 mt-2">
+                                    <input 
+                                        type="date"
+                                        className="w-full p-2 placeholder:text-gray-400"
+                                        value={items.tgl_berlangganan}
+                                        onChange={e => setItems({...items, tgl_berlangganan : e.target.value})}
+                                        required
+                                    />
+                                </div>
+                            </div>
+                            
+                            {/* Tanggal Selesai Berlangganan */}
+                            <div className="mb-4">
+                                <label className="font-semibold">Tanggal Selesai</label>
+                                <div className="bg-white p-2 rounded-md border border-gray-300 mt-2">
+                                    <input 
+                                        type="date"
+                                        className="w-full p-2 placeholder:text-gray-400"
+                                        value={items.tgl_selesai_berlangganan}
+                                        onChange={e => setItems({...items, tgl_selesai_berlangganan : e.target.value})}
+                                        required
+                                    />
+                                </div>
+                            </div>
+                            
+                            {/* Tanggal Pembayaran */}
+                            <div className="mb-4">
+                                <label className="font-semibold">Tanggal Pembayaran</label>
+                                <div className="bg-white p-2 rounded-md border border-gray-300 mt-2">
+                                    <input 
+                                        type="date"
+                                        className="w-full p-2 placeholder:text-gray-400"
+                                        value={items.tgl_pembayaran}
+                                        onChange={e => setItems({...items, tgl_pembayaran : e.target.value})}
+                                    />
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    
-                    <div className="mb-5">
-                        <label>Tanggal Pembayaran</label>
-                        <div className='bg-white p-2 rounded-md border-solid border-gray-300 border'>
-                            <input 
-                                type="date"
-                                className='w-full p-2 border rounded placeholder:text-gray-400 placeholder:font-inter placeholder:font-light'
-                                value={items.tgl_pembayaran}
-                                onChange={e => setItems({...items, tgl_pembayaran : e.target.value})}
-                            />
+                        
+                        {/* Status and Biaya Grid */}
+                        <div className="md:grid md:grid-cols-2 md:gap-x-4">
+                            {/* Status */}
+                            <div className="mb-4">
+                                <label className="font-semibold">Status</label>
+                                <div className="mt-2">
+                                    <Select
+                                        options={status}
+                                        value={items.status}
+                                        onChange={status => setItems({...items, status})}
+                                        placeholder="Pilih Status"
+                                        className="w-full"
+                                        required
+                                    />
+                                </div>
+                            </div>
+                            
+                            {/* Biaya */}
+                            <div className="mb-4">
+                                <div className="flex justify-between items-center">
+                                    <label className="font-semibold">Biaya</label>
+                                    <span className="text-xs text-red-500">* Hanya Nomor</span>
+                                </div>
+                                <div className="bg-white p-2 rounded-md border border-gray-300 mt-2">
+                                    <input 
+                                        type="text"
+                                        className="w-full p-2 placeholder:text-gray-400"
+                                        placeholder="Masukkan Biaya"
+                                        value={items.biaya}
+                                        onChange={e => setItems({...items, biaya : e.target.value.replace(/\D/g, "")})}
+                                        maxLength={12}
+                                        required
+                                    />
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    
-                    <div className="mb-5">
-                        <label>Status</label>
-                            <Select
-                                options={status}
-                                value={items.status}
-                                onChange={status => setItems({...items, status})}
-                                placeholder="Pilih Status"
-                                className="w-full"
-                                required
-                            />
-                    </div>
-                    
-                    <div className="mb-5">
-                        <div className="flex justify-between">
-                            <label>Biaya</label>
-                            <p className='text-xs text-red-500 mt-1'>* Hanya Menerima Nomor</p>
+                        
+                        {/* Note */}
+                        <div className="mb-4">
+                            <label className="font-semibold">Note</label>
+                            <div className="bg-white p-2 rounded-md border border-gray-300 mt-2">
+                                <textarea 
+                                    className="w-full min-h-fit p-2 placeholder:text-gray-400"
+                                    placeholder="Masukkan Catatan"
+                                    value={items.note}
+                                    onChange={e => setItems({...items, note : e.target.value})}
+                                    maxLength={225}
+                                    rows="3"
+                                    required 
+                                />
+                            </div>
                         </div>
-                        <div className='bg-white p-2 rounded-md border-solid border-gray-300 border'>
-                            <input 
-                                type="text"
-                                className='w-full p-2 border rounded placeholder:text-gray-400 placeholder:font-inter placeholder:font-light'
-                                placeholder='Masukkan Biaya'
-                                value={items.biaya}
-                                onChange={e => setItems({...items, biaya : e.target.value.replace(/\D/g, "")})}
-                                maxLength={12}
-                                required
-                            />
+                        
+                        {/* Actions */}
+                        <div className="flex flex-col items-center justify-self-center mt-10 max-w-full w-[25rem] space-y-2 text-center">
+                            <button
+                                disabled={disabled}
+                                type="submit"
+                                className="py-2 px-4 w-full rounded-lg font-medium bg-blue-500 hover:bg-blue-600 transition-color duration-200 text-white disabled:bg-blue-300"
+                            >
+                                Update
+                            </button>
+                            <button
+                                type="button"
+                                className="py-2 px-4 w-full rounded-lg font-medium border border-red-200 bg-red-50 hover:bg-red-100 transition-color duration-200 text-red-600"
+                                onClick={fetchItems}
+                            >
+                                Reset
+                            </button>
                         </div>
-                    </div>
-                    
-                    <div className="mb-5">
-                        <label>Note</label>
-                        <div className='bg-white p-2 rounded-md border-solid border-gray-300 border'>
-                            <textarea 
-                                className='w-full h-16 p-2 border rounded placeholder:text-gray-400 placeholder:font-inter placeholder:font-light'
-                                placeholder='Masukkan Catatan'
-                                value={items.note}
-                                onChange={e => setItems({...items, note : e.target.value})}
-                                required 
-                            />
-                        </div>
-                    </div>
-                    
-                    <div className="flex">
-                        <button disabled={disabled} type='submit' className="bg-cyan-400 text-white p-2 rounded w-1/2 me-3">
-                            Update Billing
-                        </button>
-                        <button type='button' onClick={fetchItems} className="bg-red-400 text-white p-2 rounded w-1/2">
-                            Reset
-                        </button>
-                    </div>
-                </form>
+                    </form>
+                </div>
             </div>
         </Block>
     </Layout>
