@@ -123,7 +123,7 @@ function ApprovalMR() {
                 setTimeout(() => navigate('/notifications'), 1200);
             } catch (error) {
                 Swal.fire({
-                    title: 'Tidak berhasil di Reject!',
+                    title: 'Tidak berhasil di Tolak!',
                     icon: 'error',
                     timer: 2000,
                     showConfirmButton: false,

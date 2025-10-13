@@ -154,10 +154,10 @@ const ModalLPB = ({ onClose, onSave, open, initialData, apiUrl, existingItems = 
         }
     };
 
-    const handleArrivalQuantityChange = (detailId, quantity) => {
-        setArrivalQuantities(prev => ({
+    const handleArrivalQuantityChange = (detailId, value) => {
+        setArrivalQuantities((prev) => ({
             ...prev,
-            [detailId]: parseInt(quantity) || 0
+            [detailId]: value === '' ? '' : (parseInt(value) || 0)
         }));
     };
 
@@ -263,7 +263,9 @@ const ModalLPB = ({ onClose, onSave, open, initialData, apiUrl, existingItems = 
                                                     : "border-gray-200"
                                             }`}
                                         >
+                                            
                                             <div className="flex flex-col sm:flex-row sm:items-start gap-4">
+                                                
                                                 <div className="flex-shrink-0 mx-auto sm:mx-0">
                                                     {detail.barangs?.image ? (
                                                         <img
@@ -279,6 +281,7 @@ const ModalLPB = ({ onClose, onSave, open, initialData, apiUrl, existingItems = 
                                                 </div>
 
                                                 <div className="flex-1 min-w-0 text-center sm:text-left">
+                                                    
                                                     <h3 className="font-medium text-gray-900 text-base sm:text-lg">
                                                         {detail.barangs?.name}
                                                     </h3>
@@ -302,6 +305,7 @@ const ModalLPB = ({ onClose, onSave, open, initialData, apiUrl, existingItems = 
                                                             </p>
                                                         </div>
                                                         {!selectedDetailId && (
+                                                            
                                                             <button
                                                                 type="button"
                                                                 disabled={
@@ -326,39 +330,47 @@ const ModalLPB = ({ onClose, onSave, open, initialData, apiUrl, existingItems = 
                                             </div>
 
                                             {selectedDetailId === detail.id && (
-                                                <div className="border-t border-gray-100">
-                                                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                                                        <div className="flex-1 w-full">
-                                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                <div className="border-t-2 border-gray-200 mt-3 pt-3">
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => setSelectedDetailId(null)}
+                                                                aria-label="Kembali"
+                                                                title="Kembali"
+                                                                className="inline-flex items-center px-1 py-0.5 text-blue-600 hover:text-blue-700"
+                                                            >
+                                                                <i className="bx bx-left-arrow-alt text-xl"></i>
+                                                                <span className="ml-1 text-sm">Kembali</span>
+                                                            </button>
+                                                    <div className="flex items-center justify-between w-full">
+                                                        <div className="flex items-center">
+                                                            <label className=" block text-sm font-medium text-gray-700">
                                                                 Jumlah yang Diterima
                                                             </label>
-                                                            <div className="bg-white p-2 rounded-md border border-gray-300">
-                                                                <input
-                                                                    type="number"
-                                                                    min="0"
-                                                                    max={getMaxQuantity(detail)}
-                                                                    className="w-full focus:outline-none"
-                                                                    value={
-                                                                        arrivalQuantities[detail.id] ??
-                                                                        ""
-                                                                    }
-                                                                    onChange={(e) =>
-                                                                        handleArrivalQuantityChange(
-                                                                            detail.id,
-                                                                            e.target.value
-                                                                        )
-                                                                    }
-                                                                    placeholder="Masukkan jumlah yang diterima"
-                                                                    required
-                                                                />
-                                                            </div>
                                                         </div>
-                                                        <div className="text-sm text-gray-500 w-full sm:w-auto">
-                                                            <p>
-                                                                Barang yang belum diterima:{" "}
-                                                                {getMaxQuantity(detail)}{" "}
-                                                                {detail.barangs?.satuan}
-                                                            </p>
+                                                        <p className="text-sm text-gray-500">
+                                                            Barang yang belum diterima: {getMaxQuantity(detail)} {detail.barangs?.satuan}
+                                                        </p>
+                                                    </div>
+                                                    <div className="w-full">
+                                                        <div className="bg-white p-2 rounded-md border border-gray-300">
+                                                            <input
+                                                                type="number"
+                                                                min="0"
+                                                                max={getMaxQuantity(detail)}
+                                                                className="w-full focus:outline-none"
+                                                                value={
+                                                                    arrivalQuantities[detail.id] ??
+                                                                    ""
+                                                                }
+                                                                onChange={(e) =>
+                                                                    handleArrivalQuantityChange(
+                                                                        detail.id,
+                                                                        e.target.value
+                                                                    )
+                                                                }
+                                                                placeholder="Masukkan jumlah yang diterima"
+                                                                required
+                                                            />
                                                         </div>
                                                     </div>
                                                 </div>

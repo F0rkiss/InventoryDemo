@@ -10,7 +10,6 @@ import Transition from '../component/Transition';
 import DateFormat from '../../helper/DateFormatHelper';
 import { DecryptID } from '../../helper/EncryptHelper';
 import { useAuth } from '../../auth/AuthContext';
-import PurchaseRequestBarang from '../component/PurchaseRequestBarang';
 import ModalPurchaseRequest from '../component/modal/ModalPurchaseRequest';
 import ImagePreviewModal from '../component/modal/ImagePreviewModal';
 import InfoRow from '../component/infoRow';
@@ -138,10 +137,61 @@ function UpdatePurchaseRequest() {
         setIsPreviewOpen(true);
     };
 
+    // === Validation Functions ===
+    const validateItemCount = () => {
+        const maxItems = detailMR.length;
+        if (selectedItems.length !== maxItems) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Jumlah Detail Barang Tidak Sesuai',
+                text: `Jumlah detail barang harus sesuai dengan make request. Saat ini: ${selectedItems.length} dari ${maxItems} barang yang diperlukan.`,
+            });
+            return false;
+        }
+        return true;
+    };
+
+    const validateQuantity = () => {
+        // Create a map of make request details for quantity validation
+        const mrDetailsMap = new Map();
+        detailMR.forEach(detail => {
+            if (detail.invent_barang_id) {
+                mrDetailsMap.set(String(detail.invent_barang_id), detail.qty);
+            }
+        });
+
+        // Check each selected item's quantity against make request
+        for (const selectedItem of selectedItems) {
+            const barangId = selectedItem.selectedBarang?.id;
+            if (barangId) {
+                const mrQty = mrDetailsMap.get(String(barangId));
+                if (mrQty && selectedItem.qty > mrQty) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Jumlah Quantity Tidak Sesuai',
+                        text: `Quantity untuk barang "${selectedItem.selectedBarang.name}" (${selectedItem.qty}) melebihi permintaan make request (${mrQty}).`,
+                    });
+                    return false;
+                }
+            }
+        }
+        return true;
+    };
+
     const handleUpdatePurchaseRequest = async () => {
         if (selectedItems.length === 0) {
         Swal.fire({ icon: 'warning', title: 'Tidak ada barang dipilih', text: 'Silakan pilih minimal satu barang.' });
         return;
+        }
+
+        // Validate item count
+        if (!validateItemCount()) {
+            return;
+        }
+
+        // Validate quantity
+        if (!validateQuantity()) {
+            return;
         }
 
         try {
@@ -174,12 +224,10 @@ function UpdatePurchaseRequest() {
                 {/* HEADER */}
                 <div className="flex items-center justify-between mb-4">
                 <Back goHome={() => navigate('/purchase-request/list-purchase-request')} />
-                <p className={`py-2 px-3 rounded-md text-sm sm:text-base ${item.is_full_approval ? 'text-amber-700 bg-amber-200' : 'text-green-700 bg-green-200'}`}>
-                    {item.is_full_approval ? 'Pending' : 'Approved'}
-                </p>
+        
                 </div>
                 <p className="text-xl sm:text-2xl lg:text-3xl font-semibold capitalize">
-                    Detail Laporan Penerimaan Barang
+                    Detail Purchase Request
                 </p>
 
                 <div className="flex flex-col lg:flex-row gap-4 mt-3">
@@ -246,7 +294,12 @@ function UpdatePurchaseRequest() {
                 <div className="bg-white border rounded-md p-4 sm:p-6 mt-6">
                 <div className="flex justify-between items-center mb-4">
                     <p className="text-lg sm:text-xl text-gray-400 font-semibold">Detail Purchase Request</p>
-                    <div className="text-sm sm:text-base text-gray-500">{selectedItems.length} barang</div>
+                    <div className="text-sm sm:text-base text-gray-500">
+                        {selectedItems.length} dari {detailMR.length} barang
+                        {selectedItems.length === detailMR.length && (
+                            <span className="ml-2 text-green-600 font-medium">✓ Lengkap</span>
+                        )}
+                    </div>
                 </div>
 
                 {selectedItems.length === 0 ? (
@@ -301,9 +354,14 @@ function UpdatePurchaseRequest() {
                 )}
 
                 {/* Add Item Button */}
-                <div className="flex justify-center mt-5">
-                    <button type="button" className="text-3xl sm:text-4xl font-light text-gray-700 hover:text-gray-900" onClick={() => handleOpenModal()}>
-                    <i className="bx bx-plus"></i>
+                <div className="flex mt-5">
+                    <button
+                    type="button"
+                    className="w-full rounded-lg py-2 px-4 flex items-center justify-center font-medium bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors duration-200"
+                    onClick={() => handleOpenModal()}
+                    >
+                    <i className='bx bx-plus mr-2 font-semibold text-base'></i>
+                    <span>{ selectedItems.length === 0 ? 'Tambah detail' : 'Tambah detail lain'}</span>
                     </button>
                 </div>
                 </div>
@@ -332,6 +390,7 @@ function UpdatePurchaseRequest() {
             initialData={initialModalData}
             apiUrl={apiUrl}
             existingItems={selectedItems}
+            makeRequestDetails={detailMR}
             />
         )}
         </Layout>

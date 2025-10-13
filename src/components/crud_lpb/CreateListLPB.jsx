@@ -30,7 +30,13 @@ function CreateListLPB() {
   const fetchItems = async () => {
     try {
       setLoading(true);
-      const response = await api.get(searchTerm ? `laporanPenerimaanBarang-purchaseOrder/${searchTerm}` : 'laporanPenerimaanBarang-purchaseOrder');
+      let endpoint = 'laporanPenerimaanBarang-purchaseOrder'
+      const params = { cursor: nextCursor }
+      if (searchTerm) {
+        params.search = searchTerm
+      }
+
+      const response = await api.get(endpoint, { params });
       const data = response.data.data;
       setItems(data.data);
       setNextCursor(data.next_cursor);

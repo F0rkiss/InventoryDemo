@@ -1,24 +1,27 @@
 import React, { useEffect, useRef, useState } from 'react'
+import { Block } from 'framework7-react'
+import { useNavigate } from 'react-router-dom'
 import Layout from '../component/Layout'
 import Transition from '../component/Transition'
 import ScrollPagination from '../component/ScrollPagination'
 import Loader from '../component/Loader'
-import { Block } from 'framework7-react'
-import { useNavigate } from 'react-router-dom'
 import LogCards from '../component/cards/LogCards'
 import DataEmpty from '../component/DataEmpty'
+import SearchBar from '../component/SearchBar'
 import api from '../../api/api'
-import { encrypting } from '../../helper/EncryptHelper'
-import Back from '../component/Back'
 
-function Mutasi() {
+function Log() {
     const [items, setItems] = useState([])
+    const [searchTerm, setSearchTerm] = useState('')
     const [nextCursor, setNextCursor] = useState(null)
     const [loading, setLoading] = useState(false)
     const [contentVisible, setContentVisible] = useState(false)
+
     const navigate = useNavigate()
     const hasFetched = useRef(false)
+    const typingTimeoutRef = useRef(null)
 
+    // --- INITIAL LOAD ---
     useEffect(() => {
         if (!hasFetched.current) {
             fetchItems()
@@ -26,25 +29,20 @@ function Mutasi() {
         }
     }, [])
 
-    const fetchItems = async () => {
+    // --- FETCH ITEMS ---
+    const fetchItems = async (query = '') => {
         try {
             setLoading(true)
-            const response = await api.get('log')
+            const endpoint = query ? `log/${query}` : 'log'
+            const { data } = await api.get(endpoint)
 
-            // ✅ perbaikan struktur respons
-            const data = Array.isArray(response.data?.data?.data)
-                ? response.data.data.data
-                : []
-
-            const withReadStatus = data.map((item) => ({
-                ...item,
-                isRead: false,
-            }))
+            const logs = Array.isArray(data?.data?.data) ? data.data.data : []
+            const withReadStatus = logs.map((item) => ({ ...item, isRead: false }))
 
             setItems(withReadStatus)
-            setNextCursor(response.data?.data?.next_cursor || null)
+            setNextCursor(data?.data?.next_cursor || null)
         } catch (error) {
-            console.error('Gagal fetch mutasi:', error)
+            console.error('Gagal fetch Log:', error)
             setItems([])
             setNextCursor(null)
         } finally {
@@ -53,65 +51,75 @@ function Mutasi() {
         }
     }
 
+    // --- FETCH MORE ITEMS ---
     const fetchMoreItems = async () => {
         if (loading || !nextCursor) return
         try {
             setLoading(true)
-            const response = await api.get('log', {
-                params: { cursor: nextCursor },
-            })
+            const endpoint = searchTerm ? `log/${searchTerm}` : 'log'
+            const { data } = await api.get(endpoint, { params: { cursor: nextCursor } })
 
-            const data = Array.isArray(response.data?.data?.data)
-                ? response.data.data.data
-                : []
+            const newLogs = Array.isArray(data?.data?.data) ? data.data.data : []
+            const uniqueLogs = newLogs.filter(
+                (log) => !items.some((i) => i.id === log.id)
+            )
 
-            const newItems = data.map((item) => ({
-                ...item,
-                isRead: false,
-            }))
-
-            setItems((prevItems) => {
-                const existingIds = new Set(prevItems.map((i) => i.id))
-                const uniqueNew = newItems.filter((i) => !existingIds.has(i.id))
-                return [...prevItems, ...uniqueNew]
-            })
-
-            setNextCursor(response.data?.data?.next_cursor || null)
+            setItems((prev) => [
+                ...prev,
+                ...uniqueLogs.map((item) => ({ ...item, isRead: false })),
+            ])
+            setNextCursor(data?.data?.next_cursor || null)
         } catch (error) {
-            console.error('Gagal fetch mutasi tambahan:', error)
+            console.error('Gagal fetch log tambahan:', error)
         } finally {
             setLoading(false)
         }
     }
 
-    // const goToPage = (item) => {
-    //     const encryptedId = encrypting(item.id)
-    //     navigate(`/inventMutasi/${encryptedId}`)
-    // }
+    // --- SEARCH HANDLER (like modal style) ---
+    const handleSearchChange = (term) => {
+        setSearchTerm(term)
+
+        if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current)
+
+        typingTimeoutRef.current = setTimeout(() => {
+            if (term.trim()) fetchItems(term)
+            else fetchItems()
+        }, 400)
+    }
 
     return (
-        <Layout title={'Mutasi'}>
+        <Layout title="Log">
             <Block>
-                <Back goHome={() => navigate('/dashboard')} />
-                <p className='text-2xl lg:text-3xl font-semibold capitalize ms-3 my-4'>Daftar Log</p>
+                <div className="ms-3 mb-4 flex items-center justify-between">
+                    <p className="lg:text-3xl text-2xl font-semibold capitalize">
+                        Log List
+                    </p>
+                    <SearchBar
+                        onChange={handleSearchChange}
+                        disable={loading}
+                        values={searchTerm}
+                    />
+                </div>
 
                 <Transition contentVisible={contentVisible}>
-                    <ScrollPagination fetchMoreItems={fetchMoreItems} loading={loading} nextCursor={nextCursor}>
+                    <ScrollPagination
+                        fetchMoreItems={fetchMoreItems}
+                        loading={loading}
+                        nextCursor={nextCursor}
+                    >
                         {items.map((item) => (
-                            <LogCards
-                                key={item.id}
-                                item={item}
-                            />
+                            <LogCards key={item.id} item={item} />
                         ))}
                     </ScrollPagination>
 
                     {!loading && items.length === 0 && <DataEmpty />}
                 </Transition>
 
-                {loading && <Loader Class={'mt-40'} />}
+                {loading && <Loader Class="mt-40" />}
             </Block>
         </Layout>
     )
 }
 
-export default Mutasi
+export default Log
