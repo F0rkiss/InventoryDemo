@@ -139,6 +139,7 @@ import useMenuAccess from '../../hooks/useMenuAccess'
                                 goToUpdate={goToUpdate}
                                 canDelete={canDelete}
                                 canUpdate={canUpdate}
+                                from={'lpb'}
                                 />
                             )))
                         }

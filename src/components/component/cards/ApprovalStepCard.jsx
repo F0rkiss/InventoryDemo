@@ -1,6 +1,6 @@
 import React, { forwardRef, useEffect, useRef, useState } from 'react'
 
-const ApprovalStepCard = forwardRef(({item, goToDetail, canUpdate, canDelete, goToUpdate, deleteItems}, ref) => {
+const ApprovalStepCard = forwardRef(({item, from, goToDetail, canUpdate, canDelete, goToUpdate, deleteItems}, ref) => {
     const [open, setOpen] = useState(false);
     const popRef = useRef(null);
 
@@ -30,13 +30,24 @@ const ApprovalStepCard = forwardRef(({item, goToDetail, canUpdate, canDelete, go
             <p className="font-bold text-xl capitalize leading-tight">{item.username || item.user?.EmpName}</p>
             <p className="font-medium">{item.is_upline ? 'Atasan' : 'Bukan Atasan'}</p>
           </div>
-          <button
-            className="detail-button col-start-3 justify-self-end"
-            onClick={() => goToDetail(item.id)}
-            title="User Info"
-          >
-            <i className="bx bx-dots-vertical-rounded text-2xl group-hover:text-gray-800 transition-all duration-200" />
-          </button>
+          { (from === 'lpb') ?
+            (<button
+              className="detail-button col-start-3 justify-self-end"
+              onClick={() => setOpen(true)}
+              title="User Info"
+            >
+              <i className="bx bx-dots-vertical-rounded text-2xl group-hover:text-gray-800 transition-all duration-200" />
+            </button>)
+            : (
+              <button
+                className="detail-button col-start-3 justify-self-end"
+                onClick={() => goToDetail(item.id)}
+                title="User Info"
+              >
+                <i className="bx bx-dots-vertical-rounded text-2xl group-hover:text-gray-800 transition-all duration-200" />
+              </button>
+            )
+          }
         </div>
 
         {/* Content */}

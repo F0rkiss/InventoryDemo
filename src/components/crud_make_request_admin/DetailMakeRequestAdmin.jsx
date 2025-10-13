@@ -7,6 +7,7 @@ import Layout from '../component/Layout';
 import { DecryptID, encrypting } from '../../helper/EncryptHelper';
 import Transition from '../component/Transition';
 import DateFormat from '../../helper/DateFormatHelper'
+import PriceFormatter from '../../helper/PriceFormatHelper';
 import { useAuth } from '../../auth/AuthContext';
 import Swal from 'sweetalert2';
 import ImagePreviewModal from '../component/modal/ImagePreviewModal';
@@ -213,7 +214,12 @@ function DetailMakeRequestAdmin() {
                                   <td className="px-4 py-4">{item.kode_barang}</td>
                                   <td className="px-4 py-4 rounded-r-md">{item.kode_gudang}</td>
                                   <td className="px-4 py-4 rounded-r-md">
-                                    <img src={`${apiUrl}${item.image}`} alt="item image" className="max-w-xs w-full rounded shadow" />
+                                    <img 
+                                    src={`${apiUrl}${item.image}`}
+                                    alt="item image" 
+                                    className="max-w-xs w-full rounded shadow"
+                                    onClick={() => handleImageClick(`${apiUrl}${item.image}`)}
+                                     />
                                   </td>
                                   <td className="px-4 py-4 rounded-r-md">{item.is_asset ? 'Asset' : 'Non-Asset'}</td>
                                 </tr>
@@ -244,11 +250,11 @@ function DetailMakeRequestAdmin() {
                                       <td className="px-4 py-4">{purchaseOrders.kode_suplier}</td>
                                       <td className="px-4 py-4">{purchaseOrders.kode}</td>
                                       <td className="px-4 py-1">{purchaseOrders.alamat}</td>
-                                      <td className="px-4 py-1 rounded-r-md">{purchaseOrders.harga}</td>
+                                      <td className="px-4 py-1 rounded-r-md">{PriceFormatter(purchaseOrders.harga)}</td>
                                       <td className="px-4 py-1 rounded-r-md">{purchaseOrders.cara_pembayaran}</td>
                                       <td className="px-4 py-1 rounded-r-md">{purchaseOrders.keterangan}</td>
-                                      <td className="px-4 py-1 rounded-r-md">{purchaseOrders.tanggal_po}</td>
-                                      <td className="px-4 py-1 rounded-r-md">{purchaseOrders.tanggal_penyerahan}</td>
+                                      <td className="px-4 py-1 rounded-r-md">{purchaseOrders.tanggal_po || '-'}</td>
+                                      <td className="px-4 py-1 rounded-r-md">{DateFormat(purchaseOrders.tanggal_penyerahan)}</td>
                                     </tr>
                                 </tbody>
                               </table>

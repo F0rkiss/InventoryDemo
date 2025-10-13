@@ -241,30 +241,32 @@ function UpdateMakeRequest() {
                                                     key={id}
                                                     className="
                                                     border border-gray-300 rounded-xl p-3
-                                                    grid grid-cols-[80px,1fr] md:grid-cols-[160px,1fr,80px,160px,64px]
+                                                    grid grid-cols-[auto,1fr]  /* Simple grid: image size, remaining space */
                                                     items-center gap-x-4
                                                     "
                                                 >
                                                     {/* Image Section */}
-                                                    <div className="overflow-hidden rounded-lg bg-gray-50 w-full aspect-[4/3]">
-                                                        {isStockRequest && (item.selectedBarang?.gambarBarang || item.selectedBarang?.image) ? (
-                                                            <div className="flex items-center">
+                                                    { isStockRequest && 
+                                                        <div className="overflow-hidden rounded-lg bg-gray-50 w-20 md:w-40 aspect-[4/3]">
+                                                            {isStockRequest && (item.selectedBarang?.gambarBarang || item.selectedBarang?.image) ? (
                                                                 <img
                                                                     src={`${apiUrl}${item.selectedBarang.gambarBarang || item.selectedBarang.image}`}
                                                                     alt={item.selectedBarang.name || item.selectedBarang.namaBarang}
                                                                     className="w-full h-full object-cover cursor-pointer"
                                                                     onClick={() => handleImageClick(`${apiUrl}${item.selectedBarang.gambarBarang || item.selectedBarang.image}`)}
                                                                 />
-                                                            </div>
-                                                        ) : (
-                                                            <div className="w-full h-full flex items-center justify-center text-xs text-gray-400">
-                                                                No Image
-                                                            </div>
-                                                        )}
-                                                    </div>
+                                                            ) : (
+                                                                <div className="w-full h-full flex items-center justify-center text-xs text-gray-400">
+                                                                    No Image
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    }
 
-                                                    {/* Item Details Section */}
-                                                    <div className="flex flex-col justify-between flex-grow p-1 md:p-0 md:contents">
+                                                    {/* NEW: Flex container for all content to the right of the image */}
+                                                    <div className={`flex items-center w-full ${!isStockRequest ? 'col-span-2' : ''}`}>
+        
+                                                        {/* Item Details Section */}
                                                         <div>
                                                             {isStockRequest ? (
                                                                 <div className="font-semibold text-gray-800">
@@ -280,25 +282,22 @@ function UpdateMakeRequest() {
                                                                     Kode: {item.selectedBarang?.kode_barang || item.selectedBarang?.kodeBarang}
                                                                 </div>
                                                             )}
-                                                        </div>
-
-                                                        {/* Quantity Section */}
-                                                        <div className="flex flex-col items-start mt-2 md:mt-0 md:contents">
-                                                            <div className="font-medium md:text-right">
+                                                            <div className="font-medium mt-1">
                                                                 <span className="font-normal text-sm text-gray-400">Qty: </span>
                                                                 {item.qty}
                                                             </div>
                                                         </div>
-                                                    </div>
 
-                                                    {/* Buttons Section */}
-                                                    <div className="col-start-2 flex items-center justify-center w-full gap-2 mt-2 divide-x-2 md:col-auto md:divide-x-0 md:mt-0 md:justify-self-end md:border-l-2 md:pl-3">
-                                                        <button type="button" onClick={() => { setInitialDetails(item); setEditIndex(id); setOpenModal(true); }}>
-                                                            <i className='bx bx-edit text-xl text-cyan-600'></i>
-                                                        </button>
-                                                        <button type="button" onClick={() => setDetails(details.filter((_, i) => i !== id))} className="pl-2">
-                                                            <i className='bx bx-trash text-xl text-red-500'></i>
-                                                        </button>
+                                                        {/* Buttons Section (Pushed right with ml-auto) */}
+                                                        <div className="flex items-center gap-4 ml-auto pl-3">
+                                                            <button type="button" onClick={() => { setInitialDetails(item); setEditIndex(id); setOpenModal(true); }}>
+                                                                <i className='bx bx-edit text-xl text-cyan-600'></i>
+                                                            </button>
+                                                            <button type="button" onClick={() => setDetails(details.filter((_, i) => i !== id))}>
+                                                                <i className='bx bx-trash text-xl text-red-500'></i>
+                                                            </button>
+                                                        </div>
+
                                                     </div>
                                                 </div>
                                             ))
