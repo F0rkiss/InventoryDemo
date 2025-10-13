@@ -35,17 +35,21 @@ const fetchItems = async () => {
   try {
     setLoading(true)
 
-    let endpoint = searchTerm
-      ? `laporanPenerimaanBarang/${searchTerm}`
-      : 'laporanPenerimaanBarang'
+    let endpoint = 'laporanPenerimaanBarang'
     const params = { cursor: nextCursor }
 
-    if (filterStatus === 'completed') {
-      endpoint = 'laporanPenerimaanBarang-toggle'
-      params.is_full_approval = 1
-    } else if (filterStatus === 'not_completed') {
-      endpoint = 'laporanPenerimaanBarang-toggle'
-      params.is_full_approval = 0
+    // Prioritize search term over filters
+    if (searchTerm) {
+      params.search = searchTerm
+    } else {
+      // Only apply filters when there's no search term
+      if (filterStatus === 'completed') {
+        endpoint = 'laporanPenerimaanBarang-toggle'
+        params.is_full_approval = 1
+      } else if (filterStatus === 'not_completed') {
+        endpoint = 'laporanPenerimaanBarang-toggle'
+        params.is_full_approval = 0
+      }
     }
 
     const response = await api.get(endpoint, { params })
@@ -66,17 +70,21 @@ const fetchMoreItems = async () => {
   try {
     setLoading(true)
 
-    let endpoint = searchTerm
-      ? `laporanPenerimaanBarang/${searchTerm}`
-      : 'laporanPenerimaanBarang'
+    let endpoint = 'laporanPenerimaanBarang'
     const params = { cursor: nextCursor }
 
-    if (filterStatus === 'completed') {
-      endpoint = 'laporanPenerimaanBarang-toggle'
-      params.is_full_approval = 1
-    } else if (filterStatus === 'not_completed') {
-      endpoint = 'laporanPenerimaanBarang-toggle'
-      params.is_full_approval = 0
+    // Prioritize search term over filters
+    if (searchTerm) {
+      params.search = searchTerm
+    } else {
+      // Only apply filters when there's no search term
+      if (filterStatus === 'completed') {
+        endpoint = 'laporanPenerimaanBarang-toggle'
+        params.is_full_approval = 1
+      } else if (filterStatus === 'not_completed') {
+        endpoint = 'laporanPenerimaanBarang-toggle'
+        params.is_full_approval = 0
+      }
     }
 
     const response = await api.get(endpoint, { params })
@@ -106,7 +114,7 @@ const fetchMoreItems = async () => {
     }
     typingTimeoutRef.current = setTimeout(() => {
       setSearchTerm(query)
-    }, 750)
+    }, 1200)
   }
 
   const goToDetail = async (itemid) => {

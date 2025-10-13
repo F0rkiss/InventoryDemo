@@ -134,7 +134,6 @@ function CreatePurchaseRequest() {
 
             await api.post(`/purchaseRequest-create/${decryptedId}`, {
                 make_request_id: decryptedId,
-                // kode: kodeValue,
                 note: 'Purchase request created from make request',
                 tanggal: new Date().toISOString().split('T')[0],
                 barangIds: selectedItems.map(it => it.selectedBarang?.id).filter(Boolean),
@@ -154,7 +153,7 @@ function CreatePurchaseRequest() {
             Swal.fire({
                 icon: 'error',
                 title: 'Gagal membuat Purchase Request',
-                text: err.response?.data?.msg || 'Ada kesalahan dalam sistem',
+                text: err.response?.data?.message || 'Ada kesalahan dalam sistem',
             });
         } finally {
             setSubmitting(false);

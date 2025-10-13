@@ -100,9 +100,6 @@ function CreateLPB() {
                 qty: details.map(d => d.qty || 0),
             }
 
-            console.log("Payload dikirim:", payload)
-            console.log("Payload dikirim:", JSON.stringify(payload, null, 2))
-
             const res = await api.post(`laporanPenerimaanBarang-create/${decryptedId}`, payload)
 
             Swal.fire({
