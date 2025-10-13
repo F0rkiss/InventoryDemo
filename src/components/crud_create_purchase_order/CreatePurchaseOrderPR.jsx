@@ -5,6 +5,7 @@ import api from '../../api/api'
 import Back from '../component/Back'
 import Layout from '../component/Layout'
 import Swal from 'sweetalert2'
+import Loader from '../component/Loader'
 import SelectPaginate from '../component/SelectPaginate'
 import ModalPO from '../component/modal/ModalPurchaseOrder'
 import { DecryptID } from '../../helper/EncryptHelper'
@@ -43,6 +44,7 @@ function CreatePurchaseOrderPR() {
     const [decryptedId, setDecryptedId] = useState('')
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [errors, setErrors] = useState({});
+    const [loading, setLoading] = useState(false)
 
     // Image preview state
     const [isPreviewOpen, setIsPreviewOpen] = useState(false);
@@ -65,6 +67,7 @@ function CreatePurchaseOrderPR() {
     // Fetch details of the source Purchase Request to display them
     const fetchPrDetails = async () => {
         try {
+            setLoading(true);
             const response = await api.get(`purchaseOrder-listPurchaseRequest/detail/${decryptedId}`);
             const data = response.data.data;
             setPrInfo(data); // Set data for the informational display
@@ -72,7 +75,10 @@ function CreatePurchaseOrderPR() {
             console.error("Error fetching PR Details: ", error)
             Swal.fire({ icon:'error', title:'Gagal Memuat Detail PR', text: 'Data Purchase Request tidak dapat ditemukan.' });
         } finally { 
-            setTimeout(() => setContentVisible(true), 50)
+            setTimeout(() => {
+                setLoading(false);
+                setContentVisible(true);
+            }, 50)
          }
     };
 
@@ -188,7 +194,8 @@ function CreatePurchaseOrderPR() {
             <div className='xs:px-0 md:px-4'>
                 <Back goHome={() => navigate('/purchase-order-pr/list-purchase-order-pr')} />
                 
-                <Transition contentVisible={contentVisible}>
+                { loading && <Loader Class="mt-44"/> }
+                    <Transition contentVisible={contentVisible}>
                     {/* --- MOVED INFORMATION DISPLAY FROM DetailPurchaseOrderPR.jsx --- */}
                     {prInfo && (
                         <div className='mb-8'>

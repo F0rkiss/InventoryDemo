@@ -13,6 +13,7 @@ import { useAuth } from '../../auth/AuthContext'
 import PriceFormat from '../../helper/PriceFormatHelper'
 import ImagePreviewModal from '../component/modal/ImagePreviewModal'
 import PaymentMethodSelect from '../component/PaymentMethodSelector'
+import Loader from '../component/Loader'
 
 function UpdatePurchaseOrder() {
     const [items, setItems] = useState({
@@ -44,6 +45,8 @@ function UpdatePurchaseOrder() {
     const navigate = useNavigate()
     const [originalItems, setOriginalItems] = useState(null);
     const [originalDetails, setOriginalDetails] = useState([]);
+
+    const [ loading, setLoading ] = useState(false);
 
     const [isPreviewOpen, setIsPreviewOpen] = useState(false);
     const [selectedImageUrl, setSelectedImageUrl] = useState('');
@@ -94,6 +97,7 @@ function UpdatePurchaseOrder() {
 
     const fetchItem = async () => {
         try {
+            setLoading(true);
             const response = await api.get(`purchaseOrder-detail/${decryptedId}`);
             const data = response.data.data;
             const fetchedItems = {
@@ -115,7 +119,10 @@ function UpdatePurchaseOrder() {
             console.error("Failed to fetch data:", error);
             Swal.fire({ icon: 'error', title: 'Gagal Memuat Data', text: 'Tidak dapat mengambil detail Purchase Order.' });
         } finally { 
-            setTimeout(() => setContentVisible(true), 50)
+            setTimeout(() => {
+                setContentVisible(true);
+                setLoading(false);
+            }, 50)
          }
     };
 
@@ -240,6 +247,7 @@ const handleSubmit = async (e) => {
                 <div className='xs:px-0 md:px-4'>
                     <Back goHome={() => navigate('/purchase-order/list-purchase-order')} />
                     <p className='lg:text-3xl text-2xl font-semibold capitalize my-4'>Update Purchase Order</p>
+                    { loading && <Loader Class="mt-44"/> }
                     <Transition contentVisible={contentVisible}>
                     <div className="p-7 bg-white rounded-lg border border-gray-300 shadow-xl shadow-gray-200">
                         <form onSubmit={handleSubmit} className='space-y-5'>

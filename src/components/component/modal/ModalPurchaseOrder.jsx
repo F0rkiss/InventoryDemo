@@ -170,7 +170,7 @@ const ModalPurchaseOrder = ({ onClose, onSave, open, initialData, apiUrl, existi
     return (
         <MiModal
             onClose={onClose}
-            contentClass="max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+            contentClass="max-w-2xl w-full min-h-[64vh] overflow-y-auto"
             closeModal={false}
         >
             <div className='py-16 px-6'>

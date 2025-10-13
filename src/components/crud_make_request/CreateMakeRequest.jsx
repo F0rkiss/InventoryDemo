@@ -150,7 +150,7 @@ function CreateMakeRequest() {
                     required />
                   </div>
                 </div>
-
+                {console.log(isStockRequest)}
                 {/* DIUBAH: Hanya tampilkan bagian detail jika Type Request sudah dipilih */}
                 {isStockRequest !== null && (
                   <>
@@ -171,8 +171,9 @@ function CreateMakeRequest() {
                                   "
                               >
                                   {/* Image Section */}
+                                  { isStockRequest === true &&
                                   <div className="overflow-hidden rounded-lg bg-gray-50 w-full aspect-[4/3]">
-                                      {isStockRequest && item.selectedBarang?.gambarBarang ? (
+                                      { item.selectedBarang?.gambarBarang ? (
                                           <div className="flex items-center">
                                               <img
                                                   src={`${apiUrl}${item.selectedBarang.gambarBarang}`}
@@ -187,6 +188,7 @@ function CreateMakeRequest() {
                                           </div>
                                       )}
                                   </div>
+                                  }
 
                                   {/* Item Details Section */}
                                   <div className="flex flex-col justify-between flex-grow p-1 md:p-0 md:contents">
@@ -197,6 +199,7 @@ function CreateMakeRequest() {
                                               </div>
                                           ) : (
                                               <div className="font-semibold text-gray-800">
+                                                <span className="font-normal text-sm text-gray-400">Note: </span>
                                                   {item.note_barang}
                                               </div>
                                           )}
@@ -217,7 +220,7 @@ function CreateMakeRequest() {
                                   </div>
 
                                   {/* Buttons Section */}
-                                  <div className="flex items-center gap-2 mt-2 md:mt-0 md:ml-auto">
+                                  <div className="col-start-2 flex items-center justify-center w-full gap-2 mt-2 divide-x-2 md:col-auto md:divide-x-0 md:mt-0 md:justify-self-end md:border-l-2 md:pl-3">
                                       <button type="button" onClick={() => { setInitialDetails(item); setEditIndex(id); setOpenModal(true); }}>
                                           <i className="bx bx-edit text-xl text-cyan-600"></i>
                                       </button>
