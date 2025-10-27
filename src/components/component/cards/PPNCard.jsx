@@ -18,6 +18,7 @@ const PPNCard = forwardRef(({item, deleteItems, goToDetail, goToUpdate, canUpdat
                     <button
                         className="px-3 py-1.5 update-button"
                         onClick={() => goToUpdate(item.id)}
+                        disabled
                     >
                         Update
                     </button>

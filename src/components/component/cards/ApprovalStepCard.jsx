@@ -72,6 +72,12 @@ const ApprovalStepCard = forwardRef(({item, from, goToDetail, canUpdate, canDele
                   {item.jenisTypeRequest}
                 </p>
               </div>
+              <div className="flex justify-between items-start">
+                <span className="text-gray-600">Admin Approval</span>
+                <p className="text-sm font-medium text-gray-800 text-right max-w-[60%] break-words">
+                  {item.isAdminApproved ? "Diperlukan" : "Tidak Diperlukan" }
+                </p>
+              </div>
             </>
           )}
         </div>

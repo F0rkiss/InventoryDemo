@@ -30,6 +30,30 @@ function CreateListLPB() {
   const fetchItems = async () => {
     try {
       setLoading(true);
+      setContentVisible(false);
+      setNextCursor(null); // Reset cursor for new search
+      let endpoint = 'laporanPenerimaanBarang-purchaseOrder'
+      const params = {}
+      if (searchTerm) {
+        params.search = searchTerm
+      }
+
+      const response = await api.get(endpoint, { params });
+      const data = response.data.data;
+      setItems(Array.isArray(data.data) ? data.data : []);
+      setNextCursor(data.next_cursor);
+      setLoading(false);
+      setTimeout(() => setContentVisible(true), 50);
+    } catch (error) {
+      setLoading(false);
+      setItems([]);
+    }
+  };
+
+  const fetchMoreItems = async () => {
+    if (!nextCursor || loading) return;
+    try {
+      setLoading(true);
       let endpoint = 'laporanPenerimaanBarang-purchaseOrder'
       const params = { cursor: nextCursor }
       if (searchTerm) {
@@ -38,36 +62,14 @@ function CreateListLPB() {
 
       const response = await api.get(endpoint, { params });
       const data = response.data.data;
-      setItems(data.data);
-      setNextCursor(data.next_cursor);
-      setLoading(false);
-      setTimeout(() => setContentVisible(true), 50);
-    } catch (error) {
-      setLoading(false);
-    }
-  };
 
-  const fetchMoreItems = async () => {
-    if (!nextCursor || loading) return;
-    try {
-      setLoading(true);
-      const response = await api.get(searchTerm ? `laporanPenerimaanBarang-purchaseOrder/${searchTerm}` : 'laporanPenerimaanBarang-purchaseOrder', {
-        params: {
-          cursor: nextCursor,
-        },
+      setItems((prevItems) => {
+        const existingIds = new Set(prevItems.map(item => item.id));
+        const newItems = (data.data || []).filter(item => !existingIds.has(item.id));
+        return [...prevItems, ...newItems];
       });
-      const data = response.data.data;
-
-        setItems(
-          (prevItems) => {
-          const existingIds = new Set(prevItems.map(item => item.id));
-          const newItems = data.data.filter(item => !existingIds.has(item.id));
-          return [...prevItems, ...newItems];
-        }
-      );
       setNextCursor(data.next_cursor);
       setLoading(false);
-      setTimeout(() => setContentVisible(true), 50);
     } catch (error) {
       setLoading(false);
     }
@@ -106,24 +108,26 @@ function CreateListLPB() {
         </div>
 
         <Transition contentVisible={contentVisible}>
-          <ScrollPagination
-            fetchMoreItems={fetchMoreItems}
-            loading={loading}
-            nextCursor={nextCursor}
-          >
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {items.map((item) => (
-                <LPBCards 
-                key={item.id} 
-                item={item} 
-                isList={false} 
-                goToCreate={goToCreate}
-                />
-              ))}
-            </div>
-          </ScrollPagination>
-
-          {items.length <= 0 && !loading && <DataEmpty />}
+          {items.length > 0 ? (
+            <ScrollPagination
+              fetchMoreItems={fetchMoreItems}
+              loading={loading}
+              nextCursor={nextCursor}
+            >
+              <div className="gap-4">
+                {items.map((item) => (
+                  <LPBCards 
+                  key={item.id} 
+                  item={item} 
+                  isList={false} 
+                  goToCreate={goToCreate}
+                  />
+                ))}
+              </div>
+            </ScrollPagination>
+          ) : (
+            !loading && <DataEmpty />
+          )}
         </Transition>
 
         {loading && <Loader Class="mt-44" />}

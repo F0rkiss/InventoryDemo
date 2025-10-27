@@ -150,25 +150,27 @@ const fetchMoreItems = async () => {
         </div>
 
         <Transition contentVisible={contentVisible}>
-          <ScrollPagination
-            fetchMoreItems={fetchMoreItems}
-            loading={loading}
-            nextCursor={nextCursor}
-          >
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {items.map((item) => (
-                <LPBCards 
-                key={item.id} 
-                item={item} 
-                isList={true} 
-                goToUpdate={goToUpdate}
-                goToDetail={goToDetail}
-                />
-              ))}
-            </div>
-          </ScrollPagination>
-
-          {items.length <= 0 && !loading && <DataEmpty />}
+          {items.length > 0 ? (
+            <ScrollPagination
+              fetchMoreItems={fetchMoreItems}
+              loading={loading}
+              nextCursor={nextCursor}
+            >
+              <div className=" gap-4">
+                {items.map((item) => (
+                  <LPBCards 
+                  key={item.id} 
+                  item={item} 
+                  isList={true} 
+                  goToUpdate={goToUpdate}
+                  goToDetail={goToDetail}
+                  />
+                ))}
+              </div>
+            </ScrollPagination>
+          ) : (
+            !loading && <DataEmpty />
+          )}
         </Transition>
 
         {loading && <Loader Class="mt-44" />}

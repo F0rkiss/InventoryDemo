@@ -94,7 +94,7 @@ th {
 }
 
 .update-button {
-  background-color: #1BB8AB; /* bg-cyan-50 */
+  background-color: #3B82F6; /* bg-cyan-50 */
   color: white; /* text-cyan-600 */
   font-weight: 500; /* font-medium */
   border-radius: 0.5rem; /* rounded-md */
@@ -105,7 +105,7 @@ th {
 }
 
 .update-button:hover {
-  background-color: #2fa69c; /* hover:bg-cyan-100 */
+  background-color: #2563EB; /* hover:bg-cyan-100 */
 }
 
 .delete-button {
@@ -116,6 +116,7 @@ th {
   transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter; /* transition-colors */
   transition-duration: 200ms; /* duration-200 */
   font-size: 0.875rem; /* text-sm */
+  border: 1.5px solid #e19797; 
 }
 
 .delete-button:hover {
@@ -156,3 +157,20 @@ th {
   /* Diubah dari hover:bg-cyan-100 ke hover:bg-green-100 */
   background-color: #befdd4; 
 }
+
+.DetailButton {
+  background-color: #f3f4f6; /* sedikit lebih terang dari #dedbdb (bg-gray-100) */
+  color: #1f2937; /* text-gray-800 */
+  font-weight: 500;
+  border-radius: 0.5rem;
+  border: 1.5px solid #d1d5db; /* border-gray-300 */
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+}
+
+.DetailButton:hover {
+  background-color: #e5e7eb; /* hover:bg-gray-200 */
+  border-color: #9ca3af; /* hover:border-gray-400 */
+}
+

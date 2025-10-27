@@ -14,11 +14,14 @@ function UpdateTypeRequest() {
     const [items, setItems] = useState({
         name: '',
         jenis: '',
-        description: ''
+        description: '',
+        is_stok: ''
     })
     const [decryptedId, setDecryptedId] = useState('')
     const [disabled, setDisabled] = useState(false)
     const [contentVisible, setContentVisible] = useState(false)
+    const [originalItems, setOriginalItems] = useState(null)
+
     const navigate = useNavigate()
     const { id } = useParams()
 
@@ -40,46 +43,65 @@ function UpdateTypeRequest() {
         try {
             const response = await api.get(`inventTypeRequest-detail/${decryptedId}`)
             const data = response.data.data;
-            setItems({
+            const formatted = {
                 name: data.name,
                 jenis: data.jenis,
-                description: data.description
-            })
+                description: data.description,
+                is_stok: data.is_stok
+            }
+            setItems(formatted)
+            setOriginalItems(formatted)
         } catch (error) {
-
+            // handle error
         } finally {
             setTimeout(() => setContentVisible(true), 50)
         }
     }
+    
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        try {
-            if (disabled) {
-                return
-            }
-            setDisabled(true)
-            const response = await api.put(`inventTypeRequest-update/${decryptedId}`, {
-                name: items.name,
-                jenis: items.jenis,
-                description: items.description
+        if (disabled) return;
+    
+        const isChanged = JSON.stringify(items) !== JSON.stringify(originalItems)
+        if (!isChanged) {
+            Swal.fire({
+                icon: 'info',
+                title: 'Tidak ada perubahan',
+                text: 'Data masih sama seperti sebelumnya',
+                timer: 1500,
+                showConfirmButton: false
             })
             navigate('/type-request/list-type-request')
+            return
+        }
+    
+        try {
+            setDisabled(true)
+            await api.put(`inventTypeRequest-update/${decryptedId}`, items)
+            Swal.fire({
+                title: 'Type request berhasil diubah!',
+                icon: 'success',
+                timer: 1500,
+                showConfirmButton: false,
+            })
         } catch (error) {
             Swal.fire({
-                icon:'error',
-                title:'Tidak dapat mengubah tipe request',
-                text:'Ada Kesalahan Dalam Sistem'
+                icon: 'error',
+                title: 'Tidak dapat mengubah tipe request',
+                text: 'Ada Kesalahan Dalam Sistem'
             })
         } finally {
             setDisabled(false)
         }
     }
+    
     const resetValue = () => {
         setItems({
             name: '',
             jenis: '',
-            description: ''
+            description: '',
+            is_stok: ''
         })
     }
     return (
@@ -129,6 +151,22 @@ function UpdateTypeRequest() {
                                     placeholder='Deskripsi'
                                     required
                                 />
+                                </div>
+                            </div>
+                            <div className="mb-4">
+                            <label className='font-semibold'>Diambil Dari Stok</label>
+                                <div className='bg-white p-2 rounded-md border border-gray-300 border mt-2'>
+                                    <select
+                                    value={items.is_stok}
+                                    onChange={e => setItems({ ...items, is_stok: e.target.value })}
+                                    className="w-full p-2 border rounded appearance-none placeholder:text-gray-400 placeholder:font-inter placeholder:font-light"
+                                    required
+                                    >
+                                    <option value="" disabled>Pilih status stok</option>
+                                    <option value="ya">Iya</option>
+                                    <option value="tidak">Tidak</option>
+                                    <option value="other">Other</option>
+                                    </select>
                                 </div>
                             </div>
                             <div className="flex justify-center mt-6">

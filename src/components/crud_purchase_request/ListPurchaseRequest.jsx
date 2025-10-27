@@ -126,7 +126,7 @@ function PurchaseRequestList() {
     navigate(`/purchase-request/detail-purchase-request/${encryptingID}`)
   }
 
-  const goToPR = async (id) => {
+  const goToUpdate = async (id) => {
     const encryptingID = await encrypting(id)
     navigate(`/purchase-request/update-purchase-request/${encryptingID}`)
   }
@@ -154,7 +154,7 @@ function PurchaseRequestList() {
         </div>
 
         <Transition contentVisible={contentVisible}>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 items-start">
+          <div className="m-2 gap-4 items-start">
             <ScrollPagination
               rootSelector=".page-content"
               fetchMoreItems={fetchMoreItems}
@@ -165,7 +165,7 @@ function PurchaseRequestList() {
                 <PurchaseRequestCards
                   key={item.id}
                   item={item}
-                  goToPR={goToPR}
+                  goToUpdate={goToUpdate}
                   goToDetail={goToDetail}
                   isList={true}
                 />

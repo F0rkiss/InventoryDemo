@@ -156,11 +156,12 @@ function DetailPurchaseRequest() {
                                 <p className="text-lg lg:text-xl text-gray-400 font-semibold">Detail Purchase Request</p>
                                 <div className="text-sm text-gray-500">{detailPR.length} barang</div>
                             </div>
-
+                            <InfoRow label="Tanggal" value={item.tanggal} />
+                            <InfoRow label="Note" value={item.note} />
                             {detailPR.length === 0 ? (
-                                <p className="text-gray-400 italic text-center py-4">Belum ada barang dipilih</p>
+                                <p className="text-gray-400 italic text-center py-4 pt-4">Belum ada barang dipilih</p>
                             ) : (
-                                <div className='overflow-x-auto'>
+                                <div className='overflow-x-auto pt-4'>
                                     <table className="w-full text-sm text-left min-w-[600px]">
                                         <thead>
                                             <tr className="bg-gray-100">
@@ -200,13 +201,26 @@ function DetailPurchaseRequest() {
                                     </table>
                                 </div>
                             )}
-
-                            {item.can_be_deleted && (
-                                <div className='flex justify-end mt-5'>
-                                    <button onClick={cancelOrder} className='bg-red-500 hover:bg-red-600 transition-colors duration-200 max-w-xs py-2 rounded-md text-white font-medium'>
+                            {item.can_be_deleted ? (
+                                <>
+                                    <div className='flex justify-end mt-5'>
+                                    <button
+                                        onClick={cancelOrder}
+                                        className='delete-button transition-colors duration-200 max-w-xs py-2 rounded-md text-white font-medium'
+                                    >
                                         Delete Order
                                     </button>
-                                </div>
+                                    </div>
+
+                                    {/* <button
+                                        className='px-3 py-1.5 update-button text-sm sm:text-base'
+                                        onClick={() => goToPR(item.id)}
+                                    >
+                                        Update
+                                    </button> */}
+                                </>
+                                ) : (
+                                <></>
                             )}
                         </div>
                     </Transition>

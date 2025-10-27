@@ -32,26 +32,26 @@ function UpdateStatus() {
     if (decryptedId) fetchItems()
   }, [decryptedId])
 
-//   const fetchItems = async () => {
-//     try {
-//       const response = await api.get(`inventStatus-detail/${decryptedId}`)
-//       const data = response.data.data
-//       const fetched = {
-//         nilai: data?.nilai_ppn || '',
-//       }
-//       setItems(fetched)
-//       setOriginalItems(fetched)
-//       setIsUnchanged(true)
-//     } catch (err) {
-//       Swal.fire({
-//         icon: 'error',
-//         title: 'Gagal memuat data',
-//         text: 'Silakan coba lagi.',
-//       })
-//     } finally {
-//         setTimeout(() => setContentVisible(true), 50)
-//     }
-//   }
+  const fetchItems = async () => {
+    try {
+      const response = await api.get(`ppn/${decryptedId}`)
+      const data = response.data.data
+      const fetched = {
+        nilai: data?.nilai_ppn || '',
+      }
+      setItems(fetched)
+      setOriginalItems(fetched)
+      setIsUnchanged(true)
+    } catch (err) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Gagal memuat data',
+        text: 'Silakan coba lagi.',
+      })
+    } finally {
+        setTimeout(() => setContentVisible(true), 50)
+    }
+  }
 
   // Disable Update until there is a change
   useEffect(() => {
