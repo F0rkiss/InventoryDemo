@@ -28,12 +28,24 @@ const NotifCards = forwardRef(({ item, goToPage }, ref) => {
                 <p className="text-sm text-gray-600 mb-1">{item.message_approval}</p>
 
                 <div className="flex justify-between items-center">
-                    <p className="text-xs text-gray-400">
-                        {item.should_approve ? 'Perlu approval' : 'Tidak perlu approval'}
-                    </p>
+                    <div>
+                        <p className="text-xs text-gray-400">
+                            {item.should_approve ? 'Perlu approval' : 'Tidak perlu approval'}
+                        </p>
+                        <span
+                        className={`px-2 py-1 rounded-full font-semibold ${
+                            item.jenis_request === 'LPB'
+                            ? 'bg-blue-500 bg-opacity-30 text-blue-700'
+                            : item.jenis_request === 'MR'
+                            ? 'bg-green-500 bg-opacity-30 text-green-700'
+                            : 'bg-gray-400 bg-opacity-30 text-gray-700'
+                        }`}
+                        >
+                        {item.jenis_request}
+                        </span>
+                    </div>
                     <p className="text-xs text-gray-400">
                         {item.kode}
-                        <span className="">Type : {item.jenis_request}</span>
                     </p>
                 </div>
             </div>

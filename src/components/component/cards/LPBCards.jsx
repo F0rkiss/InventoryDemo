@@ -209,7 +209,8 @@ const LPBCards = forwardRef(({ item, goToUpdate, goToDetail, isList, goToCreate,
                     onClick={() => goToDetail(item.id)}
                     title="View Details"
                 >
-                    <h3>Detail</h3>
+                    <h3>Lihat Detail</h3>
+                    <i className="bx bx-chevron-right text-lg"></i>
                 </button>
                 </>
             ) : (
