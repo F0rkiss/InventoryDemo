@@ -58,7 +58,7 @@ const Notifications = () => {
               <NotifCards 
                 key={item.id} 
                 item={item} 
-                goTo={() => goTo(item)} 
+                goToPage={() => goTo(item)} 
               />
             ))}
           </div>

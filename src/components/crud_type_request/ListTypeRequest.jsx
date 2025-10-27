@@ -122,7 +122,7 @@ import useMenuAccess from '../../hooks/useMenuAccess'
     const goToDetail = async (id) => {
       const encryptingID = await encrypting(id)
       navigate(`/type-request/detail-type-request/${encryptingID}`)
-    } 
+    }     
 
     return (
       <Layout title={'List Type Request'}>

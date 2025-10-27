@@ -30,6 +30,10 @@ function UpdatePurchaseRequest() {
     const [initialModalData, setInitialModalData] = useState({ selectedBarang: null, qty: '' });
     const [isPreviewOpen, setIsPreviewOpen] = useState(false);
     const [selectedImageUrl, setSelectedImageUrl] = useState('');
+    const [errors, setErrors] = useState({});
+    const [originalItem, setOriginalItem] = useState({});
+    const [originalSelectedItems, setOriginalSelectedItems] = useState([]);
+
 
     const { id } = useParams();
     const { role } = useAuth();
@@ -54,20 +58,14 @@ function UpdatePurchaseRequest() {
         const { data } = await api.get(`/purchaseRequest-detail/${decryptedId}`);
         setItem(data.data);
         setDetailPR(data.data.details || []);
+        setDetailMR(data.data.details || []);
         setPrDetailQty(data.data.qty || []);
 
-        if (data.data.make_request?.id) {
-            const makeRequestId = data.data.make_request.id;
-            const url = role === "admin"
-            ? `/inventMakeRequest-admin/detail/${makeRequestId}`
-            : `/inventMakeRequest-detail/${makeRequestId}`;
+        setItem(data.data);
+        setOriginalItem(data.data);
 
-            const makeRequestResponse = await api.get(url);
-            const mrData = makeRequestResponse.data.data.makeRequest.MR;
-            const details = makeRequestResponse.data.data.makeRequest.detailsMR || [];
-            setMakeRequestData(mrData);
-            setDetailMR(details);
-        }
+        setSelectedItems(convertedItems);
+        setOriginalSelectedItems(convertedItems);
 
         const qtyDataMap = new Map();
         (data.data.qty || []).forEach(q => qtyDataMap.set(String(q.barang_id), q));
@@ -85,19 +83,19 @@ function UpdatePurchaseRequest() {
         }
     };
 
-    const qtyMap = useMemo(() => {
-        const map = new Map();
-        (prDetailQty || []).forEach(q => map.set(String(q.barang_id), q));
-        return map;
-    }, [prDetailQty]);
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setItem((prev) => ({ ...prev, [name]: value }));
+        };
 
-    const getQty = (prRow, type = 'requested_qty') => {
-        if (!prRow) return '-';
-        const barangId = prRow.invent_barangs_id ?? prRow.barangs?.id;
-        if (!barangId) return '-';
-        const found = qtyMap.get(String(barangId));
-        return found?.[type] ?? '-';
-    };
+        const validateForm = () => {
+            const newErrors = {};
+            if (!item.tanggal) newErrors.tanggal = 'Tanggal wajib diisi';
+            if (!item.note || item.note.trim() === '') newErrors.note = 'Note wajib diisi';
+        
+            setErrors(newErrors);
+            return Object.keys(newErrors).length === 0;
+        };
 
     const handleOpenModal = (item = null, index = null) => {
         if (item && index !== null) {
@@ -137,84 +135,54 @@ function UpdatePurchaseRequest() {
         setIsPreviewOpen(true);
     };
 
-    // === Validation Functions ===
-    const validateItemCount = () => {
-        const maxItems = detailMR.length;
-        if (selectedItems.length !== maxItems) {
-            Swal.fire({
-                icon: 'warning',
-                title: 'Jumlah Detail Barang Tidak Sesuai',
-                text: `Jumlah detail barang harus sesuai dengan make request. Saat ini: ${selectedItems.length} dari ${maxItems} barang yang diperlukan.`,
-            });
-            return false;
-        }
-        return true;
-    };
-
-    const validateQuantity = () => {
-        // Create a map of make request details for quantity validation
-        const mrDetailsMap = new Map();
-        detailMR.forEach(detail => {
-            if (detail.invent_barang_id) {
-                mrDetailsMap.set(String(detail.invent_barang_id), detail.qty);
-            }
-        });
-
-        // Check each selected item's quantity against make request
-        for (const selectedItem of selectedItems) {
-            const barangId = selectedItem.selectedBarang?.id;
-            if (barangId) {
-                const mrQty = mrDetailsMap.get(String(barangId));
-                if (mrQty && selectedItem.qty > mrQty) {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Jumlah Quantity Tidak Sesuai',
-                        text: `Quantity untuk barang "${selectedItem.selectedBarang.name}" (${selectedItem.qty}) melebihi permintaan make request (${mrQty}).`,
-                    });
-                    return false;
-                }
-            }
-        }
-        return true;
-    };
 
     const handleUpdatePurchaseRequest = async () => {
-        if (selectedItems.length === 0) {
-        Swal.fire({ icon: 'warning', title: 'Tidak ada barang dipilih', text: 'Silakan pilih minimal satu barang.' });
-        return;
-        }
-
-        // Validate item count
-        if (!validateItemCount()) {
+        if (!validateForm()) return;
+    
+        const isItemChanged = JSON.stringify(item) !== JSON.stringify(originalItem);
+        const isSelectedChanged = JSON.stringify(selectedItems) !== JSON.stringify(originalSelectedItems);
+    
+        if (!isItemChanged && !isSelectedChanged) {
+            Swal.fire({
+                icon: 'info',
+                title: 'Tidak ada perubahan',
+                text: 'Data masih sama seperti sebelumnya',
+                timer: 1500,
+                showConfirmButton: false
+            });
+            setTimeout(() => navigate('/purchase-request/list-purchase-request'), 1000);
             return;
         }
-
-        // Validate quantity
-        if (!validateQuantity()) {
-            return;
-        }
-
+    
         try {
-        setSubmitting(true);
-        const barangIds = selectedItems.map(item => item.selectedBarang?.id).filter(Boolean);
-        const qty = selectedItems.map(item => item.qty);
-
-        await api.put(`/purchaseRequest-update/${decryptedId}`, {
-            invent_make_request_id: makeRequestData?.id,
-            kode: item.kode,
-            note: 'Latest Update Purchase Request',
-            tanggal: new Date().toISOString().split('T')[0],
-            barangIds,
-            qty,
-        });
-
-        Swal.fire({ title: 'Purchase Request berhasil diupdate!', icon: 'success', timer: 2000, showConfirmButton: false });
-        setTimeout(() => navigate('/purchase-request/list-purchase-request'), 1200);
+            setSubmitting(true);
+            const barangIds = selectedItems.map(item => item.selectedBarang?.id).filter(Boolean);
+            const qty = selectedItems.map(item => item.qty);
+    
+            await api.put(`/purchaseRequest-update/${decryptedId}`, {
+                invent_make_request_id: item.make_request?.id,
+                note: item.note,
+                tanggal: item.tanggal,
+            });
+    
+            Swal.fire({
+                title: 'Purchase Request berhasil diupdate!',
+                icon: 'success',
+                timer: 2000,
+                showConfirmButton: false
+            });
+            setTimeout(() => navigate('/purchase-request/list-purchase-request'), 1200);
         } catch (error) {
-        console.error('Error updating purchase request:', error);
-        Swal.fire({ icon: 'error', title: 'Gagal mengupdate Purchase Request', text: error.response?.data?.msg || 'Ada kesalahan dalam sistem' });
-        } finally { setSubmitting(false); }
+            Swal.fire({
+                icon: 'error',
+                title: 'Gagal mengupdate Purchase Request',
+                text: error.response?.data?.msg || 'Ada kesalahan dalam sistem'
+            });
+        } finally {
+            setSubmitting(false);
+        }
     };
+    
 
     return (
         <Layout title="Update Purchase Request">
@@ -227,7 +195,7 @@ function UpdatePurchaseRequest() {
         
                 </div>
                 <p className="text-xl sm:text-2xl lg:text-3xl font-semibold capitalize">
-                    Detail Purchase Request
+                    Update Purchase Request
                 </p>
 
                 <div className="flex flex-col lg:flex-row gap-4 mt-3">
@@ -266,9 +234,11 @@ function UpdatePurchaseRequest() {
                 {/* MR DETAIL */}
                 <div className="bg-white border rounded-md p-4 sm:p-6 mt-6 overflow-x-auto">
                 <p className="font-semibold text-gray-400 mb-4 text-lg sm:text-xl">Make Request Details</p>
+                
                 {detailMR.length === 0 ? (
                     <p className="text-gray-400 italic">No detail data</p>
                 ) : (
+                    <div className='overflow-x-auto'>
                     <table className="w-full text-sm sm:text-base text-left">
                     <thead>
                         <tr className="bg-gray-100">
@@ -281,96 +251,84 @@ function UpdatePurchaseRequest() {
                         {detailMR.map((d, i) => (
                         <tr key={d.id} className={i % 2 === 0 ? 'bg-gray-50' : 'bg-white'}>
                             <td className="px-2 sm:px-4 py-2 rounded-l-md">{i + 1}</td>
-                            <td className="px-2 sm:px-4 py-2">{d.note_barang}</td>
+                            <div className="flex items-center gap-3 px-4 py-4 rounded-l-md">
+                                {d?.barangs.image && (
+                                    <img
+                                    src={`${apiUrl}${d?.barangs.image}`}
+                                    // alt={name}
+                                    className="max-w-[10rem] object-cover rounded shadow cursor-pointer"
+                                    onClick={() =>
+                                        handleImageClick(`${apiUrl}${d?.barangs.image}`)
+                                    }
+                                    />
+                                    )}
+                                <div>
+                                    <p className="font-medium text-gray-900">
+                                        {d?.barangs.name}
+                                    </p>
+                                    <p className="text-xs text-gray-500">
+                                        Kode: {d?.barangs.kode_barang}
+                                    </p>
+                                    <p className="text-xs text-gray-500">
+                                        Gudang: {d?.barangs.kode_gudang}
+                                    </p>
+                                </div>
+                            </div>
                             <td className="px-2 sm:px-4 py-2 rounded-r-md">{d.qty}</td>
                         </tr>
                         ))}
                     </tbody>
                     </table>
+                    </div>
                 )}
                 </div>
 
                 {/* PR DETAIL */}
-                <div className="bg-white border rounded-md p-4 sm:p-6 mt-6">
-                <div className="flex justify-between items-center mb-4">
-                    <p className="text-lg sm:text-xl text-gray-400 font-semibold">Detail Purchase Request</p>
-                    <div className="text-sm sm:text-base text-gray-500">
-                        {selectedItems.length} dari {detailMR.length} barang
-                        {selectedItems.length === detailMR.length && (
-                            <span className="ml-2 text-green-600 font-medium">✓ Lengkap</span>
-                        )}
-                    </div>
-                </div>
+                <div className="p-6 mt-4 bg-white shadow-sm rounded-lg border">
+                            <form onSubmit={handleUpdatePurchaseRequest} className='space-y-5'>
 
-                {selectedItems.length === 0 ? (
-                    <p className="text-gray-400 italic text-center py-4">Belum ada barang dipilih</p>
-                ) : (
-                    <div className="overflow-x-auto max-h-[300px] sm:max-h-[400px]">
-                    <table className="w-full text-sm sm:text-base text-left">
-                        <thead>
-                        <tr className="bg-gray-100">
-                            <th className="px-2 sm:px-3 py-1 rounded-l-md">No</th>
-                            <th className="px-2 sm:px-3 py-1">Barang</th>
-                            <th className="px-2 sm:px-3 py-1">Jumlah Diminta</th>
-                            <th className="px-2 sm:px-3 py-1 rounded-r-md">Aksi</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {selectedItems.map((item, i) => (
-                            <tr key={i} className={i % 2 === 0 ? 'bg-gray-50' : 'bg-white'}>
-                            <td className="px-2 sm:px-4 py-2 rounded-l-md">{i + 1}</td>
-                            <td className="px-2 sm:px-4 py-2">
-                                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3">
-                                {item.selectedBarang?.image && (
-                                    <img
-                                    src={`${apiUrl}${item.selectedBarang.image}`}
-                                    alt={item.selectedBarang.name}
-                                    className="max-w-[8rem] sm:max-w-[10rem] object-cover rounded shadow cursor-pointer"
-                                    onClick={() => handleImageClick(`${apiUrl}${item.selectedBarang.image}`)}
+                            <div className="mb-4">
+                                    <div className="flex justify-between items-center">
+                                        <label className='font-semibold'>Tanggal</label>
+                                        {errors.tanggal && <span className="text-red-500 text-sm">{errors.tanggal}</span>}
+                                    </div>
+                                    <div className={`bg-white p-2 rounded-md border mt-2 ${errors.tanggal ? 'border-red-500' : 'border-gray-300'}`}>
+                                    <input 
+                                        type="date" 
+                                        name="tanggal" 
+                                        value={item.tanggal || ''} 
+                                        onChange={handleChange}
+                                        className="w-full p-2 placeholder:text-gray-400"
+                                        placeholder="Tanggal"
                                     />
-                                )}
-                                <div>
-                                    <p className="font-medium text-gray-900">{item.selectedBarang?.name}</p>
-                                    <p className="text-xs sm:text-sm text-gray-500">{item.selectedBarang?.kode_barang}</p>
-                                </div>
-                                </div>
-                            </td>
-                            <td className="px-2 sm:px-4 py-2">{item.qty}</td>
-                            <td className="px-2 sm:px-4 py-2 rounded-r-md">
-                                <div className="flex gap-2">
-                                <button onClick={() => handleOpenModal(item, i)} className="text-cyan-600 hover:text-cyan-700" title="Edit">
-                                    <i className="bx bx-edit text-lg"></i>
-                                </button>
-                                <button onClick={() => handleRemoveItem(i)} className="text-red-500 hover:text-red-600" title="Hapus">
-                                    <i className="bx bx-trash text-lg"></i>
-                                </button>
-                                </div>
-                            </td>
-                            </tr>
-                        ))}
-                        </tbody>
-                    </table>
-                    </div>
-                )}
 
-                {/* Add Item Button */}
-                <div className="flex mt-5">
-                    <button
-                    type="button"
-                    className="w-full rounded-lg py-2 px-4 flex items-center justify-center font-medium bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors duration-200"
-                    onClick={() => handleOpenModal()}
-                    >
-                    <i className='bx bx-plus mr-2 font-semibold text-base'></i>
-                    <span>{ selectedItems.length === 0 ? 'Tambah detail' : 'Tambah detail lain'}</span>
-                    </button>
-                </div>
-                </div>
+                                    </div>
+                                </div>
+                                <div className="mb-4">
+                                    <div className="flex justify-between items-center">
+                                        <label className='font-semibold'>note</label>
+                                        {errors.note && <span className="text-red-500 text-sm">{errors.note}</span>}
+                                    </div>
+                                    <div className={`bg-white p-2 rounded-md border mt-2 ${errors.keterangan ? 'border-red-500' : 'border-gray-300'}`}>
+                                    <textarea
+                                        name="note" 
+                                        value={item.note || ''} 
+                                        onChange={handleChange}
+                                        className="w-full min-h-fit p-2 placeholder:text-gray-400"
+                                        maxLength={225}
+                                        placeholder="Note"
+                                        rows="3"
+                                    />
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
 
                 {/* Action Buttons */}
                 <div className="flex justify-end mt-6 gap-3">
                 <button
                     onClick={handleUpdatePurchaseRequest}
-                    disabled={submitting || selectedItems.length === 0}
+                    disabled={submitting}
                     className="bg-green-500 hover:bg-green-600 disabled:bg-gray-400 text-white px-6 py-2 rounded-md font-medium"
                 >
                     {submitting ? 'Updating...' : 'Update Purchase Request'}

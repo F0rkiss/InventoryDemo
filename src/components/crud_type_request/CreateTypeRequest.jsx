@@ -5,6 +5,7 @@ import api from '../../api/api'
 import Back from '../component/Back'
 import Layout from '../component/Layout'
 import Swal from 'sweetalert2'
+import SelectPaginate from '../component/SelectPaginate'
 
 function CreateTypeRequest() {
     const navigate = useNavigate()
@@ -12,7 +13,8 @@ function CreateTypeRequest() {
     const [items, setItems] = useState({
         name: '',
         jenis: '',
-        description: ''
+        description: '',
+        is_stok: ''
     })  
       
     const [disabled, setDisabled] = useState(false)
@@ -27,7 +29,8 @@ function CreateTypeRequest() {
             const response = await api.post('inventTypeRequest-create', {
                 name : items.name,
                 jenis : items.jenis,
-                description: items.description
+                description: items.description,
+                is_stok: items.is_stok
             })
             Swal.fire({
                 title: 'Type request berhasil dibuat!',
@@ -56,7 +59,8 @@ function CreateTypeRequest() {
         setItems({
             name: '',
             jesnis: '',
-            description: ''
+            description: '',
+            is_stok: ''
         })
     }
 
@@ -75,7 +79,7 @@ function CreateTypeRequest() {
                             value={items.name} 
                             onChange={e => setItems({ ...items, name: e.target.value })}
                             className="w-full p-2 border rounded placeholder:text-gray-400 placeholder:font-inter placeholder:font-light "
-                            placeholder='Nama Tipe Request'
+                            placeholder='Nama Type Request'
                             required
                         />
                         </div>
@@ -109,6 +113,22 @@ function CreateTypeRequest() {
                         />
                         </div>
                         {/* <p className='text-xs text-red-500 mt-1 ms-1'>Kode Hanya Boleh 2 Karakter dan Tidak Boleh Nomor</p> */}
+                    </div>
+                    <div className="mb-4">
+                    <label className='font-semibold'>Diambil Dari Stok</label>
+                        <div className='bg-white p-2 rounded-md border border-gray-300 border mt-2'>
+                            <select
+                            value={items.is_stok}
+                            onChange={e => setItems({ ...items, is_stok: e.target.value })}
+                            className="w-full p-2 border rounded appearance-none placeholder:text-gray-400 placeholder:font-inter placeholder:font-light"
+                            required
+                            >
+                            <option value="" disabled>Pilih status stok</option>
+                            <option value="ya">Iya</option>
+                            <option value="tidak">Tidak</option>
+                            <option value="other">Other</option>
+                            </select>
+                        </div>
                     </div>
                     <div className="flex justify-center mt-6">
                         <button disabled={disabled} type='submit' className='w-4/12 py-2 rounded-md bg-teal-400 text-white me-2'>Submit</button>

@@ -69,12 +69,6 @@ function UpdateLPB() {
             const response = await api.get(`/laporanPenerimaanBarang-detail/${decryptedId}`)
             const data = response.data.data
             const PODetails = response.data.data.purchase_order?.details
-            // console.log('=== DEBUG UPDATE LPB ===')
-            // console.log('Full LPB Response:', response.data.data)
-            // console.log('Purchase Order:', response.dat?a.data.purchase_order)
-            // console.log('PODetails:', PODetails)
-            
-            // Populate form fields with existing LPB data
             const fetchedItems = {
                 purchase_order_kode: data.purchase_order?.kode || null,
                 purchase_order_id: data.purchase_order?.id || '',
@@ -86,11 +80,7 @@ function UpdateLPB() {
             // Load existing detail items
             const existingDetails = data.details || []
             
-            // Extract purchase order ID from the LPB data
             const poId = data.purchase_order?.id || data.purchase_order_id
-            // console.log('LPB Data:', data);
-            // console.log('Extracted Purchase Order ID:', poId);
-            // console.log('Purchase Order Object:', data.purchase_order);
             
             setItems(fetchedItems)
             setDetails(existingDetails)
@@ -117,12 +107,27 @@ function UpdateLPB() {
             Swal.fire({ icon:'warning', title:'Form Tidak Lengkap', text:'Harap isi semua field yang wajib diisi.' })
             return
         }
-
+    
+        const isItemsChanged = JSON.stringify(items) !== JSON.stringify(originalItems)
+        const isDetailsChanged = JSON.stringify(details) !== JSON.stringify(originalDetails)
+    
+        if (!isItemsChanged && !isDetailsChanged) {
+            Swal.fire({
+                icon: 'info',
+                title: 'Tidak ada perubahan',
+                text: 'Data masih sama seperti sebelumnya',
+                timer: 1500,
+                showConfirmButton: false
+            })
+            navigate('/lpb/list-lpb')
+            return
+        }
+    
         try {
             if (isSubmitting) return
             setIsSubmitting(true)
             setDisabled(true)
-
+    
             const payload = {
                 invent_purchase_order_id: items.purchase_order_id || items.purchase_order,
                 tanggal: items.tanggal,
@@ -131,12 +136,9 @@ function UpdateLPB() {
                 invent_barangs_id: details.map(d => d.barangs?.id || null),
                 qty: details.map(d => d.qty || 0),
             }
-
-            console.log("Payload dikirim:", payload)
-            console.log("Payload dikirim:", JSON.stringify(payload, null, 2))
-
+    
             const res = await api.put(`laporanPenerimaanBarang-update/${decryptedId}`, payload)
-
+    
             Swal.fire({
                 title:'LPB berhasil diperbarui!',
                 icon:'success', 
@@ -146,24 +148,17 @@ function UpdateLPB() {
             navigate('/lpb/list-lpb')
             
         } catch (err) {
-
-            console.error("===== DEBUG ERROR =====")
-            console.error("Full error object:", err)
-            console.error("Response data:", err?.response?.data)
-            console.error("Response status:", err?.response?.status)
-            console.error("Response headers:", err?.response?.headers)
-
             Swal.fire({ 
                 icon:'error',
                 title:'Gagal Memperbarui LPB',
                 text: err?.response?.data?.msg || 'Kesalahan pada sistem'
             })
-            console.error('Submit error:', err?.response?.data || err)
         } finally {
             setIsSubmitting(false)
             setDisabled(false)
         }
     }
+    
     
     const handleChange = (e) => {
         const { name, value } = e.target

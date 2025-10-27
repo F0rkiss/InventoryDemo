@@ -54,12 +54,12 @@ function UpdateApprovalStep() {
                 user_id: data.user_id || '',
                 invent_type_request_id: data.invent_type_request_id || '',
                 is_upline: data.is_upline === 1 ? 'yes' : 'no',
+                isAdminApproved: data.isAdminApproved === 1 ? 'yes' : 'no',
                 note: data.note || '',
                 // Display values
                 user_name: data.user?.EmpName || '',
                 type_request_name: data.type_request?.name || '',
-                type_request_jenis: data.type_request?.jenis || '',
-                type_request_description: data.type_request?.description || ''
+
             });
         } catch (error) {
             console.error('Error fetching approval step:', error);
@@ -78,6 +78,7 @@ function UpdateApprovalStep() {
                 user_id: parseInt(items.user_id),
                 invent_type_request_id: parseInt(items.invent_type_request_id),
                 is_upline: items.is_upline === 'yes' ? 1 : 0,
+                isAdminApproved: items.isAdminApproved === 'yes' ? 1 : 0,
                 note: items.note
             });
 
@@ -173,36 +174,7 @@ function UpdateApprovalStep() {
 
 
                         </div>
-                        {/* <div className="mb-5">
-                            <label>Jenis Request:</label>
-                            <div className='bg-white p-2 rounded-md border-solid border-gray-300 border'>
-                                <input 
-                                    type="text" 
-                                    name="type_request_jenis" 
-                                    value={items.type_request_jenis} 
-                                    onChange={e => setItems({ ...items, type_request_jenis: e.target.value })}
-                                    maxLength={50}
-                                    placeholder='Jenis Request'
-                                    className="w-full p-2 border rounded placeholder:text-gray-400 placeholder:font-inter placeholder:font-light capitalize"
-                                    required
-                                />
-                            </div>
-                        </div>
-                        <div className="mb-5">
-                            <label>Description:</label>
-                            <div className='bg-white p-2 rounded-md border-solid border-gray-300 border'>
-                                <input 
-                                    type="text" 
-                                    name="type_request_description" 
-                                    value={items.type_request_description} 
-                                    onChange={e => setItems({ ...items, type_request_description: e.target.value })}
-                                    maxLength={50}
-                                    placeholder='Description'
-                                    className="w-full p-2 border rounded placeholder:text-gray-400 placeholder:font-inter placeholder:font-light capitalize"
-                                    required
-                                />
-                            </div>
-                        </div> */}
+
                         <div className="mb-5">
                             <label>Is Upline:</label>
                             <div className=''>
@@ -210,6 +182,22 @@ function UpdateApprovalStep() {
                                     name="is_upline" 
                                     value={items.is_upline} 
                                     onChange={e => setItems({ ...items, is_upline: e.target.value })}
+                                    className="w-full p-2 border rounded placeholder:text-gray-400 placeholder:font-inter placeholder:font-light capitalize bg-white p-2 rounded-md border-solid border-gray-300 border"
+                                    required
+                                >
+                                    <option value="">Select Option</option>
+                                    <option value="yes">Yes</option>
+                                    <option value="no">No</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div className="mb-5">
+                            <label>Is Admin Approved:</label>
+                            <div className=''>
+                                <select 
+                                    name="isAdminApproved" 
+                                    value={items.isAdminApproved} 
+                                    onChange={e => setItems({ ...items, isAdminApproved: e.target.value })}
                                     className="w-full p-2 border rounded placeholder:text-gray-400 placeholder:font-inter placeholder:font-light capitalize bg-white p-2 rounded-md border-solid border-gray-300 border"
                                     required
                                 >

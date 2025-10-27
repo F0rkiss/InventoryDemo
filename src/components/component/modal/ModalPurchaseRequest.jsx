@@ -128,7 +128,7 @@ const ModalPurchaseRequest = ({ onClose, onSave, open, initialData, apiUrl, exis
     const handleSubmit = async(e) => {
         e.preventDefault()
         try {
-            if (!modalData.selectedBarang || !modalData.qty) {
+            if (!modalData.selectedBarang) {
                 Swal.fire({
                     icon: 'warning',
                     title: 'Data belum lengkap',
@@ -266,7 +266,7 @@ const ModalPurchaseRequest = ({ onClose, onSave, open, initialData, apiUrl, exis
                     </div>
 
                     {/* qty Input */}
-                    <div className="w-full max-w-md">
+                    {/* <div className="w-full max-w-md">
                         <label className="block text-sm font-medium text-gray-700 mb-1">Jumlah Pembelian</label>
                         <div className='bg-white p-2 rounded-md border border-gray-300'>
                             <input
@@ -289,12 +289,12 @@ const ModalPurchaseRequest = ({ onClose, onSave, open, initialData, apiUrl, exis
                                 </p>
                             ) : null;
                         })()}
-                    </div>
+                    </div> */}
 
                     <div className='flex flex-col w-full items-center mt-3 gap-2'>
                         <button
                             type="submit"
-                            disabled={!modalData.selectedBarang || !modalData.qty}
+                            disabled={!modalData.selectedBarang}
                             className='bg-green-500 disabled:bg-green-300 text-white w-[90%] sm:w-[50%] h-10 rounded-lg'
                         >
                             Save

@@ -33,7 +33,7 @@ const RoleCards = forwardRef(({item, deleteItems, goToDetail, goToUpdate, restor
             <div className='flex justify-end gap-2 pt-3 mt-3'>
                 {canUpdate && (
                     <button
-                        className="px-3 py-1.5 bg-cyan-50 hover:bg-cyan-100 text-cyan-600 font-medium rounded-md transition-colors duration-200 text-sm"
+                        className="px-3 py-1.5 update-button text-sm"
                         onClick={() => goToUpdate(item.id)}
                     >
                         Update
@@ -42,7 +42,7 @@ const RoleCards = forwardRef(({item, deleteItems, goToDetail, goToUpdate, restor
                 {canDelete && (
                     <button
                         onClick={() => deleteItems(item.id, item.name)}
-                        className="px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 font-medium rounded-md transition-colors duration-200 text-sm"
+                        className="px-3 py-1.5 delete-button text-sm"
                     >
                         Delete
                     </button>

@@ -47,7 +47,6 @@ function DetailApprovalStep() {
                 ) : (
                     <div className="px-4">
                         <Transition contentVisible={contentVisible}>
-                            {/* HEADER */}
                             <div className="flex items-center justify-between mb-4">
                                 <Back goHome={() => navigate('/approval-step/list-approval-step')} />
                             </div>
@@ -55,28 +54,37 @@ function DetailApprovalStep() {
                             <div className="flex flex-col lg:flex-row gap-4 mt-3">
                                 {/* Approval Step Info */}
                                 <div className="bg-white border rounded-md p-6 flex-1 min-h-[200px]">
-                                    <p className="font-semibold text-gray-400 mb-2 text-xl">Approval Step Information</p>
-                                    <p className="text-xl font-bold capitalize">{item.user?.EmpName || '-'}</p>
+                                    <p className="font-semibold text-gray-400 text-xl">Approval Step Information</p>
+                                    <p className="text-xl font-bold capitalize mt-2">{item.user?.EmpName || '-'}</p>
                                     <p className="text-lg mb-4">Step: {item.approval_step || '-'}</p>
 
                                     <div className="space-y-3">
                                         <InfoRow label="Employee Name" value={item.user?.EmpName} />
                                         <InfoRow label="Employee Email" value={item.user?.email} />
                                         <InfoRow label="Employee Code" value={item.user?.EmpCode} />
-                                        <InfoRow label="Phone" value={item.Emp} />
+                                        <InfoRow label="Phone" value={item.user?.EmpPhone} />
+                                        <InfoRow label="Admin Approval" value={item.isAdminApproved ? "Diperlukan" : "Tidak Diperlukan"} />
                                     </div>
                                 </div>
 
                                 {/* Type Request Info */}
                                 <div className="bg-white border rounded-md p-6 flex-1 min-h-[200px]">
-                                    <div className="flex justify-between">
-                                        <p className="font-semibold text-gray-400 mb-2 text-xl">Type Request Information</p>
+                                    <div className="flex items-start justify-between gap-4">
+                                        <div className="flex-1 min-w-0">
+                                            <p className="font-semibold text-gray-400 text-xl truncate">Type Request Information</p>
+                                        </div>
+
                                         {item.type_request?.jenis && (
-                                            <p className="py-2 px-2 rounded-md text-amber-700 bg-amber-200">{item.type_request.jenis}</p>
+                                            <div className="shrink-0 ml-2">
+                                                <span className="inline-flex items-center py-1 px-3 rounded-md text-amber-700 bg-amber-200 text-sm font-medium">
+                                                    {item.type_request.jenis}
+                                                </span>
+                                            </div>
                                         )}
                                     </div>
-                                    <p className="text-lg font-bold">{item.type_request?.name || '-'}</p>
-                                    <p className="text-sm text-gray-500 mb-4">{item.type_request?.description || '-'}</p>
+
+                                    <p className="text-lg font-bold mt-3 truncate max-w-full">{item.type_request?.name || '-'}</p>
+                                    <p className="text-sm text-gray-500 mb-4 mt-1 whitespace-pre-wrap break-words">{item.type_request?.description || '-'}</p>
 
                                     <div className="space-y-3">
                                         <InfoRow label="Jenis Request" value={item.type_request?.jenis} />
@@ -102,9 +110,9 @@ function DetailApprovalStep() {
 // Small Reusable Component
 // ==============================
 const InfoRow = ({ label, value }) => (
-    <div className="flex justify-between">
-        <span className="text-gray-500">{label}</span>
-        <span className="font-medium">{value || '-'}</span>
+    <div className="flex items-start justify-between">
+        <span className="text-gray-500 w-36 shrink-0">{label}</span>
+        <span className="font-medium text-right min-w-0 break-words">{value || '-'}</span>
     </div>
 )
 

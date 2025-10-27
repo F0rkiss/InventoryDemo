@@ -117,6 +117,7 @@ function ListPPN() {
     const goToUpdate = async(id) => {
         const encryptingID = await encrypting(id)
         navigate(`/ppn/update-ppn/${encryptingID}`)
+        
     }
 
     return (

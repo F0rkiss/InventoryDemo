@@ -27,6 +27,8 @@ function CreateApprovalStep() {
     const [disabled, setDisabled] = useState(false)
     const navigate = useNavigate();
     // console.log(data)
+
+    
     
     const handleSubmit = async (e) => {
         e.preventDefault();        
@@ -39,6 +41,7 @@ function CreateApprovalStep() {
                 user_id: parseInt(items.user_id),
                 invent_type_request_id: parseInt(items.invent_type_request_id),
                 is_upline: items.is_upline === 'yes' ? 1 : 0,
+                isAdminApproved: items.isAdminApproved === 'yes' ? 1 : 0,
                 note: items.note
             });
 
@@ -127,8 +130,6 @@ function CreateApprovalStep() {
                                 }
                                 required
                             />
-
-
                         </div>
                         <div className="mb-5">
                             <label>Is Upline:</label>
@@ -137,6 +138,22 @@ function CreateApprovalStep() {
                                     name="is_upline" 
                                     value={items.is_upline} 
                                     onChange={e => setItems({ ...items, is_upline: e.target.value })}
+                                    className="w-full p-2 border rounded placeholder:text-gray-400 placeholder:font-inter placeholder:font-light capitalize bg-white p-2 rounded-md border-solid border-gray-300 border"
+                                    required
+                                >
+                                    <option value="">Select Option</option>
+                                    <option value="yes">Yes</option>
+                                    <option value="no">No</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div className="mb-5">
+                            <label>Is Admin Approved:</label>
+                            <div className=''>
+                                <select 
+                                    name="is_upline" 
+                                    value={items.isAdminApproved} 
+                                    onChange={e => setItems({ ...items, isAdminApproved: e.target.value })}
                                     className="w-full p-2 border rounded placeholder:text-gray-400 placeholder:font-inter placeholder:font-light capitalize bg-white p-2 rounded-md border-solid border-gray-300 border"
                                     required
                                 >

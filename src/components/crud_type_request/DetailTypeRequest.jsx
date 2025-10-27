@@ -11,6 +11,7 @@ import Transition from '../component/Transition';
 import Layout from '../component/Layout';
 import { DecryptID } from '../../helper/EncryptHelper';
 import DateFormat from '../../helper/DateFormatHelper';
+import InfoRow from '../component/infoRow';
 
 function DetailTypeRequest() {
 
@@ -60,12 +61,18 @@ function DetailTypeRequest() {
                     ) : (
                     <Transition contentVisible={contentVisible}>
                         {/* <p>{item.msg}</p> */}
-                    <div className='bg-white rounded shadow-sm overflow-hidden p-6 text-lg mt-8'>
-                        <p className='capitalize'><b>Name: </b><br />{item.name}</p>
-                        <p className='capitalize'><b>Jenis: </b><br />{item.jenis}</p>
-                        <p><b>Description: </b><br />{item.description}</p>
-                        <p><b>Created at: </b><br />{DateFormat(item.created_at)}</p>
-                        <p><b>Last updated: </b><br />{DateFormat(item.updated_at)}</p>
+                        <p className="text-xl sm:text-2xl lg:text-3xl font-semibold capitalize mt-3 ml-2">
+                                Type Request Detail
+                            </p>
+                    <div className='bg-white rounded shadow-sm overflow-hidden p-6 text-lg mt-4'>
+                        <InfoRow label="Nama Type Request" value={item.name} />
+                        <InfoRow label="Jenis Type Request" value={item.jenis} />
+                        <InfoRow label="Deskripsi" value={item.description} />
+                        <div className='capitalize'>
+                        <InfoRow label="Diambil Dari Stok" value={item.is_stok} />
+                        </div>
+                        <InfoRow label="Tanggal Dibuat" value={DateFormat(item.created_at)} />
+                        <InfoRow label="Tanggal diPerbarui Di" value={DateFormat(item.updated_at)} />
                     </div>
                     </Transition>
                     )

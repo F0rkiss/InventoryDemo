@@ -29,6 +29,7 @@ function CreatePurchaseRequest() {
     const [submitting, setSubmitting] = useState(false);
     const [kodeValue, setKodeValue] = useState('');
     const [selectedItems, setSelectedItems] = useState([]);
+    const [errors, setErrors] = useState({});
 
     const [openModal, setOpenModal] = useState(false);
     const [editIndex, setEditIndex] = useState(null);
@@ -58,8 +59,8 @@ function CreatePurchaseRequest() {
         try {
             setLoading(true);
             const res = await api.get(`purchaseRequest-makeRequest/detail/${decryptedId}`);
-            setItem(res.data?.data || res.data); // antisipasi struktur response
-            // console.log('API Response:', res.data);
+            setItem(res.data?.data || res.data);
+            console.log('Fetched tanggal:', res.data?.data?.tanggal);
         } catch (err) {
             console.error('Error fetching items:', err);
         } finally {
@@ -69,75 +70,51 @@ function CreatePurchaseRequest() {
     };
 
     // === Validation Functions ===
-    const validateItemCount = () => {
-        const maxItems = item.details?.length || 0;
-        if (selectedItems.length !== maxItems) {
-            Swal.fire({
-                icon: 'warning',
-                title: 'Jumlah Detail Barang Tidak Sesuai',
-                text: `Jumlah detail barang harus sesuai dengan make request. Saat ini: ${selectedItems.length} dari ${maxItems} barang yang diperlukan.`,
+    const validate = () => {
+        const newErrors = {};
+        if (!item.tanggal) newErrors.tanggal = 'Tanggal wajib diisi.';
+        if (!item.note) newErrors.note = 'Kode Supplier wajib diisi.';
+        
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setItem(prevItem => ({ ...prevItem, [name]: value }));
+        if (errors[name]) {
+            setErrors(prevErrors => {
+                const newErrors = { ...prevErrors };
+                delete newErrors[name];
+                return newErrors;
             });
-            return false;
         }
-        return true;
+        console.log('Updated tanggal:', value);
     };
-
-    const validateQuantity = () => {
-        // Create a map of make request details for quantity validation
-        const mrDetailsMap = new Map();
-        (item.details || []).forEach(detail => {
-            if (detail.invent_barang_id) {
-                mrDetailsMap.set(String(detail.invent_barang_id), detail.qty);
-            }
-        });
-
-        // Check each selected item's quantity against make request
-        for (const selectedItem of selectedItems) {
-            const barangId = selectedItem.selectedBarang?.id;
-            if (barangId) {
-                const mrQty = mrDetailsMap.get(String(barangId));
-                if (mrQty && selectedItem.qty > mrQty) {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Jumlah Quantity Tidak Sesuai',
-                        text: `Quantity untuk barang "${selectedItem.selectedBarang.name}" (${selectedItem.qty}) melebihi permintaan make request (${mrQty}).`,
-                    });
-                    return false;
-                }
-            }
+    
+    const handleSelectChange = (name, value) => {
+        setItem(prevItem => ({ ...prevItem, [name]: value }));
+        if (errors[name]) {
+            setErrors(prevErrors => {
+                const newErrors = { ...prevErrors };
+                delete newErrors[name];
+                return newErrors;
+            });
         }
-        return true;
     };
+    
 
     // === Handlers ===
     const handleCreatePurchaseRequest = async () => {
-        if (selectedItems.length === 0) {
-            return Swal.fire({
-                icon: 'warning',
-                title: 'Tidak ada barang dipilih',
-                text: 'Silakan pilih minimal satu barang untuk purchase request.',
-            });
-        }
-
-        // Validate item count
-        if (!validateItemCount()) {
-            return;
-        }
-
-        // Validate quantity
-        if (!validateQuantity()) {
-            return;
-        }
-
+        console.log('Submitting with tanggal:', item.tanggal);
         try {
             setSubmitting(true);
 
             await api.post(`/purchaseRequest-create/${decryptedId}`, {
                 make_request_id: decryptedId,
-                note: 'Purchase request created from make request',
-                tanggal: new Date().toISOString().split('T')[0],
-                barangIds: selectedItems.map(it => it.selectedBarang?.id).filter(Boolean),
-                qty: selectedItems.map(it => it.qty),
+                note: item.note,
+                tanggal: item.tanggal,
+                
             });
 
             Swal.fire({
@@ -160,10 +137,9 @@ function CreatePurchaseRequest() {
         }
     };
 
-      // ==============================
+        // ==============================
         // Image Preview
         // ==============================
-
         const handleClosePreview = () => {
             setIsPreviewOpen(false);
             setSelectedImageUrl('');
@@ -192,7 +168,7 @@ function CreatePurchaseRequest() {
                         <div className="flex flex-col lg:flex-row gap-4 mt-3">
                             {/* Main Information */}
                             <div className="bg-white border rounded-md p-6 flex-1 min-h-[200px]">
-                                <p className="font-semibold text-gray-400 mb-2 text-xl">Main Information</p>
+                                <p className="font-semibold text-gray-400 mb-2 text-xl">Make Request Information</p>
                                 <p className="text-xl font-bold capitalize">{item.kode}</p>
                                 <p className="text-lg mb-4">{DateFormat(item.tanggal, false)}</p>
 
@@ -200,20 +176,23 @@ function CreatePurchaseRequest() {
                                     <InfoRow label="Employee Name" value={item.user?.EmpName} />
                                     <InfoRow label="Employee Code" value={item.user?.EmpCode} />
                                     <InfoRow label="Employee Email" value={item.user?.email} />
+                                    <InfoRow label="Type Request" value={item.type_request?.name} />
+                                    <InfoRow label="Jenis Type Request" value={item.type_request?.jenis} />
                                 </div>
                             </div>
 
                             {/* Detail */}
-                            <div className="bg-white border rounded-md p-6 flex-1 min-h-[200px]">
-                                <p className="font-semibold text-gray-400 mb-4 text-xl">Detail</p>
+                            <div className="bg-white border rounded-md p-6 flex-1 min-h-[200px] ">
+                                <p className="font-semibold text-gray-400 mb-4 text-xl ">Detail</p>
                                 {item.details?.length === 0 ? (
                                     <p className="text-gray-400 italic">No detail data</p>
                                 ) : (
-                                    <table className="w-full text-sm text-left">
+                                    <div className='overflow-x-auto'>
+                                    <table className="w-full text-sm text-left min-w-[600px] ">
                                         <thead>
-                                            <tr className="bg-gray-100">
+                                            <tr className="bg-gray-100 ">
                                                 <th className="px-3 py-2 rounded-l-md">No</th>
-                                                <th className="px-3 py-1">Note Barang</th>
+                                                <th className="px-3 py-1">Barang</th>
                                                 <th className="px-3 py-1 rounded-r-md">Qty</th>
                                             </tr>
                                         </thead>
@@ -224,104 +203,30 @@ function CreatePurchaseRequest() {
                                                     className={i % 2 === 0 ? 'bg-gray-50' : 'bg-white'}
                                                 >
                                                     <td className="px-4 py-4 rounded-l-md">{i + 1}</td>
-                                                    <td className="px-4 py-4">{d.note_barang}</td>
-                                                    <td className="px-4 py-4 rounded-r-md">{d.qty}</td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                )}
-                            </div>
-                        </div>
-
-                        {/* === Barang Selection === */}
-                        <div className="bg-white border rounded-md p-6 mt-6">
-                            {/* Header */}
-                            <div className="flex justify-between items-center mb-4">
-                                <p className="text-xl text-gray-400 font-semibold">Pilih Barang</p>
-                                <div className="text-sm text-gray-500">
-                                    {selectedItems.length} dari {item.details?.length || 0} barang dipilih
-                                    {selectedItems.length === (item.details?.length || 0) && (
-                                        <span className="ml-2 text-green-600 font-medium">✓ Lengkap</span>
-                                    )}
-                                </div>
-                            </div>
-
-                            {/* Selected Items Table */}
-                            <div className="mb-4">
-                                {selectedItems.length === 0 ? (
-                                    <p className="text-gray-400 italic text-center py-4">
-                                        Belum ada barang dipilih
-                                    </p>
-                                ) : (
-                                    <div className='overflow-x-auto'>
-                                    <table className="w-full text-sm text-left">
-                                        <thead>
-                                            <tr className="bg-gray-100">
-                                                <th className="px-3 py-2 rounded-l-md">No</th>
-                                                <th className="px-3 py-1">Barang</th>
-                                                <th className="px-3 py-1">Jumlah</th>
-                                                <th className="px-3 py-1 rounded-r-md">Aksi</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {selectedItems.map((sItem, i) => (
-                                                <tr
-                                                    key={i}
-                                                    className={i % 2 === 0 ? 'bg-gray-50' : 'bg-white'}
-                                                >
-                                                    <td className="px-4 py-4 rounded-l-md">{i + 1}</td>
-                                                    <td className="px-4 py-4">
-                                                        <div className="flex items-center gap-3">
-                                                            {sItem.selectedBarang?.image && (
-                                                                <img
-                                                                    src={`${apiUrl}${sItem.selectedBarang.image}`}
-                                                                    alt={sItem.selectedBarang.name}
-                                                                    className="max-w-[10rem] object-cover rounded shadow cursor-pointer"
-                                                                    onClick={() => handleImageClick(`${apiUrl}${sItem.selectedBarang.image}`)}
-                                                                />
+                                                    <div className="flex items-center gap-3 px-4 py-4 rounded-l-md">
+                                                        {d?.barang.image && (
+                                                            <img
+                                                            src={`${apiUrl}${d?.barang.image}`}
+                                                            // alt={name}
+                                                            className="max-w-[10rem] object-cover rounded shadow cursor-pointer"
+                                                            onClick={() =>
+                                                                handleImageClick(`${apiUrl}${d?.barang.image}`)
+                                                            }
+                                                            />
                                                             )}
-                                                            <div>
-                                                                <p className="font-medium text-gray-900">
-                                                                    {sItem.selectedBarang?.name}
-                                                                </p>
-                                                                <p className="text-xs text-gray-500">
-                                                                    {sItem.selectedBarang?.kode_barang}
-                                                                </p>
-                                                            </div>
+                                                        <div>
+                                                            <p className="font-medium text-gray-900">
+                                                                {d?.barang?.name}
+                                                            </p>
+                                                            <p className="text-xs text-gray-500">
+                                                                Kode: {d?.barang.kode_barang}
+                                                            </p>
+                                                            <p className="text-xs text-gray-500">
+                                                                Gudang: {d?.barang.kode_gudang}
+                                                            </p>
                                                         </div>
-                                                    </td>
-                                                    <td className="px-4 py-4">{sItem.qty}</td>
-                                                    <td className="px-4 py-4 rounded-r-md">
-                                                        <div className="flex gap-2">
-                                                            {/* Edit Button */}
-                                                            <button
-                                                                onClick={() => {
-                                                                    setEditIndex(i);
-                                                                    setInitialModalData(sItem);
-                                                                    setOpenModal(true);
-                                                                }}
-                                                                className="text-cyan-600 hover:text-cyan-700"
-                                                                title="Edit"
-                                                            >
-                                                                <i className="bx bx-edit text-lg"></i>
-                                                            </button>
-                                                            {/* Delete Button */}
-                                                            <button
-                                                                onClick={() =>
-                                                                    setSelectedItems(
-                                                                        selectedItems.filter(
-                                                                            (_, idx) => idx !== i
-                                                                        )
-                                                                    )
-                                                                }
-                                                                className="text-red-500 hover:text-red-600"
-                                                                title="Hapus"
-                                                            >
-                                                                <i className="bx bx-trash text-lg"></i>
-                                                            </button>
-                                                        </div>
-                                                    </td>
+                                                    </div>
+                                                    <td className="px-4 py-4 rounded-r-md">{d.qty}</td>
                                                 </tr>
                                             ))}
                                         </tbody>
@@ -329,36 +234,54 @@ function CreatePurchaseRequest() {
                                     </div>
                                 )}
                             </div>
-
-                            {/* Add Item Button */}
-                            <div className="flex mt-5">
-                                {selectedItems.length < (item.details?.length || 0) ? (
-                                    <button
-                                        type="button"
-                                        className="w-full rounded-lg py-2 px-4 flex items-center justify-center font-medium bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors duration-200"
-                                        onClick={() => {
-                                            setOpenModal(true);
-                                            setEditIndex(null);
-                                            setInitialModalData({ selectedBarang: null, qty: '' });
-                                        }}
-                                    >
-                                        <i className='bx bx-plus mr-2 font-semibold text-base'></i>
-                                        <span>{ selectedItems.length === 0 ? 'Tambah detail' : 'Tambah detail lain'}</span>
-                                    </button>
-                                ) : (
-                                    <p className="text-sm text-gray-500 italic w-full text-center">
-                                        Maksimal {item.details?.length || 0} barang sesuai detail make request
-                                    </p>
-                                )}
-                            </div>
-
                         </div>
+
+                        <div className="p-6 mt-4 bg-white shadow-sm rounded-lg border">
+                            <form onSubmit={handleCreatePurchaseRequest} className='space-y-5'>
+
+                            <div className="mb-4">
+                                    <div className="flex justify-between items-center">
+                                        <label className='font-semibold'>Tanggal</label>
+                                        {errors.tanggal && <span className="text-red-500 text-sm">{errors.tanggal}</span>}
+                                    </div>
+                                    <div className={`bg-white p-2 rounded-md border mt-2 ${errors.tanggal ? 'border-red-500' : 'border-gray-300'}`}>
+                                    <input 
+                                        type="date" 
+                                        name="tanggal" 
+                                        value={item.tanggal || ''} 
+                                        onChange={handleChange}
+                                        className="w-full p-2 placeholder:text-gray-400"
+                                        placeholder="Tanggal"
+                                    />
+
+                                    </div>
+                                </div>
+                                <div className="mb-4">
+                                    <div className="flex justify-between items-center">
+                                        <label className='font-semibold'>note</label>
+                                        {errors.note && <span className="text-red-500 text-sm">{errors.note}</span>}
+                                    </div>
+                                    <div className={`bg-white p-2 rounded-md border mt-2 ${errors.keterangan ? 'border-red-500' : 'border-gray-300'}`}>
+                                    <textarea
+                                        name="note" 
+                                        value={item.note || ''} 
+                                        onChange={handleChange}
+                                        className="w-full min-h-fit p-2 placeholder:text-gray-400"
+                                        maxLength={225}
+                                        placeholder="Note"
+                                        rows="3"
+                                    />
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        
 
                         {/* === Action Buttons === */}
                         <div className="flex justify-end mt-6 gap-3">
                             <button
                                 onClick={handleCreatePurchaseRequest}
-                                disabled={submitting || selectedItems.length === 0}
+                                disabled={submitting}
                                 className="bg-green-500 hover:bg-green-600 disabled:bg-gray-400 
                                     text-white px-6 py-2 rounded-md font-medium"
                             >

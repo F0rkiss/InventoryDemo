@@ -30,6 +30,7 @@
     "framework7-icons": "^5.0.5",
     "framework7-react": "^8.3.3",
     "jwt-decode": "^4.0.0",
+    "lucide-react": "^0.546.0",
     "prop-types": "^15.8.1",
     "qrcode": "^1.5.4",
     "qrcode.react": "^4.0.1",
