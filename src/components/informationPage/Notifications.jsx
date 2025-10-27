@@ -18,10 +18,15 @@ const Notifications = () => {
             const response = await api.get('notification');
             const data = response.data.data;
 
-            const withReadStatus = data.map((item) => ({
+            const withReadStatus = data
+            .map((item) => ({
                 ...item,
                 isRead: false,
-            }));
+            }))
+            .sort((a, b) => new Date(b.created_at) - new Date(a.created_at)); // Sort newest first
+
+            setItems(withReadStatus);
+
 
             setItems(withReadStatus);
             setNextCursor(response.data.next_cursor);
@@ -41,16 +46,20 @@ const Notifications = () => {
             });
             const data = response.data.data;
 
-            const newItems = data.map((item) => ({
+            const newItems = data
+            .map((item) => ({
                 ...item,
                 isRead: false,
-            }));
+            }))
+            .sort((a, b) => new Date(b.created_at) - new Date(a.created_at)); // Sort newest first
 
             setItems((prevItems) => {
-                const existingIds = new Set(prevItems.map((item) => item.id));
-                const uniqueNew = newItems.filter((item) => !existingIds.has(item.id));
-                return [...prevItems, ...uniqueNew];
+            const existingIds = new Set(prevItems.map((item) => item.id));
+            const uniqueNew = newItems.filter((item) => !existingIds.has(item.id));
+            const combined = [...prevItems, ...uniqueNew];
+            return combined.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)); // Re-sort after merge
             });
+
 
             setNextCursor(response.data.next_cursor);
         } catch (error) {
@@ -151,8 +160,17 @@ const Notifications = () => {
                                                 <p className="text-xs text-gray-400">
                                                     {notif.should_approve ? 'Perlu approval' : 'Tidak perlu approval'}
                                                 </p>
-                                                <p className="text-xs text-gray-400">{notif.jenis_request}</p>
-                                                {/* <p className="text-xs text-gray-400">{notif.kode}</p> */}
+                                                <span
+                                                className={`px-2 py-1 rounded-full font-semibold text-xs ${
+                                                    notif.jenis_request === 'LPB'
+                                                    ? 'bg-blue-500 bg-opacity-30 text-blue-700'
+                                                    : notif.jenis_request === 'MR'
+                                                    ? 'bg-green-500 bg-opacity-30 text-green-700'
+                                                    : 'bg-gray-400 bg-opacity-30 text-gray-700'
+                                                }`}
+                                                >
+                                                {notif.jenis_request}
+                                                </span>
                                             </div>
                                         </div>
                                     </div>

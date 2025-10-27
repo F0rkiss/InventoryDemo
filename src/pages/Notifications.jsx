@@ -15,16 +15,23 @@ const Notifications = () => {
       try {
         const response = await api.get('notification');
         const data = response.data.data;
-        console.log('Notifications data:', data);
-        setItems(data);
+    
+        const sortedData = [...data].sort(
+          (a, b) => new Date(b.created_at) - new Date(a.created_at)
+        );
+    
+        console.log('Sorted Notifications:', sortedData);
+        setItems(sortedData);
       } catch (error) {
         console.error('Error fetching notifications:', error);
       } finally {
         setLoading(false);
       }
     };
+    
     fetchItems();
   }, []);
+  
 
   const goTo = (item) => {
     if (item.jenis_request === "MR") {

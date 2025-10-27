@@ -166,7 +166,7 @@ function UpdatePurchaseRequest() {
             });
     
             Swal.fire({
-                title: 'Purchase Request berhasil diupdate!',
+                title: 'Purchase Request berhasil diPerbarui!',
                 icon: 'success',
                 timer: 2000,
                 showConfirmButton: false

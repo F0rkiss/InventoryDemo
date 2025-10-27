@@ -133,51 +133,52 @@ function PurchaseRequestList() {
 
   return (
     <Layout title={'List Purchase Request'}>
-      <Block>
-        <div className="ms-3 mb-4 flex items-center justify-between">
-          <div className="flex justify-between items-center w-full">
-            <p className="lg:text-3xl text-2xl font-semibold capitalize">
-              Purchase Request List
-            </p>
-            <div className="flex items-center">
-              <FilterStatusToggle
-                value={filterStatus}
-                onChange={onFilterChange}
-              />
-              <SearchBar
-                onChange={handleSearchChange}
-                disable={loading}
-                values={searchQuery}
-              />
-            </div>
-          </div>
+  <Block>
+    <div className="mb-4 px-4 flex items-center justify-between">
+      <div className="flex justify-between items-center w-full">
+        <p className="lg:text-3xl text-2xl font-semibold capitalize">
+          Purchase Request List
+        </p>
+        <div className="flex items-center gap-2">
+          <FilterStatusToggle
+            value={filterStatus}
+            onChange={onFilterChange}
+          />
+          <SearchBar
+            onChange={handleSearchChange}
+            disable={loading}
+            values={searchQuery}
+          />
         </div>
+      </div>
+    </div>
 
-        <Transition contentVisible={contentVisible}>
-          <div className="m-2 gap-4 items-start">
-            <ScrollPagination
-              rootSelector=".page-content"
-              fetchMoreItems={fetchMoreItems}
-              loading={loading}
-              nextCursor={nextCursor}
-            >
-              {items.map((item) => (
-                <PurchaseRequestCards
-                  key={item.id}
-                  item={item}
-                  goToUpdate={goToUpdate}
-                  goToDetail={goToDetail}
-                  isList={true}
-                />
-              ))}
-            </ScrollPagination>
-          </div>
-        </Transition>
+    <Transition contentVisible={contentVisible}>
+      <div className="space-y-4">
+        <ScrollPagination
+          rootSelector=".page-content"
+          fetchMoreItems={fetchMoreItems}
+          loading={loading}
+          nextCursor={nextCursor}
+        >
+          {items.map((item) => (
+            <PurchaseRequestCards
+              key={item.id}
+              item={item}
+              goToUpdate={goToUpdate}
+              goToDetail={goToDetail}
+              isList={true}
+            />
+          ))}
+        </ScrollPagination>
+      </div>
+    </Transition>
 
-        {items.length === 0 && !loading && contentVisible && <DataEmpty />}
-        {loading && <Loader Class="mt-44" />}
-      </Block>
-    </Layout>
+    {items.length === 0 && !loading && contentVisible && <DataEmpty />}
+    {loading && <Loader Class="mt-44" />}
+  </Block>
+</Layout>
+
   )
 }
 

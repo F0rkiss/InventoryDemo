@@ -10,7 +10,7 @@ const PurchaseRequestCards = forwardRef(
 
         return (
             <div
-                className="m-2 rounded-lg bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200 p-3 flex flex-col justify-between min-h-[100px] w-full"
+                className="rounded-lg bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200 p-3 flex flex-col justify-between min-h-[100px] w-full"
                 ref={ref}
             >
                 {/* Header Section */}
@@ -140,11 +140,12 @@ const PurchaseRequestCards = forwardRef(
                     {isList ? (
                             <div className="flex justify-end gap-2 mt-3">
                                 <button
-                                className="px-3 py-1.5 DetailButton text-sm sm:text-base"
+                                className="flex justify-center items-center w-full px-4 py-3 bg-slate-800 hover:bg-slate-900 text-white font-semibold rounded-lg transition-colors duration-200"
                                 onClick={() => goToDetail(item.id)}
                                 title="View Details"
                                 >
-                                <h3>Detail</h3>
+                                <h3>Lihat Detail</h3>
+                                <i className="bx bx-chevron-right text-lg"></i>
                             </button>
                             </div>
                             

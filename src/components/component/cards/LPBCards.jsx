@@ -205,11 +205,12 @@ const LPBCards = forwardRef(({ item, goToUpdate, goToDetail, isList, goToCreate,
             {isList ? (
                 <>
                 <button
-                    className="px-3 py-1.5 DetailButton text-sm sm:text-base"
+                    className="flex justify-center items-center w-full px-4 py-3 bg-slate-800 hover:bg-slate-900 text-white font-semibold rounded-lg transition-colors duration-200"
                     onClick={() => goToDetail(item.id)}
                     title="View Details"
                 >
-                    <h3>Detail</h3>
+                    <h3>Lihat Detail</h3>
+                    <i className="bx bx-chevron-right text-lg"></i>
                 </button>
                 </>
             ) : (

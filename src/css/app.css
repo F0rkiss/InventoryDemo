@@ -116,7 +116,6 @@ th {
   transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter; /* transition-colors */
   transition-duration: 200ms; /* duration-200 */
   font-size: 0.875rem; /* text-sm */
-  border: 1.5px solid #e19797; 
 }
 
 .delete-button:hover {
