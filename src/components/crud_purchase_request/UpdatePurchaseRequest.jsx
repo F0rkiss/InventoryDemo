@@ -182,6 +182,20 @@ function UpdatePurchaseRequest() {
             setSubmitting(false);
         }
     };
+
+    const resetValue = () => {
+        setItem(originalItem || {
+            tanggal: '',
+            note: '',
+            kode: '',
+            user: {},
+            make_request: {},
+            details: [],
+        });
+    
+        setSelectedItems(originalSelectedItems || []);
+        setErrors({});
+    };
     
 
     return (
@@ -322,18 +336,19 @@ function UpdatePurchaseRequest() {
                                     </div>
                                 </div>
                             </form>
-                        </div>
+                <div className="flex flex-col items-center justify-self-center mt-10 max-w-full w-[25rem] space-y-2 text-center">
+                    <button
+                        onClick={handleUpdatePurchaseRequest}
+                        disabled={submitting || !item.note}
+                        className='py-2 px-4 w-full rounded-lg font-medium bg-blue-500 hover:bg-blue-600 transition-color duration-200 text-white disabled:bg-blue-200'
+                    >
+                        {submitting ? 'Updating...' : 'Update Purchase Request'}
+                    </button>
+                    <button className='py-2 px-4 w-full rounded-lg font-medium border border-red-200 bg-red-50 hover:bg-red-100 transition-color duration-200 text-red-600' onClick={resetValue} type='button'>Reset</button>
+                    </div>
+                </div>
 
                 {/* Action Buttons */}
-                <div className="flex justify-end mt-6 gap-3">
-                <button
-                    onClick={handleUpdatePurchaseRequest}
-                    disabled={submitting}
-                    className="bg-green-500 hover:bg-green-600 disabled:bg-gray-400 text-white px-6 py-2 rounded-md font-medium"
-                >
-                    {submitting ? 'Updating...' : 'Update Purchase Request'}
-                </button>
-                </div>
             </Transition>
             </div>
         </Block>

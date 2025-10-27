@@ -134,7 +134,7 @@ function PurchaseRequestList() {
   return (
     <Layout title={'List Purchase Request'}>
   <Block>
-    <div className="mb-4 px-4 flex items-center justify-between">
+    <div className="ms-3 mb-4 flex items-center justify-between">
       <div className="flex justify-between items-center w-full">
         <p className="lg:text-3xl text-2xl font-semibold capitalize">
           Purchase Request List

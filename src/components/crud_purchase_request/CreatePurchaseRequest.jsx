@@ -55,12 +55,15 @@ function CreatePurchaseRequest() {
     }, [decryptedId]);
 
     // === API ===
+    const [originalItem, setOriginalItem] = useState(null);
+
     const fetchItems = async () => {
         try {
             setLoading(true);
             const res = await api.get(`purchaseRequest-makeRequest/detail/${decryptedId}`);
-            setItem(res.data?.data || res.data);
-            console.log('Fetched tanggal:', res.data?.data?.tanggal);
+            const fetched = res.data?.data || res.data;
+            setItem(fetched);
+            setOriginalItem(fetched); // ✅ store original
         } catch (err) {
             console.error('Error fetching items:', err);
         } finally {
@@ -68,6 +71,7 @@ function CreatePurchaseRequest() {
             setTimeout(() => setContentVisible(true), 50);
         }
     };
+
 
     // === Validation Functions ===
     const validate = () => {
@@ -136,6 +140,23 @@ function CreatePurchaseRequest() {
             setSubmitting(false);
         }
     };
+
+    const resetValue = () => {
+        if (originalItem) {
+            setItem(originalItem);
+        } else {
+            setItem({
+                tanggal: '',
+                note: '',
+                kode: '',
+                user: {},
+                type_request: {},
+                details: [],
+            });
+        }
+        setErrors({});
+    };
+    
 
         // ==============================
         // Image Preview
@@ -274,20 +295,17 @@ function CreatePurchaseRequest() {
                                     </div>
                                 </div>
                             </form>
-                        </div>
-                        
-
                         {/* === Action Buttons === */}
-                        <div className="flex justify-end mt-6 gap-3">
+                        <div className="flex flex-col items-center justify-self-center mt-10 max-w-full w-[25rem] space-y-2 text-center">
                             <button
                                 onClick={handleCreatePurchaseRequest}
-                                disabled={submitting || !item.note }
-                                className="bg-green-500 hover:bg-green-600 disabled:bg-gray-400 
-                                    text-white px-6 py-2 rounded-md font-medium"
-                            >
+                                disabled={submitting || !item.note}
+                                className='py-2 px-4 w-full rounded-lg font-medium bg-blue-500 hover:bg-blue-600 transition-color duration-200 text-white disabled:bg-blue-200'>
                                 {submitting ? 'Creating...' : 'Create Purchase Request'}
                             </button>
+                            <button className='py-2 px-4 w-full rounded-lg font-medium border border-red-200 bg-red-50 hover:bg-red-100 transition-color duration-200 text-red-600' onClick={resetValue} type='button'>Reset</button>
                         </div>
+                    </div>
                     </Transition>
                 </div>
             </Block>
