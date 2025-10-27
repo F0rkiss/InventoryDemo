@@ -281,7 +281,7 @@ function CreatePurchaseRequest() {
                         <div className="flex justify-end mt-6 gap-3">
                             <button
                                 onClick={handleCreatePurchaseRequest}
-                                disabled={submitting}
+                                disabled={submitting || !item.note }
                                 className="bg-green-500 hover:bg-green-600 disabled:bg-gray-400 
                                     text-white px-6 py-2 rounded-md font-medium"
                             >

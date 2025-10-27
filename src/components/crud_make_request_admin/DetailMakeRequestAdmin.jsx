@@ -79,7 +79,7 @@ function DetailMakeRequestAdmin() {
             <Transition contentVisible={contentVisible}>
             <Back goHome={() => navigate('/material-request-admin/list-material-request-admin')} />
             <div className="flex items-center justify-between my-4 gap-2">
-              <p className='lg:text-3xl text-lg font-semibold capitalize'>Detail Make Request</p>
+              <p className='lg:text-3xl text-lg font-semibold capitalize'>Detail Material Request</p>
               <p className='rounded-md bg-gray-300 lg:p-2 p-2 text-center lg:text-sm text-xs text-gray-700'>{item.is_full_approval}</p>
             </div>
               <>

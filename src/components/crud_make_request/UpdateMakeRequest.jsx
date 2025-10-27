@@ -215,7 +215,7 @@ function UpdateMakeRequest() {
             <Block>
                 <div className='xs:px-0 md:px-4'>
                     <Back goHome={() => navigate('/material-request/list-material-request')} />
-                    <p className='lg:text-3xl text-2xl font-semibold capitalize my-4'>Update Make Request</p>
+                    <p className='lg:text-3xl text-2xl font-semibold capitalize my-4'>Update Material Request</p>
                     <Transition contentVisible={contentVisible}>
                         <div className="p-7 bg-white shadow-lg shadow-gray-200 rounded-lg border">
                             <form onSubmit={handleSubmit}>
@@ -290,10 +290,12 @@ function UpdateMakeRequest() {
                                                                     Kode: {item.selectedBarang?.kode_barang || item.selectedBarang?.kodeBarang}
                                                                 </div>
                                                             )}
-                                                            <div className="font-medium mt-1">
-                                                                <span className="font-normal text-sm text-gray-400">Qty: </span>
-                                                                {item.qty}
-                                                            </div>
+                                                            {isStockRequest !== 'other' &&
+                                                                <div className="font-medium mt-1">
+                                                                    <span className="font-normal text-sm text-gray-400">Qty: </span>
+                                                                    {item.qty}
+                                                                </div>
+                                                            }
                                                         </div>
 
                                                         {/* Buttons Section */}

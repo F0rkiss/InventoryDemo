@@ -126,7 +126,7 @@ function CreateMakeRequest() {
       <Block>
         <div className="xs:px-0 md:px-4">
           <Back goHome={() => navigate('/material-request/list-material-request')} />
-          <p className="lg:text-3xl text-2xl font-semibold capitalize my-4">Create Make Request</p>
+          <p className="lg:text-3xl text-2xl font-semibold capitalize my-4">Create Material Request</p>
 
           <Transition contentVisible={contentVisible}>
             <div className="p-7 bg-white shadow-lg shadow-gray-200 rounded-lg border border-gray-300">

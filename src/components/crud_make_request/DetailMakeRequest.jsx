@@ -153,11 +153,11 @@ function DetailMakeRequest() {
                     <div className='space-y-2 pt-3 border-t'>
                       <div className="flex justify-between ">
                         <span className="text-gray-500">Type Request</span>
-                        <span className='font-medium'>{mainMR.type_name}</span>
+                        <span className='font-medium text-right'>{mainMR.type_name}</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-500">Jenis</span>
-                        <span className='font-medium'>{mainMR.type_jenis}</span>
+                        <span className='font-medium text-right'>{mainMR.type_jenis}</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-500">Tanggal dibuat</span>
@@ -181,10 +181,12 @@ function DetailMakeRequest() {
                         <thead>
                           <tr className="bg-gray-100">
                             <th className="px-3 py-2 rounded-l-md">No</th>
-                            <th className="px-3 py-1">
+                            <th className={`px-3 py-1 ${mainMR?.is_stok === 'other' ? 'rounded-r-md' : ''}`}>
                               {(mainMR?.is_stok === 'ya' || mainMR?.is_stok === 'other')  ? 'Permintaan' : 'Notes'}
                             </th>
-                            <th className="px-3 py-1 rounded-r-md">Quantity</th>
+                            {mainMR?.is_stok !== 'other' &&
+                              <th className="px-3 py-1 rounded-r-md">Quantity</th>
+                            }
                           </tr>
                         </thead>
                         <tbody>
@@ -220,8 +222,9 @@ function DetailMakeRequest() {
                                       d?.note_barang || '-'
                                     )}
                               </td>
-                              {/* }        */}
-                              <td className="px-4 py-4 rounded-r-md">{d.qty}</td>
+                              {mainMR?.is_stok !== 'other' &&
+                                <td className="px-4 py-4 rounded-r-md">{d.qty}</td>
+                              }
                             </tr>
                           ))}
                         </tbody>

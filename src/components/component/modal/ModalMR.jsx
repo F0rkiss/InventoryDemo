@@ -157,7 +157,7 @@ const ModalMR = ({ open, onClose, onSave, initialData, requestMode, apiUrl }) =>
 
                     {(requestMode === 'ya' || requestMode === 'other') ? (
                         <div className="mb-4">
-                            <label className="font-semibold">Pilih Barang</label>
+                            <label className="font-semibold">Pilih Permintaan</label>
                             <div className="relative mt-1" ref={searchContainerRef}>
                                 {selectedBarang ? (
                                     <>
