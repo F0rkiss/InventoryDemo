@@ -22,7 +22,7 @@ function ListPPN() {
     const [loading, setLoading] = useState(false)
     const [contentVisible, setContentVisible] = useState(false)
     const navigate = useNavigate();
-    const { canCreate, canUpdate, canDelete } = useMenuAccess('Status')
+    const { canCreate, canUpdate, canDelete } = useMenuAccess('PPN')
 
     useEffect(() => {
         fetchItems()

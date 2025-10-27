@@ -7,7 +7,7 @@ const PPNCard = forwardRef(({item, deleteItems, goToDetail, goToUpdate, canUpdat
             {/* Header Section */}
             <div className='grid grid-cols-2 justify-between border-b items-center justify-center pb-2'>
                 <h3 className='col-start-1 font-semibold text-2xl capitalize leading-tight'>
-                    {item.nilai_ppn}
+                    {item.nilai_ppn}%
                 </h3>
             </div>
 

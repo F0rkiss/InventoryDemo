@@ -279,7 +279,7 @@ const ModalPurchaseOrder = ({ onClose, onSave, open, initialData, apiUrl, existi
                             </div>
                         </div>
                         <div>
-                            <label className="font-semibold">Harga Sub Total</label>
+                            <label className="font-semibold">Biaya Total</label>
                             <div className='bg-white mt-1 p-2 rounded-md border border-gray-300'>
                                 <input
                                     type="number"

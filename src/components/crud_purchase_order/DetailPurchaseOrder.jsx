@@ -123,7 +123,23 @@ function DetailPurchaseOrder() {
                 <div className="bg-white border rounded-md p-6 flex-1 min-h-[200px]">
                   <p className="font-semibold text-gray-400 mb-2 text-xl">Main Information</p>
                   <p className="text-xl font-bold capitalize">{item.kode}</p>
-                  <p className="text-lg mb-4">{PriceFormat(item.harga)}</p>
+                  { item.is_ppn !== 0 ? (
+                      <div className="flex gap-3 items-center mb-4">
+                        <p className="text-lg font-semibold">
+                          {PriceFormat(item.harga_after_ppn)}
+                        </p>
+                        <p className="text-md text-gray-500">
+                          {PriceFormat(item.harga)}
+                        </p>
+                        <p className="text-amber-600 font-medium">PPN {item.nilai_ppn}%</p>
+                      </div>
+                    ) : 
+                    (
+                       <p className="text-lg font-medium mb-4">
+                          {PriceFormat(item.harga)}
+                      </p>
+                    )
+                  }
                   <div className="text-right space-y-3">
                     <div className="flex  justify-between">
                         <p className='text-gray-500'>Kode Supplier</p><p className='font-medium'>{item.kode_suplier}</p>

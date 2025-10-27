@@ -55,6 +55,7 @@ const ItemCard = forwardRef(({ item, handleDetailClick, handleUpdateClick, handl
                   onClick={() => handleUpdateClick(item.id)}
                 >
                   Update
+                  <i className="bx bx-edit"></i>
                 </button>
             )}
             {canDelete && (
@@ -63,13 +64,15 @@ const ItemCard = forwardRef(({ item, handleDetailClick, handleUpdateClick, handl
                   onClick={() => handleDeleteClick(item.id)}
                 >
                   Delete
+                  <i className="bx bx-trash-alt"></i>
                 </button>
             )}
           </div>
 
-          <div className="flex flex-col md:flex-row gap-4">
+          <div className="flex flex-col md:flex-row gap-4 md:justify-between">
             {/* Left side: Details */}
-            <div className="flex-grow">
+            {/* ----- BARIS INI DIUBAH ----- */}
+            <div className="flex-grow md:flex-grow-0">
               {initial === 'Barang' && (
                 <div className="text w-full space-y-3">
                   <div className="text-gray-500">
@@ -85,44 +88,46 @@ const ItemCard = forwardRef(({ item, handleDetailClick, handleUpdateClick, handl
               )}
 
               {initial === 'Stok' && (
-                <div className="flex-grow">
-                  <div className="text w-full space-y-2 pb-2">
-                    <div className="text-gray-500">
-                      Kode Barang <p className='text-black font-medium'>{item.kodeBarang}</p>
-                    </div>
-                    <div className=" text-gray-500">
-                      Kode Gudang <p className='text-black font-medium'>{item.kodeGudang}</p>
-                    </div>
-                    <div className=" text-gray-500">
-                      Tgl. Masuk <p className='text-black font-medium'>{DateFormat(item.tanggal_barang_masuk)}</p>
-                    </div>
-                    <div className="text-gray-500">
-                      Quantity <p className='text-black font-medium'>{item.qty}</p>
-                    </div>
-                    <div className="text-gray-500 space-x-2">
-                      Note <p className='text-black font-medium'>{item.note}</p>
-                    </div>
+                <div className="text w-full space-y-2 pb-2">
+                  <div className="text-gray-500">
+                    Kode Barang <p className='text-black font-medium'>{item.kodeBarang}</p>
                   </div>
-                  <div className={`text w-fit border py-1 px-3 rounded-lg hover:bg-gray-50 transition-color duration-200 ${isOpenLPB ? 'bg-gray-100' : ''}`}>
-                    <button className="flex w-full items-center justify-between text-gray-700" onClick={toggleAccordionLPB}>
-                      <p className='font-semibold text-left'>LPB</p>
-                      <i className={`bx bx-chevron-${isOpenLPB ? 'up' : 'down'} text-2xl`}></i>
-                    </button>
-                    <div className={`space-y-2 transition-all duration-300 ease-in-out overflow-hidden ${isOpenLPB ? 'max-h-96 pt-2' : 'max-h-0'}`}>
-                      <div className="text-gray-500">
-                        Penerima <p className='text-black font-medium'>{item.penerimaLpb}</p>
-                      </div>
-                      <div className=" text-gray-500">
-                        Kode <p className='text-black font-medium'>{item.kodeLpb}</p>
-                      </div>
-                      <div className=" text-gray-500">
-                        Tanggal <p className='text-black font-medium'>{DateFormat(item.tanggalLpb)}</p>
-                      </div>
-                    </div>
+                  <div className=" text-gray-500">
+                    Kode Gudang <p className='text-black font-medium'>{item.kodeGudang}</p>
+                  </div>
+                  <div className=" text-gray-500">
+                    Tgl. Masuk <p className='text-black font-medium'>{DateFormat(item.tanggal_barang_masuk)}</p>
+                  </div>
+                  <div className="text-gray-500">
+                    Quantity <p className='text-black font-medium'>{item.qty}</p>
+                  </div>
+                  <div className="text-gray-500 space-x-2">
+                    Note <p className='text-black font-medium'>{item.note}</p>
                   </div>
                 </div>
               )}
             </div>
+
+            {/* Middle side: LPB (Stok Only) */}
+            {/* {initial === 'Stok' && (
+              <div className={`text w-fit border py-1 px-3 rounded-lg hover:bg-gray-50 transition-color duration-200 ${isOpenLPB ? 'bg-gray-100' : ''}`}>
+                <button className="flex w-full items-center justify-between text-gray-700" onClick={toggleAccordionLPB}>
+                  <p className='font-semibold text-left'>LPB</p>
+                  <i className={`bx bx-chevron-${isOpenLPB ? 'up' : 'down'} text-2xl`}></i>
+                </button>
+                <div className={`space-y-2 transition-all duration-300 ease-in-out overflow-hidden ${isOpenLPB ? 'max-h-96 pt-2' : 'max-h-0'}`}>
+                  <div className="text-gray-500">
+                    Penerima <p className='text-black font-medium'>{item.penerimaLpb}</p>
+                  </div>
+                  <div className=" text-gray-500">
+                    Kode <p className='text-black font-medium'>{item.kodeLpb}</p>
+                  </div>
+                  <div className=" text-gray-500">
+                    Tanggal <p className='text-black font-medium'>{DateFormat(item.tanggalLpb)}</p>
+                  </div>
+                </div>
+              </div>
+            )} */}
 
             {/* Right side: Image */}
             <div className="flex-shrink-0 md:w-60 h-60 flex items-center justify-center">

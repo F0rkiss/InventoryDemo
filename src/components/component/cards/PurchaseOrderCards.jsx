@@ -55,7 +55,7 @@ const PurchaseOrderCards = forwardRef(({item, goToUpdate, goToDetail, canUpdate,
             >
                 <div className="space-y-2">
                     <div className="flex justify-end space-x-2">
-                        { (canUpdate && item.canBeUpdated) &&
+                        { (canUpdate && item.canBeUpdated) ? (
                             <button
                                 className="w-fit px-5 py-2 update-button flex items-center text-sm gap-2"
                                 onClick={() => goToUpdate(item.id)}
@@ -64,6 +64,16 @@ const PurchaseOrderCards = forwardRef(({item, goToUpdate, goToDetail, canUpdate,
                                 Update
                                 <i className="bx bx-edit"></i>
                             </button>
+                            )
+                            :
+                            (
+                            <button
+                                className="w-fit px-5 py-2 text-white bg-gray-800 rounded-lg disabled flex items-center text-sm gap-2"
+                                title="Update Request"
+                            >
+                                LPB sudah dibuat
+                            </button>
+                            )
                         }
 
                     </div>
@@ -98,7 +108,7 @@ const PurchaseOrderCards = forwardRef(({item, goToUpdate, goToDetail, canUpdate,
                                 <p className='text-gray-500'>Biaya <p className='font-medium text-black'>{PriceFormat(item.harga)}</p></p>
                                 { item.is_ppn !== 0 && (
                                     <>
-                                        <p className='text-gray-500'>PPN <p className='font-medium text-black'>{item.nilai_ppn}</p> </p> 
+                                        <p className='text-gray-500'>PPN <p className='font-medium text-black'>{item.nilai_ppn}%</p> </p> 
                                         <p className='text-gray-500'>Biaya Akhir <p className='font-medium text-black'>{PriceFormat(item.harga_after_ppn)}</p> </p> 
                                     </>
                                     )
