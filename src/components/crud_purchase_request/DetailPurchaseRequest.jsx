@@ -133,7 +133,7 @@ function DetailPurchaseRequest() {
                             {/* MR INFO */}
                             <div className="bg-white border rounded-md p-4 lg:p-6 flex-1 min-h-[200px]">
                                 <div className='flex justify-between items-start'>
-                                    <p className="font-semibold text-gray-400 mb-2 text-lg lg:text-xl">Make Request Information</p>
+                                    <p className="font-semibold text-gray-400 mb-2 text-lg lg:text-xl">Material Request Information</p>
                                     <p className={`flex py-1 px-2 lg:py-2 lg:px-3 items-center text-xs lg:text-sm text-center gap-1 rounded-md font-medium ${item.make_request?.is_full_approval ? 'text-green-700 bg-green-100 border border-green-500' : 'text-amber-700 bg-amber-100 border border-amber-500'}`}>
                                         {item.make_request?.is_full_approval ? 'Approved':'Pending'}
                                     </p>

@@ -40,17 +40,18 @@ function PurchaseOrderList() {
         const params = {};
 
         // 2. API logic updated to handle three filter states
-        if (filterStatus === 'completed') {
-          endpoint = 'purchaseOrder-toggle';
-          params.is_completed = 1;
-        } else if (filterStatus === 'not_completed') {
-          endpoint = 'purchaseOrder-toggle';
-          params.is_completed = 0; // Filter for not completed
-        }
-
         if (searchTerm) {
           params.search = searchTerm;
+        } else {
+          if (filterStatus === 'completed') {
+            endpoint = 'purchaseOrder-toggle';
+            params.is_completed = 1;
+          } else if (filterStatus === 'not_completed') {
+            endpoint = 'purchaseOrder-toggle';
+            params.is_completed = 0; // Filter for not completed
+          }
         }
+
         const response = await api.get(endpoint, { params });
         const data = response.data.data;
         setItems(Array.isArray(data.data) ? data.data : []);
@@ -73,15 +74,14 @@ function PurchaseOrderList() {
         };
         if (searchTerm) {
           params.search = searchTerm;
-        }
-        
-        // Apply the same logic for pagination
-        if (filterStatus === 'completed') {
+        } else {
+          if (filterStatus === 'completed') {
             endpoint = 'purchaseOrder-toggle';
             params.is_completed = 1;
-        } else if (filterStatus === 'not_completed') {
+          } else if (filterStatus === 'not_completed') {
             endpoint = 'purchaseOrder-toggle';
-            params.is_completed = 0;
+            params.is_completed = 0; // Filter for not completed
+          }
         }
 
         const response = await api.get(endpoint, { params });
@@ -131,7 +131,7 @@ function PurchaseOrderList() {
             <div className='ms-3 mb-4 flex items-center justify-between'>
               <div className="flex justify-between items-center w-full">
                 <p className='lg:text-3xl text-2xl font-semibold capitalize'>Purchase Order List</p>
-                <div className='flex items-center'>
+                <div className='flex items-center gap-2'>
                   <FilterStatusToggle
                     value={filterStatus}
                     onChange={onFilterChange}
@@ -147,7 +147,7 @@ function PurchaseOrderList() {
               </div>
             </div>
             <Transition contentVisible={contentVisible}>
-              <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 items-start'>
+              <div className='space-y-4'>
                 <ScrollPagination rootSelector=".page-content" fetchMoreItems={fetchMoreItems} loading={loading} nextCursor={nextCursor}>
                     {
                       ( items.map((item) => (

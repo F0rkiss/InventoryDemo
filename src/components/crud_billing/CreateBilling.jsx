@@ -76,7 +76,7 @@ function CreateBilling() {
     return (
     <Layout title={'Create Billing'}>
         <Block>
-            <div className="px-4">
+            <div className="xs:px-0 md:px-4">
                 <Back goHome={() => navigate('/billing/list-billing')}/>
                 <p className="lg:text-3xl text-2xl font-semibold capitalize my-4">Create Billing</p>
 

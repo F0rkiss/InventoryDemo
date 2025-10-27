@@ -135,7 +135,7 @@ function DetailPurchaseOrderPR() {
               { makeRequest &&
                 <div className="bg-white border rounded-md p-6 flex-1 min-h-[200px]">
                   <div className='flex justify-between items-center mb-4'>
-                    <p className="text-xl text-gray-400 font-semibold mb-2">Make Request</p>
+                    <p className="text-xl text-gray-400 font-semibold mb-2">Material Request</p>
                     <p className={`flex py-2 px-3 items-center text-center text-sm gap-1 rounded-md font-medium ${
                         makeRequest.is_full_approval 
                           ? 'text-green-700 bg-green-100 border border-green-500' 

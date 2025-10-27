@@ -121,6 +121,10 @@ const CreateBilling = lazy(() => import('./crud_billing/CreateBilling.jsx'))
 const UpdateBilling = lazy(() => import('./crud_billing/UpdateBilling.jsx'))
 const DetailBilling = lazy(() => import('./crud_billing/DetailBilling.jsx'))
 
+const ListPPN = lazy(() => import('./crud_ppn/ListPPN.jsx'))
+const CreatePPN = lazy(() => import('./crud_ppn/CreatePPN.jsx'))
+const UpdatePPN = lazy(() => import('./crud_ppn/UpdatePPN.jsx'))
+
 // const TableMR = lazy(() => import('./Table/TableMR/TabelMR.jsx'))
 const TableBilling = lazy(() => import('./Table/TableBilling/TableBilling.jsx'))
 
@@ -221,13 +225,13 @@ const MyApp = () => {
                   <Route path='/lpb/detail-lpb/:id' element={<DetailLPB />} />
                   <Route path='/lpb/update-lpb/:id' element={<UpdateLPB />} />
 
-                  <Route path='/make-request/list-make-request' element={<ListMakeRequest />} />
-                  <Route path='/make-request/detail-make-request/:id' element={<DetailMakeRequest />} />
-                  <Route path='/make-request/update-make-request/:id' element={<UpdateMakeRequest />} />
-                  <Route path='/make-request/create-make-request' element={<CreateMakeRequest />} />
+                  <Route path='/material-request/list-material-request' element={<ListMakeRequest />} />
+                  <Route path='/material-request/detail-material-request/:id' element={<DetailMakeRequest />} />
+                  <Route path='/material-request/update-material-request/:id' element={<UpdateMakeRequest />} />
+                  <Route path='/material-request/create-material-request' element={<CreateMakeRequest />} />
 
-                  <Route path='/make-request-admin/list-make-request-admin' element={<ListMakeRequestAdmin />} />
-                  <Route path='/make-request-admin/detail-make-request-admin/:id' element={<DetailMakeRequestAdmin />} />
+                  <Route path='/material-request-admin/list-material-request-admin' element={<ListMakeRequestAdmin />} />
+                  <Route path='/material-request-admin/detail-material-request-admin/:id' element={<DetailMakeRequestAdmin />} />
                   
                   <Route path='/table-billing' element={<TableBilling/>} />
 
@@ -247,6 +251,10 @@ const MyApp = () => {
                   <Route path='/jenismemo/list-jenismemo' element={<JenisMemoList />} />
                   <Route path='/jenismemo/update-jenismemo/:id' element={<UpdateJenisMemo />} />
                   <Route path='/jenismemo/create-jenismemo' element={<CreateJenisMemo />} />
+
+                  <Route path='/ppn' element={<ListPPN/>} />
+                  <Route path='/ppn/create-ppn' element={<CreatePPN/>} />
+                  <Route path='/ppn/update-ppn/:id' element={<UpdatePPN/>} />
 
                   <Route path='/navigation-groups/list-navigation-groups' element={<NavigationGroupList/>}/>
                   <Route path='/navigation-groups/create-navigation-groups' element={<CreateNavigationGroup/>}/>

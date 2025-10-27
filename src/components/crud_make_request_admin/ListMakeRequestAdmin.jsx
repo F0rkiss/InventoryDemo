@@ -41,27 +41,24 @@ import FilterStatusToggle from '../component/FilterStatusToggle';
       const isFiltered = filterStatus !== 'all';
       const isSearching = !!searchTerm; // Check if there's an active search term
 
-      let url;
-      const baseAdminUrl = 'inventMakeRequest-admin';
+      let url = 'inventMakeRequest';
 
       // Determine the URL based on whether a search is active
-      if (isFiltered) {
-        // For filtering without a search
-        url = 'inventMakeRequest-admin-toggle';
-      } else {
-        // Default URL for listing all items
-        url = baseAdminUrl;
-      }
-
-      // Build query parameters
       const params = {};
       if (cursor) params.cursor = cursor;
 
       if (isSearching) {
-        params.search = searchTerm;
-      }
-      if (isFiltered) {
-        params.is_full_approval = (filterStatus === 'completed' ? 1 : 0);
+        params.search = searchTerm
+      } else {
+          if (filterStatus === 'completed') {
+            // For filtering without a search
+            url = 'inventMakeRequest-personal-toggle';
+            params.is_full_approval = 1
+          } else if (filterStatus === 'not_completed') {
+            // Default URL for listing all items
+            url = 'inventMakeRequest-personal-toggle';
+            params.is_full_approval = 0
+          }
       }
 
       return { url, params };
@@ -133,30 +130,28 @@ import FilterStatusToggle from '../component/FilterStatusToggle';
 
     const goToDetail = async (id) => {
       const encryptingID = await encrypting(id)
-      navigate(`/make-request-admin/detail-make-request-admin/${encryptingID}`)
+      navigate(`/material-request-admin/detail-material-request-admin/${encryptingID}`)
     } 
 
     return (
       <Layout title={'List Make Request'}>
           <Block>
-            <div className='ms-3 mb-4 flex items-center justify-between'>
-              <div className="flex justify-between items-center w-full">
-                <p className='md:text-3xl text-lg font-semibold capitalize me-1'>All Make Request List</p>
-                <div className='flex items-center'>
-                  <FilterStatusToggle
-                    value={filterStatus}
-                    onChange={onFilterChange}
-                  />
-                  <SearchBar
-                    onChange={handleSearchChange}
-                    disable={loading}
-                    values={searchQuery}
-                  />
-                </div>
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-2">
+              <p className='md:text-3xl text-2xl font-semibold capitalize ms-3'>All Material Request List</p>
+              <div className='flex items-center gap-2'>
+                <SearchBar
+                  onChange={handleSearchChange}
+                  disable={loading}
+                  values={searchQuery}
+                />
+                <FilterStatusToggle
+                  value={filterStatus}
+                  onChange={onFilterChange}
+                />
               </div>
             </div>
             <Transition contentVisible={contentVisible}>
-              <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
+              <div className='space-y-4'>
                 <ScrollPagination rootSelector=".page-content" fetchMoreItems={fetchMoreItems} loading={loading} nextCursor={nextCursor}>
                     {
                       ( items.map((item) => (
@@ -164,8 +159,6 @@ import FilterStatusToggle from '../component/FilterStatusToggle';
                           key={item.id}
                           item={item}
                           goToDetail={goToDetail}
-                        //   goToUpdate={goToUpdate}
-                        //   canUpdate={canUpdate}
                           filterStatus={filterStatus}
                           />
                       )))
@@ -178,7 +171,6 @@ import FilterStatusToggle from '../component/FilterStatusToggle';
             }
             {loading && <Loader Class="mt-44" />}
           </Block>
-          {/* { canCreate && <FlyingButton goTo={'/make-request/create-make-request'} />} */}
       </Layout>
     )
   }

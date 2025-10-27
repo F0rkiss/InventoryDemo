@@ -1,16 +1,16 @@
 const menus = [
     { key: "Dashboard", label: "Dashboard", icon: "bx bxs-dashboard", path: "/dashboard" },
     {
-        key: "MakeRequest" || "MakeRequestAdmin" || "ListMakeRequest" || "ListPurchaseRequest" || "PurchaseRequest" || "PurchaseOrder" || "TypeRequest",
+        key: "MakeRequest" || "MakeRequestAdmin" || "ListMakequest" || "ListPurchaseRequest" || "PurchaseRequest" || "PurchaseOrder" || "TypeRequest",
         label: "Request",
         icon: "bx bx-message-add",
         isAccordion: true,
         children: [
-            { key: "MakeRequestAdmin", label: "All Make Request", path: "/make-request-admin/list-make-request-admin" },
-            { key: "MakeRequest", label: "Personal Make Request", path: "/make-request/list-make-request" },
+            { key: "MakeRequestAdmin", label: "All Material Request", path: "/material-request-admin/list-material-request-admin" },
+            { key: "MakeRequest", label: "Personal Material Request", path: "/material-request/list-material-request" },
             { key: "ListMakeRequest", label: "Create Purchase Request", path: "/make-purchase-request/list-make-purchase-request" },
-            { key: "ListPurchaseRequest", label: "Create Purchase Order", path: "/purchase-order-pr/list-purchase-order-pr" },
             { key: "PurchaseRequest", label: "Purchase Request", path: "/purchase-request/list-purchase-request" },
+            { key: "ListPurchaseRequest", label: "Create Purchase Order", path: "/purchase-order-pr/list-purchase-order-pr" },
             { key: "PurchaseOrder", label: "Purchase Order", path: "/purchase-order/list-purchase-order" },
             { key: "TypeRequest", label: "Type Request", path: "/type-request/list-type-request" },
         ]
@@ -27,7 +27,7 @@ const menus = [
     },
 
     {
-        key: "Barang" || "JenisBarang" || "SumberBarang",
+        key: "InventStok" || "Barang" || "JenisBarang" || "SumberBarang",
         label: "Barang",
         icon: "bx bx-package",
         isAccordion: true,
@@ -55,13 +55,14 @@ const menus = [
     { key: "Billing", label: "Billing", icon: "bx bx-spreadsheet", path: "/billing/list-billing" },
     { key: "NavigationGroup", label: "Navigation Group", icon: "bx bx-navigation", path: "/navigation-groups/list-navigation-groups" },
     {
-        key: "InventMutasi" || "InventLog",
+        key: "InventMutasi" || "InventLog" || "PPN",
         label: "Information",
         icon: "bx bx-info-circle",
         isAccordion: true,
         children: [
             { key: "InventMutasi", label: "Mutasi", path: "/mutasi" },
-            { key: "InventLog", label: "Log", path: "/log" }
+            { key: "InventLog", label: "Log", path: "/log" },
+            { key: "PPN", label: "PPN", path: "/ppn" }
         ]
     },
     { key: "JenisMemo", label: "Jenis Memo", icon: "bx bx-note", path: "/jenismemo/list-jenismemo" },

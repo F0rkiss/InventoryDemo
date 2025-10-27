@@ -26,6 +26,7 @@ function CreatePurchaseOrderPR() {
         keterangan: '',
         cara_pembayaran: '',
         tanggal_penyerahan: '',
+        is_ppn: 0,
     }) 
     const [details, setDetails] = useState([]); // Details for the new PO being created
 
@@ -116,6 +117,7 @@ function CreatePurchaseOrderPR() {
                 tanggal_penyerahan: items.tanggal_penyerahan,
                 keterangan: items.keterangan,
                 cara_pembayaran: items.cara_pembayaran,
+                is_ppn: items.is_ppn,
                 invent_barangs_id: details.map(d => d.selectedBarang?.id ),
                 qty: details.map(d => d.qty ),
                 harga_sub_total: details.map(d => d.harga_sub_total)
@@ -145,8 +147,13 @@ function CreatePurchaseOrderPR() {
     };
     
     const handleChange = (e) => {
-        const { name, value } = e.target;
-        setItems(prevItems => ({ ...prevItems, [name]: value }));
+        const { name, value, type, checked } = e.target;
+        if (type === 'checkbox') {
+            setItems(prevItems => ({ ...prevItems, [name]: checked ? 1 : 0 }));
+        } else {
+            // Handle other inputs
+            setItems(prevItems => ({ ...prevItems, [name]: value }));
+        }
         if (errors[name]) {
             setErrors(prevErrors => {
                 const newErrors = { ...prevErrors };
@@ -172,7 +179,17 @@ function CreatePurchaseOrderPR() {
             setItems(originalItems);
             setDetails(originalDetails);
         } else {
-            setItems({ purchase_request: null, tanggal: '' });
+            setItems({
+                purchase_request: null,
+                tanggal: '',
+                kode_suplier: '',
+                kode: '',
+                alamat: '',
+                keterangan: '',
+                cara_pembayaran: '',
+                tanggal_penyerahan: '',
+                is_ppn: 0 
+            });
             setDetails([]);
         }
         setErrors({});
@@ -225,7 +242,7 @@ function CreatePurchaseOrderPR() {
                                 {prInfo.make_request &&
                                 <div className="bg-white border rounded-md p-6 flex-1 min-h-[200px]">
                                     <div className='flex justify-between items-center mb-2 gap-2'>
-                                        <p className="text-xl text-gray-400 font-semibold">Make Request</p>
+                                        <p className="text-xl text-gray-400 font-semibold">Material Request</p>
                                     </div>
                                     <p className="font-bold text-lg">{prInfo.make_request?.kode}</p>
                                     <p className="">{prInfo.make_request?.note}</p>
@@ -389,21 +406,39 @@ function CreatePurchaseOrderPR() {
                                 />
                                 </div>
                             </div>
-                            <div className="mb-4">
-                                <div className="flex justify-between items-center">
-                                    <label className='font-semibold'>Metode Pembayaran</label>
-                                    {errors.cara_pembayaran && <span className="text-red-500 text-sm">{errors.cara_pembayaran}</span>}
+                            <div className="grid md:grid-cols-2 md:gap-6">
+                                <div className="mb-4">
+                                    <div className="flex justify-between items-center">
+                                        <label className='font-semibold'>Metode Pembayaran</label>
+                                        {errors.cara_pembayaran && <span className="text-red-500 text-sm">{errors.cara_pembayaran}</span>}
+                                    </div>
+                                    <div className={`bg-white p-2 rounded-md border mt-2 ${errors.cara_pembayaran ? 'border-red-500' : 'border-gray-300'}`}>
+                                    <input 
+                                        type="text" 
+                                        name="cara_pembayaran" 
+                                        value={items.cara_pembayaran} 
+                                        onChange={handleChange}
+                                        className="w-full p-2 placeholder:text-gray-400"
+                                        maxLength={80}
+                                        placeholder='Metode Pembayaran'
+                                    />
+                                    </div>
                                 </div>
-                                <div className={`bg-white p-2 rounded-md border mt-2 ${errors.cara_pembayaran ? 'border-red-500' : 'border-gray-300'}`}>
-                                <input 
-                                    type="text" 
-                                    name="cara_pembayaran" 
-                                    value={items.cara_pembayaran} 
-                                    onChange={handleChange}
-                                    className="w-full p-2 placeholder:text-gray-400"
-                                    maxLength={80}
-                                    placeholder='Metode Pembayaran'
-                                />
+                                <div className="mb-4">
+                                    <label className='font-semibold'>PPN</label>
+                                    <div className="bg-white p-2 rounded-md mt-2 flex items-center h-fit"> 
+                                        <label htmlFor="is_ppn_checkbox" className="flex items-center cursor-pointer w-full">
+                                            <input 
+                                                type="checkbox" 
+                                                id="is_ppn_checkbox"
+                                                name="is_ppn" 
+                                                checked={items.is_ppn == 1} // Cek jika value = 1
+                                                onChange={handleChange}
+                                                className="w-6 h-6 text-blue-600 bg-gray-100 border-gray-100 rounded focus:ring-blue-500"
+                                            />
+                                            <span className="ml-3 text-gray-700">Dikenakan PPN</span>
+                                        </label>
+                                    </div>
                                 </div>
                             </div>
                             <div className="mt-2 pt-3">

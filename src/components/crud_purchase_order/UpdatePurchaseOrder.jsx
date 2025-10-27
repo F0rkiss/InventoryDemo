@@ -249,11 +249,59 @@ const handleSubmit = async (e) => {
                     <p className='lg:text-3xl text-2xl font-semibold capitalize my-4'>Update Purchase Order</p>
                     { loading && <Loader Class="mt-44"/> }
                     <Transition contentVisible={contentVisible}>
+                    {/* <div className="p-7 bg-white rounded-lg border border-gray-300 shadow-xl shadow-gray-200">
+                        <div className='flex justify-between items-center mb-4'>
+                            <p className="text-xl text-gray-400 font-semibold mb-2">Purchase Request</p>
+                            <p className={`flex py-2 px-3 items-center lg:text-[14px] xs:text-xs text-center gap-1 rounded-md font-medium ${purchaseRequest.is_completed ? 'text-green-700 bg-green-100 border border-green-500' : 'text-amber-700 bg-amber-100 border border-amber-500'}`}>
+                            {purchaseRequest.is_completed ? <><i className='bx bxs-check-circle lg/md:text-sm xs:text-lg pe-1'></i>Selesai</> : <><i className='bx bxs-time lg/md:text-sm xs:text-lg pe-1'></i>Belum selesai</> }</p>
+                        </div>
+                        { !purchaseRequest ?
+                            (
+                            <p className="text-gray-400 italic">No purchase request data</p>
+                            ) : (
+                            <>
+                                <p className="font-bold text-lg">{purchaseRequest?.kode}</p>
+                                <p className="">{purchaseRequest?.note}</p>
+                                <p className="mb-4">{DateFormat(purchaseRequest?.tanggal)}</p>
+                                <div className="overflow-x-auto">
+                                <table className="w-full text-sm text-left">
+                                    <thead>
+                                    <tr className="bg-gray-100">
+                                        <th className="px-3 py-2 rounded-l-md">No</th>
+                                        <th className="px-3 py-1">Barang</th>
+                                        <th className="px-3 py-1 rounded-r-md">Quantity</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {detailPR?.map((item, i) => (
+                                        <tr key={item.id} className={` ${item.id % 2 === 0 ? 'bg-gray-50' : 'bg-white'}`}>
+                                        <td className="px-4 py-4 rounded-l-md">{i + 1}</td>
+                                        <td className="px-4 py-4 rounded-r-md">
+                                            <div className='flex items-center gap-3'>
+                                            <img src={`${apiUrl}${item.barangs?.image}`} alt="item image" className="max-w-[10rem] object-cover rounded shadow cursor-pointer"
+                                                onClick={() => handleImageClick(`${apiUrl}${item.barangs?.image}`)}
+                                            />
+                                            <div>
+                                                <p className="font-medium text-gray-900">{item.barangs?.name}</p>
+                                                <p className="text-xs text-gray-500">{item.barangs?.kode_barang}</p>
+                                            </div>
+                                            </div>
+                                        </td>
+                                        <td className="px-4 py-4 rounded-r-md">{item.qty}</td>
+                                        </tr>
+                                    ))}
+                                    </tbody>
+                                </table>
+                                </div>
+                            </>
+                            )
+                        }
+                    </div> */}
                     <div className="p-7 bg-white rounded-lg border border-gray-300 shadow-xl shadow-gray-200">
                         <form onSubmit={handleSubmit} className='space-y-5'>
                             <div className="mb-5 space-y-2">
                                 <label className='font-semibold'>Purchase Request</label>
-                                <div className='bg-gray-200 p-2 rounded-md border border-gray-300'>
+                                <div className='bg-gray-200 px-4 py-2 rounded-md border border-gray-300'>
                                     <input 
                                         type="text" 
                                         name="purchase_request" 
@@ -267,13 +315,13 @@ const handleSubmit = async (e) => {
                             </div>
                             <div className="mb-4">
                                 <label className='font-semibold'>Tanggal</label>
-                                <div className='bg-white p-2 rounded-md border border-gray-300 mt-2'>
+                                <div className='bg-white py-2 px-4 rounded-md border border-gray-300 mt-2'>
                                 <input 
                                     type="date" 
                                     name="tanggal" 
                                     value={items.tanggal} 
                                     onChange={e => setItems({ ...items, tanggal: e.target.value })}
-                                    className="w-full p-2 placeholder:text-gray-400"
+                                    className="w-full placeholder:text-gray-400"
                                     required
                                 />
                                 </div>
@@ -281,7 +329,7 @@ const handleSubmit = async (e) => {
 
                             <div className='mb-4'>
                                 <label className='font-semibold'>Kode Supplier</label>
-                                <div className='bg-white p-2 rounded-md border-solid border-gray-300 border mt-2'>
+                                <div className='bg-white py-2 px-4 rounded-md border-solid border-gray-300 border mt-2'>
                                 <input 
                                     type="text" 
                                     name="kode_suplier" 
@@ -312,7 +360,7 @@ const handleSubmit = async (e) => {
                             </div>
                             <div className="mb-4">
                                 <label className='font-semibold'>Tanggal Penyerahan</label>
-                                <div className='bg-white p-2 rounded-md border border-gray-300 mt-2'>
+                                <div className='bg-white px-4 py-2 rounded-md border border-gray-300 mt-2'>
                                 <input 
                                     type="date" 
                                     name="tanggal_penyerahan" 
@@ -343,7 +391,7 @@ const handleSubmit = async (e) => {
                                     {errors.cara_pembayaran && <span className="text-red-500 text-sm">{errors.cara_pembayaran}</span>}
                                     </div> */}
                                 <label className='font-semibold'>Metode Pembayaran</label>
-                                <div className={`bg-white p-3 rounded-md border mt-2 border-gray-300`}>
+                                <div className={`bg-white px-4 py-2 rounded-md border mt-2 border-gray-300`}>
                                 <input 
                                     type="text" 
                                     name="cara_pembayaran" 
@@ -409,7 +457,7 @@ const handleSubmit = async (e) => {
                                             {/* MODIFIED: This div now stacks its children vertically on small screens */}
                                             <div className="flex flex-col items-start mt-2 md:mt-0 md:contents">
                                                 <div className="font-medium">
-                                                    <span className="font-normal text-sm text-gray-400">Harga: </span>
+                                                    <span className="font-normal text-sm text-gray-400">Biaya: </span>
                                                     {PriceFormat(item.harga_sub_total) || item.selectedBarang?.harga_sub_total}
                                                 </div>
                                                 <div className="font-medium md:text-right">

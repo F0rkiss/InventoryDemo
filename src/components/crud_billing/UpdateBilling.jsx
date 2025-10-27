@@ -108,7 +108,7 @@ function UpdateBilling() {
     return (
     <Layout title={'Update Billing'}>
         <Block>
-            <div className="px-4">
+            <div className="xs:px-0 md:px-4">
                 <Back goHome={() => navigate(-1)}/>
                 <p className="lg:text-3xl text-2xl font-semibold capitalize my-4">Update Billing</p>
 

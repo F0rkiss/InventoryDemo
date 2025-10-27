@@ -35,7 +35,7 @@ function SearchBar({
   );
 
   return (
-    <div className='my-2 ms-1'>
+    <div className='my-2 '>
       {blockContent}
     </div>
   );

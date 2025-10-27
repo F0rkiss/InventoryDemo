@@ -16,8 +16,7 @@ import useMenuAccess from '../../hooks/useMenuAccess'
 import FilterStatusToggle from '../component/FilterStatusToggle';
 import ExportButton from '../component/ExportSheets';
 
-  function MakeRequestList() {
-
+function MakeRequestList() {
     const [items, setItems] = useState([])
     const [loading, setLoading] = useState(false)
     const [nextCursor, setNextCursor] = useState(null)
@@ -40,34 +39,25 @@ import ExportButton from '../component/ExportSheets';
 
     // 1) One helper to build URL + params consistently
     const buildReq = (cursor) => {
-      // const isAdmin = role === 'admin';
       const isFiltered = filterStatus !== 'all';
       const isSearching = !!searchTerm; // Check if there's an active search term
 
-      let url;
-      // const baseAdminUrl = 'inventMakeRequest-admin';
-      const baseUserUrl = 'inventMakeRequest';
+      let url = 'inventMakeRequest';
 
-      // Determine the URL based on whether a search is active
-      if (isFiltered) {
-        // For filtering without a search
-        url = 'inventMakeRequest-personal-toggle';
-      } else {
-        // Default URL for listing all items
-        url = baseUserUrl;
-      }
-
-      // Build query parameters
       const params = {};
       if (cursor) params.cursor = cursor;
 
       if (isSearching) {
         params.search = searchTerm
+      } else {
+          if (filterStatus === 'completed') {
+            url = 'inventMakeRequest-personal-toggle';
+            params.is_full_approval = 1
+          } else if (filterStatus === 'not_completed') {
+            url = 'inventMakeRequest-personal-toggle';
+            params.is_full_approval = 0
+          }
       }
-      if (isFiltered) {
-        params.is_full_approval = (filterStatus === 'completed' ? 1 : 0);
-      }
-
       return { url, params };
     };
 
@@ -99,7 +89,6 @@ import ExportButton from '../component/ExportSheets';
 
         const newList = Array.isArray(page?.data) ? page.data : [];
 
-        // stop if no results or stuck cursor
         if (!newList.length || page?.next_cursor === nextCursor) {
           setNextCursor(null);
           return;
@@ -131,44 +120,42 @@ import ExportButton from '../component/ExportSheets';
     };
 
     useEffect(() => {
-    // cleanup on unmount
       return () => debounceRef.current && clearTimeout(debounceRef.current);
     }, []);
 
     const goToUpdate = async(itemid) => {
       const encryptingID = await encrypting(itemid)
-      navigate(`/make-request/update-make-request/${encryptingID}`);
+      navigate(`/material-request/update-material-request/${encryptingID}`);
     }
     
     const goToDetail = async (id) => {
       const encryptingID = await encrypting(id)
-      navigate(`/make-request/detail-make-request/${encryptingID}`)
+      navigate(`/material-request/detail-material-request/${encryptingID}`)
     } 
 
     return (
       <Layout title={'List Make Request'}>
           <Block>
-            <SearchBar
-              onChange={handleSearchChange}
-              disable={loading}
-              values={searchQuery}
-            />
-            <div className='ms-3 mb-4 flex items-center justify-between'>
-              <div className="flex justify-between items-center w-full">
-                <p className='md:text-3xl text-lg font-semibold capitalize me-1'>Personal Make Request List</p>
-                <div className='flex items-center'>
-                  <FilterStatusToggle
+            {/* Header Section */}
+            <div className='flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-2'>
+              <p className='md:text-3xl text-2xl ms-3 font-semibold'>List Material Request</p>
+              <div className="flex items-center gap-2">
+                <SearchBar
+                onChange={handleSearchChange}
+                disable={loading}
+                values={searchQuery}
+                />
+                <FilterStatusToggle
                     value={filterStatus}
                     onChange={onFilterChange}
-                    // disabled={loading}
-                    // showText   // uncomment if you want to show the current label text
-                  />
-                  <ExportButton/>
-                </div>
+                />
+                <ExportButton/>
               </div>
             </div>
+            
             <Transition contentVisible={contentVisible}>
-              <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
+              {/* Changed from grid to vertical stack */}
+              <div className='space-y-4'>
                 <ScrollPagination rootSelector=".page-content" fetchMoreItems={fetchMoreItems} loading={loading} nextCursor={nextCursor}>
                     {
                       ( items.map((item) => (
@@ -190,7 +177,7 @@ import ExportButton from '../component/ExportSheets';
             }
             {loading && <Loader Class="mt-44" />}
           </Block>
-          { canCreate && <FlyingButton goTo={'/make-request/create-make-request'} />}
+          { canCreate && <FlyingButton goTo={'/material-request/create-material-request'} />}
       </Layout>
     )
   }

@@ -59,7 +59,7 @@ function ExportButton() {
     <button
       onClick={handleExport}
       disabled={loading}
-      className="ml-2 py-2 px-4 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:opacity-50 flex items-center justify-center transition-colors duration-200"
+      className="py-2 px-6 w-fit bg-green-600 text-white rounded-full hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:opacity-50 flex items-center justify-center transition-colors duration-200"
       title="Export to Excel"
     >
       {loading ? (

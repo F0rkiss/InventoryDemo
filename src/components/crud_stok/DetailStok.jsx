@@ -167,7 +167,7 @@ function DetailStok() {
                 </div>
               </div>
             </div>
-            { isAsset === 0 ? 
+            { isAsset === 'ya' ? 
             (
               <div className="bg-white border rounded-md p-6 mt-6 min-h-[150px]">
                 <h2 className="text-xl font-semibold text-gray-400 mb-3">Mutasi</h2>

@@ -4,7 +4,7 @@ import api from '../../../api/api';
 import Swal from 'sweetalert2';
 import Loader from '../Loader';
 
-const ModalMR = ({ open, onClose, onSave, initialData, isStock, apiUrl }) => {
+const ModalMR = ({ open, onClose, onSave, initialData, requestMode, apiUrl }) => {
     // State internal modal
     const [noteBarang, setNoteBarang] = useState('');
     const [selectedBarang, setSelectedBarang] = useState(null);
@@ -17,20 +17,41 @@ const ModalMR = ({ open, onClose, onSave, initialData, isStock, apiUrl }) => {
     const [showResults, setShowResults] = useState(false);
     const searchContainerRef = useRef(null);
 
-    // BARU: Menambahkan ref untuk mendeteksi klik di luar komponen pencarian
     const debounceTimeout = useRef(null);
 
     // BARU: Fungsi untuk mengambil data barang (baik awal maupun berdasarkan pencarian)
-    const fetchAvailableBarang = async (term = '') => {
+    const fetchAvailableBarang = async (term = '', mode) => {
         setBarangLoading(true);
-        // BARU: Mengubah endpoint secara dinamis. Jika term kosong, ambil daftar umum.
-        const endpoint = term.trim() ? `/inventStok/${term.trim()}` : '/inventStok';
+        let endpoint = '';
+        let config = {}; // Objek konfigurasi untuk Axios (untuk params)
+
         try {
-            const response = await api.get(endpoint);
-            setAvailableBarang(response.data.data.data || []);
+            if (mode === 'ya') {
+                // Mode "ya" (Stok) menggunakan {term} sebagai bagian dari URL
+                endpoint = '/inventStok';
+                if (term.trim()) {
+                    endpoint = `${endpoint}/${term.trim()}`;
+                }
+            } else if (mode === 'other') {
+                // Mode "other" (Barang) menggunakan ?search={term}
+                endpoint = '/inventMakeRequest-barangOther';
+                if (term.trim()) {
+                    // Axios akan otomatis mengubah ini menjadi /inventBarang?search=...
+                    config.params = { search: term.trim() }; 
+                }
+            } else {
+                // Mode "tidak" atau null, jangan fetch
+                setBarangLoading(false);
+                return;
+            }
+
+            // DIUBAH: Panggilan api.get() sekarang menyertakan 'config'
+            const response = await api.get(endpoint, config);
+            
+            setAvailableBarang(response.data.data?.data || response.data.data || []);
         } catch (error) {
             console.error('Error fetching barang:', error);
-            setAvailableBarang([]); // Pastikan state kosong jika ada error
+            setAvailableBarang([]); 
         } finally {
             setBarangLoading(false);
         }
@@ -38,20 +59,28 @@ const ModalMR = ({ open, onClose, onSave, initialData, isStock, apiUrl }) => {
 
     useEffect(() => {
         if (open) {
-            // Reset semua state saat modal dibuka
-            setQty(initialData?.qty || '');
-            setNoteBarang(isStock ? '' : (initialData?.note_barang || ''));
-            setSelectedBarang(isStock ? (initialData?.selectedBarang || null) : null);
-            setSearchTerm(isStock ? (initialData?.selectedBarang?.name || '') : '');
+            // DIUBAH: Logika berdasarkan requestMode
+            const isSelectionMode = (requestMode === 'ya' || requestMode === 'other');
+            
+            setNoteBarang(isSelectionMode ? '' : (initialData?.note_barang || ''));
+            setSelectedBarang(isSelectionMode ? (initialData?.selectedBarang || null) : null);
+            setSearchTerm(isSelectionMode ? (initialData?.selectedBarang?.name || initialData?.selectedBarang?.namaBarang || '') : '');
+            
             setAvailableBarang([]);
             setShowResults(false);
 
-            // BARU: Jika ini adalah request stok, langsung ambil daftar barang awal
-            if (isStock && !initialData?.selectedBarang) {
-                fetchAvailableBarang();
+            if (requestMode === 'other') {
+                setQty(1); // Langsung set qty ke 1 jika mode "other"
+            } else {
+                setQty(initialData?.qty || ''); // Logika lama untuk "ya" dan "tidak"
+            }
+
+            // DIUBAH: Ambil data barang jika mode-nya "ya" atau "other"
+            if (isSelectionMode && !initialData?.selectedBarang) {
+                fetchAvailableBarang('', requestMode);
             }
         }
-    }, [open, initialData, isStock]);
+    }, [open, initialData, requestMode]);
 
 
     // BARU: Effect untuk menutup dropdown saat klik di luar area pencarian
@@ -73,45 +102,44 @@ const ModalMR = ({ open, onClose, onSave, initialData, isStock, apiUrl }) => {
         setShowResults(true); 
         clearTimeout(debounceTimeout.current);
         debounceTimeout.current = setTimeout(() => {
-            fetchAvailableBarang(term);
+            fetchAvailableBarang(term, requestMode);
         }, 1200);
     };
 
-    const handleBarangSelect = (stok) => {
-        // Flatten: jadikan selalu objek barang + sisipkan kode_gudang jika tersedia di stok
-        const flat = {
-            ...(stok?.barang || stok || {}),
-            kode_gudang: stok?.barang?.kode_gudang || stok?.barang?.kodeGudang || undefined,
+    const handleBarangSelect = (item) => {
+       const flat = {
+            ...(item?.barang || item || {}),
+            kode_gudang: item?.kode_gudang || item?.kodeGudang || item?.barang?.kode_gudang || undefined,
         };
         setSelectedBarang(flat);
-        setSearchTerm(flat.name || '');
+        setSearchTerm(flat.name || flat.namaBarang || '');
+        setShowResults(false);
     };
     
     const handleRemoveBarang = () => {
         setSelectedBarang(null);
         setSearchTerm('');
-        // BARU: Ambil kembali daftar barang awal setelah menghapus pilihan
-        fetchAvailableBarang(); 
+        fetchAvailableBarang('', requestMode); 
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
         const isQtyInvalid = !qty || parseInt(qty) <= 0;
-        if (isStock) {
+        if (requestMode === 'ya' || requestMode === 'other') {
             if (!selectedBarang || isQtyInvalid) {
                 Swal.fire({ icon: 'warning', title: 'Data belum lengkap', text: 'Silakan pilih barang dan masukkan jumlah yang valid.' });
                 return;
             }
-        } else {
+        } else if (requestMode === 'tidak') {
             if (!noteBarang || isQtyInvalid) {
                 Swal.fire({ icon: 'warning', title: 'Data belum lengkap', text: 'Silakan isi catatan barang dan jumlah yang valid.' });
                 return;
             }
         }
         const saveData = { qty: parseInt(qty) };
-        if (isStock) {
+        if (requestMode === 'ya' || requestMode === 'other') {
             saveData.selectedBarang = selectedBarang;
-        } else {
+        } else if (requestMode === 'tidak') {
             saveData.note_barang = noteBarang;
         }
         onSave(saveData);
@@ -127,16 +155,15 @@ const ModalMR = ({ open, onClose, onSave, initialData, isStock, apiUrl }) => {
                         {initialData ? 'Edit Detail Request' : 'Tambah Detail Request'}
                     </p>
 
-                    {isStock ? (
+                    {(requestMode === 'ya' || requestMode === 'other') ? (
                         <div className="mb-4">
                             <label className="font-semibold">Pilih Barang</label>
-                            {/* BARU: Menambahkan ref ke div pembungkus */}
                             <div className="relative mt-1" ref={searchContainerRef}>
                                 {selectedBarang ? (
                                     <>
                                     <div className="relative border rounded-lg p-3 bg-white flex items-start gap-3 shadow-sm">
                                         <div className="flex items-center gap-3">
-                                            {console.log(selectedBarang)}
+                                            {/* DIUBAH: Normalisasi field gambar */}
                                             {(selectedBarang.gambarBarang || selectedBarang.image) && (
                                                 <img
                                                     src={`${apiUrl}${selectedBarang.gambarBarang || selectedBarang.image}`}
@@ -145,13 +172,15 @@ const ModalMR = ({ open, onClose, onSave, initialData, isStock, apiUrl }) => {
                                                 />
                                             )}
                                             <div>
+                                                {/* DIUBAH: Normalisasi field teks */}
                                                 <p className="font-medium text-gray-900">{selectedBarang.name || selectedBarang.namaBarang}</p>
                                                 <p className="text-sm text-gray-500">
                                                     {selectedBarang.kode_barang || selectedBarang.kodeBarang}
                                                 </p>
+                                                {/* DIUBAH: Field gudang hanya relevan untuk 'ya' (Stok) */}
                                                 {
-                                                    selectedBarang.kodeGudang || selectedBarang.kode_gudang &&
-                                                    <p className="text-xs text-gray-400">Gudang: {selectedBarang.kode_gudang}</p>
+                                                    (requestMode === 'ya' && (selectedBarang.kodeGudang || selectedBarang.kode_gudang)) &&
+                                                    <p className="text-xs text-gray-400">Gudang: {selectedBarang.kode_gudang || selectedBarang.kodeGudang}</p>
                                                 }
                                             </div>
                                         </div>
@@ -173,11 +202,9 @@ const ModalMR = ({ open, onClose, onSave, initialData, isStock, apiUrl }) => {
                                                 type="text"
                                                 value={searchTerm}
                                                 onChange={(e) => handleSearchChange(e.target.value)}
-                                                // BARU: Menambahkan onFocus untuk menampilkan dropdown
                                                 onFocus={() => setShowResults(true)}
                                                 placeholder="Cari berdasarkan nama atau kode barang"
                                                 className="w-full focus:outline-none placeholder-gray-400"
-                                                // autoFocus
                                             />
                                         </div>
 
@@ -190,25 +217,38 @@ const ModalMR = ({ open, onClose, onSave, initialData, isStock, apiUrl }) => {
                                                         {searchTerm ? 'Barang tidak ditemukan' : 'Tidak ada barang tersedia'}
                                                     </div>
                                                 ) : (
-                                                    availableBarang.map((stok) => (
-                                                        <div
-                                                            key={stok.id}
-                                                            onClick={() => handleBarangSelect(stok)}
-                                                            className="p-3 cursor-pointer flex items-center gap-3 hover:bg-blue-50 transition"
-                                                        >
-                                                            {stok.gambarBarang && (
-                                                                <img
-                                                                    src={`${apiUrl}${stok.gambarBarang}`}
-                                                                    alt={stok.barang?.name || stok.namaBarang}
-                                                                    className="w-10 h-10 object-cover rounded-md border"
-                                                                />
-                                                            )}
-                                                            <div className="flex-1">
-                                                                <p className="font-medium text-gray-900 text-sm">{stok.namaBarang}</p>
-                                                                <p className="text-xs text-gray-500">{stok.kodeBarang} • {stok.kodeGudang}</p>
+                                                    // DIUBAH: Normalisasi data di dalam map
+                                                    availableBarang.map((item) => {
+                                                        // Tentukan field berdasarkan mode
+                                                        const isStok = requestMode === 'ya';
+                                                        const id = item.id;
+                                                        const name = isStok ? item.namaBarang : item.name;
+                                                        const code = isStok ? item.kodeBarang : item.kode_barang;
+                                                        const image = isStok ? item.gambarBarang : item.image;
+                                                        const gudang = isStok ? item.kodeGudang : null;
+
+                                                        return (
+                                                            <div
+                                                                key={id}
+                                                                onClick={() => handleBarangSelect(item)}
+                                                                className="p-3 cursor-pointer flex items-center gap-3 hover:bg-blue-50 transition"
+                                                            >
+                                                                {image && (
+                                                                    <img
+                                                                        src={`${apiUrl}${image}`}
+                                                                        alt={name}
+                                                                        className="w-10 h-10 object-cover rounded-md border"
+                                                                    />
+                                                                )}
+                                                                <div className="flex-1">
+                                                                    <p className="font-medium text-gray-900 text-sm">{name}</p>
+                                                                    <p className="text-xs text-gray-500">
+                                                                        {code} {gudang && `• ${gudang}`}
+                                                                    </p>
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                    ))
+                                                        );
+                                                    })
                                                 )}
                                             </div>
                                         )}
@@ -217,6 +257,7 @@ const ModalMR = ({ open, onClose, onSave, initialData, isStock, apiUrl }) => {
                             </div>
                         </div>
                     ) : (
+                        // Ini adalah kasus untuk requestMode === 'tidak'
                         <div className="mb-4">
                             <label className="font-semibold">Note Barang</label>
                             <div className='bg-white p-2 mt-1 rounded-md border border-gray-300'>
@@ -224,13 +265,14 @@ const ModalMR = ({ open, onClose, onSave, initialData, isStock, apiUrl }) => {
                             </div>
                         </div>
                     )}
-                    
-                    <div className="mb-6">
-                        <label className="font-semibold">Quantity</label>
-                        <div className='bg-white p-2 mt-1 rounded-md border border-gray-300'>
-                            <input type="number" placeholder='Jumlah barang' min={1} className='w-full focus:outline-none' onChange={e => setQty(e.target.value)} value={qty} required />
-                        </div>
-                    </div>
+                    {requestMode !== 'other' &&
+                        (<div className="mb-6">
+                            <label className="font-semibold">Quantity</label>
+                            <div className='bg-white p-2 mt-1 rounded-md border border-gray-300'>
+                                <input type="number" placeholder='Jumlah barang' min={1} className='w-full focus:outline-none' onChange={e => setQty(e.target.value)} value={qty} required />
+                            </div>
+                        </div>)
+                    }
 
                     <div className='flex flex-col sm:flex-row-reverse w-full justify-start items-center gap-3'>
                         <button type="submit" className='w-full sm:w-auto py-2 px-6 rounded-lg font-medium bg-blue-500 hover:bg-blue-600 text-white transition-color duration-200'>Simpan</button>

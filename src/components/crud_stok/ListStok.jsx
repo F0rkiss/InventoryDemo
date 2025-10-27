@@ -162,7 +162,7 @@ function StokList() {
                 />
           </div>  
             <Transition contentVisible={contentVisible}>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 items-start">
+                <div className="space-y-4">
                     <ScrollPagination
                         loading={loading}
                         nextCursor={nextCursor}

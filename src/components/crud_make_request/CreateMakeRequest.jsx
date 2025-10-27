@@ -43,11 +43,12 @@ function CreateMakeRequest() {
     
     // BARU: Set status is_stock berdasarkan pilihan. Reset detail jika tipe berubah.
     if (selectedOption) {
-      const isStock = selectedOption.is_stok === 1;
-      if (isStockRequest !== isStock) {
+      // Asumsikan selectedOption.is_stok adalah "ya", "tidak", atau "other"
+      const newRequestType = selectedOption.is_stok; 
+      if (isStockRequest !== newRequestType) {
         setDetails([]); // Kosongkan detail jika tipe request berubah
       }
-      setIsStockRequest(isStock);
+      setIsStockRequest(newRequestType);
     } else {
       setIsStockRequest(null);
       setDetails([]);
@@ -59,6 +60,7 @@ function CreateMakeRequest() {
       setIsPreviewOpen(false);
       setSelectedImageUrl('');
   };
+
   const handleImageClick = (imageUrl) => {
       setSelectedImageUrl(imageUrl);
       setIsPreviewOpen(true);
@@ -83,19 +85,21 @@ function CreateMakeRequest() {
         qty: details.map((d) => d.qty),
       };
 
-      if (isStockRequest) {
+      if (isStockRequest === 'ya' || isStockRequest === 'other') {
+        // Jika "ya" (Stok) atau "other" (Barang), kirim ID barang
         payload.invent_barang_id = details.map((d) => d.selectedBarang?.id || d.selectedBarang?.invent_barangs_id || d.invent_barang_id);
-      } else {
+      } else if (isStockRequest === 'tidak') {
+        // Jika "tidak", kirim note
         payload.note_barang = details.map((d) => d.note_barang);
       }
 
       await api.post('inventMakeRequest-create', payload);
 
-      Swal.fire({ title: 'Make request berhasil dibuat!', icon: 'success', timer: 2000, showConfirmButton: false });
-      navigate('/make-request/list-make-request');
+      Swal.fire({ title: 'Material request berhasil dibuat!', icon: 'success', timer: 2000, showConfirmButton: false });
+      navigate('/material-request/list-material-request');
 
     } catch (error) {
-      Swal.fire({ icon: 'error', title: 'Gagal membuat request', text: error?.response?.data?.message || 'Terjadi kesalahan pada sistem.' });
+      Swal.fire({ icon: 'error', title: 'Gagal membuat material request', text: error?.response?.data?.message || 'Terjadi kesalahan pada sistem.' });
     } finally {
       setDisabled(false);
     }
@@ -121,14 +125,14 @@ function CreateMakeRequest() {
     <Layout title={'Create Make Request'}>
       <Block>
         <div className="xs:px-0 md:px-4">
-          <Back goHome={() => navigate('/make-request/list-make-request')} />
+          <Back goHome={() => navigate('/material-request/list-material-request')} />
           <p className="lg:text-3xl text-2xl font-semibold capitalize my-4">Create Make Request</p>
 
           <Transition contentVisible={contentVisible}>
             <div className="p-7 bg-white shadow-lg shadow-gray-200 rounded-lg border border-gray-300">
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div className="mb-5 space-y-2">
-                  <label className="font-semibold">Type Request</label>
+                  <label className="font-semibold">Jenis Permintaan</label>
                   <SelectPaginate
                     source={'inventTypeRequest'}
                     selectValue={items.type_request}
@@ -150,7 +154,6 @@ function CreateMakeRequest() {
                     required />
                   </div>
                 </div>
-                {console.log(isStockRequest)}
                 {/* DIUBAH: Hanya tampilkan bagian detail jika Type Request sudah dipilih */}
                 {isStockRequest !== null && (
                   <>
@@ -171,14 +174,15 @@ function CreateMakeRequest() {
                                   "
                               >
                                   {/* Image Section (no changes here) */}
-                                  {isStockRequest && (
+                                  {(isStockRequest === 'ya' || isStockRequest === 'other') && (
                                       <div className="overflow-hidden rounded-lg bg-gray-50 w-20 md:w-40 aspect-[4/3]">
-                                          {item.selectedBarang?.gambarBarang ? (
+                                          {/* DIUBAH: Menyesuaikan field gambar (gambarBarang, image, dll) */}
+                                          {item.selectedBarang?.gambarBarang || item.selectedBarang?.image ? (
                                               <img
-                                                  src={`${apiUrl}${item.selectedBarang.gambarBarang}`}
-                                                  alt={item.selectedBarang.namaBarang}
+                                                  src={`${apiUrl}${item.selectedBarang.gambarBarang || item.selectedBarang.image}`}
+                                                  alt={item.selectedBarang.namaBarang || item.selectedBarang.name}
                                                   className="w-full h-full object-cover cursor-pointer"
-                                                  onClick={() => handleImageClick(`${apiUrl}${item.selectedBarang.gambarBarang}`)}
+                                                  onClick={() => handleImageClick(`${apiUrl}${item.selectedBarang.gambarBarang || item.selectedBarang.image}`)}
                                               />
                                           ) : (
                                               <div className="w-full h-full flex items-center justify-center text-xs text-gray-400">
@@ -189,25 +193,28 @@ function CreateMakeRequest() {
                                   )}
 
                                   {/* NEW: Flex container for all content to the right of the image */}
-                                  <div className={`flex items-center w-full ${!isStockRequest ? 'col-span-2' : ''}`}>
+                                  <div className={`flex items-center w-full ${(isStockRequest === 'tidak') ? 'col-span-2' : ''}`}>
 
                                       {/* Item Details Section */}
                                       <div>
-                                          {isStockRequest ? (
-                                              <div className="font-semibold text-gray-800">
-                                                  {item.selectedBarang?.name || item.selectedBarang?.namaBarang}
-                                              </div>
-                                          ) : (
+                                          {/* DIUBAH: Logika tampilan berdasarkan Tipe */}
+                                          {(isStockRequest === 'ya' || isStockRequest === 'other') ? (
+                                              <>
+                                                <div className="font-semibold text-gray-800">
+                                                    {item.selectedBarang?.name || item.selectedBarang?.namaBarang}
+                                                </div>
+                                                <div className="font-normal text-sm text-gray-400">
+                                                  {/* DIUBAH: Menyesuaikan field kode */}
+                                                  Kode: {item.selectedBarang?.kode || item.selectedBarang?.kodeBarang || item.selectedBarang?.kode_barang}
+                                                </div>
+                                              </>
+                                          ) : ( // isStockRequest === 'tidak'
                                               <div className="font-semibold text-gray-800">
                                                   <span className="font-normal text-sm text-gray-400">Note: </span>
                                                   {item.note_barang}
                                               </div>
                                           )}
-                                          {isStockRequest && (
-                                              <div className="font-normal text-sm text-gray-400">
-                                                  Kode: {item.selectedBarang?.kode || item.selectedBarang?.kodeBarang}
-                                              </div>
-                                          )}
+                                          
                                           <div className="font-medium mt-1">
                                               <span className="font-normal text-sm text-gray-400">Qty: </span>
                                               {item.qty}
@@ -223,7 +230,6 @@ function CreateMakeRequest() {
                                               <i className="bx bx-trash text-xl text-red-500"></i>
                                           </button>
                                       </div>
-
                                   </div>
                               </div>
                           ))
@@ -247,7 +253,7 @@ function CreateMakeRequest() {
               <ModalDetailRequest
                 open={openModal}
                 initialData={initialDetails}
-                isStock={isStockRequest}
+                requestMode={isStockRequest}
                 apiUrl={apiUrl}
                 onClose={() => { setOpenModal(false); setEditIndex(null); }}
                 onSave={handleSaveDetail}

@@ -8,21 +8,21 @@ import Swal from 'sweetalert2';
 import { DecryptID } from '../../helper/EncryptHelper';
 import Transition from '../component/Transition';
 import { useAuth } from '../../auth/AuthContext';
-import ModalMR from '../component/modal/ModalMR';
+import ModalMR from '../component/modal/ModalMR'; // Pastikan path ini benar
 import ImagePreviewModal from '../component/modal/ImagePreviewModal';
 
 function UpdateMakeRequest() {
     const { id } = useParams();
     const navigate = useNavigate();
     const { role } = useAuth();
-    const apiUrl = import.meta.env.VITE_URL; // BARU: Diperlukan untuk gambar
+    const apiUrl = import.meta.env.VITE_URL;
 
     const [items, setItems] = useState({
-        type_request: '', // Akan diisi dengan nama tipe request
+        type_request: '', 
         tanggal: '',
     });
     
-    // BARU: State untuk melacak tipe request (stok atau bukan)
+    // DIUBAH: State melacak tipe request ("ya", "tidak", "other", atau null)
     const [isStockRequest, setIsStockRequest] = useState(null);
 
     const [details, setDetails] = useState([]);
@@ -65,13 +65,16 @@ function UpdateMakeRequest() {
         } else {
             detailsChanged = details.some((detail, index) => {
                 const orig = originalDetails[index];
-                if (isStockRequest) {
-                    const oldId = orig.selectedBarang?.id || orig.id;
-                    const newId = detail.selectedBarang?.id || detail.id;
+                
+                // DIUBAH: Logika perbandingan berdasarkan requestMode
+                if (isStockRequest === 'ya' || isStockRequest === 'other') {
+                    const oldId = orig.selectedBarang?.id || orig.invent_barang_id;
+                    const newId = detail.selectedBarang?.id || detail.invent_barang_id;
                     return newId !== oldId || String(detail.qty) !== String(orig.qty);
-                } else {
+                } else if (isStockRequest === 'tidak') {
                     return detail.note_barang !== orig.note_barang || String(detail.qty) !== String(orig.qty);
                 }
+                return false; // Fallback
             });
         }
         setIsUnchanged(!dateChanged && !detailsChanged);
@@ -82,29 +85,35 @@ function UpdateMakeRequest() {
             const url = role === 'admin' ? `inventMakeRequest-admin/detail/${decryptedId}` : `inventMakeRequest-detail/${decryptedId}`;
             const response = await api.get(url);
             const data = response.data.data.makeRequest;
-            // DIUBAH: Mengambil data is_stock dan menyimpannya di state
-            const isStock = data.MR?.is_stok === 1;
-            setIsStockRequest(isStock);
+            
+            // DIUBAH: Mengambil data is_stock ("ya", "tidak", "other")
+            const requestMode = data.MR?.is_stok;
+            setIsStockRequest(requestMode);
 
             const fetchedItems = {
                 type_request: data.MR?.type_name,
                 tanggal: data.MR?.tanggal
             };
 
-            // DIUBAH: Menyesuaikan struktur detail dari API
+            // DIUBAH: Menyesuaikan struktur detail berdasarkan requestMode
             const fetchedDetails = data.detailsMR.map(detail => {
-                if (isStock) {
-                    // Manually build the 'selectedBarang' object to ensure consistency
+                // Jika "ya" atau "other", kita buat objek selectedBarang
+                if (requestMode === 'ya' || requestMode === 'other') {
                     const barangData = {
                         id: detail.invent_barang_id,
-                        name: detail.nameBarang,
-                        image: detail.image,
-                        kode_barang: detail.kodeBarang,
+                        // Normalisasi nama, gambar, kode
+                        name: detail.nameBarang || detail.name,
+                        namaBarang: detail.nameBarang || detail.name,
+                        image: detail.image || detail.gambarBarang,
+                        gambarBarang: detail.image || detail.gambarBarang,
+                        kode_barang: detail.kodeBarang || detail.kode_barang,
+                        kodeBarang: detail.kodeBarang || detail.kode_barang,
+                        // Gudang hanya ada di mode "ya" (stok)
                         kode_gudang: detail.kodeGudang
                     };
-                    // Now, the item will have the correct 'selectedBarang' object
                     return { ...detail, selectedBarang: barangData };
                 }
+                // Jika "tidak", kembalikan apa adanya (sudah berisi note_barang)
                 return detail;
             }) || [];
             
@@ -138,32 +147,28 @@ function UpdateMakeRequest() {
                 qty: details.map(item => item.qty),
             };
 
-            if (isStockRequest) {
-                // Gunakan 'barang_id' dari item asli, atau 'id' dari barang yang baru dipilih
-                payload.invent_barang_id = details.map(item => item.selectedBarang?.invent_barangs_id || item.selectedBarang?.id || item.invent_barang_id);
-            } else {
+            if (isStockRequest === 'ya' || isStockRequest === 'other') {
+                payload.invent_barang_id = details.map(item => item.selectedBarang?.id || item.invent_barang_id);
+            } else if (isStockRequest === 'tidak') {
                 payload.note_barang = details.map(item => item.note_barang);
             }
 
             await api.put(`inventMakeRequest-update/${decryptedId}`, payload);
             
             Swal.fire({ title: 'Make request berhasil diubah!', icon: 'success', timer: 2000, showConfirmButton: false });
-            navigate('/make-request/list-make-request');
+            navigate('/material-request/list-material-request');
 
         } catch (error) {
             let errorMessage = 'Ada Kesalahan Dalam Sistem';
-
             if (error?.response?.data?.msg) {
                 const msg = error.response.data.msg;
-
                 if (typeof msg === 'string') {
-                errorMessage = msg;
+                    errorMessage = msg;
                 } else if (typeof msg === 'object') {
-                // flatten object values and take first message
-                const messages = Object.values(msg).flat();
-                if (messages.length > 0) {
-                    errorMessage = messages[0]; 
-                }
+                    const messages = Object.values(msg).flat();
+                    if (messages.length > 0) {
+                        errorMessage = messages[0]; 
+                    }
                 }
             }
             Swal.fire({
@@ -209,13 +214,13 @@ function UpdateMakeRequest() {
         <Layout title={'Update Make Request'}>
             <Block>
                 <div className='xs:px-0 md:px-4'>
-                    <Back goHome={() => navigate('/make-request/list-make-request')} />
+                    <Back goHome={() => navigate('/material-request/list-material-request')} />
                     <p className='lg:text-3xl text-2xl font-semibold capitalize my-4'>Update Make Request</p>
                     <Transition contentVisible={contentVisible}>
                         <div className="p-7 bg-white shadow-lg shadow-gray-200 rounded-lg border">
                             <form onSubmit={handleSubmit}>
                                 <div className="mb-5 space-y-2">
-                                    <label className='font-semibold'>Type Request</label>
+                                    <label className='font-semibold'>Jenis Permintaan</label>
                                     <div className='bg-gray-200 p-2 rounded-md border border-gray-300 mt-2'>
                                         <input type="text" value={items.type_request || ''} className="w-full p-2 bg-transparent" readOnly disabled />
                                     </div>
@@ -241,14 +246,14 @@ function UpdateMakeRequest() {
                                                     key={id}
                                                     className="
                                                     border border-gray-300 rounded-xl p-3
-                                                    grid grid-cols-[auto,1fr]  /* Simple grid: image size, remaining space */
+                                                    grid grid-cols-[auto,1fr]
                                                     items-center gap-x-4
                                                     "
                                                 >
-                                                    {/* Image Section */}
-                                                    { isStockRequest && 
+                                                    {/* DIUBAH: Tampilkan gambar jika "ya" atau "other" */}
+                                                    { (isStockRequest === 'ya' || isStockRequest === 'other') && 
                                                         <div className="overflow-hidden rounded-lg bg-gray-50 w-20 md:w-40 aspect-[4/3]">
-                                                            {isStockRequest && (item.selectedBarang?.gambarBarang || item.selectedBarang?.image) ? (
+                                                            {(item.selectedBarang?.gambarBarang || item.selectedBarang?.image) ? (
                                                                 <img
                                                                     src={`${apiUrl}${item.selectedBarang.gambarBarang || item.selectedBarang.image}`}
                                                                     alt={item.selectedBarang.name || item.selectedBarang.namaBarang}
@@ -263,21 +268,24 @@ function UpdateMakeRequest() {
                                                         </div>
                                                     }
 
-                                                    {/* NEW: Flex container for all content to the right of the image */}
-                                                    <div className={`flex items-center w-full ${!isStockRequest ? 'col-span-2' : ''}`}>
+                                                    {/* DIUBAH: Terapkan col-span jika "tidak" */}
+                                                    <div className={`flex items-center w-full ${isStockRequest === 'tidak' ? 'col-span-2' : ''}`}>
         
                                                         {/* Item Details Section */}
                                                         <div>
-                                                            {isStockRequest ? (
+                                                            {/* DIUBAH: Tampilkan nama barang jika "ya" atau "other" */}
+                                                            {(isStockRequest === 'ya' || isStockRequest === 'other') ? (
                                                                 <div className="font-semibold text-gray-800">
                                                                     {item.selectedBarang?.name || item.selectedBarang?.namaBarang}
                                                                 </div>
                                                             ) : (
+                                                                // Tampilkan note jika "tidak"
                                                                 <div className="font-semibold text-gray-800">
                                                                     {item.note_barang}
                                                                 </div>
                                                             )}
-                                                            {isStockRequest && (
+                                                            {/* DIUBAH: Tampilkan kode jika "ya" atau "other" */}
+                                                            {(isStockRequest === 'ya' || isStockRequest === 'other') && (
                                                                 <div className="font-normal text-sm text-gray-400">
                                                                     Kode: {item.selectedBarang?.kode_barang || item.selectedBarang?.kodeBarang}
                                                                 </div>
@@ -288,7 +296,7 @@ function UpdateMakeRequest() {
                                                             </div>
                                                         </div>
 
-                                                        {/* Buttons Section (Pushed right with ml-auto) */}
+                                                        {/* Buttons Section */}
                                                         <div className="flex items-center gap-4 ml-auto pl-3">
                                                             <button type="button" onClick={() => { setInitialDetails(item); setEditIndex(id); setOpenModal(true); }}>
                                                                 <i className='bx bx-edit text-xl text-cyan-600'></i>
@@ -318,13 +326,13 @@ function UpdateMakeRequest() {
                             </form>
                         </div>
                         {openModal && (
-                            // DIUBAH: Menggunakan modal yang baru
+                            // DIUBAH: Menggunakan prop 'requestMode'
                             <ModalMR
                                 open={openModal}
                                 onClose={() => { setOpenModal(false); setEditIndex(null); }}
                                 onSave={handleSaveDetail}
                                 initialData={initialDetails}
-                                isStock={isStockRequest}
+                                requestMode={isStockRequest} // Ganti dari isStock
                                 apiUrl={apiUrl}
                             />
                         )}

@@ -74,7 +74,7 @@ const LogCards = forwardRef(({ item, goToPage }, ref) => {
                                 </h5>
                                 {beforeIsNull ? (
                                     <div className="text-center py-4">
-                                        <i className="bx bx-plus-circle text-2xl text-gray-400 mb-2"></i>
+                                        {/* <i className="bx bx-plus-circle text-2xl text-gray-400 mb-2"></i> */}
                                         <p className="text-gray-400 text-sm italic">Data Baru</p>
                                     </div>
                                 ) : (

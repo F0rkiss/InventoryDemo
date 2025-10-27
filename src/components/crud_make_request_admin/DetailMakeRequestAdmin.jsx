@@ -77,7 +77,7 @@ function DetailMakeRequestAdmin() {
         <div className="xs:px-0 md:px-4">
           {/* Main Info & Detail */}
             <Transition contentVisible={contentVisible}>
-            <Back goHome={() => navigate('/make-request-admin/list-make-request-admin')} />
+            <Back goHome={() => navigate('/material-request-admin/list-material-request-admin')} />
             <div className="flex items-center justify-between my-4 gap-2">
               <p className='lg:text-3xl text-lg font-semibold capitalize'>Detail Make Request</p>
               <p className='rounded-md bg-gray-300 lg:p-2 p-2 text-center lg:text-sm text-xs text-gray-700'>{item.is_full_approval}</p>
@@ -133,7 +133,8 @@ function DetailMakeRequestAdmin() {
                           <tr className="bg-gray-100">
                             <th className="px-3 py-2 rounded-l-md">No</th>
                             <th className="px-3 py-1">
-                              {mainMR?.is_stok === 1 ? 'Barang' : 'Note Barang'}</th>
+                              {(mainMR?.is_stok === 'ya' || mainMR?.is_stok === 'other')  ? 'Barang' : 'Note Barang'}
+                            </th>
                             <th className="px-3 py-1 rounded-r-md">Quantity</th>
                           </tr>
                         </thead>
@@ -143,7 +144,7 @@ function DetailMakeRequestAdmin() {
                               <td className="px-4 py-4 rounded-l-md">{i + 1}</td>
                               {/* { d.note_barang &&  */}
                                 <td className="px-4 py-4">
-                                  {Number(mainMR?.is_stok) === 1 ? (
+                                  {(mainMR?.is_stok === 'ya' || mainMR?.is_stok === 'other') ? (
                                       <div className="flex items-center gap-3">
                                         {d?.image && (
                                           <img
