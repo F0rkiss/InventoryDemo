@@ -116,7 +116,6 @@ th {
   transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter; /* transition-colors */
   transition-duration: 200ms; /* duration-200 */
   font-size: 0.875rem; /* text-sm */
-  border: 1.5px solid #e19797; 
 }
 
 .delete-button:hover {
@@ -158,19 +157,24 @@ th {
   background-color: #befdd4; 
 }
 
-.DetailButton {
-  background-color: #f3f4f6; /* sedikit lebih terang dari #dedbdb (bg-gray-100) */
-  color: #1f2937; /* text-gray-800 */
-  font-weight: 500;
-  border-radius: 0.5rem;
-  border: 1.5px solid #d1d5db; /* border-gray-300 */
-  padding: 0.5rem 1rem;
-  font-size: 0.875rem;
-  transition: all 0.2s ease;
+.more-detail-button {
+  display: flex;                 /* flex */
+  justify-content: center;     /* justify-center */
+  align-items: center;         /* items-center */
+  width: 100%;                 /* w-full */
+  padding: 0.7rem 1rem;       /* px-4 (1rem) & py-3 (0.75rem) */
+  background-color: #1e293b;   /* bg-slate-800 */
+  color: #ffffff;              /* text-white */
+  font-weight: 600;            /* font-semibold */
+  border-radius: 0.5rem;       /* rounded-lg */
+  
+  /* transition-colors & duration-200 */
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 200ms;
 }
 
-.DetailButton:hover {
-  background-color: #e5e7eb; /* hover:bg-gray-200 */
-  border-color: #9ca3af; /* hover:border-gray-400 */
+.more-detail-button:hover {
+  background-color: #0f172a;   /* hover:bg-slate-900 */
 }
 

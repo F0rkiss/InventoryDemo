@@ -87,10 +87,10 @@ const MakeRequestCards = forwardRef(({ item, goToDetail, canUpdate, goToUpdate }
                 </div>
                     <div className="flex flex-col sm:flex-row gap-2 mt-4">
                         <button
-                            className="w-full px-4 py-3 bg-slate-800 hover:bg-slate-900 text-white font-semibold rounded-lg transition-colors duration-200"
+                            className="more-detail-button"
                             onClick={() => goToDetail(item.id)}
                         >
-                            Lihat Detail
+                            Lihat Detail <i className="bx bx-chevron-right text-lg"></i>
                         </button>
                     </div>
             </div>

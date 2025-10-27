@@ -205,7 +205,7 @@ const LPBCards = forwardRef(({ item, goToUpdate, goToDetail, isList, goToCreate,
             {isList ? (
                 <>
                 <button
-                    className="px-3 py-1.5 DetailButton text-sm sm:text-base"
+                    className="more-detail-button"
                     onClick={() => goToDetail(item.id)}
                     title="View Details"
                 >

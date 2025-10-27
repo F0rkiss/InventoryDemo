@@ -1,52 +1,79 @@
-import React, { forwardRef } from 'react';
+import React, { forwardRef, useState } from 'react';
 import DateFormat from '../../../helper/DateFormatHelper';
 
 const PurchaseOrderPRCards = forwardRef(({ item, goToCreate, goToDetail }, ref) => {
+    const [isExpanded, setIsExpanded] = useState(null);
+    const toggleExpansion = () => {
+        setIsExpanded(!isExpanded);
+    };
+    
     const itemCount = item.details?.length || 0;
 
     return (
-        <div
-            className="rounded-lg bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200 p-4 flex flex-col justify-between min-h-[200px]"
-            ref={ref}
-        >
-            {/* Header Section */}
-            <div className='grid grid-cols-3 justify-between mb-3 border-b items-center justify-center pb-2'>
-                <h3 className='col-start-1 col-span-2 font-bold text-xl capitalize'>
-                    {item.kode}
-                </h3>
-                <h3 className='row-start-2 col-span-3 font-medium text-lg capitalize self-start'>
-                    {DateFormat(item.tanggal)}
-                </h3>
-                {/* <button
-                    className='detail-button col-start-3 justify-self-end'
-                    onClick={() => goToDetail(item.id)}
-                    title="View Details"
-                >
-                    <i className="bx bx-dots-vertical-rounded text-2xl group-hover:text-gray-800 transition-all duration-200" />
-                </button> */}
-            </div>
-
-            {/* Content Section */}
-            <div className='flex-1 space-y-2 mb-4'>
-                <div className="flex justify-between items-start">
-                    <span className="text-gray-500">Note</span>
-                    <p className='font-medium text-right max-w-[60%] break-words'>
-                        {item.note}
+        <div className='rounded-2xl bg-white border px-5 py-3 mb-2 flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow duration-200' ref={ref}>
+            {/* Bagian Header (Selalu Terlihat) - Diambil dari PurchaseOrderCards */}
+            <div className='flex justify-between items-center min-h-[64px]'>
+                <div className='self-start py-1 space-y-1'>
+                    <p className='flex font-bold text-lg sm:text-md capitalize items-center'>
+                        {item.kode}
                     </p>
+                    <p className='text-base pe-2'>
+                        {DateFormat(item.tanggal)}
+                    </p>
+                    <div className={`max-h-max min-w-max max-w-max rounded-md border ${item.is_completed ? 'bg-green-50 border-green-400' : 'bg-amber-50 border-amber-400'}`} >
+                        <p className={`py-1 px-2 flex gap-1 text-left items-center text-xs font-medium ${item.is_completed ? 'text-green-700' : 'text-amber-600'}`}>
+                            <i className={`${item.is_completed ? 'bx bxs-check-circle' : 'bx bxs-time'}`}></i> 
+                            { item.is_completed ? 'Selesai' : 'Belum selesai'}</p>
+                    </div>
                 </div>
-            </div>
-            <div className={`max-w-max flex self-end rounded-md border mb-2 ${item.is_completed ? 'bg-green-50 border-green-400' : 'bg-amber-50 border-amber-400'}`} >
-                <p className={`py-1 px-4 text-xs font-medium ${item.is_completed ? 'text-green-700' : 'text-amber-600'}`}>{item.is_completed ? 'Selesai' : 'Belum selesai' }</p>
-            </div>
-
-            {/* Action Buttons Section */}
-            <div className='flex justify-end gap-2 mt-3'>
                 <button
-                    className="px-3 py-1.5 purchase-button "
-                    onClick={() => goToCreate(item.id)}
+                    className='px-2 py-1 detail-button self-center'
+                    aria-expanded={isExpanded}
+                    aria-label="Toggle details"
+                    onClick={toggleExpansion}
                 >
-                    Create Purchase Order
+                    <i className={`bx bxs-chevron-down text-2xl text-gray-600 transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`} />
                 </button>
+            </div>
+            
+            {/* Konten (Expandable) - Diambil dari PurchaseOrderCards */}
+            <div
+            className={`
+                mt-2 transition-all duration-300 overflow-hidden
+                ${isExpanded ? "max-h-screen opacity-100" : "max-h-0 opacity-0"}
+            `}
+            >
+                <div className="space-y-2">
+
+                    {/* Konten Detail 2 Kolom - Diisi dengan data dari PR */}
+                    <div className="flex flex-col md:flex-row gap-x-10 gap-y-2 mb-4 text-sm">
+                        
+                        {/* Kolom Kiri */}
+                        <div className="flex-1 space-y-2">
+                            <div className="">
+                                <p className='text-gray-500'>Note</p><p className='font-medium'>{item.note}</p>
+                            </div>
+                        </div>
+                        
+                        {/* Kolom Kanan */}
+                        <div className="flex-1 space-y-2">
+                            <div className="">
+                                <p className='text-gray-500'>Kode MR</p><p className='font-medium'>{item.make_request?.kode}</p>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    {/* Tombol Aksi Bawah - Diarahkan ke goToDetail */}
+                    <div className="flex flex-col sm:flex-row py-2">
+                        <button
+                            className="flex justify-center items-center w-full px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white  font-semibold rounded-lg transition-colors duration-200"
+                            onClick={() => goToCreate(item.id)}
+                        >
+                            Buat Purchase Order <i className="bx bx-chevron-right text-lg"></i>
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     );

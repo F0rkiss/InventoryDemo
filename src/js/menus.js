@@ -12,7 +12,6 @@ const menus = [
             { key: "PurchaseRequest", label: "Purchase Request", path: "/purchase-request/list-purchase-request" },
             { key: "ListPurchaseRequest", label: "Create Purchase Order", path: "/purchase-order-pr/list-purchase-order-pr" },
             { key: "PurchaseOrder", label: "Purchase Order", path: "/purchase-order/list-purchase-order" },
-            { key: "TypeRequest", label: "Type Request", path: "/type-request/list-type-request" },
         ]
     },
     {
@@ -25,7 +24,7 @@ const menus = [
             { key: "LPB", label: "LPB", path: "/lpb/list-lpb" },
         ]
     },
-
+    
     {
         key: "InventStok" || "Barang" || "JenisBarang" || "SumberBarang",
         label: "Barang",
@@ -50,6 +49,7 @@ const menus = [
     },
     { key: "User", label: "Data User", icon: "bx bxs-user-badge", path: "/user/list-user" },
     { key: "Categories", label: "Category", icon: "bx bx-category-alt", path: "/category/list-category" },
+    { key: "TypeRequest", label: "Type Request", icon:"bx bx-comment-detail" ,path: "/type-request/list-type-request" },
     { key: "Status", label: "Status", icon: "bx bxs-checkbox-checked", path: "/status/list-status" },
     { key: "Role", label: "Role", icon: "bx bx-tag", path: "/role/list-role" },
     { key: "Billing", label: "Billing", icon: "bx bx-spreadsheet", path: "/billing/list-billing" },

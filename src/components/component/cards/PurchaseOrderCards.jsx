@@ -108,7 +108,7 @@ const PurchaseOrderCards = forwardRef(({item, goToUpdate, goToDetail, canUpdate,
                                 <p className='text-gray-500'>Biaya <p className='font-medium text-black'>{PriceFormat(item.harga)}</p></p>
                                 { item.is_ppn !== 0 && (
                                     <>
-                                        <p className='text-gray-500'>PPN <p className='font-medium text-black'>{item.nilai_ppn}%</p> </p> 
+                                        <p className='text-gray-500'>PPN <p className='font-medium text-amber-600'>{item.nilai_ppn}%</p> </p> 
                                         <p className='text-gray-500'>Biaya Akhir <p className='font-medium text-black'>{PriceFormat(item.harga_after_ppn)}</p> </p> 
                                     </>
                                     )
