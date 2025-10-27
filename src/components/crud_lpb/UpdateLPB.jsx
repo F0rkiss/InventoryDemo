@@ -173,15 +173,27 @@ function UpdateLPB() {
     }
     
     const resetValue = () => {
-        if (originalItems && originalDetails) {
-            setItems(originalItems)
-            setDetails(originalDetails)
-        } else {
-            setItems({ purchase_order: null, tanggal: '', penerima:'', note:'' })
-            setDetails([])
-        }
-        setErrors({})
-    }
+        Swal.fire({
+            title: 'Reset data?',
+            text: 'Semua perubahan akan dibatalkan.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Ya, reset',
+            cancelButtonText: 'Batal',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                if (originalItems && originalDetails) {
+                    setItems(originalItems);
+                    setDetails(originalDetails);
+                } else {
+                    setItems({ purchase_order: null, tanggal: '', penerima: '', note: '' });
+                    setDetails([]);
+                }
+                setErrors({});
+            }
+        });
+    };
+    
 
     const handleClosePreview = () => {
         setIsPreviewOpen(false)

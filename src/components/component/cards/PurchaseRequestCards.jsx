@@ -10,7 +10,7 @@ const PurchaseRequestCards = forwardRef(
 
         return (
             <div
-                className="rounded-lg bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200 p-3 flex flex-col justify-between min-h-[100px] w-full"
+                className="mb-3 rounded-lg bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200 p-3 flex flex-col justify-between min-h-[100px] w-full"
                 ref={ref}
             >
                 {/* Header Section */}
