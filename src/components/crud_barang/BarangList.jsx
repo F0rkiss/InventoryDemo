@@ -161,7 +161,7 @@ function ListBarang() {
     <Layout title={'List Barang'}>
         <Block>
           <div className='ms-3 mb-4 flex items-center justify-between'>
-                <p className='lg:text-3xl text-2xl font-semibold capitalize'>Barang List</p>
+                <p className='lg:text-3xl text-2xl font-semibold capitalize'>Daftar Barang</p>
                 <SearchBar
                     onChange={handleSearchChange}
                     disable={loading}

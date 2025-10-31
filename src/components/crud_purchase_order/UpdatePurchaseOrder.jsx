@@ -12,7 +12,6 @@ import Transition from '../component/Transition'
 import { useAuth } from '../../auth/AuthContext'
 import PriceFormat from '../../helper/PriceFormatHelper'
 import ImagePreviewModal from '../component/modal/ImagePreviewModal'
-import PaymentMethodSelect from '../component/PaymentMethodSelector'
 import Loader from '../component/Loader'
 
 function UpdatePurchaseOrder() {
@@ -24,7 +23,7 @@ function UpdatePurchaseOrder() {
         kode: '',
         alamat: '',
         keterangan: '',
-        cara_pembayaran: '',
+        cara_pembayaran: null,
         tanggal_penyerahan: '',
     }) 
     const [details, setDetails] = useState([]);
@@ -73,7 +72,7 @@ function UpdatePurchaseOrder() {
             items.kode_suplier !== originalItems.kode_suplier ||
             items.keterangan !== originalItems.keterangan ||
             items.alamat !== originalItems.alamat ||
-            items.cara_pembayaran !== originalItems.cara_pembayaran ||
+            items.cara_pembayaran?.id !== originalItems.cara_pembayaran?.id ||
             items.tanggal_penyerahan !== originalItems.tanggal_penyerahan;
 
         let detailsChanged = false;

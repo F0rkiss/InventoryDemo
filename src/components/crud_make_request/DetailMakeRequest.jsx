@@ -28,8 +28,12 @@ function DetailMakeRequest() {
   const [contentVisible, setContentVisible] = useState(false)
   const apiUrl = import.meta.env.VITE_URL
 
+  // Preview image
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [selectedImageUrl, setSelectedImageUrl] = useState('');
+
+  // loading preview pdf
+  const [isPreviewLoading, setIsPreviewLoading] = useState(false);
   
   useEffect(() => {
     const decryptedId = DecryptID(id)
@@ -68,6 +72,53 @@ function DetailMakeRequest() {
   const handleImageClick = (imageUrl) => {
     setSelectedImageUrl(imageUrl);
     setIsPreviewOpen(true);
+  };
+
+  const handlePreview = async () => {
+      if (isPreviewLoading) return; // Mencegah klik ganda
+      setIsPreviewLoading(true);
+      try {
+          // Menggunakan decryptedId dari state
+          const response = await api.get(`/pdf/preview_mr/${decryptedId}`, {
+              responseType: 'blob', // Penting: minta response sebagai blob (file)
+          });
+
+          // Cek jika response adalah PDF
+          if (response.data.type === 'application/pdf') {
+              // Buat URL objek dari blob
+              const file = new Blob([response.data], { type: 'application/pdf' });
+              const fileURL = URL.createObjectURL(file);
+              
+              // Buka di tab baru
+              window.open(fileURL, '_blank');
+              URL.revokeObjectURL(fileURL); // Bersihkan memori setelah tab terbuka
+          } else {
+              // Handle jika API mengembalikan error (misal, JSON error)
+              // Coba baca blob sebagai teks untuk melihat pesan error
+              const errText = await response.data.text();
+              let errJson = {};
+              try {
+                errJson = JSON.parse(errText); // Asumsi error adalah JSON
+              } catch(e) {
+                errJson = { message: 'Format respons tidak valid.' }
+              }
+              Swal.fire({
+                  icon: 'error',
+                  title: 'Gagal Membuat Preview',
+                  text: errJson.message || 'Format respons tidak valid.'
+              });
+          }
+
+      } catch (error) {
+          console.error("Error generating preview: ", error);
+          Swal.fire({
+              icon: 'error',
+              title: 'Gagal Membuat Preview',
+              text: error.message || 'Terjadi kesalahan pada server.'
+          });
+      } finally {
+          setIsPreviewLoading(false);
+      }
   };
 
   const cancelRequest = async () => {
@@ -116,9 +167,26 @@ function DetailMakeRequest() {
           {/* Main Info & Detail */}
             <Transition contentVisible={contentVisible}>
             <Back goHome={() => navigate('/material-request/list-material-request')} />
-            <div className="flex items-center justify-between my-4">
-                {/* <div className='flex items-center justify-between my-4'> */}
+            <div className="my-4">
                 <p className='lg:text-3xl text-2xl font-semibold capitalize'>Detail Material Request</p>
+                
+                {/* Wrapper untuk status dan tombol preview */}
+                <div className="flex items-center justify-between sm: gap-3 pt-4"> 
+                  {/* Tombol Preview Baru */}
+                  <button
+                      type="button"
+                      onClick={handlePreview}
+                      disabled={isPreviewLoading}
+                      className="flex items-center gap-2 py-2 px-3 w-fit rounded-md border border-slate-300 font-medium text-sm bg-white text-gray-700 hover:bg-gray-100 transition-colors duration-200 disabled:opacity-50"
+                      title="Preview PDF"
+                  >
+                      {/* Menggunakan icon boxicons */}
+                      <i className={`bx ${isPreviewLoading ? 'bx-loader-alt bx-spin' : 'bx-file'}`}></i>
+                      <span className="sm:inline">
+                          {isPreviewLoading ? 'Loading...' : 'Preview'}
+                      </span>
+                  </button>
+                  {/* --- Akhir Tombol Preview --- */}
                   {
                     role === 'admin' ? 
                     (
@@ -127,7 +195,9 @@ function DetailMakeRequest() {
                       <p className={`${item.can_be_deleted ? 'text-amber-700 bg-amber-100 border border-amber-500 py-2 px-3' : 'text-green-700 bg-green-100 border border-green-500 py-2 px-3'} rounded-md font-medium`}>{item.is_full_approval}</p>
                     )
                   }
-                {/* </div> */}
+
+                </div>
+                {/* --- Akhir Wrapper --- */}
             </div>
               <>
               <div className="flex flex-col lg:flex-row gap-4 mt-3">
@@ -331,6 +401,7 @@ function DetailMakeRequest() {
                               <th className="p-3">Approval Step Number</th>
                               <th className="p-3">Approval Step Note</th>
                               <th className="p-3 rounded-r-md">Status</th>
+                              <th className="p-3 rounded-r-md">Tanggal</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -346,9 +417,10 @@ function DetailMakeRequest() {
                                 </td>
                                 <td className="p-3">{step.approval_step_number}</td>
                                 <td className="p-3">{step.approval_step_note}</td>
-                                <td className='p-3 rounded-r-md'>
+                                <td className='p-3 '>
                                   <div className={`font-semibold ${step.status === 'approved' ? 'text-green-600' : 'text-red-600'}`}>{step.status}</div>
                                 </td>
+                                <td className="p-3 rounded-r-md">{step.created_at}</td>
                               </tr>
                             ))}
                           </tbody>

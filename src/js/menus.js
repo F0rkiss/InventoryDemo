@@ -31,8 +31,8 @@ const menus = [
         icon: "bx bx-package",
         isAccordion: true,
         children: [
-            { key: "InventStok", label: "List Stok", path: "/stok/list-stok" },
-            { key: "Barang", label: "List Barang", path: "/barang/list-barang" },
+            { key: "InventStok", label: "Daftar Stok", path: "/stok/list-stok" },
+            { key: "Barang", label: "Daftar Barang", path: "/barang/list-barang" },
             { key: "JenisBarang", label: "Jenis Barang", path: "/jenis-barang/list-jenis-barang" },
             { key: "SumberBarang", label: "Sumber Barang", path: "/sumber-barang/list-sumber-barang" },
         ]

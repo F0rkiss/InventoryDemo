@@ -184,6 +184,7 @@ const ModalPurchaseOrder = ({ onClose, onSave, open, initialData, apiUrl, existi
                     <div className="mb-4">
                         <label className="font-semibold">Pilih Barang</label>
                         <div className="relative mt-1" ref={searchContainerRef}>
+                            {console.log(modalData.selectedBarang)}
                             {modalData.selectedBarang ? (
                                 <div className="relative border rounded-lg p-3 bg-white flex items-start gap-3 shadow-sm">
                                     <div className="flex items-center gap-3">
@@ -287,7 +288,7 @@ const ModalPurchaseOrder = ({ onClose, onSave, open, initialData, apiUrl, existi
                                     className='w-full focus:outline-none'
                                     onChange={e => setModalData({ ...modalData, harga: e.target.value })}
                                     value={modalData.harga}
-                                    placeholder="Masukkan harga sub total"
+                                    placeholder="Masukkan biaya total"
                                     required
                                 />
                             </div>

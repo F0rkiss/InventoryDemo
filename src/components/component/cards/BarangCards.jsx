@@ -30,14 +30,17 @@ const ItemCard = forwardRef(({ item, handleDetailClick, handleUpdateClick, handl
                 </p>
             </div>
         </div>
-        <button
-            className='px-2 py-1 detail-button self-center'
-            aria-expanded={isExpanded}
-            aria-label="Toggle details"
-            onClick={toggleExpansion}
-        >
-            <i className={`bx bxs-chevron-down text-2xl text-gray-600 transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`} />
-        </button>
+        <div className="flex items-center my-2 gap-4">
+          <p className="text-gray-500">Qty: <span className="font-semibold text-black">{item.qty}</span></p>
+          <button
+              className='px-2 py-1 detail-button self-center'
+              aria-expanded={isExpanded}
+              aria-label="Toggle details"
+              onClick={toggleExpansion}
+          >
+              <i className={`bx bxs-chevron-down text-2xl text-gray-600 transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`} />
+          </button>
+        </div>
       </div>
 
       {/* --- Expandable Content --- */}

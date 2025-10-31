@@ -5,7 +5,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import Select from 'react-select'
 import { Block } from 'framework7-react'
 import SelectPaginate from '../component/SelectPaginate'
-import { accessOptions, findAccessOption } from '../../helper/FindOptions'
+import { isAsset, findIsAssetOption } from '../../helper/FindOptions'
 import Swal from 'sweetalert2'
 import Layout from '../component/Layout'
 import { DecryptID } from '../../helper/EncryptHelper'
@@ -20,7 +20,6 @@ function UpdateBarang() {
     const [isUnchanged, setIsUnchanged] = useState(true)
     const [item, setItem] = useState({
         name: '',
-        kode_barang: '',
         kode_gudang: '',
         satuan: '',
         image: null, // can be string (existing) or File (new)
@@ -50,7 +49,6 @@ function UpdateBarang() {
         const data = res.data.data
         const fetched = {
             name: data.name || '',
-            kode_barang: data.kode_barang || '',
             kode_gudang: data.kode_gudang || '',
             satuan: data.satuan || '',
             image: data.image || null,
@@ -66,7 +64,7 @@ function UpdateBarang() {
             tingkat_kebutuhan: data.tingkat_kebutuhan
             ? { value: data.tingkat_kebutuhan.id, label: data.tingkat_kebutuhan.name }
             : null,
-            is_asset: findAccessOption(data.is_asset),
+            is_asset: findIsAssetOption(data.is_asset),
         }
         setItem(fetched)
         setOriginal(fetched)
@@ -84,7 +82,6 @@ function UpdateBarang() {
         if (!original) return
         const changed =
         item.name !== original.name ||
-        item.kode_barang !== original.kode_barang ||
         item.kode_gudang !== original.kode_gudang ||
         item.satuan !== original.satuan ||
         // image changed if File selected
@@ -116,7 +113,6 @@ function UpdateBarang() {
     const validate = () => {
         if (
         !item.name ||
-        !item.kode_barang ||
         !item.kode_gudang ||
         !item.satuan ||
         !item.is_asset ||
@@ -154,7 +150,6 @@ function UpdateBarang() {
         fd.append('name', item.name)
         fd.append('is_asset', item.is_asset?.value)
         fd.append('satuan', item.satuan)
-        fd.append('kode_barang', item.kode_barang)
         fd.append('kode_gudang', item.kode_gudang)
         if (item.image instanceof File) fd.append('image', item.image)
 
@@ -215,21 +210,6 @@ function UpdateBarang() {
                     {/* Kode & Gudang side-by-side on md+ */}
                     <div className="md:grid md:grid-cols-2 md:gap-x-4">
                     <div className="mb-5 space-y-2">
-                        <label className="font-semibold">Kode Barang</label>
-                        <div className="bg-white p-2 rounded-md border border-gray-300 mt-2">
-                        <input
-                            type="text"
-                            name="kode_barang"
-                            value={item.kode_barang}
-                            onChange={(e) => setItem({ ...item, kode_barang: e.target.value })}
-                            className="w-full p-2 placeholder:text-gray-400 placeholder:font-inter placeholder:font-light"
-                            maxLength={80}
-                            placeholder="Kode Barang"
-                            required
-                        />
-                        </div>
-                    </div>
-                    <div className="mb-5 space-y-2">
                         <label className="font-semibold">Kode Gudang</label>
                         <div className="bg-white p-2 rounded-md border border-gray-300 mt-2">
                         <input
@@ -266,7 +246,7 @@ function UpdateBarang() {
                     <div className="mb-5 space-y-2">
                         <label className="font-semibold">Aset</label>
                         <Select
-                        options={accessOptions}
+                        options={isAsset}
                         value={item.is_asset}
                         placeholder="Aset"
                         onChange={(is_asset) => setItem({ ...item, is_asset })}

@@ -138,7 +138,7 @@ function MakeRequestList() {
           <Block>
             {/* Header Section */}
             <div className='flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-2'>
-              <p className='md:text-3xl text-2xl ms-3 font-semibold'>List Material Request</p>
+              <p className='md:text-3xl text-2xl ms-3 font-semibold'>Daftar Material Request</p>
               <div className="flex items-center gap-2">
                 <SearchBar
                 onChange={handleSearchChange}

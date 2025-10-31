@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import Select from 'react-select'
 import Back from '../component/Back'
 import { Block } from 'framework7-react'
-import { accessOptions } from '../../helper/FindOptions'
+import { isAsset } from '../../helper/FindOptions'
 import Layout from '../component/Layout'
 import SelectPaginate from '../component/SelectPaginate'
 import Swal from 'sweetalert2'
@@ -15,7 +15,6 @@ function CreateBarang() {
 
   const [items, setItems] = useState({
     name: '',
-    kode_barang: '',
     kode_gudang: '',
     satuan: '',
     image: null,
@@ -55,7 +54,6 @@ function CreateBarang() {
   const validate = () => {
     if (
       !items.name ||
-      !items.kode_barang ||
       !items.kode_gudang ||
       !items.satuan ||
       !items.is_asset ||
@@ -92,7 +90,6 @@ function CreateBarang() {
       fd.append('name', items.name)
       fd.append('is_asset', items.is_asset?.value)
       fd.append('satuan', items.satuan)
-      fd.append('kode_barang', items.kode_barang)
       fd.append('kode_gudang', items.kode_gudang)
       if (items.image) fd.append('image', items.image)
 
@@ -122,7 +119,6 @@ function CreateBarang() {
   const resetValue = () => {
     setItems({
       name: '',
-      kode_barang: '',
       kode_gudang: '',
       satuan: '',
       image: null,
@@ -163,21 +159,6 @@ function CreateBarang() {
 
                 {/* Kode & Gudang side-by-side on md+ */}
                 <div className="md:grid md:grid-cols-2 md:gap-x-4">
-                  <div className="xs:mb-5 space-y-2">
-                    <label className="font-semibold">Kode Barang</label>
-                    <div className="bg-white p-2 rounded-md border border-gray-300 mt-2">
-                      <input
-                        type="text"
-                        name="kode_barang"
-                        value={items.kode_barang}
-                        onChange={(e) => setItems({ ...items, kode_barang: e.target.value })}
-                        className="w-full p-2 placeholder:text-gray-400 "
-                        maxLength={80}
-                        placeholder="Kode Barang"
-                        required
-                      />
-                    </div>
-                  </div>
                   <div className="space-y-2">
                     <label className="font-semibold">Kode Gudang</label>
                     <div className="bg-white p-2 rounded-md border border-gray-300 mt-2">
@@ -215,7 +196,7 @@ function CreateBarang() {
                   <div className="mb-5 space-y-2">
                     <label className="font-semibold">Aset</label>
                     <Select
-                      options={accessOptions}
+                      options={isAsset}
                       value={items.is_asset}
                       placeholder="Aset"
                       onChange={(is_asset) => setItems({ ...items, is_asset })}

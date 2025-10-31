@@ -1,16 +1,15 @@
 import React, { useEffect, useState } from 'react'
-import { Page, Block } from 'framework7-react'
+import { Block } from 'framework7-react'
 import { useNavigate, useParams } from 'react-router-dom'
 import api from '../../api/api'
 import Back from '../component/Back'
 import Layout from '../component/Layout'
 import Swal from 'sweetalert2'
 import Loader from '../component/Loader'
-import SelectPaginate from '../component/SelectPaginate'
 import ModalPO from '../component/modal/ModalPurchaseOrder'
 import { DecryptID } from '../../helper/EncryptHelper'
 import Transition from '../component/Transition'
-import { useAuth } from '../../auth/AuthContext'
+import SelectPaginate from '../component/SelectPaginate'
 import PriceFormat from '../../helper/PriceFormatHelper'
 import ImagePreviewModal from '../component/modal/ImagePreviewModal'
 import DateFormat from '../../helper/DateFormatHelper' // Import DateFormat helper
@@ -24,7 +23,7 @@ function CreatePurchaseOrderPR() {
         kode: '',
         alamat: '',
         keterangan: '',
-        cara_pembayaran: '',
+        cara_pembayaran: null,
         tanggal_penyerahan: '',
         is_ppn: 0,
     }) 
@@ -91,7 +90,6 @@ function CreatePurchaseOrderPR() {
         if (!items.alamat) newErrors.alamat = 'Alamat wajib diisi.';
         if (!items.tanggal_penyerahan) newErrors.tanggal_penyerahan = 'Tanggal Penyerahan wajib diisi.';
         if (!items.keterangan) newErrors.keterangan = 'Keterangan wajib diisi.';
-        if (!items.cara_pembayaran) newErrors.cara_pembayaran = 'Metode Pembayaran wajib diisi.';
         if (details.length === 0) newErrors.details = 'Tambahkan minimal satu detail barang.';
         
         setErrors(newErrors);
@@ -116,7 +114,7 @@ function CreatePurchaseOrderPR() {
                 alamat: items.alamat,
                 tanggal_penyerahan: items.tanggal_penyerahan,
                 keterangan: items.keterangan,
-                cara_pembayaran: items.cara_pembayaran,
+                cara_pembayaran: items.cara_pembayaran?.id,
                 is_ppn: items.is_ppn,
                 invent_barangs_id: details.map(d => d.selectedBarang?.id ),
                 qty: details.map(d => d.qty ),
@@ -186,7 +184,7 @@ function CreatePurchaseOrderPR() {
                 kode: '',
                 alamat: '',
                 keterangan: '',
-                cara_pembayaran: '',
+                cara_pembayaran: null,
                 tanggal_penyerahan: '',
                 is_ppn: 0 
             });
@@ -412,17 +410,14 @@ function CreatePurchaseOrderPR() {
                                         <label className='font-semibold'>Metode Pembayaran</label>
                                         {errors.cara_pembayaran && <span className="text-red-500 text-sm">{errors.cara_pembayaran}</span>}
                                     </div>
-                                    <div className={`bg-white p-2 rounded-md border mt-2 ${errors.cara_pembayaran ? 'border-red-500' : 'border-gray-300'}`}>
-                                    <input 
-                                        type="text" 
-                                        name="cara_pembayaran" 
-                                        value={items.cara_pembayaran} 
-                                        onChange={handleChange}
-                                        className="w-full p-2 placeholder:text-gray-400"
-                                        maxLength={80}
-                                        placeholder='Metode Pembayaran'
+                                    <SelectPaginate 
+                                        source={'paymentType'}
+                                        selectValue={items.cara_pembayaran}
+                                        selectName="Metode pembayaran"
+                                        itemLabel={['payment']}
+                                        handleSelectChange={(value) => handleSelectChange('cara_pembayaran', value)}
+                                        className="w-full pt-2 placeholder:text-gray-400"
                                     />
-                                    </div>
                                 </div>
                                 <div className="mb-4">
                                     <label className='font-semibold'>PPN</label>
@@ -560,6 +555,7 @@ function CreatePurchaseOrderPR() {
                         setOpenModal(false);
                         setEditIndex(null);
                     }}
+                    initialData={editIndex !== null ? details[editIndex] : null}
                     />
                 }
             </div>

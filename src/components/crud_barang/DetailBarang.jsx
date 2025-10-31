@@ -78,7 +78,7 @@ function DetailItem() {
                 <div>
                   <h2 className="font-bold capitalize text-2xl ">{item.name}</h2>
                   <p className="mb-4 text-base">
-                    {isAsset ? 'Aset' : 'Non - asset'}
+                    {isAsset === 'ya' ? 'Aset' : isAsset === 'tidak' ? 'Non Aset' : 'Bangunan'}
                   </p>
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
