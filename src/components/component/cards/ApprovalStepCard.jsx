@@ -72,8 +72,40 @@ const ApprovalStepCard = forwardRef(({item, from, goToDetail, canUpdate, canDele
                   {item.jenisTypeRequest}
                 </p>
               </div>
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-1 relative group">
+                  <span className="text-gray-600">Step Approval</span>
+                  <i className="bx bx-info-circle text-yellow-500 cursor-pointer"></i>
+                  <div
+                    className="absolute left-full ml-2 top-1/2 -translate-y-1/2 
+                              opacity-0 group-hover:opacity-100
+                              transition-opacity duration-200 
+                              [transition-delay:400ms] group-hover:[transition-delay:0ms]
+                              bg-white border border-gray-300 text-gray-700 text-xs 
+                              rounded-md px-2 py-1 w-56 shadow-sm pointer-events-none"
+                  >
+                    Urutan persetujuan berdasarkan nomor yang menentukan siapa pengguna yang melakukan approval terlebih dahulu.
+                  </div>
+                </div>
+                <p className="text-sm font-medium text-gray-800 text-right max-w-[60%] break-words">
+                  {item.approval_step}
+                </p>
+              </div>
               <div className="flex justify-between items-start">
+                <div className="flex items-center gap-1 relative group">
                 <span className="text-gray-600">Admin Approval</span>
+                <i className="bx bx-info-circle text-yellow-500 cursor-pointer"></i>
+                  <div
+                    className="absolute left-full ml-2 top-1/2 -translate-y-1/2 
+                              opacity-0 group-hover:opacity-100
+                              transition-opacity duration-200 
+                              [transition-delay:400ms] group-hover:[transition-delay:0ms]
+                              bg-white border border-gray-300 text-gray-700 text-xs 
+                              rounded-md px-2 py-1 w-56 shadow-sm pointer-events-none"
+                  >
+                    user approval yang perlu membuat barang saat menyetujui
+                  </div>
+                </div>
                 <p className="text-sm font-medium text-gray-800 text-right max-w-[60%] break-words">
                   {item.isAdminApproved ? "Diperlukan" : "Tidak Diperlukan" }
                 </p>

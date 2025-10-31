@@ -26,6 +26,7 @@ function DetailLPB() {
 
     const [selectedImageUrl, setSelectedImageUrl] = useState('');
     const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+    const [isPreviewLoading, setIsPreviewLoading] = useState(false);
 
     const { id } = useParams();
     const { role } = useAuth();
@@ -109,6 +110,51 @@ function DetailLPB() {
             }
         }
 
+        const handlePreview = async () => {
+            if (isPreviewLoading) return; // Mencegah klik ganda
+            setIsPreviewLoading(true);
+            try {
+                // Menggunakan decryptedId dari state
+                const response = await api.get(`/pdf/preview_lpb/${decryptedId}`, {
+                    responseType: 'blob', // Penting: minta response sebagai blob (file)
+                });
+                // Cek jika response adalah PDF
+                if (response.data.type === 'application/pdf') {
+                    // Buat URL objek dari blob
+                    const file = new Blob([response.data], { type: 'application/pdf' });
+                    const fileURL = URL.createObjectURL(file);
+                    
+                    // Buka di tab baru
+                    window.open(fileURL, '_blank');
+                    URL.revokeObjectURL(fileURL); // Bersihkan memori setelah tab terbuka
+                } else {
+                    // Handle jika API mengembalikan error (misal, JSON error)
+                    // Coba baca blob sebagai teks untuk melihat pesan error
+                    const errText = await response.data.text();
+                    let errJson = {};
+                    try {
+                      errJson = JSON.parse(errText); // Asumsi error adalah JSON
+                    } catch(e) {
+                        errJson = { message: 'Format respons tidak valid.' }
+                    }
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal Membuat Preview',
+                        text: errJson.message || 'Format respons tidak valid.'
+                    });
+                }
+            } catch (error) {
+                console.error("Error generating preview: ", error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal Membuat Preview',
+                    text: error.message || 'Terjadi kesalahan pada server.'
+                });
+            } finally {
+                setIsPreviewLoading(false);
+            }
+        };
+
     // ==============================
     // Helpers
     // ==============================
@@ -138,6 +184,10 @@ function DetailLPB() {
         setSelectedImageUrl(imageUrl);
         setIsPreviewOpen(true);
         };
+        
+        const approvalClass = item.is_full_approval
+        ? 'text-green-700 bg-green-100 border border-green-500'
+        : 'text-amber-700 bg-amber-100 border border-amber-500';
 
     // ==============================
     // Render
@@ -151,6 +201,28 @@ function DetailLPB() {
                     <div className="flex items-center justify-between my-4">
                         <p className='lg:text-3xl text-2xl font-semibold capitalize'>Detail Laporan Penerimaan Barang</p>
                     </div>
+
+                    <div className="flex justify-between items-center">
+                    <button
+                        type="button"
+                        onClick={handlePreview}
+                        disabled={isPreviewLoading}
+                        className="flex items-center gap-2 py-2 px-3 w-fit rounded-md border border-slate-300 font-medium text-sm bg-white text-gray-700 hover:bg-gray-100 transition-colors duration-200 disabled:opacity-50"
+                        title="Preview PDF"
+                    >
+                        <i className={`bx ${isPreviewLoading ? 'bx-loader-alt bx-spin' : 'bx-file'}`}></i>
+                        <span className="sm:inline">
+                        {isPreviewLoading ? 'Loading...' : 'Preview'}
+                        </span>
+                    </button>
+
+                    <span
+                        className={`inline-block rounded-md font-medium text-xs lg:text-sm px-2 py-1 ${approvalClass}`}
+                    >
+                        {item.is_full_approval ? 'Sudah Di Approve' : 'Belum Di Approve'}
+                    </span>
+                    </div>
+
         
                     {/* MAIN INFO + PO INFO */}
                     <div className="flex flex-col lg:flex-row gap-4 mt-3">
@@ -163,14 +235,20 @@ function DetailLPB() {
                                 <InfoRow label="Penerima" value={item.penerima} />
                                 <InfoRow label="Note" value={item.note} />
                                 <InfoRow label="Tanggal" value={DateFormat(item.tanggal)} />
-                                <InfoRow
-                                    label="Status Approval LPB"
-                                    value={
-                                        <p className={`flex py-1 px-2 lg:py-2 lg:px-3 items-center text-xs lg:text-sm text-center gap-1 rounded-md font-medium ${item.is_full_approval ? 'text-green-700 bg-green-100 border border-green-500' : 'text-amber-700 bg-amber-100 border border-amber-500'}`}>
-                                            {item.is_full_approval ? 'Sudah Di Approve' : 'Belum Di Approve'}
-                                        </p>
+                                <InfoRow label="Status Approval LPB" value={
+                                        <span
+                                        className={`inline-block rounded-md font-medium text-xs lg:text-sm ${
+                                            item.is_full_approval
+                                            ? 'text-green-700 bg-green-100 border border-green-500'
+                                            : 'text-amber-700 bg-amber-100 border border-amber-500'
+                                        }`}
+                                        style={{ padding: '2px 6px' }} // tighter padding
+                                        >
+                                        {item.is_full_approval ? 'Sudah Di Approve' : 'Belum Di Approve'}
+                                        </span>
                                     }
-                                />
+                                    />
+
                             </div>
                         </div>
 

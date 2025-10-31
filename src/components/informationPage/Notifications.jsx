@@ -23,7 +23,7 @@ const Notifications = () => {
                 ...item,
                 isRead: false,
             }))
-            .sort((a, b) => new Date(b.created_at) - new Date(a.created_at)); // Sort newest first
+            .sort((a, b) => new Date(a.created_at) - new Date(b.created_at)); // Sort data terlama
 
             setItems(withReadStatus);
 
@@ -51,13 +51,13 @@ const Notifications = () => {
                 ...item,
                 isRead: false,
             }))
-            .sort((a, b) => new Date(b.created_at) - new Date(a.created_at)); // Sort newest first
+            .sort((a, b) => new Date(a.created_at) - new Date(b.created_at)); // Sort newest first
 
             setItems((prevItems) => {
             const existingIds = new Set(prevItems.map((item) => item.id));
             const uniqueNew = newItems.filter((item) => !existingIds.has(item.id));
             const combined = [...prevItems, ...uniqueNew];
-            return combined.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)); // Re-sort after merge
+            return combined.sort((a, b) => new Date(a.created_at) - new Date(b.created_at)); // Re-sort after merge
             });
 
 

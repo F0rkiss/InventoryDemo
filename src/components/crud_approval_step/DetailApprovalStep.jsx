@@ -7,6 +7,7 @@ import Loader from '../component/Loader'
 import Transition from '../component/Transition'
 import Layout from '../component/Layout'
 import { DecryptID } from '../../helper/EncryptHelper'
+import InfoRow from '../component/infoRow'
 
 function DetailApprovalStep() {
     const [item, setItem] = useState({})
@@ -45,7 +46,7 @@ function DetailApprovalStep() {
                 {loading ? (
                     <Loader Class={'mt-20'} />
                 ) : (
-                    <div className="px-4">
+                    <div className="px-4 sm:px-6">
                         <Transition contentVisible={contentVisible}>
                             <div className="flex items-center justify-between mb-4">
                                 <Back goHome={() => navigate('/approval-step/list-approval-step')} />
@@ -53,23 +54,24 @@ function DetailApprovalStep() {
 
                             <div className="flex flex-col lg:flex-row gap-4 mt-3">
                                 {/* Approval Step Info */}
-                                <div className="bg-white border rounded-md p-6 flex-1 min-h-[200px]">
+                                <div className="bg-white border rounded-md p-4 sm:p-6 flex-1 min-h-[200px]">
                                     <p className="font-semibold text-gray-400 text-xl">Approval Step Information</p>
-                                    <p className="text-xl font-bold capitalize mt-2">{item.user?.EmpName || '-'}</p>
-                                    <p className="text-lg mb-4">Step: {item.approval_step || '-'}</p>
+                                    <p className="text-xl font-bold capitalize mt-2 mb-3">{item.user?.EmpName || '-'}</p>
 
                                     <div className="space-y-3">
                                         <InfoRow label="Employee Name" value={item.user?.EmpName} />
                                         <InfoRow label="Employee Email" value={item.user?.email} />
                                         <InfoRow label="Employee Code" value={item.user?.EmpCode} />
                                         <InfoRow label="Phone" value={item.user?.EmpPhone} />
-                                        <InfoRow label="Admin Approval" value={item.isAdminApproved ? "Diperlukan" : "Tidak Diperlukan"} />
+                                        <InfoRow label="Step Approval" value={item.approval_step} showInfo={true} infoText="Urutan persetujuan berdasarkan nomor yang menentukan siapa pengguna yang melakukan approval terlebih dahulu." /> 
+                                        <InfoRow label="Up Line" value={item.is_upline ? "Iya" : "Tidak"} showInfo={true} infoText=" Jika adalah atasan dari depertamen dari user" /> 
+                                        <InfoRow label="Admin Approval" value={item.isAdminApproved ? "Diperlukan" : "Tidak Diperlukan"} showInfo={true} infoText="User approval yang perlu membuat barang saat menyetujui."/>
                                     </div>
                                 </div>
 
                                 {/* Type Request Info */}
-                                <div className="bg-white border rounded-md p-6 flex-1 min-h-[200px]">
-                                    <div className="flex items-start justify-between gap-4">
+                                <div className="bg-white border rounded-md p-4 sm:p-6 flex-1 min-h-[200px]">
+                                    <div className="flex flex-wrap items-start justify-between gap-4">
                                         <div className="flex-1 min-w-0">
                                             <p className="font-semibold text-gray-400 text-xl truncate">Type Request Information</p>
                                         </div>
@@ -94,7 +96,7 @@ function DetailApprovalStep() {
                             </div>
 
                             {/* NOTE */}
-                            <div className="bg-white border rounded-md p-6 mt-6">
+                            <div className="bg-white border rounded-md p-4 sm:p-6 mt-6">
                                 <p className="text-xl text-gray-400 font-semibold mb-2">Note</p>
                                 <p className="text-gray-700 whitespace-pre-wrap">{item.note || '-'}</p>
                             </div>
@@ -105,15 +107,5 @@ function DetailApprovalStep() {
         </Layout>
     )
 }
-
-// ==============================
-// Small Reusable Component
-// ==============================
-const InfoRow = ({ label, value }) => (
-    <div className="flex items-start justify-between">
-        <span className="text-gray-500 w-36 shrink-0">{label}</span>
-        <span className="font-medium text-right min-w-0 break-words">{value || '-'}</span>
-    </div>
-)
 
 export default DetailApprovalStep
