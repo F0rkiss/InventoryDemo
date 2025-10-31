@@ -61,9 +61,9 @@ const StatusList = lazy(() => import('./crud_status/StatusList.jsx'));
 const CreateStatus = lazy(() => import('./crud_status/CreateStatus.jsx'));
 const UpdateStatus = lazy(() => import('./crud_status/UpdateStatus.jsx'));
 
-const JenisMemoList = lazy(() => import('./crud_jenis_memo/JenisMemoList.jsx'));
-const CreateJenisMemo = lazy(() => import('./crud_jenis_memo/CreateJenisMemo.jsx'));
-const UpdateJenisMemo = lazy(() => import('./crud_jenis_memo/UpdateJenisMemo.jsx'));
+const JenisMemoList = lazy(() => import('./crud_jenis_memo/jenisMemoList.jsx'));
+const CreateJenisMemo = lazy(() => import('./crud_jenis_memo/CreatejenisMemo.jsx'));
+const UpdateJenisMemo = lazy(() => import('./crud_jenis_memo/UpdatejenisMemo.jsx'));
 
 const NavigationGroupList = lazy(() => import('./crud_navigations/crud_navigation_groups/ListNavigationGroups.jsx'));
 const CreateNavigationGroup = lazy(() => import('./crud_navigations/crud_navigation_groups/CreateNavigationGroups.jsx'));
