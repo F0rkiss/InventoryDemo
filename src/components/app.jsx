@@ -106,7 +106,7 @@ const CreateLPB = lazy(() => import('./crud_lpb/CreateLPB'))
 
 const ListLPB = lazy(() => import('./crud_lpb/ListLPB'))
 const DetailLPB = lazy(() => import('./crud_lpb/DetailLPB.jsx'))
-const UpdateLPB = lazy(() => import('./crud_lpb/updateLPB.jsx'))
+const UpdateLPB = lazy(() => import('./crud_lpb/UpdateLPB.jsx'))
 
 const ListMakeRequest = lazy(() => import('./crud_make_request/ListMakeRequest.jsx'))
 const DetailMakeRequest = lazy(() => import('./crud_make_request/DetailMakeRequest.jsx'))

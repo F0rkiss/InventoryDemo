@@ -135,7 +135,13 @@ function UpdateApprovalStep() {
                         />
                         </div>
                         <div className="mb-5">
-                            <label>Approval Step:</label>
+                        <div className="relative group inline-flex items-center gap-1">
+                                <label>Approval Step:</label>
+                                <i className="bx bx-info-circle text-yellow-500 cursor-pointer"></i>
+                                <div className="absolute left-full ml-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 group-hover:delay-0 delay-500 bg-white border border-gray-300 text-gray-700 text-xs rounded-md px-2 py-1 w-56 shadow-sm pointer-events-none">
+                                Urutan persetujuan berdasarkan nomor yang menentukan siapa pengguna yang melakukan approval terlebih dahulu.
+                                </div>
+                            </div>
                             <div className='bg-white p-2 rounded-md border-solid border-gray-300 border'>
                                 <input 
                                     type="number" 
@@ -176,7 +182,13 @@ function UpdateApprovalStep() {
                         </div>
 
                         <div className="mb-5">
-                            <label>Is Upline:</label>
+                            <div className="relative group inline-flex items-center gap-1 flex justify-between">
+                                <label>Is Upline:</label>
+                                <i className="bx bx-info-circle text-yellow-500 cursor-pointer"></i>
+                                <div className="absolute left-full ml-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 delay-500 group-hover:delay-0 bg-white border border-gray-300 text-gray-700 text-xs rounded-md px-2 py-1 w-56 shadow-sm pointer-events-none">
+                                Atasan dari departemen user
+                                </div>
+                            </div>
                             <div className=''>
                                 <select 
                                     name="is_upline" 
@@ -192,7 +204,13 @@ function UpdateApprovalStep() {
                             </div>
                         </div>
                         <div className="mb-5">
-                            <label>Is Admin Approved:</label>
+                            <div className="relative group inline-flex items-center gap-1">
+                                <label>is Admin Approved:</label>
+                                <i className="bx bx-info-circle text-yellow-500 cursor-pointer"></i>
+                                <div className="absolute left-full ml-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 delay-500 group-hover:delay-0 bg-white border border-gray-300 text-gray-700 text-xs rounded-md px-2 py-1 w-56 shadow-sm pointer-events-none">
+                                user approval yang perlu membuat barang saat menyetujui
+                                </div>
+                            </div>
                             <div className=''>
                                 <select 
                                     name="isAdminApproved" 
