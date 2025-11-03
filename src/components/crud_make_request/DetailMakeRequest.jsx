@@ -16,6 +16,7 @@ function DetailMakeRequest() {
   const mainMR = item.makeRequest?.MR || {};
   const detailMR = item.makeRequest?.detailsMR || []
   const approvalSteps = item.approvalStepHistories || []
+  const approvers = item.approvalStep || []
   const purchaseRequest = item.purchaseRequest?.PR;
   const purchaseDetails = item.purchaseRequest?.detailsPR || [];
   const purchaseOrders = item.purchaseOrder;
@@ -384,6 +385,79 @@ function DetailMakeRequest() {
                   }
                 </div>
               }
+              {
+                approvers.length !== 0 &&
+                <div className="bg-white border rounded-md p-6 mt-6">
+                  <p className="text-xl text-gray-400 font-semibold mb-2">Approval Steps</p>
+                  { !approvers ?
+                    (
+                      <p className="text-gray-400 italic">No approvals needed yet.</p>
+                    ) : (
+                      <>
+                        <div className="overflow-x-auto">
+                          <table className="w-full text-sm text-left">
+                            <thead>
+                              <tr className="bg-gray-100">
+                                <th className="px-3 py-2 rounded-l-md">Step</th>
+                                <th className="px-3 py-2">Name</th>
+                                <th className="px-3 py-1">Posisi</th>
+                                <th className="px-3 py-1">Note</th>
+                                <th className="px-3 py-1 rounded-r-md">No. Telp</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {approvers?.map((item) => (
+                                <tr key={item.id} className={` ${item.id % 2 === 0 ? 'bg-gray-50' : 'bg-white'}`}>
+                                  <td className="px-4 py-4 rounded-l-md">{item.approval_step}</td>
+                                  <td className="px-4 py-4">{item.user_name}</td>
+                                  <td className="px-4 py-4">{item.is_upline ? 'Atasan' : 'Bukan Atasan'}</td>
+                                  <td className="px-4 py-4 rounded-r-md">{item.note}</td>
+                                  <td className="px-4 py-4 rounded-r-md">{item.EmpPhone}</td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                        { role === 'admin' && purchaseOrders &&
+                          <div className="mt-6">
+                            <p className="text-xl text-gray-400 font-semibold mb-2">Purchase Order</p>
+        
+                            <div className="overflow-x-auto">
+                              <table className="w-full text-sm text-left">
+                                <thead>
+                                  <tr className="bg-gray-100">
+                                    <th className="px-3 py-2 rounded-l-md">Kode Supplier</th>
+                                    <th className="px-3 py-1">Kode</th>
+                                    <th className="px-3 py-1">Alamat</th>
+                                    <th className="px-3 py-1">Harga</th>
+                                    <th className="px-3 py-1">Pembayaran</th>
+                                    <th className="px-3 py-1">Keterangan</th>
+                                    <th className="px-3 py-1">Tgl. PO</th>
+                                    <th className="px-3 py-1 rounded-r-md">Tgl. Penyerahan</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                    <tr className={` ${item.id % 2 === 0 ? 'bg-gray-50' : 'bg-white'}`}>
+                                      <td className="px-4 py-4">{purchaseOrders.kode_suplier}</td>
+                                      <td className="px-4 py-4">{purchaseOrders.kode}</td>
+                                      <td className="px-4 py-1">{purchaseOrders.alamat}</td>
+                                      <td className="px-4 py-1 rounded-r-md">{purchaseOrders.harga}</td>
+                                      <td className="px-4 py-1 rounded-r-md">{purchaseOrders.cara_pembayaran}</td>
+                                      <td className="px-4 py-1 rounded-r-md">{purchaseOrders.keterangan}</td>
+                                      <td className="px-4 py-1 rounded-r-md">{purchaseOrders.tanggal_po}</td>
+                                      <td className="px-4 py-1 rounded-r-md">{purchaseOrders.tanggal_penyerahan}</td>
+                                    </tr>
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+                        }
+                      </>
+                    )
+                  }
+                </div>
+              }
+            
 
               {/* Approval Histories */}
               { approvalSteps.length !== 0  &&

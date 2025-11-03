@@ -55,14 +55,15 @@ const menus = [
     { key: "Billing", label: "Billing", icon: "bx bx-spreadsheet", path: "/billing/list-billing" },
     { key: "NavigationGroup", label: "Navigation Group", icon: "bx bx-navigation", path: "/navigation-groups/list-navigation-groups" },
     {
-        key: "InventMutasi" || "InventLog" || "PPN",
+        key: "InventMutasi" || "InventLog" || "PPN" || "PaymentType",
         label: "Information",
         icon: "bx bx-info-circle",
         isAccordion: true,
         children: [
             { key: "InventMutasi", label: "Mutasi", path: "/mutasi" },
             { key: "InventLog", label: "Log", path: "/log" },
-            { key: "PPN", label: "PPN", path: "/ppn" }
+            { key: "PPN", label: "PPN", path: "/ppn" },
+            { key: "PaymentType", label: "Payment Method", path: "/list-payment-method" }
         ]
     },
     { key: "JenisMemo", label: "Jenis Memo", icon: "bx bx-note", path: "/jenismemo/list-jenismemo" },

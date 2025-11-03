@@ -125,6 +125,10 @@ const ListPPN = lazy(() => import('./crud_ppn/ListPPN.jsx'))
 const CreatePPN = lazy(() => import('./crud_ppn/CreatePPN.jsx'))
 const UpdatePPN = lazy(() => import('./crud_ppn/UpdatePPN.jsx'))
 
+const ListPaymentMethod = lazy(() => import('./crud_payment_method/ListPaymentMethod.jsx'))
+const CreatePaymentMethod = lazy(() => import('./crud_payment_method/CreatePaymentMethod.jsx'))
+const UpdatePaymentMethod = lazy(() => import('./crud_payment_method/UpdatePaymentMethod.jsx'))
+
 // const TableMR = lazy(() => import('./Table/TableMR/TabelMR.jsx'))
 const TableBilling = lazy(() => import('./Table/TableBilling/TableBilling.jsx'))
 
@@ -255,6 +259,10 @@ const MyApp = () => {
                   <Route path='/ppn' element={<ListPPN/>} />
                   <Route path='/ppn/create-ppn' element={<CreatePPN/>} />
                   <Route path='/ppn/update-ppn/:id' element={<UpdatePPN/>} />
+
+                  <Route path='/list-payment-method' element={<ListPaymentMethod/>} />
+                  <Route path='/create-payment-method' element={<CreatePaymentMethod/>} />
+                  <Route path='/update-payment-method/:id' element={<UpdatePaymentMethod/>} />
 
                   <Route path='/navigation-groups/list-navigation-groups' element={<NavigationGroupList/>}/>
                   <Route path='/navigation-groups/create-navigation-groups' element={<CreateNavigationGroup/>}/>

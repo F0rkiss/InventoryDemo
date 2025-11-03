@@ -4,7 +4,8 @@ import api from '../../../api/api';
 import Swal from 'sweetalert2';
 import Loader from '../Loader';
 
-const ModalPurchaseOrder = ({ onClose, onSave, open, initialData, apiUrl, existingItems = [], maxItems = null }) => {
+// --- TERIMA PROPS BARU: prItems ---
+const ModalPurchaseOrder = ({ onClose, onSave, open, initialData, apiUrl, prItems = [], existingItems = [], maxItems = null }) => {
     const [modalData, setModalData] = useState({
         selectedBarang: null,
         qty: '',
@@ -28,6 +29,13 @@ const ModalPurchaseOrder = ({ onClose, onSave, open, initialData, apiUrl, existi
         if (open) {
             // FIXED: Check for 'barang_detail' (from API) or 'selectedBarang' (from a previous unsaved edit)
             const existingBarang = initialData?.barang_detail || initialData?.selectedBarang;
+
+            // --- BARU: Tetapkan daftar barang yang tersedia dari prop prItems ---
+            // Kita ambil objek 'barang_detail' dari setiap item di prItems
+            const itemsFromPR = prItems.map(prDetail => prDetail.barang_detail).filter(Boolean); // .filter(Boolean) untuk jaga-jaga jika ada data null
+            setAvailableBarang(itemsFromPR);
+            // -----------------------------------------------------------------
+
             if (initialData && existingBarang) {
                 // If editing, populate from initialData
                 setModalData({
@@ -40,10 +48,10 @@ const ModalPurchaseOrder = ({ onClose, onSave, open, initialData, apiUrl, existi
                 // Reset for a new entry
                 setModalData({ selectedBarang: null, qty: '', harga: '' });
                 setSearchTerm('');
-                fetchAvailableBarang();
+                // fetchAvailableBarang(); // <-- HAPUS: Tidak perlu fetch API lagi
             }
         }
-    }, [open, initialData]);
+    }, [open, initialData, prItems]); // <-- TAMBAHKAN prItems sebagai dependency
 
     const searchContainerRef = useRef(null);
     useEffect(() => {
@@ -59,29 +67,27 @@ const ModalPurchaseOrder = ({ onClose, onSave, open, initialData, apiUrl, existi
         };
     }, []);
 
-    // Fetch available barang
-    const fetchAvailableBarang = async (term = '') => {
+    // --- DIUBAH: Fungsi ini sekarang memfilter prItems secara lokal ---
+    const fetchAvailableBarang = (term = '') => {
         setBarangLoading(true);
-        // The endpoint is now always the same.
-        const endpoint = '/inventBarang';
-        
-        // We will build a configuration object for the API call.
-        const config = {};
-
-        // If a search term exists, add it to the 'params' object.
-        // This will be converted to "?search=term" in the URL.
-        if (term.trim()) {
-            config.params = {
-                search: term.trim()
-            };
-        }
-
         try {
-            // Pass the endpoint and the config object to the API call.
-            const response = await api.get(endpoint, config);
-            setAvailableBarang(response.data.data.data || []);
+            // Ambil daftar barang master dari prop
+            const itemsFromPR = prItems.map(prDetail => prDetail.barang_detail).filter(Boolean);
+
+            if (term.trim() === '') {
+                // Jika tidak ada pencarian, tampilkan semua barang dari PR
+                setAvailableBarang(itemsFromPR);
+            } else {
+                // Jika ada pencarian, filter berdasarkan nama atau kode
+                const lowerCaseTerm = term.toLowerCase();
+                const filteredItems = itemsFromPR.filter(barang => 
+                    (barang.name && barang.name.toLowerCase().includes(lowerCaseTerm)) ||
+                    (barang.kode_barang && barang.kode_barang.toLowerCase().includes(lowerCaseTerm))
+                );
+                setAvailableBarang(filteredItems);
+            }
         } catch (error) {
-            console.error('Error fetching barang:', error);
+            console.error('Error filtering PR items:', error);
             setAvailableBarang([]);
         } finally {
             setBarangLoading(false);
@@ -95,10 +101,11 @@ const ModalPurchaseOrder = ({ onClose, onSave, open, initialData, apiUrl, existi
         clearTimeout(debounceTimeout.current);
         debounceTimeout.current = setTimeout(() => {
             fetchAvailableBarang(term);
-        }, 1200);
+        }, 300); // <-- Kurangi waktu debounce, karena filter lokal cepat
     };
 
     const handleBarangSelect = (barang) => {
+        // Logika ini sekarang akan berfungsi dengan benar karena `existingItems` di-pass dari induk
         const isAlreadySelected = existingItems.some(item => 
             (item.selectedBarang?.id === barang.id || item.barang_detail?.id === barang.id) && 
             (initialData?.selectedBarang?.id !== barang.id && initialData?.barang_detail?.id !== barang.id)
@@ -108,7 +115,7 @@ const ModalPurchaseOrder = ({ onClose, onSave, open, initialData, apiUrl, existi
             Swal.fire({
                 icon: 'warning',
                 title: 'Barang sudah dipilih',
-                text: 'Barang ini sudah ada dalam daftar pilihan.',
+                text: 'Barang ini sudah ada dalam daftar PO.',
             });
             return;
         }
@@ -121,7 +128,7 @@ const ModalPurchaseOrder = ({ onClose, onSave, open, initialData, apiUrl, existi
     const handleRemoveBarang = () => {
         setModalData(prev => ({ ...prev, selectedBarang: null, qty: '', harga: '' }));
         setSearchTerm('');
-        fetchAvailableBarang();
+        fetchAvailableBarang(''); // <-- Reset daftar ke semua barang PR
     };
 
     const handleSubmit = async (e) => {
@@ -182,9 +189,9 @@ const ModalPurchaseOrder = ({ onClose, onSave, open, initialData, apiUrl, existi
                     </div>
                     {/* Barang Selection */}
                     <div className="mb-4">
-                        <label className="font-semibold">Pilih Barang</label>
+                        <label className="font-semibold">Pilih Barang (dari Purchase Request)</label>
                         <div className="relative mt-1" ref={searchContainerRef}>
-                            {console.log(modalData.selectedBarang)}
+                            {/* Hapus console.log */}
                             {modalData.selectedBarang ? (
                                 <div className="relative border rounded-lg p-3 bg-white flex items-start gap-3 shadow-sm">
                                     <div className="flex items-center gap-3">
@@ -233,7 +240,7 @@ const ModalPurchaseOrder = ({ onClose, onSave, open, initialData, apiUrl, existi
                                             ) : availableBarang.length === 0 ? (
                                                 <div className="p-4 text-center text-gray-500">
                                                     {/* DIUBAH: Pesan yang lebih sesuai */}
-                                                    {searchTerm ? 'Barang tidak ditemukan' : 'Tidak ada barang tersedia'}
+                                                    {searchTerm ? 'Barang tidak ditemukan' : 'Tidak ada barang di PR ini'}
                                                 </div>
                                             ) : (
                                                 availableBarang.map((barang) => (

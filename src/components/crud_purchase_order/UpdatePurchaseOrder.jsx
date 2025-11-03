@@ -25,6 +25,7 @@ function UpdatePurchaseOrder() {
         keterangan: '',
         cara_pembayaran: null,
         tanggal_penyerahan: '',
+        is_ppn: 0,
     }) 
     const [details, setDetails] = useState([]);
     const { id } = useParams()
@@ -44,6 +45,9 @@ function UpdatePurchaseOrder() {
     const navigate = useNavigate()
     const [originalItems, setOriginalItems] = useState(null);
     const [originalDetails, setOriginalDetails] = useState([]);
+
+    // --- BARU: State untuk menyimpan info Purchase Request ---
+    const [prInfo, setPrInfo] = useState(null);
 
     const [ loading, setLoading ] = useState(false);
 
@@ -73,7 +77,8 @@ function UpdatePurchaseOrder() {
             items.keterangan !== originalItems.keterangan ||
             items.alamat !== originalItems.alamat ||
             items.cara_pembayaran?.id !== originalItems.cara_pembayaran?.id ||
-            items.tanggal_penyerahan !== originalItems.tanggal_penyerahan;
+            items.tanggal_penyerahan !== originalItems.tanggal_penyerahan ||
+            items.is_ppn !== originalItems.is_ppn;
 
         let detailsChanged = false;
         if (details.length !== originalDetails.length) {
@@ -99,6 +104,13 @@ function UpdatePurchaseOrder() {
             setLoading(true);
             const response = await api.get(`purchaseOrder-detail/${decryptedId}`);
             const data = response.data.data;
+
+            // --- BARU: Simpan data purchase_request yang terhubung ---
+            if (data.purchase_request) {
+                setPrInfo(data.purchase_request);
+            }
+            // ----------------------------------------------------
+
             const fetchedItems = {
                 purchase_request : data.purchase_request.kode, // This is the display code
                 purchase_request_id: data.purchase_request.id, // FIXED: Store the actual ID
@@ -106,7 +118,8 @@ function UpdatePurchaseOrder() {
                 kode_suplier: data.kode_suplier,
                 alamat: data.alamat,
                 keterangan: data.keterangan,
-                cara_pembayaran: data.cara_pembayaran,
+                cara_pembayaran: data.payment ? {value: data.payment?.id, label: data.payment?.cara_pembayaran} : null,
+                is_ppn: data.is_ppn,
                 tanggal_penyerahan: data.tanggal_penyerahan,
             };
             const fetchedDetails = data.details || [];
@@ -149,7 +162,8 @@ const handleSubmit = async (e) => {
             // FIXED: Check for the ID in the correct order of priority.
             // 1. `selectedBarang.id` (for new/edited items)
             // 2. `barang_id` (for initial items loaded from the API)
-            const barangId = d.selectedBarang?.id ?? d.barang_id; 
+            // 3. `barang_detail.id` (from initial load, new structure)
+            const barangId = d.selectedBarang?.id ?? d.barang_detail?.id ?? d.barang_id;
             
             if (!barangId) {
                 throw new Error(`Baris #${i+1}: Barang belum dipilih.`);
@@ -169,11 +183,14 @@ const handleSubmit = async (e) => {
         if (items.alamat) fd.append('alamat', items.alamat);
         if (items.tanggal_penyerahan) fd.append('tanggal_penyerahan', items.tanggal_penyerahan);
         if (items.keterangan) fd.append('keterangan', items.keterangan);
-        if (items.cara_pembayaran) fd.append('cara_pembayaran', items.cara_pembayaran);
+        if (items.cara_pembayaran) fd.append('cara_pembayaran', items.cara_pembayaran?.value);
+        
+        // --- PERBAIKAN: Selalu kirim nilai is_ppn ---
+        fd.append('is_ppn', items.is_ppn); // Kirim 1 atau 0
 
         details.forEach(d => {
             // FIXED: Use the same robust logic to find the ID for submission
-            const barangId = d.selectedBarang?.id ?? d.barang_id;
+            const barangId = d.selectedBarang?.id ?? d.barang_detail?.id ?? d.barang_id;
             const quantity = d.qty || d.requested_qty; // Use new qty if available, otherwise fallback to original
 
             // The backend expects 'invent_barangs_id[]' based on your Postman screenshot
@@ -223,7 +240,7 @@ const handleSubmit = async (e) => {
                 kode: '',
                 alamat: '',
                 keterangan: '',
-                cara_pembayaran: '',
+                cara_pembayaran: null,
                 tanggal_penyerahan: '',
             });
             setDetails([]);
@@ -385,21 +402,36 @@ const handleSubmit = async (e) => {
                                 />
                                 </div>
                             </div>
-                            <div className="mb-4">
-                                {/* <div className="flex justify-between items-center">
-                                    {errors.cara_pembayaran && <span className="text-red-500 text-sm">{errors.cara_pembayaran}</span>}
-                                    </div> */}
-                                <label className='font-semibold'>Metode Pembayaran</label>
-                                <div className={`bg-white px-4 py-2 rounded-md border mt-2 border-gray-300`}>
-                                <input 
-                                    type="text" 
-                                    name="cara_pembayaran" 
-                                    value={items.cara_pembayaran} 
-                                    onChange={e => setItems({ ...items, cara_pembayaran: e.target.value })}
-                                    className="w-full p-2 placeholder:text-gray-400"
-                                    maxLength={80}
-                                    placeholder='Metode Pembayaran'
-                                />
+                            <div className="grid md:grid-cols-2 md:gap-6">
+                                <div className="mb-4">
+                                    <div className="flex justify-between items-center">
+                                        <label className='font-semibold'>Metode Pembayaran</label>
+                                        {/* {errors.cara_pembayaran && <span className="text-red-500 text-sm">{errors.cara_pembayaran}</span>} */}
+                                    </div>
+                                    <SelectPaginate 
+                                        source={'paymentType'}
+                                        selectValue={items.cara_pembayaran}
+                                        selectName="Metode pembayaran"
+                                        itemLabel={['payment']}
+                                        handleSelectChange={(cara_pembayaran) => setItems({...items, cara_pembayaran})}
+                                        className="w-full pt-2 placeholder:text-gray-400"
+                                    />
+                                </div>
+                                <div className="mb-4">
+                                    <label className='font-semibold'>PPN</label>
+                                    <div className="bg-white p-2 rounded-md mt-2 flex items-center h-fit"> 
+                                        <label htmlFor="is_ppn_checkbox" className="flex items-center cursor-pointer w-full">
+                                            <input 
+                                                type="checkbox" 
+                                                id="is_ppn_checkbox"
+                                                name="is_ppn" 
+                                                checked={items.is_ppn == 1} // Cek jika value = 1
+                                                onChange={(value) => setItems({...items, is_ppn: value.target.checked ? 1 : 0})}
+                                                className="w-6 h-6 text-blue-600 bg-gray-100 border-gray-100 rounded focus:ring-blue-500"
+                                            />
+                                            <span className="ml-3 text-gray-700">Dikenakan PPN</span>
+                                        </label>
+                                    </div>
                                 </div>
                             </div>
                             <div className="mt-2 pt-3">
@@ -516,24 +548,43 @@ const handleSubmit = async (e) => {
                         </form>
                     </div>
                     { openModal &&
-                        <ModalPO
-                        open={openModal}
-                        onClose={() => {
-                            setOpenModal(false);
-                            setEditIndex(null);
-                        }}
-                        onSave={data => {
-                            if (editIndex !== null) {
-                                setDetails(details.map((item, idx) => idx === editIndex ? data : item));
-                            } else {
-                                setDetails([...details, data]);
-                            }
-                            setOpenModal(false);
-                            setEditIndex(null);
-                        }}
-                        initialData={initialDetails}
-                        apiUrl={apiUrl}
-                        />
+                        (() => { // IIFE untuk deklarasi variabel
+                            // --- LOGIKA FLEKSIBEL ---
+                            // Buat array 'prItems' yang dinormalisasi
+                            // Ini akan memetakan ulang array 'details' dari 'prInfo'
+                            // Ini membuat properti 'barang_detail' baru, mengisinya dengan 'item.barang_detail' (jika ada)
+                            // atau 'item.barangs' (jika 'barang_detail' tidak ada).
+                            const normalizedPrItems = prInfo?.details?.map(item => ({
+                                ...item,
+                                // Fleksibel: Ambil data barang dari 'barang_detail' ATAU 'barangs'
+                                barang_detail: item.barang_detail || item.barangs
+                            })) || [];
+
+                            return (
+                                <ModalPO
+                                open={openModal}
+                                onClose={() => {
+                                    setOpenModal(false);
+                                    setEditIndex(null);
+                                }}
+                                onSave={data => {
+                                    if (editIndex !== null) {
+                                        setDetails(details.map((item, idx) => idx === editIndex ? data : item));
+                                    } else {
+                                        setDetails([...details, data]);
+                                    }
+                                    setOpenModal(false);
+                                    setEditIndex(null);
+                                }}
+                                initialData={initialDetails}
+                                apiUrl={apiUrl}
+                                // --- DIUBAH: Gunakan data yang sudah dinormalisasi ---
+                                prItems={normalizedPrItems}
+                                existingItems={details}
+                                // ---------------------------------
+                                />
+                            );
+                        })()
                     }
                     </Transition>
                 </div>
@@ -548,3 +599,4 @@ const handleSubmit = async (e) => {
 }
 
 export default UpdatePurchaseOrder;
+

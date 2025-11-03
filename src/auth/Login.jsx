@@ -7,7 +7,7 @@ import useAuth from '../hooks/useAuth';
 import gambar from '../assets/image/Media_Indonesia_(2017) (1).png';
 import { jwtDecode } from 'jwt-decode';
 import CryptoJS from 'crypto-js';
-import encryptData from './CobaIndex';
+// import encryptData from './CobaIndex';
 function Login() {
     const navigate = useNavigate();
     const { setAuth, auth } = useAuth();

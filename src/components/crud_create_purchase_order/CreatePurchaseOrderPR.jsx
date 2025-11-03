@@ -556,6 +556,10 @@ function CreatePurchaseOrderPR() {
                         setEditIndex(null);
                     }}
                     initialData={editIndex !== null ? details[editIndex] : null}
+                    // --- TAMBAHKAN DUA PROPS INI ---
+                    prItems={prInfo?.details || []}
+                    existingItems={details}
+                    // ---------------------------------
                     />
                 }
             </div>
