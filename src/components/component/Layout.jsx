@@ -5,7 +5,7 @@ import { Helmet } from 'react-helmet';
 function Layout({title, children}) {
   return (
       
-      <div id='layouts' className="bg-gray-100 overflow-y-scroll font-inter h-screen">
+      <div id='layouts' className="bg-gray-100 overflow-y-scroll font-inter h-dvh">
         <CustomNavbar title={title} />
         { children }
       </div>
