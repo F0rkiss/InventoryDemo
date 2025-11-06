@@ -113,7 +113,6 @@ function UpdateBarang() {
     const validate = () => {
         if (
         !item.name ||
-        !item.kode_gudang ||
         !item.satuan ||
         !item.is_asset ||
         !item.jenis_barang ||
@@ -150,7 +149,7 @@ function UpdateBarang() {
         fd.append('name', item.name)
         fd.append('is_asset', item.is_asset?.value)
         fd.append('satuan', item.satuan)
-        fd.append('kode_gudang', item.kode_gudang)
+        if (item.kode_gudang) fd.append('kode_gudang', item.kode_gudang)
         if (item.image instanceof File) fd.append('image', item.image)
 
         await api.post(`/inventBarang-update/${decryptedId}`, fd, {

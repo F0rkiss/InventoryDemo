@@ -40,7 +40,7 @@ function Profile() {
 
   return (
     <Layout title={'Profile'}>
-      <Block>
+      <Block className="pb-[env(safe-area-inset-bottom)]">
         {loading ? (
           <Loader Class="mt-72" />
         ) : (

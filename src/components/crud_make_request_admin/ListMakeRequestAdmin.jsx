@@ -41,7 +41,7 @@ import FilterStatusToggle from '../component/FilterStatusToggle';
       const isFiltered = filterStatus !== 'all';
       const isSearching = !!searchTerm; // Check if there's an active search term
 
-      let url = 'inventMakeRequest';
+      let url = 'inventMakeRequest-admin';
 
       // Determine the URL based on whether a search is active
       const params = {};
@@ -52,11 +52,11 @@ import FilterStatusToggle from '../component/FilterStatusToggle';
       } else {
           if (filterStatus === 'completed') {
             // For filtering without a search
-            url = 'inventMakeRequest-personal-toggle';
+            url = 'inventMakeRequest-toggle';
             params.is_full_approval = 1
           } else if (filterStatus === 'not_completed') {
             // Default URL for listing all items
-            url = 'inventMakeRequest-personal-toggle';
+            url = 'inventMakeRequest-toggle';
             params.is_full_approval = 0
           }
       }

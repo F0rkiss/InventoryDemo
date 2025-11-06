@@ -16,7 +16,8 @@ function Login() {
         password: ''
     });
     const [errorMessage, setErrorMessage] = useState('');
-    const [isSubmitting, setIsSubmitting] = useState(false)
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [showPassword, setShowPassword] = useState(false); // <-- TAMBAHKAN INI
 
     useEffect(() => {
         const token = localStorage.getItem('authToken');
@@ -108,15 +109,25 @@ function Login() {
                 </div>
                 <div className='mb-6'>
                     <label className='text-gray-200 text-xs mb-2 px-0'>Password</label>
-                    <div className='mt-1 py-2 px-3 bg-stone-800 focus-within:bg-stone-700/50 border-2 border-stone-900 rounded-md transition-colors focus-within:border-stone-500'>
+                    {/* <-- UBAH INI: Tambahkan 'relative' */}
+                    <div className='flex justify-between mt-1 py-2 px-3 bg-stone-800 focus-within:bg-stone-700/50 border-2 border-stone-900 rounded-md transition-colors focus-within:border-stone-500'>
                         <input
-                            type="password"
+                            type={showPassword ? 'text' : 'password'} // <-- UBAH INI
                             placeholder='Masukkan password'
                             value={credential.password}
                             onChange={handleInputChange('password')}
-                            className='w-full !text-white placeholder:text-stone-400'
+                            className='w-full !text-white placeholder:text-stone-400 pr-16' // <-- UBAH INI: Tambahkan padding 'pr-16'
                             required
                         />
+                        {/* <-- TAMBAHKAN TOMBOL INI --> */}
+                        <button
+                            type="button" // Set type="button" agar tidak men-submit form
+                            className="flex items-center w-fit text-stone-400 hover:text-stone-200 text-sm font-medium"
+                            onClick={() => setShowPassword(!showPassword)} // Toggle state
+                        >
+                            {/* Logika untuk mengubah teks tombol */}
+                            <i className={`${showPassword ? 'bx bx-show' : 'bx bx-hide'} text-[18px]`}></i>
+                        </button>
                     </div>
                 </div>
                 {errorMessage && (
@@ -141,6 +152,3 @@ function Login() {
 }
 
 export default Login;
-
-
-
