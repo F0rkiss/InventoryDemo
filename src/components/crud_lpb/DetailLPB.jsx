@@ -7,7 +7,7 @@ import Layout from '../component/Layout';
 import Back from '../component/Back';
 import Transition from '../component/Transition';
 import DateFormat from '../../helper/DateFormatHelper';
-import { DecryptID } from '../../helper/EncryptHelper';
+import { DecryptID, encrypting } from '../../helper/EncryptHelper';
 import { useAuth } from '../../auth/AuthContext';
 import ImagePreviewModal from '../component/modal/ImagePreviewModal';
 import Swal from 'sweetalert2';
@@ -26,7 +26,6 @@ function DetailLPB() {
 
     const [selectedImageUrl, setSelectedImageUrl] = useState('');
     const [isPreviewOpen, setIsPreviewOpen] = useState(false);
-    const [isPreviewLoading, setIsPreviewLoading] = useState(false);
 
     const { id } = useParams();
     const { role } = useAuth();
@@ -110,49 +109,10 @@ function DetailLPB() {
             }
         }
 
-        const handlePreview = async () => {
-            if (isPreviewLoading) return; // Mencegah klik ganda
-            setIsPreviewLoading(true);
-            try {
-                // Menggunakan decryptedId dari state
-                const response = await api.get(`/pdf/preview_lpb/${decryptedId}`, {
-                    responseType: 'blob', // Penting: minta response sebagai blob (file)
-                });
-                // Cek jika response adalah PDF
-                if (response.data.type === 'application/pdf') {
-                    // Buat URL objek dari blob
-                    const file = new Blob([response.data], { type: 'application/pdf' });
-                    const fileURL = URL.createObjectURL(file);
-                    
-                    // Buka di tab baru
-                    window.open(fileURL, '_blank');
-                    URL.revokeObjectURL(fileURL); // Bersihkan memori setelah tab terbuka
-                } else {
-                    // Handle jika API mengembalikan error (misal, JSON error)
-                    // Coba baca blob sebagai teks untuk melihat pesan error
-                    const errText = await response.data.text();
-                    let errJson = {};
-                    try {
-                      errJson = JSON.parse(errText); // Asumsi error adalah JSON
-                    } catch(e) {
-                        errJson = { message: 'Format respons tidak valid.' }
-                    }
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Gagal Membuat Preview',
-                        text: errJson.message || 'Format respons tidak valid.'
-                    });
-                }
-            } catch (error) {
-                console.error("Error generating preview: ", error);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Gagal Membuat Preview',
-                    text: error.message || 'Terjadi kesalahan pada server.'
-                });
-            } finally {
-                setIsPreviewLoading(false);
-            }
+        const handlePreview = () => {
+            // Navigate to PDF viewer page with encrypted ID and type
+            const encryptedId = encrypting(decryptedId);
+            navigate(`/pdf-viewer/lpb/${encryptedId}`);
         };
 
     // ==============================
@@ -206,14 +166,11 @@ function DetailLPB() {
                     <button
                         type="button"
                         onClick={handlePreview}
-                        disabled={isPreviewLoading}
-                        className="flex items-center gap-2 py-2 px-3 w-fit rounded-md border border-slate-300 font-medium text-sm bg-white text-gray-700 hover:bg-gray-100 transition-colors duration-200 disabled:opacity-50"
+                        className="flex items-center gap-2 py-2 px-3 w-fit rounded-md border border-slate-300 font-medium text-sm bg-white text-gray-700 hover:bg-gray-100 transition-colors duration-200"
                         title="Preview PDF"
                     >
-                        <i className={`bx ${isPreviewLoading ? 'bx-loader-alt bx-spin' : 'bx-file'}`}></i>
-                        <span className="sm:inline">
-                        {isPreviewLoading ? 'Loading...' : 'Preview'}
-                        </span>
+                        <i className="bx bx-file"></i>
+                        <span className="sm:inline">Preview</span>
                     </button>
 
                     <span
@@ -235,19 +192,6 @@ function DetailLPB() {
                                 <InfoRow label="Penerima" value={item.penerima} />
                                 <InfoRow label="Note" value={item.note} />
                                 <InfoRow label="Tanggal" value={DateFormat(item.tanggal)} />
-                                <InfoRow label="Status Approval LPB" value={
-                                        <span
-                                        className={`inline-block rounded-md font-medium text-xs lg:text-sm ${
-                                            item.is_full_approval
-                                            ? 'text-green-700 bg-green-100 border border-green-500'
-                                            : 'text-amber-700 bg-amber-100 border border-amber-500'
-                                        }`}
-                                        style={{ padding: '2px 6px' }} // tighter padding
-                                        >
-                                        {item.is_full_approval ? 'Sudah Di Approve' : 'Belum Di Approve'}
-                                        </span>
-                                    }
-                                    />
 
                             </div>
                         </div>
@@ -258,10 +202,12 @@ function DetailLPB() {
                             <p className="text-lg font-bold">{infoPO.kode}</p>
                             <p className="text-sm text-gray-500 mb-4">{DateFormat(infoPO.tanggal, false)}</p>
                             <div className="space-y-2 lg:space-y-3">
-                                <InfoRow label="Pembuat Permintaan" value={infoPO.user_id} />
-                                <InfoRow label="Alamat" value={infoPO.alamat} />
+                                {/* <InfoRow label="Pembuat Permintaan" value={infoPO.user_id} /> */}
+                                <InfoRow label="Kode Suplier" value={infoPO.suplier.nama_perusahaan} />
+                                <InfoRow label="Phone Suplier" value={infoPO.suplier.phone} />
+                                <InfoRow label="Alamat Suplier" value={infoPO.suplier.alamat} />
                                 <InfoRow label="Estimasi Tanggal Penyerahan" value={DateFormat(infoPO.tanggal_penyerahan)} />
-                                <InfoRow label="Kode Suplier" value={infoPO.kode_suplier} />
+                                <InfoRow label="Keterangan" value={infoPO.keterangan} />
                             </div>
                         </div>
                     </div>
@@ -318,15 +264,48 @@ function DetailLPB() {
                                 </table>
                             </div>
                         )}
-        
-                        {item.can_be_deleted && (
-                            <div className='flex justify-end mt-5'>
-                                <button onClick={() => Avoid()} className='bg-red-500 hover:bg-red-600 transition-colors duration-200 max-w-xs py-2 rounded-md text-white font-medium'>
-                                    Delete Order
-                                </button>
+                    </div>
+                    {/* BUKTI SECTION */}
+                    <div className="bg-white border rounded-md p-4 lg:p-6 mt-6">
+                        <div className="flex justify-between items-center mb-4">
+                            <p className="text-lg lg:text-xl text-gray-400 font-semibold">Bukti Penerimaan</p>
+                            <div className="text-sm text-gray-500">{(item?.bukti?.length || 0)} gambar</div>
+                        </div>
+
+                        {!item?.bukti || item.bukti.length === 0 ? (
+                            <p className="text-gray-400 italic text-center py-4">Tidak ada bukti diunggah</p>
+                        ) : (
+                            <div className="rounded-md border border-dashed border-gray-300 p-3">
+                                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 w-full">
+                                    {item.bukti.map((b, i) => {
+                                        let src = b
+                                        if (typeof b === 'string') {
+                                            if (b.startsWith('http')) src = b
+                                            else if (b.startsWith('/')) src = `${apiUrl}${b}`
+                                            else src = `${apiUrl}/${b}`
+                                        }
+                                        return (
+                                            <button
+                                                key={i}
+                                                type="button"
+                                                className="relative rounded border overflow-hidden aspect-[4/3]"
+                                                onClick={() => handleImageClick(src)}
+                                            >
+                                                <img src={src} alt={`bukti-${i}`} className="w-full h-full object-cover" />
+                                            </button>
+                                        )
+                                    })}
+                                </div>
                             </div>
                         )}
                     </div>
+                        {item.can_be_deleted && (
+                            <div className='flex justify-end mt-5'>
+                                <button onClick={() => Avoid()} className='bg-red-500 hover:bg-red-600 transition-colors duration-200 max-w-xs py-2 rounded-md text-white font-medium'>
+                                    Hapus Laporan Penerimaan Barang
+                                </button>
+                            </div>
+                        )}
                 </Transition>
                 </div>
             </Block>

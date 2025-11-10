@@ -9,6 +9,7 @@ import ModalLPB from '../component/modal/ModalLPB'
 import { DecryptID } from '../../helper/EncryptHelper'
 import Transition from '../component/Transition'
 import ImagePreviewModal from '../component/modal/ImagePreviewModal'
+import UpdateMultiUploadModal from '../component/modal/UpdateMultiUploadModal'
 
 function UpdateLPB() {
     const [items, setItems] = useState({
@@ -16,6 +17,7 @@ function UpdateLPB() {
         tanggal: '',
         penerima: '',
         note: '',
+        bukti: [],
     }) 
     const { id } = useParams()
     const [details, setDetails] = useState([])
@@ -35,6 +37,8 @@ function UpdateLPB() {
     const [loading, setLoading] = useState(false)
     const [purchaseOrderId, setPurchaseOrderId] = useState(null)
     const [lpbData, setLpbData] = useState(null)
+    const [deletedExistingBukti, setDeletedExistingBukti] = useState([])
+    const [isUploadModalOpen, setIsUploadModalOpen] = useState(false)
 
     useEffect(() => {
         const decryptedIds = DecryptID(id)
@@ -52,15 +56,8 @@ function UpdateLPB() {
 
     // Fungsi validasi
     const validate = () => {
-        const newErrors = {}
-        if (!items.purchase_order_id) newErrors.purchase_order_id = 'Purchase Order wajib diisi.'
-        if (!items.tanggal) newErrors.tanggal = 'Tanggal wajib diisi.'
-        if (!items.penerima) newErrors.penerima = 'Penerima wajib diisi.'
-        if (!items.note) newErrors.note = 'Keterangan wajib diisi.'
-        if (details.length === 0) newErrors.details = 'Tambahkan minimal satu detail barang.'
-        
-        setErrors(newErrors)
-        return Object.keys(newErrors).length === 0
+        // For update, we allow single-field changes; do not enforce required fields here.
+        return true
     }
 
     const fetchItem = async () => {
@@ -75,6 +72,16 @@ function UpdateLPB() {
                 tanggal: data.tanggal || '',
                 penerima: data.penerima || '',
                 note: data.note || '',
+                bukti: Array.isArray(data.bukti)
+                    ? data.bukti.map((b) => {
+                        if (typeof b === 'string') {
+                            if (b.startsWith('http')) return b
+                            if (b.startsWith('/')) return `${apiUrl}${b}`
+                            return `${apiUrl}/${b}`
+                        }
+                        return b
+                    })
+                    : [],
             }
             
             // Load existing detail items
@@ -103,15 +110,14 @@ function UpdateLPB() {
 
     const handleSubmit = async (e) => {
         e.preventDefault()
-        if (!validate()) {
-            Swal.fire({ icon:'warning', title:'Form Tidak Lengkap', text:'Harap isi semua field yang wajib diisi.' })
-            return
-        }
+        // Skip strict field validation for update; backend will validate meaningful constraints.
     
-        const isItemsChanged = JSON.stringify(items) !== JSON.stringify(originalItems)
+        const isFieldChanged = (key) => (items?.[key] ?? '') !== (originalItems?.[key] ?? '')
+        const isItemsChanged = isFieldChanged('tanggal') || isFieldChanged('penerima') || isFieldChanged('note') || isFieldChanged('purchase_order_id')
         const isDetailsChanged = JSON.stringify(details) !== JSON.stringify(originalDetails)
+        const isBuktiChanged = (items.bukti || []).length !== (originalItems?.bukti || []).length || (items.bukti || []).some((b, i) => (originalItems?.bukti?.[i] || null) !== b) || deletedExistingBukti.length > 0
     
-        if (!isItemsChanged && !isDetailsChanged) {
+        if (!isItemsChanged && !isDetailsChanged && !isBuktiChanged) {
             Swal.fire({
                 icon: 'info',
                 title: 'Tidak ada perubahan',
@@ -119,7 +125,6 @@ function UpdateLPB() {
                 timer: 1500,
                 showConfirmButton: false
             })
-            navigate('/lpb/list-lpb')
             return
         }
     
@@ -128,16 +133,54 @@ function UpdateLPB() {
             setIsSubmitting(true)
             setDisabled(true)
     
-            const payload = {
-                invent_purchase_order_id: items.purchase_order_id || items.purchase_order,
-                tanggal: items.tanggal,
-                penerima: items.penerima,
-                note: items.note,
-                invent_barangs_id: details.map(d => d.barangs?.id || null),
-                qty: details.map(d => d.qty || 0),
+            // Determine if we need multipart (when any File is present or there is a change in bukti)
+            const hasNewFiles = (items.bukti || []).some(f => f instanceof File)
+
+            if (hasNewFiles || isBuktiChanged) {
+                const formData = new FormData()
+                if (isFieldChanged('purchase_order_id')) {
+                    formData.append('invent_purchase_order_id', items.purchase_order_id || items.purchase_order)
+                }
+                if (isFieldChanged('tanggal') && items.tanggal) formData.append('tanggal', items.tanggal)
+                if (isFieldChanged('penerima') && items.penerima) formData.append('penerima', items.penerima)
+                if (isFieldChanged('note') && (items.note ?? '') !== '') formData.append('note', items.note)
+
+                if (isDetailsChanged) {
+                    details.forEach((d, i) => {
+                        formData.append(`invent_barangs_id[${i}]`, d.barangs?.id || '')
+                        formData.append(`qty[${i}]`, d.qty || 0)
+                    })
+                }
+
+                // Append only new files; existing URLs are not re-uploaded
+                let fileIdx = 0
+                ;(items.bukti || []).forEach((b) => {
+                    if (b instanceof File) {
+                        formData.append(`bukti[${fileIdx}]`, b)
+                        fileIdx += 1
+                    }
+                })
+
+                // Inform server about deletions (best-effort; backend must support it)
+                deletedExistingBukti.forEach((url, i) => {
+                    formData.append(`delete_bukti[${i}]`, url)
+                })
+
+                await api.put(`laporanPenerimaanBarang-update/${decryptedId}`, formData, {
+                    headers: { 'Content-Type': 'multipart/form-data' },
+                })
+            } else {
+                const payload = {}
+                if (isFieldChanged('purchase_order_id')) payload.invent_purchase_order_id = items.purchase_order_id || items.purchase_order
+                if (isFieldChanged('tanggal') && items.tanggal) payload.tanggal = items.tanggal
+                if (isFieldChanged('penerima') && items.penerima) payload.penerima = items.penerima
+                if (isFieldChanged('note') && (items.note ?? '') !== '') payload.note = items.note
+                if (isDetailsChanged) {
+                    payload.invent_barangs_id = details.map(d => d.barangs?.id || null)
+                    payload.qty = details.map(d => d.qty || 0)
+                }
+                await api.put(`laporanPenerimaanBarang-update/${decryptedId}`, payload)
             }
-    
-            const res = await api.put(`laporanPenerimaanBarang-update/${decryptedId}`, payload)
     
             Swal.fire({
                 title:'LPB berhasil diperbarui!',
@@ -186,10 +229,11 @@ function UpdateLPB() {
                     setItems(originalItems);
                     setDetails(originalDetails);
                 } else {
-                    setItems({ purchase_order: null, tanggal: '', penerima: '', note: '' });
+                    setItems({ purchase_order: null, tanggal: '', penerima: '', note: '', bukti: [] });
                     setDetails([]);
                 }
                 setErrors({});
+                setDeletedExistingBukti([])
             }
         });
     };
@@ -203,6 +247,31 @@ function UpdateLPB() {
     const handleImageClick = (imageUrl) => {
         setSelectedImageUrl(imageUrl)
         setIsPreviewOpen(true)
+    }
+
+    const handleFileSelection = (e) => {
+        const newFiles = Array.from(e.target.files || [])
+        const validFiles = newFiles.filter(file => file.size <= 5 * 1024 * 1024)
+        if (validFiles.length !== newFiles.length) {
+            Swal.fire({ icon: 'error', title: 'Beberapa file melebihi batas ukuran 5 MB' })
+        }
+        setItems(prev => ({
+            ...prev,
+            bukti: [...(prev.bukti || []), ...validFiles]
+        }))
+    }
+
+    const handleDelete = (index) => {
+        setItems(prev => {
+            const target = prev.bukti?.[index]
+            if (typeof target === 'string') {
+                setDeletedExistingBukti(d => [...d, target])
+            }
+            return {
+                ...prev,
+                bukti: (prev.bukti || []).filter((_, i) => i !== index)
+            }
+        })
     }
 
     return (
@@ -357,7 +426,7 @@ function UpdateLPB() {
                             </div>
 
                             {/* Add Detail Button */}
-                            <div className="flex mt-4">
+                            <div className="flex mt-42">
                                 <button
                                     type="button"
                                     className="w-full rounded-lg py-2 px-4 flex items-center font-medium bg-blue-50 text-blue-600 hover:bg-blue-100"
@@ -368,6 +437,40 @@ function UpdateLPB() {
                                     <i className='bx bx-plus mr-2 font-semibold text-base'></i>
                                     <span>{ details.length === 0 ? 'Tambah detail penerimaan' : 'Edit detail penerimaan'}</span>
                                 </button>
+                            </div>
+
+                            {/* Image (Bukti) */}
+                            <div className="mb-5 space-y-3">
+                                <label className="text-lg font-semibold">Image</label>
+                                {items.bukti?.length > 0 && (
+                                    <div className="rounded-md border border-dashed border-gray-300 p-3">
+                                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 w-full">
+                                            {items.bukti.map((b, i) => {
+                                                const src = b instanceof File ? URL.createObjectURL(b) : b
+                                                return (
+                                                    <button
+                                                        key={i}
+                                                        type="button"
+                                                        className="relative rounded border overflow-hidden aspect-[4/3]"
+                                                        onClick={() => handleImageClick(src)}
+                                                    >
+                                                        <img src={src} alt={`img-${i}`} className="w-full h-full object-cover" />
+                                                    </button>
+                                                )
+                                            })}
+                                        </div>
+                                    </div>
+                                )}
+                                <div className="flex">
+                                    <button
+                                        type="button"
+                                        className="ml-auto inline-flex items-center gap-2 px-3 py-2 rounded-md bg-blue-50 text-blue-600 hover:bg-blue-100"
+                                        onClick={() => setIsUploadModalOpen(true)}
+                                    >
+                                        <i className="bx bx-image-add"></i>
+                                        Kelola Gambar
+                                    </button>
+                                </div>
                             </div>
 
                             {/* Submit + Reset */}
@@ -387,6 +490,7 @@ function UpdateLPB() {
                                     Reset
                                 </button>
                             </div>
+
                         </form>
                     </div>
                 </Transition>
@@ -430,6 +534,18 @@ function UpdateLPB() {
             isOpen={isPreviewOpen}
             onClose={handleClosePreview}
             imageUrl={selectedImageUrl}
+        />
+
+        {/* Upload Modal */}
+        <UpdateMultiUploadModal
+            open={isUploadModalOpen}
+            initialBukti={items.bukti}
+            lpbId={decryptedId}
+            onClose={() => setIsUploadModalOpen(false)}
+            onDone={() => {
+                // Refresh LPB data to display latest images from server
+                fetchItem()
+            }}
         />
     </Layout>
     )

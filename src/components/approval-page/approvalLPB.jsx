@@ -156,7 +156,7 @@ function ApprovalLPB() {
                                 <p className="text-sm text-gray-500 mb-4">{DateFormat(infoPO.tanggal, false)}</p>
                                 <div className="space-y-3">
                                     <InfoRow label="Pembuat Permintaan" value={infoPO.user_id} />
-                                    <InfoRow label="Alamat" value={infoPO.alamat} />
+                                    <InfoRow label="Keterangan" value={infoPO.Keterangan} />
                                     <InfoRow label="Estimasi Tanggal Penyerahan" value={DateFormat(infoPO.tanggal_penyerahan)} />
                                     <InfoRow label="Kode Suplier" value={infoPO.kode_suplier} />
                                 </div>
@@ -207,6 +207,41 @@ function ApprovalLPB() {
                                 </div>
                             )}
                         </div>
+
+                        {/* BUKTI SECTION */}
+                    <div className="bg-white border rounded-md p-4 lg:p-6 mt-6">
+                        <div className="flex justify-between items-center mb-4">
+                            <p className="text-lg lg:text-xl text-gray-400 font-semibold">Bukti Penerimaan</p>
+                            <div className="text-sm text-gray-500">{(item?.bukti?.length || 0)} gambar</div>
+                        </div>
+
+                        {!item?.bukti || item.bukti.length === 0 ? (
+                            <p className="text-gray-400 italic text-center py-4">Tidak ada bukti diunggah</p>
+                        ) : (
+                            <div className="rounded-md border border-dashed border-gray-300 p-3">
+                                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 w-full">
+                                    {item.bukti.map((b, i) => {
+                                        let src = b
+                                        if (typeof b === 'string') {
+                                            if (b.startsWith('http')) src = b
+                                            else if (b.startsWith('/')) src = `${apiUrl}${b}`
+                                            else src = `${apiUrl}/${b}`
+                                        }
+                                        return (
+                                            <button
+                                                key={i}
+                                                type="button"
+                                                className="relative rounded border overflow-hidden aspect-[4/3]"
+                                                onClick={() => handleImageClick(src)}
+                                            >
+                                                <img src={src} alt={`bukti-${i}`} className="w-full h-full object-cover" />
+                                            </button>
+                                        )
+                                    })}
+                                </div>
+                            </div>
+                        )}
+                    </div>
 
                         <ApprovalActions
                             itemId={decryptedId}

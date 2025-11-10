@@ -88,7 +88,7 @@ const LogCards = forwardRef(({ item, goToPage }, ref) => {
                                         <div className="flex justify-between">
                                             <p className="text-gray-500 text-xs">Note</p>
                                             <p className="font-medium text-xs">
-                                                {item.data_before.note || '-'}
+                                                {item.data_before.details.note_barang || '-'}
                                             </p>
                                         </div>
                                     </div>
@@ -117,7 +117,7 @@ const LogCards = forwardRef(({ item, goToPage }, ref) => {
                                         <div className="flex justify-between">
                                             <p className="text-gray-500 text-xs">Note</p>
                                             <p className="font-medium text-xs">
-                                                {item.data_after.note || '-'}
+                                                {item.data_after?.details?.[0]?.note_barang || '-'}
                                             </p>
                                         </div>
                                     </div>
