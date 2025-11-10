@@ -8,10 +8,11 @@ import { DecryptID } from '../../helper/EncryptHelper'
 import Swal from 'sweetalert2'
 import Transition from '../component/Transition'
 
-function UpdateStatus() {
+function UpdateMataUang() {
   const [items, setItems] = useState({
+    kode: '',
     name: '',
-    description: '',
+    symbol: '',
   })
   const [decryptedId, setDecryptedId] = useState('')
   const [disabled, setDisabled] = useState(false)
@@ -35,11 +36,12 @@ function UpdateStatus() {
 
   const fetchItems = async () => {
     try {
-      const response = await api.get(`inventStatus-detail/${decryptedId}`)
+      const response = await api.get(`mataUang/${decryptedId}`)
       const data = response.data.data
       const fetched = {
+        kode: data?.kode || '',
         name: data?.name || '',
-        description: data?.description || '',
+        symbol: data?.symbol || '',
       }
       setItems(fetched)
       setOriginalItems(fetched)
@@ -58,7 +60,9 @@ function UpdateStatus() {
   // Disable Update until there is a change
   useEffect(() => {
     if (!originalItems) return
-    const changed = items.name !== originalItems.name || items.description !== originalItems.description
+    const changed = items.kode !== originalItems.kode || 
+                    items.name !== originalItems.name ||
+                    items.symbol !== originalItems.symbol
     setIsUnchanged(!changed)
   }, [items, originalItems])
 
@@ -68,33 +72,34 @@ function UpdateStatus() {
       if (disabled) return
       setDisabled(true)
 
-      if (!items.name || !items.description) {
+      if ( !items.kode || !items.name || !items.symbol ) {
         Swal.fire({
           icon: 'warning',
           title: 'Data belum lengkap',
-          text: 'Nama dan Deskripsi wajib diisi.',
+          text: 'Beberapa data wajib diisi.',
         })
         setDisabled(false)
         return
       }
 
-      await api.put(`inventStatus-update/${decryptedId}`, {
+      await api.put(`mataUang-update/${decryptedId}`, {
+        kode: items.kode,
         name: items.name,
-        description: items.description,
+        symbol: items.symbol,
       })
-
+      
       Swal.fire({
-        title: 'Status berhasil diperbarui!',
+        title: 'Mata uang berhasil diperbarui!',
         icon: 'success',
         timer: 2000,
         showConfirmButton: false,
       })
-      navigate('/status/list-status')
+      navigate('/mata-uang/list-mata-uang')
     } catch (error) {
       setError(error?.response?.data ?? error)
       Swal.fire({
         icon: 'error',
-        title: 'Gagal mengubah Status',
+        title: 'Gagal mengubah mata uang',
         text: 'Ada kesalahan dalam sistem.',
       })
     } finally {
@@ -104,49 +109,61 @@ function UpdateStatus() {
 
   const resetValue = () => {
     if (originalItems) setItems(originalItems)
-    else setItems({ name: '', description: '' })
+    else setItems({ kode: '', name: '', symbol: '' })
   }
 
   return (
-    <Layout title={'Update Status'}>
+    <Layout title={'Update Mata Uang'}>
       <Block>
         <div className="px-4">
-          <Back goHome={() => navigate('/status/list-status')} />
-          <p className="lg:text-3xl text-2xl font-semibold capitalize my-4">Update Status</p>
+          <Back goHome={() => navigate('/mata-uang/list-mata-uang')} />
+          <p className="lg:text-3xl text-2xl font-semibold capitalize my-4">Update Mata Uang</p>
           <Transition contentVisible={contentVisible}>
             <div className="p-8 bg-white shadow-sm rounded-lg border">
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div className="mb-5 space-y-2">
-                  <label className="font-semibold">Nama Status</label>
+                  <label className="font-semibold">Kode</label>
+                  <div className="bg-white p-2 rounded-md border border-gray-300 mt-2">
+                    <input
+                      type="text"
+                      name="kode"
+                      value={items.kode}
+                      maxLength={50}
+                      onChange={(e) => setItems({ ...items, kode: e.target.value })}
+                      placeholder="Kode mata uang"
+                      className="w-full p-2 placeholder:text-gray-400 placeholder:font-light capitalize"
+                      required
+                    />
+                  </div>
+                </div>
+                <div className="mb-4">
+                  <label className="font-semibold">Nama</label>
                   <div className="bg-white p-2 rounded-md border border-gray-300 mt-2">
                     <input
                       type="text"
                       name="name"
                       value={items.name}
                       onChange={(e) => setItems({ ...items, name: e.target.value })}
-                      maxLength={50}
-                      placeholder="Nama"
-                      className="w-full p-2 placeholder:text-gray-400 placeholder:font-inter placeholder:font-light capitalize"
+                      className="w-full p-2 placeholder:text-gray-400 placeholder:font-light"
+                      placeholder="Nama mata uang"
                       required
                     />
                   </div>
                 </div>
-
                 <div className="mb-4">
-                  <label className="font-semibold">Deskripsi</label>
+                  <label className="font-semibold">Simbol</label>
                   <div className="bg-white p-2 rounded-md border border-gray-300 mt-2">
                     <input
                       type="text"
-                      name="description"
-                      value={items.description}
-                      onChange={(e) => setItems({ ...items, description: e.target.value })}
-                      className="w-full p-2 placeholder:text-gray-400 placeholder:font-inter placeholder:font-light"
-                      placeholder="Deskripsi"
+                      name="simbol"
+                      value={items.symbol}
+                      onChange={(e) => setItems({ ...items, symbol: e.target.value })}
+                      className="w-full p-2 placeholder:text-gray-400  placeholder:font-light"
+                      placeholder="Simbol mata uang"
                       required
                     />
                   </div>
                 </div>
-
                 <div className="flex flex-col items-center justify-self-center mt-10 max-w-full w-[25rem] space-y-2 text-center">
                   <button
                     disabled={disabled || isUnchanged}
@@ -172,4 +189,4 @@ function UpdateStatus() {
   )
 }
 
-export default UpdateStatus
+export default UpdateMataUang;

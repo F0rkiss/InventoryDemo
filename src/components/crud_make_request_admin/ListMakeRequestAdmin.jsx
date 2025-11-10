@@ -25,8 +25,7 @@ import FilterStatusToggle from '../component/FilterStatusToggle';
     const [contentVisible, setContentVisible] = useState(false)
     const navigate = useNavigate()
     const { role } = useAuth()
-    const { canCreate, canUpdate } = useMenuAccess('MakeRequest');
-
+    const { canCreate, canUpdate } = useMenuAccess('MakeRequestAdmin');
     const [filterStatus, setFilterStatus] = useState('all');
     const onFilterChange = (next) => setFilterStatus(next);
 

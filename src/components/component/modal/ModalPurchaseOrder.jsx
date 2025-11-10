@@ -3,14 +3,19 @@ import MiModal from '../MiModal';
 import api from '../../../api/api';
 import Swal from 'sweetalert2';
 import Loader from '../Loader';
+import SelectPaginate from '../../component/SelectPaginate'; // --- TAMBAHAN --- (Pastikan path ini benar)
 
 // --- TERIMA PROPS BARU: prItems ---
 const ModalPurchaseOrder = ({ onClose, onSave, open, initialData, apiUrl, prItems = [], existingItems = [], maxItems = null }) => {
     const [modalData, setModalData] = useState({
         selectedBarang: null,
         qty: '',
-        harga: ''
+        harga: '',
+        selectedMataUang: null, // --- State ini sekarang akan menyimpan OBJEK, bukan ID ---
     });
+
+    // --- DIHAPUS --- State untuk Mata Uang (mataUangList, mataUangLoading)
+    // --- DIHAPUS --- karena SelectPaginate menanganinya sendiri.
 
     // Barang search states
     const [searchTerm, setSearchTerm] = useState('');
@@ -31,30 +36,35 @@ const ModalPurchaseOrder = ({ onClose, onSave, open, initialData, apiUrl, prItem
             const existingBarang = initialData?.barang_detail || initialData?.selectedBarang;
 
             // --- BARU: Tetapkan daftar barang yang tersedia dari prop prItems ---
-            // Kita ambil objek 'barang_detail' dari setiap item di prItems
-            const itemsFromPR = prItems.map(prDetail => prDetail.barang_detail).filter(Boolean); // .filter(Boolean) untuk jaga-jaga jika ada data null
+            const itemsFromPR = prItems.map(prDetail => prDetail.barang_detail).filter(Boolean); 
             setAvailableBarang(itemsFromPR);
             // -----------------------------------------------------------------
+
+            // --- DIHAPUS --- fetchMataUang() tidak diperlukan lagi.
 
             if (initialData && existingBarang) {
                 // If editing, populate from initialData
                 setModalData({
                     selectedBarang: existingBarang,
-                    qty: initialData.requested_qty || initialData.qty, // Handle both API and local state names
-                    harga: initialData.harga_sub_total || initialData.harga_satuan // Use sub_total as it is the price for PO
+                    qty: initialData.requested_qty || initialData.qty,
+                    harga: initialData.harga_sub_total || initialData.harga_satuan,
+                    // --- PERUBAHAN: Muat objek mata uang langsung dari initialData ---
+                    // (Asumsi `onSave` menyimpan keseluruhan objek)
+                    selectedMataUang: initialData.selectedMataUang || null
                 });
                 setSearchTerm(existingBarang.name);
             } else {
                 // Reset for a new entry
-                setModalData({ selectedBarang: null, qty: '', harga: '' });
+                // --- PERUBAHAN: Reset mata uang ---
+                setModalData({ selectedBarang: null, qty: '', harga: '', selectedMataUang: null });
                 setSearchTerm('');
-                // fetchAvailableBarang(); // <-- HAPUS: Tidak perlu fetch API lagi
             }
         }
-    }, [open, initialData, prItems]); // <-- TAMBAHKAN prItems sebagai dependency
+    }, [open, initialData, prItems]); 
 
     const searchContainerRef = useRef(null);
     useEffect(() => {
+        // ... (Fungsi handleClickOutside tidak berubah)
         const handleClickOutside = (event) => {
             if (searchContainerRef.current && !searchContainerRef.current.contains(event.target)) {
                 setShowResults(false);
@@ -67,18 +77,14 @@ const ModalPurchaseOrder = ({ onClose, onSave, open, initialData, apiUrl, prItem
         };
     }, []);
 
-    // --- DIUBAH: Fungsi ini sekarang memfilter prItems secara lokal ---
+    // --- (Fungsi fetchAvailableBarang tidak berubah) ---
     const fetchAvailableBarang = (term = '') => {
         setBarangLoading(true);
         try {
-            // Ambil daftar barang master dari prop
             const itemsFromPR = prItems.map(prDetail => prDetail.barang_detail).filter(Boolean);
-
             if (term.trim() === '') {
-                // Jika tidak ada pencarian, tampilkan semua barang dari PR
                 setAvailableBarang(itemsFromPR);
             } else {
-                // Jika ada pencarian, filter berdasarkan nama atau kode
                 const lowerCaseTerm = term.toLowerCase();
                 const filteredItems = itemsFromPR.filter(barang => 
                     (barang.name && barang.name.toLowerCase().includes(lowerCaseTerm)) ||
@@ -94,18 +100,18 @@ const ModalPurchaseOrder = ({ onClose, onSave, open, initialData, apiUrl, prItem
         }
     };
 
+     // --- (Fungsi handleSearchChange tidak berubah) ---
      const handleSearchChange = (term) => {
         setSearchTerm(term);
         setShowResults(true);
-
         clearTimeout(debounceTimeout.current);
         debounceTimeout.current = setTimeout(() => {
             fetchAvailableBarang(term);
-        }, 300); // <-- Kurangi waktu debounce, karena filter lokal cepat
+        }, 300);
     };
 
+    // --- (Fungsi handleBarangSelect tidak berubah) ---
     const handleBarangSelect = (barang) => {
-        // Logika ini sekarang akan berfungsi dengan benar karena `existingItems` di-pass dari induk
         const isAlreadySelected = existingItems.some(item => 
             (item.selectedBarang?.id === barang.id || item.barang_detail?.id === barang.id) && 
             (initialData?.selectedBarang?.id !== barang.id && initialData?.barang_detail?.id !== barang.id)
@@ -126,24 +132,28 @@ const ModalPurchaseOrder = ({ onClose, onSave, open, initialData, apiUrl, prItem
     };
 
     const handleRemoveBarang = () => {
-        setModalData(prev => ({ ...prev, selectedBarang: null, qty: '', harga: '' }));
+        // --- PERUBAHAN: Reset mata uang (selectedMataUang) ---
+        setModalData(prev => ({ ...prev, selectedBarang: null, qty: '', harga: '', selectedMataUang: null }));
         setSearchTerm('');
-        fetchAvailableBarang(''); // <-- Reset daftar ke semua barang PR
+        fetchAvailableBarang(''); 
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            if (!modalData.selectedBarang || !modalData.qty || !modalData.harga) {
+            // --- PERUBAHAN: Validasi mata uang ---
+            if (!modalData.selectedBarang || !modalData.qty || !modalData.harga || !modalData.selectedMataUang) {
                 Swal.fire({
                     icon: 'warning',
                     title: 'Data belum lengkap',
-                    text: 'Silakan pilih barang, masukkan jumlah beserta harganya!',
+                    // --- PERUBAHAN: Update teks error ---
+                    text: 'Silakan pilih barang, masukkan jumlah, harga, dan mata uang!',
                 });
                 return;
             }
             
             if (maxItems && existingItems.length >= maxItems && (!initialData || !initialData.barangs)) {
+                // ... (Logika tidak berubah)
                 Swal.fire({
                     icon: 'warning',
                     title: 'Batas maksimal tercapai',
@@ -155,16 +165,19 @@ const ModalPurchaseOrder = ({ onClose, onSave, open, initialData, apiUrl, prItem
             const qty = parseInt(modalData.qty);
             const harga = parseInt(modalData.harga);
 
-            // FIXED: Return a consistent data structure with 'selectedBarang'
+            // --- PERUBAHAN: Kirim keseluruhan objek selectedMataUang saat onSave ---
+            // Ini agar saat "Edit", modal bisa menerima objek ini kembali.
             onSave({
                 selectedBarang: modalData.selectedBarang,
                 qty: qty,
-                harga_satuan: harga, // This can be used for display or future edits
-                harga_sub_total: harga // For PO, the price entered is the subtotal
+                harga_satuan: harga,
+                harga_sub_total: harga,
+                selectedMataUang: modalData.selectedMataUang // --- PERUBAHAN ---
             });
 
             // Reset state and close modal
-            setModalData({ selectedBarang: null, qty: '', harga: '' });
+            // --- PERUBAHAN: Reset mata uang ---
+            setModalData({ selectedBarang: null, qty: '', harga: '', selectedMataUang: null });
             setSearchTerm('');
 
         } catch (error) {
@@ -177,7 +190,7 @@ const ModalPurchaseOrder = ({ onClose, onSave, open, initialData, apiUrl, prItem
     return (
         <MiModal
             onClose={onClose}
-            contentClass="max-w-2xl w-full min-h-[64vh] overflow-y-auto"
+            contentClass="maxw-2xl w-full min-h-[64vh] overflow-y-auto"
             closeModal={false}
         >
             <div className='py-16 px-6'>
@@ -187,11 +200,12 @@ const ModalPurchaseOrder = ({ onClose, onSave, open, initialData, apiUrl, prItem
                             {initialData && (initialData.barang_detail || initialData.selectedBarang) ? 'Edit Detail Purchase Order' : 'Tambah Detail Purchase Order'}
                         </p>
                     </div>
+                    
                     {/* Barang Selection */}
                     <div className="mb-4">
+                        {/* ... (JSX untuk pilih barang tidak berubah) ... */}
                         <label className="font-semibold">Pilih Barang (dari Purchase Request)</label>
                         <div className="relative mt-1" ref={searchContainerRef}>
-                            {/* Hapus console.log */}
                             {modalData.selectedBarang ? (
                                 <div className="relative border rounded-lg p-3 bg-white flex items-start gap-3 shadow-sm">
                                     <div className="flex items-center gap-3">
@@ -227,7 +241,7 @@ const ModalPurchaseOrder = ({ onClose, onSave, open, initialData, apiUrl, prItem
                                             type="text"
                                             value={searchTerm}
                                             onChange={(e) => handleSearchChange(e.target.value)}
-                                            onFocus={() => setShowResults(true)} // BARU: Tampilkan hasil saat input di-klik
+                                            onFocus={() => setShowResults(true)} 
                                             placeholder="Cari berdasarkan nama atau kode barang"
                                             className="w-full focus:outline-none placeholder-gray-400"
                                         />
@@ -239,7 +253,6 @@ const ModalPurchaseOrder = ({ onClose, onSave, open, initialData, apiUrl, prItem
                                                 <div className="p-4 text-center"><Loader /></div>
                                             ) : availableBarang.length === 0 ? (
                                                 <div className="p-4 text-center text-gray-500">
-                                                    {/* DIUBAH: Pesan yang lebih sesuai */}
                                                     {searchTerm ? 'Barang tidak ditemukan' : 'Tidak ada barang di PR ini'}
                                                 </div>
                                             ) : (
@@ -270,11 +283,10 @@ const ModalPurchaseOrder = ({ onClose, onSave, open, initialData, apiUrl, prItem
                         </div>
                     </div>
 
-                    {/* Qty and Harga Inputs */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
                         <div>
                             <label className="font-semibold">Jumlah</label>
-                            <div className='bg-white p-2 rounded-md border border-gray-300 mt-1'>
+                            <div className='bg-white p-3 rounded-md border border-gray-300 mt-1'>
                                 <input
                                     type="number"
                                     min={1}
@@ -288,7 +300,7 @@ const ModalPurchaseOrder = ({ onClose, onSave, open, initialData, apiUrl, prItem
                         </div>
                         <div>
                             <label className="font-semibold">Biaya Total</label>
-                            <div className='bg-white mt-1 p-2 rounded-md border border-gray-300'>
+                            <div className='bg-white mt-1 p-3 rounded-md border border-gray-300'>
                                 <input
                                     type="number"
                                     min={1}
@@ -300,12 +312,28 @@ const ModalPurchaseOrder = ({ onClose, onSave, open, initialData, apiUrl, prItem
                                 />
                             </div>
                         </div>
+
+                        <div className="pt-[1px]"> 
+                            <label className="font-semibold">Mata Uang</label>
+                            <div className='bg-white rounded-md mt-1'>
+                                <SelectPaginate
+                                    source={'mataUang'}
+                                    selectValue={modalData.selectedMataUang}
+                                    selectName="Mata Uang"
+                                    itemLabel={['kode']}
+                                    handleSelectChange={(value) => 
+                                        setModalData(prev => ({ ...prev, selectedMataUang: value }))
+                                    }
+                                    required
+                                />
+                            </div>
+                        </div>
                     </div>
 
                     <div className='flex flex-col sm:flex-row-reverse w-full justify-start items-center gap-3'>
                         <button
                             type="submit"
-                            disabled={!modalData.selectedBarang || !modalData.qty || !modalData.harga}
+                            disabled={!modalData.selectedBarang || !modalData.qty || !modalData.harga || !modalData.selectedMataUang}
                             className='w-full sm:w-auto py-2 px-6 rounded-lg font-medium bg-blue-500 hover:bg-blue-600 transition-colors duration-200 text-white disabled:bg-blue-300'
                         >
                             Simpan

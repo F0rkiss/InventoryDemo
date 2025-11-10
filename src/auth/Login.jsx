@@ -76,7 +76,7 @@ function Login() {
             // Handle errors during login
             setErrorMessage('Login failed: ' + (error.response?.data?.message || error.message));
             if (error.response.status === 401) {
-                setErrorMessage('Email atau Password Anda salah')
+                setErrorMessage('Kode atau Password Anda salah')
             }
         } finally {
             setIsSubmitting(false)
@@ -109,7 +109,6 @@ function Login() {
                 </div>
                 <div className='mb-6'>
                     <label className='text-gray-200 text-xs mb-2 px-0'>Password</label>
-                    {/* <-- UBAH INI: Tambahkan 'relative' */}
                     <div className='flex justify-between mt-1 py-2 px-3 bg-stone-800 focus-within:bg-stone-700/50 border-2 border-stone-900 rounded-md transition-colors focus-within:border-stone-500'>
                         <input
                             type={showPassword ? 'text' : 'password'} // <-- UBAH INI
@@ -119,7 +118,6 @@ function Login() {
                             className='w-full !text-white placeholder:text-stone-400 pr-16' // <-- UBAH INI: Tambahkan padding 'pr-16'
                             required
                         />
-                        {/* <-- TAMBAHKAN TOMBOL INI --> */}
                         <button
                             type="button" // Set type="button" agar tidak men-submit form
                             className="flex items-center w-fit text-stone-400 hover:text-stone-200 text-sm font-medium"

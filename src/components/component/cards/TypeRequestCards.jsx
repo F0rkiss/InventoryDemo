@@ -1,6 +1,6 @@
 import React, { forwardRef } from 'react'
 
-const TypeRequestCards = forwardRef(({item, goToDetail, canUpdate, goToUpdate, deleteItems}, ref) => {
+const TypeRequestCards = forwardRef(({item, goToDetail, canUpdate, canDelete, goToUpdate, deleteItems}, ref) => {
 
     return (
        <div className='rounded-lg bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200 p-4 flex flex-col justify-between min-h-[200px]' ref={ref}>
@@ -50,12 +50,14 @@ const TypeRequestCards = forwardRef(({item, goToDetail, canUpdate, goToUpdate, d
                         Update
                     </button>
                 }
-                <button
+                {canDelete &&
+                    <button
                         className="px-3 py-1.5 delete-button"
                         onClick={() => deleteItems(item.id)}
                     >
                         delete
                     </button>
+                }
             </div>
         </div>
     )

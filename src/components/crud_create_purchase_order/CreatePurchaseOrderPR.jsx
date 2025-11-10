@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react' // --- PERUBAHAN: Menghapus useRef
 import { Block } from 'framework7-react'
 import { useNavigate, useParams } from 'react-router-dom'
 import api from '../../api/api'
@@ -19,9 +19,8 @@ function CreatePurchaseOrderPR() {
     const [items, setItems] = useState({
         purchase_request: null,
         tanggal: '',
-        kode_suplier: '',
+        supplier: null,
         kode: '',
-        alamat: '',
         keterangan: '',
         cara_pembayaran: null,
         tanggal_penyerahan: '',
@@ -86,8 +85,7 @@ function CreatePurchaseOrderPR() {
     const validate = () => {
         const newErrors = {};
         if (!items.tanggal) newErrors.tanggal = 'Tanggal wajib diisi.';
-        if (!items.kode_suplier) newErrors.kode_suplier = 'Kode Supplier wajib diisi.';
-        if (!items.alamat) newErrors.alamat = 'Alamat wajib diisi.';
+        if (!items.supplier) newErrors.supplier = 'Supplier wajib dipilih.';
         if (!items.tanggal_penyerahan) newErrors.tanggal_penyerahan = 'Tanggal Penyerahan wajib diisi.';
         if (!items.keterangan) newErrors.keterangan = 'Keterangan wajib diisi.';
         if (details.length === 0) newErrors.details = 'Tambahkan minimal satu detail barang.';
@@ -108,20 +106,26 @@ function CreatePurchaseOrderPR() {
             setIsSubmitting(true);
             setDisabled(true);
 
-            const payload = {
-                tanggal: items.tanggal,
-                kode_suplier: items.kode_suplier,
-                alamat: items.alamat,
-                tanggal_penyerahan: items.tanggal_penyerahan,
-                keterangan: items.keterangan,
-                cara_pembayaran: items.cara_pembayaran?.id,
-                is_ppn: items.is_ppn,
-                invent_barangs_id: details.map(d => d.selectedBarang?.id ),
-                qty: details.map(d => d.qty ),
-                harga_sub_total: details.map(d => d.harga_sub_total)
-            };
-            
-            const res = await api.post(`purchaseOrder-create/${decryptedId}`, payload);
+            const fd = new FormData();
+            fd.append('tanggal', items.tanggal);
+            fd.append('invent_suplier_id', items.supplier?.value);
+            fd.append('tanggal_penyerahan', items.tanggal_penyerahan);
+            fd.append('keterangan', items.keterangan);
+            if (items.cara_pembayaran) {
+               fd.append('cara_pembayaran', items.cara_pembayaran.id);
+            }
+            fd.append('is_ppn', items.is_ppn);
+
+            details.forEach(d => {
+                fd.append('invent_barangs_id[]', d.selectedBarang?.id);
+                fd.append('qty[]', d.qty);
+                fd.append('harga_sub_total[]', d.harga_sub_total);
+                fd.append('invent_mata_uang_id[]', d.selectedMataUang?.id); // Asumsi .id
+            });
+
+            const res = await api.post(`purchaseOrder-create/${decryptedId}`, fd, {
+                headers: { 'Content-Type': 'multipart/form-data' },
+            });
 
             Swal.fire({
                 title:'Purchase Order berhasil dibuat!',
@@ -180,13 +184,11 @@ function CreatePurchaseOrderPR() {
             setItems({
                 purchase_request: null,
                 tanggal: '',
-                kode_suplier: '',
-                kode: '',
-                alamat: '',
+                supplier: null,
                 keterangan: '',
                 cara_pembayaran: null,
                 tanggal_penyerahan: '',
-                is_ppn: 0 
+                is_ppn: 0,
             });
             setDetails([]);
         }
@@ -211,7 +213,6 @@ function CreatePurchaseOrderPR() {
                 
                 { loading && <Loader Class="mt-44"/> }
                     <Transition contentVisible={contentVisible}>
-                    {/* --- MOVED INFORMATION DISPLAY FROM DetailPurchaseOrderPR.jsx --- */}
                     {prInfo && (
                         <div className='mb-8'>
                             <div className="flex items-center justify-between my-4">
@@ -326,56 +327,38 @@ function CreatePurchaseOrderPR() {
                                     <label className='font-semibold'>Tanggal</label>
                                     {errors.tanggal && <span className="text-red-500 text-sm">{errors.tanggal}</span>}
                                 </div>
-                                <div className={`bg-white p-2 rounded-md border mt-2 ${errors.tanggal ? 'border-red-500' : 'border-gray-300'}`}>
+                                <div className={`bg-white p-3 rounded-md border mt-2 ${errors.tanggal ? 'border-red-500' : 'border-gray-300'}`}>
                                 <input 
-                                    // --- PERUBAHAN DI SINI ---
-                                    type={items.tanggal ? 'date' : 'text'} // Tipe dinamis
-                                    onFocus={(e) => e.target.type = 'date'} // Ubah ke 'date' saat di-klik
-                                    onBlur={(e) => { // Ubah kembali ke 'text' jika kosong
+                                    type={items.tanggal ? 'date' : 'text'}
+                                    onFocus={(e) => e.target.type = 'date'}
+                                    onBlur={(e) => {
                                         if (!e.target.value) {
                                             e.target.type = 'text';
                                         }
                                     }}
-                                    // --- AKHIR PERUBAHAN ---
                                     name="tanggal" 
                                     value={items.tanggal} 
                                     onChange={handleChange}
                                     className="w-full p-2 placeholder:text-gray-400"
-                                    placeholder='Pilih Tanggal' // Placeholder untuk 'text'
+                                    placeholder='Pilih Tanggal'
                                 />
                                 </div>
                             </div>
                             <div className='mb-4'>
                                 <div className="flex justify-between items-center">
-                                    <label className='font-semibold'>Kode Supplier</label>
-                                    {errors.kode_suplier && <span className="text-red-500 text-sm">{errors.kode_suplier}</span>}
+                                    <label className='font-semibold'>Supplier</label>
+                                    {errors.supplier && <span className="text-red-500 text-sm">{errors.supplier}</span>}
                                 </div>
-                                <div className={`bg-white p-2 rounded-md border mt-2 ${errors.kode_suplier ? 'border-red-500' : 'border-gray-300'}`}>
-                                <input 
-                                    type="text" 
-                                    name="kode_suplier" 
-                                    value={items.kode_suplier} 
-                                    onChange={handleChange}
-                                    className="w-full p-2 placeholder:text-gray-400"
+                                <div className={`bg-white rounded-md mt-2 ${errors.supplier ? 'border-red-500' : 'border-gray-300'}`}>
+                                <SelectPaginate 
+                                    selectName="Supplier"
+                                    source={'suplier'} 
+                                    selectValue={items.supplier} 
+                                    itemLabel={['nama_perusahaan']}
+                                    handleSelectChange={(value) => handleSelectChange('supplier', value)}
+                                    className="w-full placeholder:text-gray-400"
                                     maxLength={80}
-                                    placeholder='Kode Supplier'
-                                />
-                                </div>
-                            </div>
-                            <div className="mb-4">
-                                <div className="flex justify-between items-center">
-                                    <label className='font-semibold'>Alamat</label>
-                                    {errors.alamat && <span className="text-red-500 text-sm">{errors.alamat}</span>}
-                                </div>
-                                <div className={`bg-white p-2 rounded-md border mt-2 ${errors.alamat ? 'border-red-500' : 'border-gray-300'}`}>
-                                <textarea
-                                    name="alamat" 
-                                    value={items.alamat} 
-                                    onChange={handleChange}
-                                    className="w-full min-h-fit p-2 placeholder:text-gray-400"
-                                    maxLength={225}
-                                    placeholder='Alamat'
-                                    rows="3"
+                                    required
                                 />
                                 </div>
                             </div>
@@ -384,22 +367,20 @@ function CreatePurchaseOrderPR() {
                                     <label className='font-semibold'>Tanggal Penyerahan</label>
                                     {errors.tanggal_penyerahan && <span className="text-red-500 text-sm">{errors.tanggal_penyerahan}</span>}
                                 </div>
-                                <div className={`bg-white p-2 rounded-md border mt-2 ${errors.tanggal_penyerahan ? 'border-red-500' : 'border-gray-300'}`}>
+                                <div className={`bg-white p-3 rounded-md border mt-2 ${errors.tanggal_penyerahan ? 'border-red-500' : 'border-gray-300'}`}>
                                 <input 
-                                    // --- PERUBAHAN DI SINI ---
-                                    type={items.tanggal_penyerahan ? 'date' : 'text'} // Tipe dinamis
-                                    onFocus={(e) => e.target.type = 'date'} // Ubah ke 'date' saat di-klik
-                                    onBlur={(e) => { // Ubah kembali ke 'text' jika kosong
+                                    type={items.tanggal_penyerahan ? 'date' : 'text'}
+                                    onFocus={(e) => e.target.type = 'date'}
+                                    onBlur={(e) => {
                                         if (!e.target.value) {
                                             e.target.type = 'text';
                                         }
                                     }}
-                                    // --- AKHIR PERUBAHAN ---
                                     name="tanggal_penyerahan" 
                                     value={items.tanggal_penyerahan} 
                                     onChange={handleChange}
                                     className="w-full p-2 placeholder:text-gray-400"
-                                    placeholder='Pilih Tanggal Penyerahan' // Placeholder untuk 'text'
+                                    placeholder='Pilih Tanggal Penyerahan'
                                 />
                                 </div>
                             </div>
@@ -443,7 +424,7 @@ function CreatePurchaseOrderPR() {
                                                 type="checkbox" 
                                                 id="is_ppn_checkbox"
                                                 name="is_ppn" 
-                                                checked={items.is_ppn == 1} // Cek jika value = 1
+                                                checked={items.is_ppn == 1}
                                                 onChange={handleChange}
                                                 className="w-6 h-6 text-blue-600 bg-gray-100 border-gray-100 rounded focus:ring-blue-500"
                                             />
@@ -452,6 +433,7 @@ function CreatePurchaseOrderPR() {
                                     </div>
                                 </div>
                             </div>
+
                             <div className="mt-2 pt-3">
                             <div className="flex justify-between items-center">
                                     <p className='text-lg font-semibold'>Detail</p>
@@ -464,7 +446,7 @@ function CreatePurchaseOrderPR() {
                                     key={id}
                                     className="
                                     border border-gray-300 rounded-xl p-3
-                                    grid grid-cols-[80px,1fr] md:grid-cols-[160px,1fr,80px,160px,64px]
+                                    grid grid-cols-[80px,1fr] md:grid-cols-[160px,1fr,80px,auto,64px]
                                     items-center gap-x-4
                                     "
                                 >
@@ -491,9 +473,8 @@ function CreatePurchaseOrderPR() {
                                             {item.qty}
                                         </div>
 
-                                        <div className="mt-1 md:mt-0 md:text-right">
-                                            <span className="text-sm text-gray-400">Subtotal: </span>
-                                            {PriceFormat(item.harga_sub_total)}
+                                        <div className="mt-1 md:mt-0 md:text-right font-medium">
+                                            {PriceFormat(item.harga_sub_total, item.selectedMataUang?.kode)}
                                         </div>
                                     </div>
 
@@ -572,10 +553,8 @@ function CreatePurchaseOrderPR() {
                         setEditIndex(null);
                     }}
                     initialData={editIndex !== null ? details[editIndex] : null}
-                    // --- TAMBAHKAN DUA PROPS INI ---
                     prItems={prInfo?.details || []}
                     existingItems={details}
-                    // ---------------------------------
                     />
                 }
             </div>

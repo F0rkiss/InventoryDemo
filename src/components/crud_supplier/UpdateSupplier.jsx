@@ -8,10 +8,12 @@ import { DecryptID } from '../../helper/EncryptHelper'
 import Swal from 'sweetalert2'
 import Transition from '../component/Transition'
 
-function UpdateStatus() {
+function UpdateSupplier() {
   const [items, setItems] = useState({
-    name: '',
-    description: '',
+    nama_perusahaan: '',
+    alamat: '',
+    phone: '',
+    pic: '',
   })
   const [decryptedId, setDecryptedId] = useState('')
   const [disabled, setDisabled] = useState(false)
@@ -35,11 +37,13 @@ function UpdateStatus() {
 
   const fetchItems = async () => {
     try {
-      const response = await api.get(`inventStatus-detail/${decryptedId}`)
+      const response = await api.get(`suplier/${decryptedId}`)
       const data = response.data.data
       const fetched = {
-        name: data?.name || '',
-        description: data?.description || '',
+        nama_perusahaan: data?.nama_perusahaan || '',
+        alamat: data?.alamat || '',
+        phone: data?.phone || '',
+        pic: data?.PIC || '',
       }
       setItems(fetched)
       setOriginalItems(fetched)
@@ -58,7 +62,10 @@ function UpdateStatus() {
   // Disable Update until there is a change
   useEffect(() => {
     if (!originalItems) return
-    const changed = items.name !== originalItems.name || items.description !== originalItems.description
+    const changed = items.nama_perusahaan !== originalItems.nama_perusahaan || 
+                    items.alamat !== originalItems.alamat ||
+                    items.phone !== originalItems.phone ||
+                    items.pic !== originalItems.pic
     setIsUnchanged(!changed)
   }, [items, originalItems])
 
@@ -68,33 +75,35 @@ function UpdateStatus() {
       if (disabled) return
       setDisabled(true)
 
-      if (!items.name || !items.description) {
+      if ( !items.nama_perusahaan || !items.alamat || !items.phone ) {
         Swal.fire({
           icon: 'warning',
           title: 'Data belum lengkap',
-          text: 'Nama dan Deskripsi wajib diisi.',
+          text: 'Beberapa data wajib diisi.',
         })
         setDisabled(false)
         return
       }
 
-      await api.put(`inventStatus-update/${decryptedId}`, {
-        name: items.name,
-        description: items.description,
+      await api.put(`suplier-update/${decryptedId}`, {
+        nama_perusahaan: items.nama_perusahaan,
+        alamat: items.alamat,
+        phone: items.phone,
+        PIC: items.pic,
       })
-
+      
       Swal.fire({
-        title: 'Status berhasil diperbarui!',
+        title: 'Supplier berhasil diperbarui!',
         icon: 'success',
         timer: 2000,
         showConfirmButton: false,
       })
-      navigate('/status/list-status')
+      navigate('/supplier/list-supplier')
     } catch (error) {
       setError(error?.response?.data ?? error)
       Swal.fire({
         icon: 'error',
-        title: 'Gagal mengubah Status',
+        title: 'Gagal mengubah supplier',
         text: 'Ada kesalahan dalam sistem.',
       })
     } finally {
@@ -104,45 +113,71 @@ function UpdateStatus() {
 
   const resetValue = () => {
     if (originalItems) setItems(originalItems)
-    else setItems({ name: '', description: '' })
+    else setItems({ nama_perusahaan: '', alamat: '', phone: '', pic: '' })
   }
 
   return (
     <Layout title={'Update Status'}>
       <Block>
         <div className="px-4">
-          <Back goHome={() => navigate('/status/list-status')} />
-          <p className="lg:text-3xl text-2xl font-semibold capitalize my-4">Update Status</p>
+          <Back goHome={() => navigate('/supplier/list-supplier')} />
+          <p className="lg:text-3xl text-2xl font-semibold capitalize my-4">Update Supplier</p>
           <Transition contentVisible={contentVisible}>
             <div className="p-8 bg-white shadow-sm rounded-lg border">
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div className="mb-5 space-y-2">
-                  <label className="font-semibold">Nama Status</label>
+                  <label className="font-semibold">Nama Perusahaan</label>
                   <div className="bg-white p-2 rounded-md border border-gray-300 mt-2">
                     <input
                       type="text"
                       name="name"
-                      value={items.name}
-                      onChange={(e) => setItems({ ...items, name: e.target.value })}
+                      value={items.nama_perusahaan}
                       maxLength={50}
-                      placeholder="Nama"
-                      className="w-full p-2 placeholder:text-gray-400 placeholder:font-inter placeholder:font-light capitalize"
+                      onChange={(e) => setItems({ ...items, nama_perusahaan: e.target.value })}
+                      placeholder="Nama perusahaan supplier"
+                      className="w-full p-2 placeholder:text-gray-400 placeholder:font-light capitalize"
                       required
                     />
                   </div>
                 </div>
-
                 <div className="mb-4">
-                  <label className="font-semibold">Deskripsi</label>
+                  <label className="font-semibold">Alamat</label>
                   <div className="bg-white p-2 rounded-md border border-gray-300 mt-2">
                     <input
                       type="text"
-                      name="description"
-                      value={items.description}
-                      onChange={(e) => setItems({ ...items, description: e.target.value })}
-                      className="w-full p-2 placeholder:text-gray-400 placeholder:font-inter placeholder:font-light"
-                      placeholder="Deskripsi"
+                      name="alamat"
+                      value={items.alamat}
+                      onChange={(e) => setItems({ ...items, alamat: e.target.value })}
+                      className="w-full p-2 placeholder:text-gray-400 placeholder:font-light"
+                      placeholder="Alamat perusahaan supplier"
                       required
+                    />
+                  </div>
+                </div>
+                <div className="mb-4">
+                  <label className="font-semibold">Phone</label>
+                  <div className="bg-white p-2 rounded-md border border-gray-300 mt-2">
+                    <input
+                      type="text"
+                      name="phone"
+                      value={items.phone}
+                      onChange={(e) => setItems({ ...items, phone: e.target.value })}
+                      className="w-full p-2 placeholder:text-gray-400  placeholder:font-light"
+                      placeholder="Nomor telefon perusahaan"
+                      required
+                    />
+                  </div>
+                </div>
+                <div className="mb-4">
+                  <label className="font-semibold">PIC</label>
+                  <div className="bg-white p-2 rounded-md border border-gray-300 mt-2">
+                    <input
+                      type="text"
+                      name="pic"
+                      value={items.pic}
+                      onChange={(e) => setItems({ ...items, pic: e.target.value })}
+                      className="w-full p-2 placeholder:text-gray-400 placeholder:font-light"
+                      placeholder="Penanggung perusahaan supplier"
                     />
                   </div>
                 </div>
@@ -172,4 +207,4 @@ function UpdateStatus() {
   )
 }
 
-export default UpdateStatus
+export default UpdateSupplier

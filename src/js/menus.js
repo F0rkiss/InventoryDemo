@@ -53,9 +53,10 @@ const menus = [
     { key: "Status", label: "Status", icon: "bx bxs-checkbox-checked", path: "/status/list-status" },
     { key: "Role", label: "Role", icon: "bx bx-tag", path: "/role/list-role" },
     { key: "Billing", label: "Billing", icon: "bx bx-spreadsheet", path: "/billing/list-billing" },
+    { key: "Suplier", label: "Supplier", icon: "bx bxs-truck", path: "/supplier/list-supplier" },
     { key: "NavigationGroup", label: "Navigation Group", icon: "bx bx-navigation", path: "/navigation-groups/list-navigation-groups" },
     {
-        key: "InventMutasi" || "InventLog" || "PPN" || "PaymentType",
+        key: "InventMutasi" || "InventLog" || "PPN" || "PaymentType" || "MataUang",
         label: "Information",
         icon: "bx bx-info-circle",
         isAccordion: true,
@@ -63,7 +64,8 @@ const menus = [
             { key: "InventMutasi", label: "Mutasi", path: "/mutasi" },
             { key: "InventLog", label: "Log", path: "/log" },
             { key: "PPN", label: "PPN", path: "/ppn" },
-            { key: "PaymentType", label: "Payment Method", path: "/list-payment-method" }
+            { key: "PaymentType", label: "Payment Method", path: "/list-payment-method" },
+            { key: "MataUang", label: "Mata Uang", path: "/mata-uang/list-mata-uang" }
         ]
     },
     { key: "JenisMemo", label: "Jenis Memo", icon: "bx bx-note", path: "/jenismemo/list-jenismemo" },

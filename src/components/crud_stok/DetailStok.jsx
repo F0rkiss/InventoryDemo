@@ -47,7 +47,6 @@ function DetailStok() {
             // It's NON-ASSET, so fetch its MUTASI (stock movement)
             const mutasiResponse = await api.get(`/inventMutasi-detail/${decryptedId}`);
             setMutasi(mutasiResponse.data.data);
-            console.log("Mutasi Response:", mutasi); // Debug log
           }
         }
       } catch (error) {

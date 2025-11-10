@@ -129,6 +129,14 @@ const ListPaymentMethod = lazy(() => import('./crud_payment_method/ListPaymentMe
 const CreatePaymentMethod = lazy(() => import('./crud_payment_method/CreatePaymentMethod.jsx'))
 const UpdatePaymentMethod = lazy(() => import('./crud_payment_method/UpdatePaymentMethod.jsx'))
 
+const ListSupplier = lazy(() => import('./crud_supplier/ListSupplier.jsx'));
+const CreateSupplier = lazy(() => import('./crud_supplier/CreateSupplier.jsx'));
+const UpdateSupplier = lazy(() => import('./crud_supplier/UpdateSupplier.jsx'));
+
+const ListMataUang = lazy(() => import('./crud_mata_uang/ListMataUang.jsx'));
+const CreateMataUang = lazy(() => import('./crud_mata_uang/CreateMataUang.jsx'));
+const UpdateMataUang = lazy(() => import('./crud_mata_uang/UpdateMataUang.jsx'));
+
 // const TableMR = lazy(() => import('./Table/TableMR/TabelMR.jsx'))
 const TableBilling = lazy(() => import('./Table/TableBilling/TableBilling.jsx'))
 
@@ -263,6 +271,14 @@ const MyApp = () => {
                   <Route path='/list-payment-method' element={<ListPaymentMethod/>} />
                   <Route path='/create-payment-method' element={<CreatePaymentMethod/>} />
                   <Route path='/update-payment-method/:id' element={<UpdatePaymentMethod/>} />
+
+                  <Route path='/supplier/list-supplier' element={<ListSupplier/>} />
+                  <Route path='/supplier/create-supplier' element={<CreateSupplier/>} />
+                  <Route path='/supplier/update-supplier/:id' element={<UpdateSupplier/>} />
+                  
+                  <Route path='/mata-uang/list-mata-uang' element={<ListMataUang/>} />
+                  <Route path='/mata-uang/create-mata-uang' element={<CreateMataUang/>} />
+                  <Route path='/mata-uang/update-mata-uang/:id' element={<UpdateMataUang/>} />
 
                   <Route path='/navigation-groups/list-navigation-groups' element={<NavigationGroupList/>}/>
                   <Route path='/navigation-groups/create-navigation-groups' element={<CreateNavigationGroup/>}/>

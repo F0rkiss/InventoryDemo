@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react' // --- PERUBAHAN: Menghapus useRef ---
 import { Page, Block } from 'framework7-react'
 import { useNavigate, useParams } from 'react-router-dom'
 import api from '../../api/api'
@@ -10,18 +10,17 @@ import ModalPO from '../component/modal/ModalPurchaseOrder'
 import { DecryptID } from '../../helper/EncryptHelper'
 import Transition from '../component/Transition'
 import { useAuth } from '../../auth/AuthContext'
-import PriceFormat from '../../helper/PriceFormatHelper'
+import PriceFormat from '../../helper/PriceFormatHelper' // Helper ini sudah support mata uang
 import ImagePreviewModal from '../component/modal/ImagePreviewModal'
 import Loader from '../component/Loader'
 
 function UpdatePurchaseOrder() {
     const [items, setItems] = useState({
-        purchase_request: '', // FIXED: Changed from null to empty string for consistency
-        purchase_request_id: null, // ADDED: State to hold the ID for submission
+        purchase_request: '', 
+        purchase_request_id: null,
         tanggal: '',
-        kode_suplier: '',
+        supplier: null, // Untuk SelectPaginate Supplier
         kode: '',
-        alamat: '',
         keterangan: '',
         cara_pembayaran: null,
         tanggal_penyerahan: '',
@@ -35,6 +34,7 @@ function UpdatePurchaseOrder() {
         selectedBarang: null,
         qty: '',
         harga: '',
+        selectedMataUang: null,
     })
     const [contentVisible, setContentVisible] = useState(false)
     const [openModal, setOpenModal] = useState(false)
@@ -46,7 +46,7 @@ function UpdatePurchaseOrder() {
     const [originalItems, setOriginalItems] = useState(null);
     const [originalDetails, setOriginalDetails] = useState([]);
 
-    // --- BARU: State untuk menyimpan info Purchase Request ---
+    // State untuk menyimpan info Purchase Request
     const [prInfo, setPrInfo] = useState(null);
 
     const [ loading, setLoading ] = useState(false);
@@ -60,7 +60,7 @@ function UpdatePurchaseOrder() {
             if (!decryptedIds) {
                 navigate(-1)
         }
-    }, [id, navigate]) // FIXED: Added navigate to dependency array
+    }, [id, navigate])
 
     useEffect(() => {
         if (decryptedId) {
@@ -71,11 +71,11 @@ function UpdatePurchaseOrder() {
     useEffect(() => {
         if (!originalItems || !originalDetails) return;
 
+        // Logika pengecekan perubahan
         const itemsChanged =
             items.tanggal !== originalItems.tanggal ||
-            items.kode_suplier !== originalItems.kode_suplier ||
+            items.supplier?.value !== originalItems.supplier?.value ||
             items.keterangan !== originalItems.keterangan ||
-            items.alamat !== originalItems.alamat ||
             items.cara_pembayaran?.id !== originalItems.cara_pembayaran?.id ||
             items.tanggal_penyerahan !== originalItems.tanggal_penyerahan ||
             items.is_ppn !== originalItems.is_ppn;
@@ -86,10 +86,14 @@ function UpdatePurchaseOrder() {
         } else {
             detailsChanged = details.some((detail, index) => {
             const orig = originalDetails[index];
+            const newMataUangId = detail.selectedMataUang?.id || detail.mata_uang_id;
+            const oldMataUangId = orig.selectedMataUang?.id || orig.mata_uang_id;
+
             return (
                 detail.invent_barangs_id !== orig.invent_barangs_id ||
-                String(detail.qty) !== String(orig.qty) || // FIXED: Compare as strings for consistency
-                String(detail.harga_sub_total) !== String(orig.harga_sub_total) 
+                String(detail.qty) !== String(orig.qty) || 
+                String(detail.harga_sub_total) !== String(orig.harga_sub_total) ||
+                newMataUangId !== oldMataUangId
             );
             });
         }
@@ -105,24 +109,28 @@ function UpdatePurchaseOrder() {
             const response = await api.get(`purchaseOrder-detail/${decryptedId}`);
             const data = response.data.data;
 
-            // --- BARU: Simpan data purchase_request yang terhubung ---
             if (data.purchase_request) {
                 setPrInfo(data.purchase_request);
             }
-            // ----------------------------------------------------
 
+            // Disesuaikan dengan state baru
             const fetchedItems = {
-                purchase_request : data.purchase_request.kode, // This is the display code
-                purchase_request_id: data.purchase_request.id, // FIXED: Store the actual ID
+                purchase_request : data.purchase_request.kode, 
+                purchase_request_id: data.purchase_request.id, 
                 tanggal : data.tanggal,
-                kode_suplier: data.kode_suplier,
-                alamat: data.alamat,
+                supplier: data.supplier ? { value: data.supplier.id, label: data.supplier.nama_perusahaan } : null,
                 keterangan: data.keterangan,
                 cara_pembayaran: data.payment ? {value: data.payment?.id, label: data.payment?.cara_pembayaran} : null,
                 is_ppn: data.is_ppn,
                 tanggal_penyerahan: data.tanggal_penyerahan,
             };
-            const fetchedDetails = data.details || [];
+
+            // Normalisasi details untuk menyertakan selectedMataUang
+            const fetchedDetails = data.details?.map(d => ({
+                ...d,
+                selectedMataUang: d.mata_uang ? { id: d.mata_uang.id, kode: d.mata_uang.kode } : null
+            })) || [];
+
             setItems(fetchedItems);
             setDetails(fetchedDetails);
             setOriginalItems(fetchedItems);
@@ -138,110 +146,106 @@ function UpdatePurchaseOrder() {
          }
     };
 
-    // In UpdatePurchaseOrder.jsx
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            if (disabled) return;
+            setDisabled(true);
 
-const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-        if (disabled) return;
-        setDisabled(true);
+            // Validasi supplier
+            if (!items.purchase_request_id || !items.tanggal || !items.supplier) {
+                Swal.fire({ icon:'warning', title:'Data belum lengkap', text:'Pastikan PR, Tanggal, dan Supplier telah diisi!' });
+                setDisabled(false); return;
+            }
+            if (!details.length) {
+                Swal.fire({ icon:'warning', title:'Detail kosong', text:'Tambahkan minimal satu detail barang.' });
+                setDisabled(false); return;
+            }
 
-        if (!items.purchase_request_id || !items.tanggal) {
-            Swal.fire({ icon:'warning', title:'Data belum lengkap', text:'Silakan pastikan Purchase Request terhubung dan Tanggal telah diisi!' });
-            setDisabled(false); return;
-        }
-        if (!details.length) {
-            Swal.fire({ icon:'warning', title:'Detail kosong', text:'Tambahkan minimal satu detail barang.' });
-            setDisabled(false); return;
-        }
+            // Per-row validation
+            for (let i=0; i < details.length; i++){
+                const d = details[i];
+                
+                const barangId = d.selectedBarang?.id ?? d.barang_detail?.id ?? d.barang_id;
+                const mataUangId = d.selectedMataUang?.id || d.mata_uang_id;
+                
+                if (!barangId) {
+                    throw new Error(`Baris #${i+1}: Barang belum dipilih.`);
+                }
+                if (!d.qty && !d.requested_qty || Number(d.qty || d.requested_qty) <= 0) {
+                    throw new Error(`Baris #${i+1}: Kuantitas (Qty) harus lebih dari 0.`);
+                }
+                if (d.harga_sub_total == null || isNaN(Number(String(d.harga_sub_total).replace(/,/g, '')))) {
+                    throw new Error(`Baris #${i+1}: Harga Sub Total tidak valid.`);
+                }
+                if (!mataUangId) {
+                    throw new Error(`Baris #${i+1}: Mata Uang belum dipilih.`);
+                }
+            }
 
-        // Per-row validation
-        for (let i=0; i < details.length; i++){
-            const d = details[i];
+            const fd = new FormData();
+            fd.append('invent_purchase_request_id', items.purchase_request_id); 
+            fd.append('tanggal', items.tanggal);
             
-            // FIXED: Check for the ID in the correct order of priority.
-            // 1. `selectedBarang.id` (for new/edited items)
-            // 2. `barang_id` (for initial items loaded from the API)
-            // 3. `barang_detail.id` (from initial load, new structure)
-            const barangId = d.selectedBarang?.id ?? d.barang_detail?.id ?? d.barang_id;
+            if (items.supplier) fd.append('invent_suplier_id', items.supplier.value);
+            if (items.tanggal_penyerahan) fd.append('tanggal_penyerahan', items.tanggal_penyerahan);
+            if (items.keterangan) fd.append('keterangan', items.keterangan);
+            if (items.cara_pembayaran) fd.append('cara_pembayaran', items.cara_pembayaran?.value);
             
-            if (!barangId) {
-                throw new Error(`Baris #${i+1}: Barang belum dipilih.`);
-            }
-            if (!d.qty && !d.requested_qty || Number(d.qty || d.requested_qty) <= 0) {
-                throw new Error(`Baris #${i+1}: Kuantitas (Qty) harus lebih dari 0.`);
-            }
-            if (d.harga_sub_total == null || isNaN(Number(String(d.harga_sub_total).replace(/,/g, '')))) {
-                throw new Error(`Baris #${i+1}: Harga Sub Total tidak valid.`);
-            }
-        }
+            fd.append('is_ppn', items.is_ppn); 
 
-        const fd = new FormData();
-        fd.append('invent_purchase_request_id', items.purchase_request_id); 
-        fd.append('tanggal', items.tanggal);
-        if (items.kode_suplier) fd.append('kode_suplier', items.kode_suplier);
-        if (items.alamat) fd.append('alamat', items.alamat);
-        if (items.tanggal_penyerahan) fd.append('tanggal_penyerahan', items.tanggal_penyerahan);
-        if (items.keterangan) fd.append('keterangan', items.keterangan);
-        if (items.cara_pembayaran) fd.append('cara_pembayaran', items.cara_pembayaran?.value);
+            details.forEach(d => {
+                const barangId = d.selectedBarang?.id ?? d.barang_detail?.id ?? d.barang_id;
+                const quantity = d.qty || d.requested_qty;
+                const mataUangId = d.selectedMataUang?.id || d.mata_uang_id;
+
+                fd.append('invent_barangs_id[]', String(barangId)); 
+                fd.append('qty[]', String(quantity));
+                fd.append('harga_sub_total[]', String(d.harga_sub_total).replace(/,/g, ''));
+                fd.append('mata_uang_id[]', String(mataUangId));
+            });
+
+            fd.append('_method', 'PUT');
+
+            const res = await api.post(`purchaseOrder-update/${decryptedId}`, fd, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
+
+            Swal.fire({
+                title:'Purchase Order berhasil diubah!',
+                icon:'success', 
+                timer:2000,
+                showConfirmButton:false
+            });
+            navigate('/purchase-order/list-purchase-order');
         
-        // --- PERBAIKAN: Selalu kirim nilai is_ppn ---
-        fd.append('is_ppn', items.is_ppn); // Kirim 1 atau 0
-
-        details.forEach(d => {
-            // FIXED: Use the same robust logic to find the ID for submission
-            const barangId = d.selectedBarang?.id ?? d.barang_detail?.id ?? d.barang_id;
-            const quantity = d.qty || d.requested_qty; // Use new qty if available, otherwise fallback to original
-
-            // The backend expects 'invent_barangs_id[]' based on your Postman screenshot
-            fd.append('invent_barangs_id[]', String(barangId)); 
-            fd.append('qty[]', String(quantity));
-            fd.append('harga_sub_total[]', String(d.harga_sub_total).replace(/,/g, ''));
-        });
-
-        fd.append('_method', 'PUT');
-
-        const res = await api.post(`purchaseOrder-update/${decryptedId}`, fd, {
-            headers: { 'Content-Type': 'multipart/form-data' }
-        });
-
-        Swal.fire({
-            title:'Purchase Order berhasil diubah!',
-            icon:'success', 
-            timer:2000,
-            showConfirmButton:false
-        });
-        navigate('/purchase-order/list-purchase-order');
-    
-    } catch (err) {
-        const msg = err.message || err?.response?.data?.message || 'Terjadi kesalahan pada sistem.';
-        Swal.fire({ 
-            icon:'error',
-            title:'Gagal Mengubah Purchase Order',
-            text: msg
-        });
-        console.log('Update error:', err?.response?.data || err);
-    } finally {
-        setDisabled(false);
-    }
-};
+        } catch (err) {
+            const msg = err.message || err?.response?.data?.message || 'Terjadi kesalahan pada sistem.';
+            Swal.fire({ 
+                icon:'error',
+                title:'Gagal Mengubah Purchase Order',
+                text: msg
+            });
+            console.log('Update error:', err?.response?.data || err);
+        } finally {
+            setDisabled(false);
+        }
+    };
 
     const resetValue = () => {
         if (originalItems && originalDetails) {
             setItems(originalItems);
             setDetails(originalDetails);
         } else {
-            // FIXED: Ensure state structure is consistent on reset
             setItems({
                 purchase_request: '',
                 purchase_request_id: null,
                 tanggal: '',
-                kode_suplier: '',
-                kode: '',
-                alamat: '',
+                supplier: null,
                 keterangan: '',
                 cara_pembayaran: null,
                 tanggal_penyerahan: '',
+                is_ppn: 0,
             });
             setDetails([]);
         }
@@ -265,54 +269,6 @@ const handleSubmit = async (e) => {
                     <p className='lg:text-3xl text-2xl font-semibold capitalize my-4'>Update Purchase Order</p>
                     { loading && <Loader Class="mt-44"/> }
                     <Transition contentVisible={contentVisible}>
-                    {/* <div className="p-7 bg-white rounded-lg border border-gray-300 shadow-xl shadow-gray-200">
-                        <div className='flex justify-between items-center mb-4'>
-                            <p className="text-xl text-gray-400 font-semibold mb-2">Purchase Request</p>
-                            <p className={`flex py-2 px-3 items-center lg:text-[14px] xs:text-xs text-center gap-1 rounded-md font-medium ${purchaseRequest.is_completed ? 'text-green-700 bg-green-100 border border-green-500' : 'text-amber-700 bg-amber-100 border border-amber-500'}`}>
-                            {purchaseRequest.is_completed ? <><i className='bx bxs-check-circle lg/md:text-sm xs:text-lg pe-1'></i>Selesai</> : <><i className='bx bxs-time lg/md:text-sm xs:text-lg pe-1'></i>Belum selesai</> }</p>
-                        </div>
-                        { !purchaseRequest ?
-                            (
-                            <p className="text-gray-400 italic">No purchase request data</p>
-                            ) : (
-                            <>
-                                <p className="font-bold text-lg">{purchaseRequest?.kode}</p>
-                                <p className="">{purchaseRequest?.note}</p>
-                                <p className="mb-4">{DateFormat(purchaseRequest?.tanggal)}</p>
-                                <div className="overflow-x-auto">
-                                <table className="w-full text-sm text-left">
-                                    <thead>
-                                    <tr className="bg-gray-100">
-                                        <th className="px-3 py-2 rounded-l-md">No</th>
-                                        <th className="px-3 py-1">Barang</th>
-                                        <th className="px-3 py-1 rounded-r-md">Quantity</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    {detailPR?.map((item, i) => (
-                                        <tr key={item.id} className={` ${item.id % 2 === 0 ? 'bg-gray-50' : 'bg-white'}`}>
-                                        <td className="px-4 py-4 rounded-l-md">{i + 1}</td>
-                                        <td className="px-4 py-4 rounded-r-md">
-                                            <div className='flex items-center gap-3'>
-                                            <img src={`${apiUrl}${item.barangs?.image}`} alt="item image" className="max-w-[10rem] object-cover rounded shadow cursor-pointer"
-                                                onClick={() => handleImageClick(`${apiUrl}${item.barangs?.image}`)}
-                                            />
-                                            <div>
-                                                <p className="font-medium text-gray-900">{item.barangs?.name}</p>
-                                                <p className="text-xs text-gray-500">{item.barangs?.kode_barang}</p>
-                                            </div>
-                                            </div>
-                                        </td>
-                                        <td className="px-4 py-4 rounded-r-md">{item.qty}</td>
-                                        </tr>
-                                    ))}
-                                    </tbody>
-                                </table>
-                                </div>
-                            </>
-                            )
-                        }
-                    </div> */}
                     <div className="p-7 bg-white rounded-lg border border-gray-300 shadow-xl shadow-gray-200">
                         <form onSubmit={handleSubmit} className='space-y-5'>
                             <div className="mb-5 space-y-2">
@@ -322,7 +278,7 @@ const handleSubmit = async (e) => {
                                         type="text" 
                                         name="purchase_request" 
                                         value={items.purchase_request} 
-                                        readOnly // Use readOnly instead of onChange for disabled fields
+                                        readOnly 
                                         className="w-full p-2 bg-transparent placeholder:text-gray-400"
                                         placeholder='Purchase Request'
                                         disabled
@@ -344,36 +300,20 @@ const handleSubmit = async (e) => {
                             </div>
 
                             <div className='mb-4'>
-                                <label className='font-semibold'>Kode Supplier</label>
-                                <div className='bg-white py-2 px-4 rounded-md border-solid border-gray-300 border mt-2'>
-                                <input 
-                                    type="text" 
-                                    name="kode_suplier" 
-                                    value={items.kode_suplier} 
-                                    onChange={e => setItems({ ...items, kode_suplier: e.target.value })}
-                                    className="w-full p-2 placeholder:text-gray-400"
-                                    maxLength={80}
-                                    placeholder='Kode Supplier'
+                                <label className='font-semibold'>Supplier</label>
+                                <div className={`bg-white rounded-md mt-2`}>
+                                <SelectPaginate 
+                                    selectName="Supplier"
+                                    source={'suplier'} 
+                                    selectValue={items.supplier} 
+                                    itemLabel={['nama_perusahaan']}
+                                    handleSelectChange={(value) => setItems({...items, supplier: value})}
+                                    className="w-full placeholder:text-gray-400"
                                     required
                                 />
                                 </div>
                             </div>
 
-                            <div className="mb-4">
-                                <label className='font-semibold'>Alamat</label>
-                                <div className='bg-white p-2 rounded-md border-solid border-gray-300 border mt-2'>
-                                <textarea
-                                    name="alamat" 
-                                    value={items.alamat} 
-                                    onChange={e => setItems({ ...items, alamat: e.target.value })}
-                                    className="w-full p-2 placeholder:text-gray-400"
-                                    maxLength={255}
-                                    placeholder='Alamat'
-                                    required
-                                    rows="3"
-                                />
-                                </div>
-                            </div>
                             <div className="mb-4">
                                 <label className='font-semibold'>Tanggal Penyerahan</label>
                                 <div className='bg-white px-4 py-2 rounded-md border border-gray-300 mt-2'>
@@ -406,7 +346,6 @@ const handleSubmit = async (e) => {
                                 <div className="mb-4">
                                     <div className="flex justify-between items-center">
                                         <label className='font-semibold'>Metode Pembayaran</label>
-                                        {/* {errors.cara_pembayaran && <span className="text-red-500 text-sm">{errors.cara_pembayaran}</span>} */}
                                     </div>
                                     <SelectPaginate 
                                         source={'paymentType'}
@@ -425,7 +364,7 @@ const handleSubmit = async (e) => {
                                                 type="checkbox" 
                                                 id="is_ppn_checkbox"
                                                 name="is_ppn" 
-                                                checked={items.is_ppn == 1} // Cek jika value = 1
+                                                checked={items.is_ppn == 1} 
                                                 onChange={(value) => setItems({...items, is_ppn: value.target.checked ? 1 : 0})}
                                                 className="w-6 h-6 text-blue-600 bg-gray-100 border-gray-100 rounded focus:ring-blue-500"
                                             />
@@ -434,6 +373,7 @@ const handleSubmit = async (e) => {
                                     </div>
                                 </div>
                             </div>
+
                             <div className="mt-2 pt-3">
                             <p className='text-lg font-semibold'>Detail</p>
                             </div>
@@ -446,7 +386,7 @@ const handleSubmit = async (e) => {
                                         key={id}
                                         className="
                                         border border-gray-300 rounded-xl p-3
-                                        grid grid-cols-[80px,1fr] md:grid-cols-[160px,1fr,80px,160px,64px]
+                                        grid grid-cols-[80px,1fr] md:grid-cols-[160px,1fr,auto,auto,64px]
                                         items-center gap-x-4
                                         "
                                     >
@@ -454,7 +394,6 @@ const handleSubmit = async (e) => {
                                             {(() => {
                                                 const imageSource = item.barang_detail || item.selectedBarang;
 
-                                                // Check if a valid source with an image exists
                                                 if (imageSource && imageSource.image) {
                                                     return (
                                                         <div className="flex items-center">
@@ -467,7 +406,6 @@ const handleSubmit = async (e) => {
                                                         </div>
                                                     );
                                                 } else {
-                                                    // If no valid image source is found
                                                     return (
                                                         <div className="w-full h-full flex items-center justify-center text-xs text-gray-400">
                                                             No Image
@@ -478,18 +416,18 @@ const handleSubmit = async (e) => {
                                         </div>
 
                                         <div className="flex flex-col justify-between flex-grow p-1 md:p-0 md:contents">
-                                            {/* Item Name */}
                                             <div>
                                                 <div className="font-semibold text-gray-800">
                                                     {item.barang_detail?.name || item.selectedBarang?.name || 'Item Name'}
                                                 </div>
                                             </div>
 
-                                            {/* MODIFIED: This div now stacks its children vertically on small screens */}
                                             <div className="flex flex-col items-start mt-2 md:mt-0 md:contents">
                                                 <div className="font-medium">
-                                                    <span className="font-normal text-sm text-gray-400">Biaya: </span>
-                                                    {PriceFormat(item.harga_sub_total) || item.selectedBarang?.harga_sub_total}
+                                                    {PriceFormat(
+                                                        item.harga_sub_total, 
+                                                        item.selectedMataUang?.kode || item.mata_uang?.kode // Cek baru atau lama
+                                                    )}
                                                 </div>
                                                 <div className="font-medium md:text-right">
                                                     <span className="font-normal text-sm text-gray-400">Qty: </span>
@@ -498,14 +436,13 @@ const handleSubmit = async (e) => {
                                             </div>
                                         </div>
                                         
-                                        {/* MODIFIED: This div now starts in column 2 and centers the buttons on small screens */}
                                         <div className="col-start-2 flex items-center justify-center w-full gap-2 mt-2 divide-x-2 md:col-auto md:divide-x-0 md:mt-0 md:justify-self-end md:border-l-2 md:pl-3">
                                             <button
                                                 type="button"
                                                 onClick={e => {
                                                     e.preventDefault();
                                                     setEditIndex(id);
-                                                    setInitialDetails(details[id]);
+                                                    setInitialDetails(details[id]); 
                                                     setOpenModal(true);
                                                 }}
                                             >
@@ -517,7 +454,7 @@ const handleSubmit = async (e) => {
                                                     e.preventDefault();
                                                     setDetails(details.filter((_, i) => i !== id));
                                                 }}
-                                                className="pl-2" // Add padding to compensate for the removed divider gap on desktop
+                                                className="pl-2" 
                                             >
                                                 <i className="bx bx-trash text-xl text-red-500"></i>
                                             </button>
@@ -535,7 +472,7 @@ const handleSubmit = async (e) => {
                                         onClick={() => {
                                             setOpenModal(!openModal);
                                             setEditIndex(null);
-                                            setInitialDetails({ selectedBarang: null, qty: '', harga: '' });
+                                            setInitialDetails({ selectedBarang: null, qty: '', harga: '', selectedMataUang: null });
                                         }}>
                                         <i className='bx bx-plus mr-2 font-semibold text-base'></i>
                                         <span>{ details.length === 0 ? 'Tambah detail' : 'Tambah detail lain'}</span>
@@ -548,15 +485,9 @@ const handleSubmit = async (e) => {
                         </form>
                     </div>
                     { openModal &&
-                        (() => { // IIFE untuk deklarasi variabel
-                            // --- LOGIKA FLEKSIBEL ---
-                            // Buat array 'prItems' yang dinormalisasi
-                            // Ini akan memetakan ulang array 'details' dari 'prInfo'
-                            // Ini membuat properti 'barang_detail' baru, mengisinya dengan 'item.barang_detail' (jika ada)
-                            // atau 'item.barangs' (jika 'barang_detail' tidak ada).
+                        (() => { 
                             const normalizedPrItems = prInfo?.details?.map(item => ({
                                 ...item,
-                                // Fleksibel: Ambil data barang dari 'barang_detail' ATAU 'barangs'
                                 barang_detail: item.barang_detail || item.barangs
                             })) || [];
 
@@ -578,10 +509,8 @@ const handleSubmit = async (e) => {
                                 }}
                                 initialData={initialDetails}
                                 apiUrl={apiUrl}
-                                // --- DIUBAH: Gunakan data yang sudah dinormalisasi ---
                                 prItems={normalizedPrItems}
                                 existingItems={details}
-                                // ---------------------------------
                                 />
                             );
                         })()
@@ -599,4 +528,3 @@ const handleSubmit = async (e) => {
 }
 
 export default UpdatePurchaseOrder;
-

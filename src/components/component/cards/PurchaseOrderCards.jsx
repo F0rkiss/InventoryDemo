@@ -83,13 +83,10 @@ const PurchaseOrderCards = forwardRef(({item, goToUpdate, goToDetail, canUpdate,
                         {/* Kolom Kiri */}
                         <div className="flex-1 space-y-2">
                             <div className="">
-                                <p className='text-gray-500'>Kode Supplier</p><p className='font-medium'>{item.kode_suplier}</p>
+                                <p className='text-gray-500'>Supplier</p><p className='font-medium'>{item.suplier}</p>
                             </div>
                             <div className="">
                                 <p className='text-gray-500'>Pembayaran</p><p className='font-medium'>{item.cara_pembayaran}</p>
-                            </div>
-                            <div className="overflow-hidden"> {/* Menghapus 'gap-3' yg tidak perlu */}
-                                <p className='text-gray-500'>Alamat</p><p className='font-medium'>{item.alamat}</p>
                             </div>
                             <div className="">
                                 <p className='text-gray-500'>Tgl. Penyerahan</p><p className='font-medium'>{DateFormat(item.tanggal_penyerahan)}</p>

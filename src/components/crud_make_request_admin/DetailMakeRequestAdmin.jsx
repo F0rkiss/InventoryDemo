@@ -9,10 +9,9 @@ import Transition from '../component/Transition';
 import DateFormat from '../../helper/DateFormatHelper'
 import PriceFormatter from '../../helper/PriceFormatHelper';
 import { useAuth } from '../../auth/AuthContext';
+import useMenuAccess from '../../hooks/useMenuAccess'
 import Swal from 'sweetalert2';
 import ImagePreviewModal from '../component/modal/ImagePreviewModal';
-import PdfPreviewModal from '../component/modal/PdfPreviewModal';
-import { isMobile, isMobileSafari } from '../../helper/DeviceHelper';
 
 function DetailMakeRequestAdmin() {
   const [item, setItem] = useState({})
@@ -26,6 +25,7 @@ function DetailMakeRequestAdmin() {
   const { id } = useParams();
   const { role } = useAuth()
   const [decryptedId, setDecryptedId] = useState('')
+  const { canRead } = useMenuAccess('PreviewMR')
 
   const [loading, setLoading] = useState(false)
   const [contentVisible, setContentVisible] = useState(false)
@@ -35,18 +35,6 @@ function DetailMakeRequestAdmin() {
   const [selectedImageUrl, setSelectedImageUrl] = useState('');
 
   const [isPreviewLoading, setIsPreviewLoading] = useState(false);
-
-  const [isPdfPreviewOpen, setIsPdfPreviewOpen] = useState(false);
-  const [selectedPdfUrl, setSelectedPdfUrl] = useState('');
-  
-  const handleClosePdfPreview = () => {
-    setIsPdfPreviewOpen(false);
-    // Hapus blob URL dari memori saat modal ditutup
-    if (selectedPdfUrl) {
-      URL.revokeObjectURL(selectedPdfUrl);
-    }
-    setSelectedPdfUrl('');
-  };
 
   useEffect(() => {
     const decryptedId = DecryptID(id)
@@ -87,6 +75,7 @@ function DetailMakeRequestAdmin() {
     setIsPreviewOpen(true);
   };
 
+  // --- FUNGSI DIPERBARUI ---
   const handlePreview = async () => {
       if (isPreviewLoading) return; // Mencegah klik ganda
       setIsPreviewLoading(true);
@@ -102,9 +91,38 @@ function DetailMakeRequestAdmin() {
               const file = new Blob([response.data], { type: 'application/pdf' });
               const fileURL = URL.createObjectURL(file);
               
-              // Buka di tab baru
-              setSelectedPdfUrl(fileURL); // Set URL untuk modal
-              setIsPdfPreviewOpen(true);  // Buka modal
+              // Coba buka di tab baru
+              const newWindow = window.open(fileURL, '_blank');
+
+              // Cek apakah tab baru diblokir
+              if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
+                  // Jika diblokir, berikan notifikasi dan paksa download
+                  Swal.fire({
+                      icon: 'info',
+                      title: 'Preview Gagal Dibuka',
+                      text: 'Browser Anda mungkin memblokir tab baru. Memulai unduhan PDF...',
+                      timer: 2500,
+                      showConfirmButton: false
+                  });
+
+                  const link = document.createElement('a');
+                  link.href = fileURL;
+                  const fileName = mainMR.kode ? `${mainMR.kode}.pdf` : 'preview-mr.pdf';
+                  link.setAttribute('download', fileName);
+                  document.body.appendChild(link);
+                  link.click();
+                  
+                  // Bersihkan link dan blob URL
+                  document.body.removeChild(link);
+                  URL.revokeObjectURL(fileURL);
+
+              } else {
+                  // Jika berhasil dibuka, revoke URL setelah 1 menit
+                  setTimeout(() => {
+                      URL.revokeObjectURL(fileURL);
+                  }, 1000 * 60); 
+              }
+
           } else {
               // Handle jika API mengembalikan error (misal, JSON error)
               // Coba baca blob sebagai teks untuk melihat pesan error
@@ -133,6 +151,7 @@ function DetailMakeRequestAdmin() {
           setIsPreviewLoading(false);
       }
   };
+  // --- AKHIR FUNGSI DIPERBARUI ---
 
   return (
     <Layout title={'Detail Make Request'}>
@@ -143,24 +162,20 @@ function DetailMakeRequestAdmin() {
             <Back goHome={() => navigate('/material-request-admin/list-material-request-admin')} />
             <div className="my-4">
                 <p className='lg:text-3xl text-2xl font-semibold capitalize'>Detail Material Request</p>
-                
-                {/* Wrapper untuk status dan tombol preview */}
                 <div className="flex items-center justify-between sm: gap-3 pt-4"> 
-                  {/* Tombol Preview Baru */}
-                  <button
+                  { canRead &&
+                    <button
                       type="button"
                       onClick={handlePreview}
                       disabled={isPreviewLoading}
                       className="flex items-center gap-2 py-2 px-3 w-fit rounded-md border border-slate-300 font-medium text-sm bg-white text-gray-700 hover:bg-gray-100 transition-colors duration-200 disabled:opacity-50"
                       title="Preview PDF"
                   >
-                      {/* Menggunakan icon boxicons */}
                       <i className={`bx ${isPreviewLoading ? 'bx-loader-alt bx-spin' : 'bx-file'}`}></i>
                       <span className="sm:inline">
                           {isPreviewLoading ? 'Loading...' : 'Preview'}
                       </span>
-                  </button>
-                  {/* --- Akhir Tombol Preview --- */}
+                  </button>}
                   {
                     role === 'admin' ? 
                     (
@@ -401,12 +416,6 @@ function DetailMakeRequestAdmin() {
                     )}
                   </div>
               }
-              {/* {
-                item.can_be_deleted &&
-                <div className='flex justify-end mt-5'>
-                  <button onClick={() => cancelRequest()} className='bg-red-500 hover:bg-red-600 transition-color duration-200 max-w-xs py-2 rounded-md text-white font-medium'>Cancel Request</button>
-                </div>
-              } */}
               </>
           </Transition>
         </div>
@@ -416,15 +425,6 @@ function DetailMakeRequestAdmin() {
         onClose={handleClosePreview}
         imageUrl={selectedImageUrl}
       />
-      <PdfPreviewModal
-          isOpen={isPdfPreviewOpen}
-          onClose={handleClosePdfPreview}
-          pdfUrl={selectedPdfUrl}
-          isMobile={isMobile()}
-          isMobileSafari={isMobileSafari()}
-          fileName={item.kode ? `${item.kode}.pdf` : 'preview-po.pdf'}
-          disabled
-        />
     </Layout>
   );
 
