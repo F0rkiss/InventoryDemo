@@ -13,6 +13,7 @@ import useAuth from '../../hooks/useAuth';
 function CreateApprovalStep() {
     const [items, setItems] = useState({
         approval_step: '',
+        back_to_approval_step: '',
         user_id: '',
         invent_type_request_id: '',
         is_upline: '',
@@ -38,6 +39,7 @@ function CreateApprovalStep() {
             setDisabled(true);
             await api.post(`inventApprovalStep-create`, {
                 approval_step: parseInt(items.approval_step),
+                approval_step: parseInt(items.back_to_approval_step),
                 user_id: parseInt(items.user_id),
                 invent_type_request_id: parseInt(items.invent_type_request_id),
                 is_upline: items.is_upline === 'yes' ? 1 : 0,
@@ -111,6 +113,29 @@ function CreateApprovalStep() {
                                 max="10"
                                 step="1"
                                 placeholder="Approval Step Number"
+                                className="w-full p-2 border rounded placeholder:text-gray-400 placeholder:font-inter placeholder:font-light capitalize"
+                                required
+                                />
+                            </div>
+                        </div>
+                        <div className="mb-5">
+                            <div className="relative group inline-flex items-center gap-1">
+                                <label>Back to Approval Step:</label>
+                                <i className="bx bx-info-circle text-yellow-500 cursor-pointer"></i>
+                                <div className="absolute left-full ml-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 group-hover:delay-0 delay-500 bg-white border border-gray-300 text-gray-700 text-xs rounded-md px-2 py-1 w-56 shadow-sm pointer-events-none">
+                                Urutan persetujuan berdasarkan nomor yang menentukan siapa pengguna yang melakukan approval terlebih dahulu.
+                                </div>
+                            </div>
+                            <div className="bg-white p-2 rounded-md border-solid border-gray-300 border">
+                                <input 
+                                type="number" 
+                                name="back_to_approval_step" 
+                                value={items.back_to_approval_step} 
+                                onChange={e => setItems({ ...items, back_to_approval_step: e.target.value })}
+                                min="1"
+                                max="10"
+                                step="1"
+                                placeholder="Back to Approval Step Number"
                                 className="w-full p-2 border rounded placeholder:text-gray-400 placeholder:font-inter placeholder:font-light capitalize"
                                 required
                                 />

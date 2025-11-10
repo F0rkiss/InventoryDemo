@@ -7,11 +7,12 @@ import Layout from '../component/Layout';
 import Back from '../component/Back';
 import Transition from '../component/Transition';
 import DateFormat from '../../helper/DateFormatHelper';
-import { DecryptID, encrypting } from '../../helper/EncryptHelper';
+import { DecryptID } from '../../helper/EncryptHelper';
 import { useAuth } from '../../auth/AuthContext';
 import ImagePreviewModal from '../component/modal/ImagePreviewModal';
 import Swal from 'sweetalert2';
 import InfoRow from '../component/infoRow';
+import { isMobileSafari } from '../../helper/DeviceHelper';
 
 function DetailLPB() {
     // ==============================
@@ -26,6 +27,7 @@ function DetailLPB() {
 
     const [selectedImageUrl, setSelectedImageUrl] = useState('');
     const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+    const [isPreviewLoading, setIsPreviewLoading] = useState(false);
 
     const { id } = useParams();
     const { role } = useAuth();
@@ -109,10 +111,78 @@ function DetailLPB() {
             }
         }
 
-        const handlePreview = () => {
-            // Navigate to PDF viewer page with encrypted ID and type
-            const encryptedId = encrypting(decryptedId);
-            navigate(`/pdf-viewer/lpb/${encryptedId}`);
+        const handlePreview = async () => {
+            if (isPreviewLoading) return;
+            setIsPreviewLoading(true);
+            try {
+                const response = await api.get(`/pdf/preview_lpb/${decryptedId}`, {
+                    responseType: 'blob',
+                });
+
+                if (response.data.type === 'application/pdf') {
+                    const file = new Blob([response.data], { type: 'application/pdf' });
+                    const fileURL = URL.createObjectURL(file);
+                    
+                    // Logika untuk iOS Safari
+                    if (isMobileSafari()) {
+                        // Untuk iOS Safari, buka di tab yang sama.
+                        // Ini adalah satu-satunya cara yang andal untuk blob URL.
+                        window.location.href = fileURL;
+                        // Kita tidak bisa revoke URL di sini karena navigasi baru saja dimulai
+                    } else {
+                        // Logika lama untuk browser lain (Chrome, Firefox, PC)
+                        const newWindow = window.open(fileURL, '_blank');
+
+                        if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
+                            Swal.fire({
+                                icon: 'info',
+                                title: 'Preview Gagal Dibuka',
+                                text: 'Browser Anda mungkin memblokir tab baru. Memulai unduhan PDF...',
+                                timer: 2500,
+                                showConfirmButton: false
+                            });
+
+                            const link = document.createElement('a');
+                            link.href = fileURL;
+                            const fileName = item.kode ? `${item.kode}.pdf` : 'preview-lpb.pdf';
+                            link.setAttribute('download', fileName);
+                            document.body.appendChild(link);
+                            link.click();
+                            
+                            document.body.removeChild(link);
+                            URL.revokeObjectURL(fileURL);
+
+                        } else {
+                            setTimeout(() => {
+                                URL.revokeObjectURL(fileURL);
+                            }, 1000 * 60); 
+                        }
+                    }
+
+                } else {
+                    const errText = await response.data.text();
+                    let errJson = {};
+                    try {
+                        errJson = JSON.parse(errText);
+                    } catch(e) {
+                        errJson = { message: 'Format respons tidak valid.' }
+                    }
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal Membuat Preview',
+                        text: errJson.message || 'Format respons tidak valid.'
+                    });
+                }
+            } catch (error) {
+                console.error("Error generating preview: ", error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal Membuat Preview',
+                    text: error.message || 'Terjadi kesalahan pada server.'
+                });
+            } finally {
+                setIsPreviewLoading(false);
+            }
         };
 
     // ==============================
@@ -166,11 +236,14 @@ function DetailLPB() {
                     <button
                         type="button"
                         onClick={handlePreview}
-                        className="flex items-center gap-2 py-2 px-3 w-fit rounded-md border border-slate-300 font-medium text-sm bg-white text-gray-700 hover:bg-gray-100 transition-colors duration-200"
+                        disabled={isPreviewLoading}
+                        className="flex items-center gap-2 py-2 px-3 w-fit rounded-md border border-slate-300 font-medium text-sm bg-white text-gray-700 hover:bg-gray-100 transition-colors duration-200 disabled:opacity-50"
                         title="Preview PDF"
                     >
-                        <i className="bx bx-file"></i>
-                        <span className="sm:inline">Preview</span>
+                        <i className={`bx ${isPreviewLoading ? 'bx-loader-alt bx-spin' : 'bx-file'}`}></i>
+                        <span className="sm:inline">
+                            {isPreviewLoading ? 'Loading...' : 'Preview'}
+                        </span>
                     </button>
 
                     <span
