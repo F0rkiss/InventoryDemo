@@ -170,7 +170,6 @@ function CreateBarang() {
                         className="w-full p-2 placeholder:text-gray-400 "
                         maxLength={80}
                         placeholder="Kode Gudang"
-                        required
                       />
                     </div>
                   </div>

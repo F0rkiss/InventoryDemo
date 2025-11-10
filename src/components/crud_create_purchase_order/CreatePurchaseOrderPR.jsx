@@ -328,12 +328,20 @@ function CreatePurchaseOrderPR() {
                                 </div>
                                 <div className={`bg-white p-2 rounded-md border mt-2 ${errors.tanggal ? 'border-red-500' : 'border-gray-300'}`}>
                                 <input 
-                                    type="date" 
+                                    // --- PERUBAHAN DI SINI ---
+                                    type={items.tanggal ? 'date' : 'text'} // Tipe dinamis
+                                    onFocus={(e) => e.target.type = 'date'} // Ubah ke 'date' saat di-klik
+                                    onBlur={(e) => { // Ubah kembali ke 'text' jika kosong
+                                        if (!e.target.value) {
+                                            e.target.type = 'text';
+                                        }
+                                    }}
+                                    // --- AKHIR PERUBAHAN ---
                                     name="tanggal" 
                                     value={items.tanggal} 
                                     onChange={handleChange}
                                     className="w-full p-2 placeholder:text-gray-400"
-                                    placeholder='Tanggal'
+                                    placeholder='Pilih Tanggal' // Placeholder untuk 'text'
                                 />
                                 </div>
                             </div>
@@ -378,12 +386,20 @@ function CreatePurchaseOrderPR() {
                                 </div>
                                 <div className={`bg-white p-2 rounded-md border mt-2 ${errors.tanggal_penyerahan ? 'border-red-500' : 'border-gray-300'}`}>
                                 <input 
-                                    type="date" 
+                                    // --- PERUBAHAN DI SINI ---
+                                    type={items.tanggal_penyerahan ? 'date' : 'text'} // Tipe dinamis
+                                    onFocus={(e) => e.target.type = 'date'} // Ubah ke 'date' saat di-klik
+                                    onBlur={(e) => { // Ubah kembali ke 'text' jika kosong
+                                        if (!e.target.value) {
+                                            e.target.type = 'text';
+                                        }
+                                    }}
+                                    // --- AKHIR PERUBAHAN ---
                                     name="tanggal_penyerahan" 
                                     value={items.tanggal_penyerahan} 
                                     onChange={handleChange}
                                     className="w-full p-2 placeholder:text-gray-400"
-                                    placeholder='Tanggal Penyerahan'
+                                    placeholder='Pilih Tanggal Penyerahan' // Placeholder untuk 'text'
                                 />
                                 </div>
                             </div>

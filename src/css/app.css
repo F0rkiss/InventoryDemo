@@ -1,7 +1,17 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+/* Sembunyikan tombol "show password" bawaan di Chrome, Edge, Safari */
+input[type="password"]::-webkit-password-reveal-button {
+  display: none;
+  -webkit-appearance: none;
+  margin: 0;
+}
 
+/* Sembunyikan tombol "show password" bawaan di IE/Edge (versi lama) */
+input[type="password"]::-ms-reveal {
+  display: none;
+}
 
 .navbar[class*="bg-color-"] {
     --f7-navbar-bg-color: var(--f7-theme-color-bg-color);

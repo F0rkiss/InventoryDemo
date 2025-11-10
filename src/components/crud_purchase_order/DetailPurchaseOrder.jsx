@@ -11,6 +11,8 @@
   import { useAuth } from '../../auth/AuthContext';
   import Swal from 'sweetalert2';
   import ImagePreviewModal from '../component/modal/ImagePreviewModal';
+  import PdfPreviewModal from '../component/modal/PdfPreviewModal';
+  import { isMobile, isMobileSafari } from '../../helper/DeviceHelper';
 
   function DetailPurchaseOrder() {
     const [item, setItem] = useState({})
@@ -31,7 +33,18 @@
 
     const [isPreviewLoading, setIsPreviewLoading] = useState(false);
 
+    const [isPdfPreviewOpen, setIsPdfPreviewOpen] = useState(false);
+    const [selectedPdfUrl, setSelectedPdfUrl] = useState('');
     
+    const handleClosePdfPreview = () => {
+      setIsPdfPreviewOpen(false);
+      // Hapus blob URL dari memori saat modal ditutup
+      if (selectedPdfUrl) {
+        URL.revokeObjectURL(selectedPdfUrl);
+      }
+      setSelectedPdfUrl('');
+    };
+
     useEffect(() => {
       const decryptedId = DecryptID(id)
       setDecryptedId(decryptedId)
@@ -71,50 +84,45 @@
     };
 
     const handlePreview = async () => {
-        if (isPreviewLoading) return; // Mencegah klik ganda
-        setIsPreviewLoading(true);
-        try {
-            // Menggunakan decryptedId dari state
-            const response = await api.get(`/pdf/preview_po/${decryptedId}`, {
-                responseType: 'blob', // Penting: minta response sebagai blob (file)
-            });
+      if (isPreviewLoading) return; // Mencegah klik ganda
+      setIsPreviewLoading(true);
+      try {
+        const response = await api.get(`/pdf/preview_po/${decryptedId}`, {
+            responseType: 'blob',
+        });
 
-            // Cek jika response adalah PDF
-            if (response.data.type === 'application/pdf') {
-                // Buat URL objek dari blob
-                const file = new Blob([response.data], { type: 'application/pdf' });
-                const fileURL = URL.createObjectURL(file);
-                
-                // Buka di tab baru
-                window.open(fileURL, '_blank');
-                URL.revokeObjectURL(fileURL); // Bersihkan memori setelah tab terbuka
-            } else {
-                // Handle jika API mengembalikan error (misal, JSON error)
-                // Coba baca blob sebagai teks untuk melihat pesan error
-                const errText = await response.data.text();
-                let errJson = {};
-                try {
-                  errJson = JSON.parse(errText); // Asumsi error adalah JSON
-                } catch(e) {
-                  errJson = { message: 'Format respons tidak valid.' }
-                }
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Gagal Membuat Preview',
-                    text: errJson.message || 'Format respons tidak valid.'
-                });
+        if (response.data.type === 'application/pdf') {
+            const file = new Blob([response.data], { type: 'application/pdf' });
+            const fileURL = URL.createObjectURL(file);
+            
+            setSelectedPdfUrl(fileURL); // Set URL untuk modal
+            setIsPdfPreviewOpen(true);  // Buka modal
+        } else {
+           // Handle jika API mengembalikan error (misal, JSON error)
+            // Coba baca blob sebagai teks untuk melihat pesan error
+            const errText = await response.data.text();
+            let errJson = {};
+            try {
+              errJson = JSON.parse(errText); // Asumsi error adalah JSON
+            } catch(e) {
+              errJson = { message: 'Format respons tidak valid.' }
             }
-
-        } catch (error) {
-            console.error("Error generating preview: ", error);
             Swal.fire({
                 icon: 'error',
                 title: 'Gagal Membuat Preview',
-                text: error.message || 'Terjadi kesalahan pada server.'
+                text: errJson.message || 'Format respons tidak valid.'
             });
-        } finally {
-            setIsPreviewLoading(false);
         }
+      } catch (error) {
+        console.error("Error generating preview: ", error);
+          Swal.fire({
+              icon: 'error',
+              title: 'Gagal Membuat Preview',
+              text: error.message || 'Terjadi kesalahan pada server.'
+          });
+      } finally {
+          setIsPreviewLoading(false);
+      }
     };
 
     const cancelOrder = async () => {
@@ -360,8 +368,8 @@
                   </div> }
                   {
                     item.can_be_deleted &&
-                    <div className='flex justify-end mt-5'>
-                      <button onClick={() => cancelOrder()} className='bg-red-500 hover:bg-red-600 transition-color duration-200 max-w-xs py-2 rounded-lg text-white font-medium'>Delete Order</button>
+                    <div className='flex lg:justify-end justify-center mt-5'>
+                      <button onClick={() => cancelOrder()} className='bg-red-500 hover:bg-red-600 transition-color duration-200 max-w-xs py-2 rounded-lg text-white font-medium'>Delete Purchase Order</button>
                     </div>
                   }
                 </>
@@ -372,6 +380,15 @@
           isOpen={isPreviewOpen}
           onClose={handleClosePreview}
           imageUrl={selectedImageUrl}
+        />
+        <PdfPreviewModal
+          isOpen={isPdfPreviewOpen}
+          onClose={handleClosePdfPreview}
+          pdfUrl={selectedPdfUrl}
+          isMobile={isMobile()}
+          isMobileSafari={isMobileSafari()}
+          fileName={item.kode ? `${item.kode}.pdf` : 'preview-po.pdf'}
+          disabled
         />
       </Layout>
     );
