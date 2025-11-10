@@ -11,9 +11,7 @@ import PriceFormat from '../../helper/PriceFormatHelper';
 import { useAuth } from '../../auth/AuthContext';
 import Swal from 'sweetalert2';
 import ImagePreviewModal from '../component/modal/ImagePreviewModal';
-// --- DIHAPUS ---
-// import PdfPreviewModal from '../component/modal/PdfPreviewModal'; 
-import { isMobile, isMobileSafari } from '../../helper/DeviceHelper';
+import { isMobileSafari } from '../../helper/DeviceHelper';
 
 function DetailPurchaseOrder() {
   const [item, setItem] = useState({})
