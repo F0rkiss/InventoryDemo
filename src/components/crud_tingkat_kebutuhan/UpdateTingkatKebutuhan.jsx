@@ -35,11 +35,10 @@ function UpdateTingkatKebutuhan() {
 
   const fetchItems = async () => {
     try {
-      const response = await api.get(`inventStatus-detail/${decryptedId}`)
+      const response = await api.get(`tingkatKebutuhanBarang-detail/${decryptedId}`)
       const data = response.data.data
       const fetched = {
         name: data?.name || '',
-        description: data?.description || '',
       }
       setItems(fetched)
       setOriginalItems(fetched)
@@ -58,7 +57,7 @@ function UpdateTingkatKebutuhan() {
   // Disable Update until there is a change
   useEffect(() => {
     if (!originalItems) return
-    const changed = items.name !== originalItems.name || items.description !== originalItems.description
+    const changed = items.name !== originalItems.name
     setIsUnchanged(!changed)
   }, [items, originalItems])
 
@@ -68,7 +67,7 @@ function UpdateTingkatKebutuhan() {
       if (disabled) return
       setDisabled(true)
 
-      if (!items.name || !items.description) {
+      if (!items.name) {
         Swal.fire({
           icon: 'warning',
           title: 'Data belum lengkap',
@@ -78,9 +77,8 @@ function UpdateTingkatKebutuhan() {
         return
       }
 
-      await api.put(`inventStatus-update/${decryptedId}`, {
+      await api.put(`tingkatKebutuhanBarang-update/${decryptedId}`, {
         name: items.name,
-        description: items.description,
       })
 
       Swal.fire({
@@ -89,7 +87,7 @@ function UpdateTingkatKebutuhan() {
         timer: 2000,
         showConfirmButton: false,
       })
-      navigate('/status/list-status')
+      navigate('/tk/list-tk')
     } catch (error) {
       setError(error?.response?.data ?? error)
       Swal.fire({
@@ -104,7 +102,7 @@ function UpdateTingkatKebutuhan() {
 
   const resetValue = () => {
     if (originalItems) setItems(originalItems)
-    else setItems({ name: '', description: '' })
+    else setItems({ name: '' })
   }
 
   return (
@@ -112,12 +110,12 @@ function UpdateTingkatKebutuhan() {
       <Block>
         <div className="px-4">
           <Back goHome={() => navigate('/status/list-status')} />
-          <p className="lg:text-3xl text-2xl font-semibold capitalize my-4">Update Status</p>
+          <p className="lg:text-3xl text-2xl font-semibold capitalize my-4">Update Tingkat Kebutuhan</p>
           <Transition contentVisible={contentVisible}>
             <div className="p-8 bg-white shadow-sm rounded-lg border">
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div className="mb-5 space-y-2">
-                  <label className="font-semibold">Nama Status</label>
+                  <label className="font-semibold">Nama Tingkat Kebutuhan</label>
                   <div className="bg-white p-2 rounded-md border border-gray-300 mt-2">
                     <input
                       type="text"
@@ -132,24 +130,9 @@ function UpdateTingkatKebutuhan() {
                   </div>
                 </div>
 
-                <div className="mb-4">
-                  <label className="font-semibold">Deskripsi</label>
-                  <div className="bg-white p-2 rounded-md border border-gray-300 mt-2">
-                    <input
-                      type="text"
-                      name="description"
-                      value={items.description}
-                      onChange={(e) => setItems({ ...items, description: e.target.value })}
-                      className="w-full p-2 placeholder:text-gray-400 placeholder:font-inter placeholder:font-light"
-                      placeholder="Deskripsi"
-                      required
-                    />
-                  </div>
-                </div>
-
                 <div className="flex flex-col items-center justify-self-center mt-10 max-w-full w-[25rem] space-y-2 text-center">
                   <button
-                    disabled={disabled || isUnchanged}
+                    disabled={disabled}
                     type="submit"
                     className="py-2 px-2 rounded-lg font-medium bg-blue-500/85 hover:bg-blue-500 transition-color duration-200 text-white disabled:bg-blue-200"
                   >

@@ -129,7 +129,7 @@ function TingkatKebutuhanList() {
         <Layout title={'List Status'}>
             <Block>
                 <div className='ms-3 mb-4 flex items-center justify-between'>
-                    <p className='lg:text-3xl text-2xl font-semibold capitalize'>Status List</p>
+                    <p className='lg:text-3xl text-2xl font-semibold capitalize'>Tingkat Kebutuhan List</p>
                     <SearchBar
                         onChange={handleSearchChange}
                         disable={loading}
