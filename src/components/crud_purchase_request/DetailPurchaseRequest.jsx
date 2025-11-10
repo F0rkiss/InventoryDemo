@@ -8,7 +8,7 @@ import Back from '../component/Back';
 import Transition from '../component/Transition';
 import DateFormat from '../../helper/DateFormatHelper';
 import InfoRow from '../component/infoRow';
-import { DecryptID } from '../../helper/EncryptHelper';
+import { DecryptID, encrypting } from '../../helper/EncryptHelper';
 import { useAuth } from '../../auth/AuthContext';
 import ImagePreviewModal from '../component/modal/ImagePreviewModal';
 import Swal from 'sweetalert2';
@@ -22,7 +22,6 @@ function DetailPurchaseRequest() {
     const [contentVisible, setContentVisible] = useState(false);
     const [selectedImageUrl, setSelectedImageUrl] = useState('');
     const [isPreviewOpen, setIsPreviewOpen] = useState(false);
-    const [isPreviewLoading, setIsPreviewLoading] = useState(false);
 
     const { id } = useParams();
     const { role } = useAuth();
@@ -102,49 +101,10 @@ function DetailPurchaseRequest() {
         setIsPreviewOpen(true);
     };
 
-    const handlePreview = async () => {
-        if (isPreviewLoading) return; // Mencegah klik ganda
-        setIsPreviewLoading(true);
-        try {
-            // Menggunakan decryptedId dari state
-            const response = await api.get(`/pdf/preview_pr/${decryptedId}`, {
-                responseType: 'blob', // Penting: minta response sebagai blob (file)
-            });
-            // Cek jika response adalah PDF
-            if (response.data.type === 'application/pdf') {
-                // Buat URL objek dari blob
-                const file = new Blob([response.data], { type: 'application/pdf' });
-                const fileURL = URL.createObjectURL(file);
-                
-                // Buka di tab baru
-                window.open(fileURL, '_blank');
-                URL.revokeObjectURL(fileURL); // Bersihkan memori setelah tab terbuka
-            } else {
-                // Handle jika API mengembalikan error (misal, JSON error)
-                // Coba baca blob sebagai teks untuk melihat pesan error
-                const errText = await response.data.text();
-                let errJson = {};
-                try {
-                  errJson = JSON.parse(errText); // Asumsi error adalah JSON
-                } catch(e) {
-                    errJson = { message: 'Format respons tidak valid.' }
-                }
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Gagal Membuat Preview',
-                    text: errJson.message || 'Format respons tidak valid.'
-                });
-            }
-        } catch (error) {
-            console.error("Error generating preview: ", error);
-            Swal.fire({
-                icon: 'error',
-                title: 'Gagal Membuat Preview',
-                text: error.message || 'Terjadi kesalahan pada server.'
-            });
-        } finally {
-            setIsPreviewLoading(false);
-        }
+    const handlePreview = () => {
+        // Navigate to PDF viewer page with encrypted ID and type
+        const encryptedId = encrypting(decryptedId);
+        navigate(`/pdf-viewer/pr/${encryptedId}`);
     };
 
     return (
@@ -161,14 +121,11 @@ function DetailPurchaseRequest() {
                         <button
                             type="button"
                             onClick={handlePreview}
-                            disabled={isPreviewLoading}
-                            className="flex items-center gap-2 py-2 px-3 w-fit rounded-md border border-slate-300 font-medium text-sm bg-white text-gray-700 hover:bg-gray-100 transition-colors duration-200 disabled:opacity-50"
+                            className="flex items-center gap-2 py-2 px-3 w-fit rounded-md border border-slate-300 font-medium text-sm bg-white text-gray-700 hover:bg-gray-100 transition-colors duration-200"
                             title="Preview PDF"
                         >
-                            <i className={`bx ${isPreviewLoading ? 'bx-loader-alt bx-spin' : 'bx-file'}`}></i>
-                            <span className="sm:inline">
-                            {isPreviewLoading ? 'Loading...' : 'Preview'}
-                            </span>
+                            <i className="bx bx-file"></i>
+                            <span className="sm:inline">Preview</span>
                         </button>
 
                         <p className={`flex py-1 px-2 lg:py-2 lg:px-3 items-center text-xs lg:text-sm text-center gap-1 rounded-md font-medium ${!item.can_be_deleted ? 'text-green-700 bg-green-100 border border-green-500' : 'text-amber-700 bg-amber-100 border border-amber-500'}`}>

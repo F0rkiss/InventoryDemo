@@ -41,6 +41,10 @@ function Log() {
 
             setItems(withReadStatus)
             setNextCursor(data?.data?.next_cursor || null)
+
+            // console.log('API Response:', data.data.data[0].data_after.details.note_barang)
+
+
         } catch (error) {
             console.error('Gagal fetch Log:', error)
             setItems([])

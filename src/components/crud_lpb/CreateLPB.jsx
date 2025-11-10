@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { Page, Block } from 'framework7-react'
 import { useNavigate, useParams } from 'react-router-dom'
 import api from '../../api/api'
@@ -9,6 +9,8 @@ import ModalLPB from '../component/modal/ModalLPB'
 import { DecryptID } from '../../helper/EncryptHelper'
 import Transition from '../component/Transition'
 import ImagePreviewModal from '../component/modal/ImagePreviewModal'
+import MultiUpload from '../component/MultiUpload'
+import CreateMultiUploadModal from '../component/modal/CreateMultiUploadModal'
 
 function CreateLPB() {
     const [items, setItems] = useState({
@@ -16,6 +18,7 @@ function CreateLPB() {
         tanggal: '',
         penerima: '',
         note: '',
+        image: null,
     }) 
     const { id } = useParams()
     const [details, setDetails] = useState([])
@@ -33,6 +36,8 @@ function CreateLPB() {
     const [isPreviewOpen, setIsPreviewOpen] = useState(false)
     const [selectedImageUrl, setSelectedImageUrl] = useState('')
     const [poMeta, setPoMeta] = useState({ totalSelectable: 0, totalDetails: 0 })
+    const fileInputRef = useRef(null)
+    const [isUploadModalOpen, setIsUploadModalOpen] = useState(false)
 
     useEffect(() => {
         const decryptedIds = DecryptID(id)
@@ -49,136 +54,163 @@ function CreateLPB() {
     }, [decryptedId])
 
     // Fungsi validasi
-    const validate = () => {
-        const newErrors = {}
-        if (!items.purchase_order) newErrors.purchase_order = 'Purchase Order wajib diisi.'
-        if (!items.tanggal) newErrors.tanggal = 'Tanggal wajib diisi.'
-        if (!items.penerima) newErrors.penerima = 'Penerima wajib diisi.'
-        if (!items.note) newErrors.note = 'Keterangan wajib diisi.'
-        if (details.length === 0) newErrors.details = 'Tambahkan minimal satu detail barang.'
+        const validate = () => {
+            const newErrors = {}
+            if (!items.purchase_order) newErrors.purchase_order = 'Purchase Order wajib diisi.'
+            if (!items.tanggal) newErrors.tanggal = 'Tanggal wajib diisi.'
+            if (!items.penerima) newErrors.penerima = 'Penerima wajib diisi.'
+            if (!items.note) newErrors.note = 'Keterangan wajib diisi.'
+            if (details.length === 0) newErrors.details = 'Tambahkan minimal satu detail barang.'
         
-        setErrors(newErrors)
-        return Object.keys(newErrors).length === 0
-    }
+            setErrors(newErrors)
+            return Object.keys(newErrors).length === 0
+        }
+        
 
-    const fetchItem = async () => {
-        try {
+        const fetchItem = async () => {
+            try {
             const response = await api.get(`laporanPenerimaanBarang-purchaseOrder/detail/${decryptedId}`)
             const data = response.data.data
             const fetchedItems = {
-                purchase_order : data.kode || '',
+                purchase_order: data.kode || '',
                 tanggal: '',
                 penerima: '',
                 note: '',
+                image: [],
             }
             setItems(fetchedItems)
             setOriginalItems(fetchedItems)
-        } catch (error) {
+            setOriginalDetails(data.details || [])
+            } catch (error) {
             console.error('Fetch error:', error)
-        } finally { 
+            } finally {
             setTimeout(() => setContentVisible(true), 50)
-        }
-    }
-
-    const handleSubmit = async (e) => {
-        e.preventDefault()
-        if (!validate()) {
-            Swal.fire({ icon:'warning', title:'Form Tidak Lengkap', text:'Harap isi semua field yang wajib diisi.' })
-            return
-        }
-
-        try {
-            if (isSubmitting) return
-            setIsSubmitting(true)
-            setDisabled(true)
-
-            const payload = {
-                tanggal: items.tanggal,
-                penerima: items.penerima,
-                note: items.note,
-                invent_barangs_id: details.map(d => d.barangs?.id || null),
-                qty: details.map(d => d.qty || 0),
             }
-
-            const res = await api.post(`laporanPenerimaanBarang-create/${decryptedId}`, payload)
-
-            Swal.fire({
-                title:'Laporan Penerimaan Barang berhasil dibuat!',
-                icon:'success', 
-                timer: 2000,
-                showConfirmButton: false
-            })
-            navigate('/lpb/list-create-lpb')
-            
-        } catch (err) {
-
-            // console.error("===== DEBUG ERROR =====")
-            // console.error("Full error object:", err)
-            // console.error("Response data:", err?.response?.data)
-            // console.error("Response status:", err?.response?.status)
-            // console.error("Response headers:", err?.response?.headers)
-
-            Swal.fire({ 
-                icon:'error',
-                title:'Gagal Membuat Laporan',
-                text: err?.response?.data?.msg || 'Kesalahan pada sistem'
-            })
-            console.error('Submit error:', err?.response?.data || err)
-        } finally {
-            setIsSubmitting(false)
-            setDisabled(false)
         }
-    }
-    
-    const handleChange = (e) => {
-        const { name, value } = e.target
-        setItems(prevItems => ({ ...prevItems, [name]: value }))
-        if (errors[name]) {
+        
+
+        const handleSubmit = async (e) => {
+            e.preventDefault()
+            if (!validate()) {
+              Swal.fire({ icon: 'warning', title: 'Form Tidak Lengkap', text: 'Harap isi semua field yang wajib diisi.' })
+              return
+            }
+            if (isSubmitting) return
+          
+            try {
+              setIsSubmitting(true)
+              setDisabled(true)
+          
+              const formData = new FormData()
+              formData.append('tanggal', items.tanggal)
+              formData.append('penerima', items.penerima)
+              formData.append('note', items.note)
+          
+              items.image.forEach((file, index) => {
+                formData.append(`bukti[${index}]`, file)
+              })
+          
+              details.forEach((d, i) => {
+                formData.append(`invent_barangs_id[${i}]`, d.barangs?.id || '')
+                formData.append(`qty[${i}]`, d.qty || 0)
+              })
+          
+              await api.post(`laporanPenerimaanBarang-create/${decryptedId}`, formData, {
+                headers: { 'Content-Type': 'multipart/form-data' },
+              })
+          
+              Swal.fire({ title: 'Laporan Penerimaan Barang berhasil dibuat!', icon: 'success', timer: 2000, showConfirmButton: false })
+              navigate('/lpb/list-create-lpb')
+            } catch (err) {
+              Swal.fire({ icon: 'error', title: 'Gagal Membuat Laporan', text: err?.response?.data?.msg || 'Kesalahan pada sistem' })
+              console.error('Submit error:', err?.response?.data || err)
+            } finally {
+              setIsSubmitting(false)
+              setDisabled(false)
+            }
+          }
+          
+        
+        
+        const handleChange = (e) => {
+            const { name, value } = e.target
+            if (name === 'purchase_order') return
+            setItems(prevItems => ({ ...prevItems, [name]: value }))
+            if (errors[name]) {
             setErrors(prevErrors => {
                 const newErrors = { ...prevErrors }
                 delete newErrors[name]
                 return newErrors
             })
-        }
-    }
-    
-    const resetValue = () => {
-        Swal.fire({
-            title: 'Reset data?',
-            text: 'Semua perubahan akan dibatalkan.',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Ya, reset',
-            cancelButtonText: 'Batal',
-        }).then((result) => {
-            if (result.isConfirmed) {
-                if (originalItems && originalDetails) {
-                    setItems(originalItems);
-                    setDetails(originalDetails);
-                } else {
-                    setItems({
-                        purchase_order: '',
-                        tanggal: '',
-                        penerima: '',
-                        note: '',
-                    });
-                    setDetails([]);
-                }
-                setErrors({});
             }
-        });
-    };
-    
+        }
+        
+        
+        const resetValue = () => {
+            Swal.fire({
+              title: 'Reset data?',
+              text: 'Semua perubahan akan dibatalkan.',
+              icon: 'warning',
+              showCancelButton: true,
+              confirmButtonText: 'Ya, reset',
+              cancelButtonText: 'Batal',
+            }).then((result) => {
+              if (result.isConfirmed) {
+                if (originalItems && originalDetails) {
+                  setItems({ ...originalItems, image: [] })
+                  setDetails(originalDetails)
+                } else {
+                  setItems({ purchase_order: '', tanggal: '', penerima: '', note: '', image: [] })
+                  setDetails([])
+                }
+                setErrors({})
+              }
+            })
+          }
+          
 
-    const handleClosePreview = () => {
-        setIsPreviewOpen(false)
-        setSelectedImageUrl('')
-    }
+        const handleFileChange = (e) => {
+            const files = Array.from(e.target.files || [])
+            const validFiles = files.filter(file => file.size <= 5 * 1024 * 1024)
+            
+                if (validFiles.length !== files.length) {
+                Swal.fire({ icon: 'error', title: 'Beberapa file melebihi batas ukuran 5 MB' })
+                }
+            
+                setItems(prev => ({ ...prev, bukti: validFiles }))
+            }
 
-    const handleImageClick = (imageUrl) => {
-        setSelectedImageUrl(imageUrl)
-        setIsPreviewOpen(true)
-    }
+            const handleUpload = (e) => {
+                const newFiles = Array.from(e.target.files || [])
+                const validFiles = newFiles.filter(file => file.size <= 5 * 1024 * 1024)
+              
+                if (validFiles.length !== newFiles.length) {
+                  Swal.fire({ icon: 'error', title: 'Beberapa file melebihi batas ukuran 5 MB' })
+                }
+              
+                setItems(prev => ({
+                  ...prev,
+                  image: [...prev.image, ...validFiles]
+                }))
+              }
+              
+
+        const handleImageClick = (imageUrl) => {
+            setSelectedImageUrl(imageUrl)
+            setIsPreviewOpen(true)
+        }
+        
+        const handleClosePreview = () => {
+            setIsPreviewOpen(false)
+            setSelectedImageUrl('')
+        }
+
+        const handleDelete = (index) => {
+            setItems(prev => ({
+              ...prev,
+              image: prev.image.filter((_, i) => i !== index)
+            }))
+          }
 
     return (
     <Layout title={'Create Purchase Order'}>
@@ -358,6 +390,40 @@ function CreateLPB() {
                                 </button>
                             </div>
 
+                            <div className="mb-5 space-y-3">
+                                <label className="font-semibold">Image</label>
+                                {items.image?.length > 0 && (
+                                    <div className="rounded-md border border-dashed border-gray-300 p-3">
+                                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 w-full">
+                                            {items.image.map((b, i) => {
+                                                const src = b instanceof File ? URL.createObjectURL(b) : b
+                                                return (
+                                                    <button
+                                                        key={i}
+                                                        type="button"
+                                                        className="relative rounded border overflow-hidden aspect-[4/3]"
+                                                        onClick={() => handleImageClick(src)}
+                                                    >
+                                                        <img src={src} alt={`img-${i}`} className="w-full h-full object-cover" />
+                                                    </button>
+                                                )
+                                            })}
+                                        </div>
+                                    </div>
+                                )}
+                                <div className="flex">
+                                    <button
+                                        type="button"
+                                        className="ml-auto inline-flex items-center gap-2 px-3 py-2 rounded-md bg-blue-50 text-blue-600 hover:bg-blue-100"
+                                        onClick={() => setIsUploadModalOpen(true)}
+                                    >
+                                        <i className="bx bx-image-add"></i>
+                                        Kelola Gambar
+                                    </button>
+                                </div>
+                            </div>
+                            
+
                             {/* Submit + Reset */}
                             <div className="flex flex-col justify-center max-w-full w-[25rem] space-y-2 mx-auto">
                                 <button 
@@ -419,8 +485,19 @@ function CreateLPB() {
             onClose={handleClosePreview}
             imageUrl={selectedImageUrl}
         />
+
+        {/* Upload Modal */}
+        <CreateMultiUploadModal
+            open={isUploadModalOpen}
+            initialFiles={items.image}
+            onClose={() => setIsUploadModalOpen(false)}
+            onSave={(files) => {
+                setItems(prev => ({ ...prev, image: files }))
+            }}
+        />
     </Layout>
     )
 }
 
 export default CreateLPB
+

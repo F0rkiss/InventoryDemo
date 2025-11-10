@@ -92,6 +92,7 @@ const CreateListPurchaseRequest = lazy(() => import('./crud_purchase_request/Cre
 const CreatePurchaseRequest = lazy(() => import('./crud_purchase_request/CreatePurchaseRequest.jsx'))
 const DetailPurchaseRequest = lazy(() => import('./crud_purchase_request/DetailPurchaseRequest.jsx'))
 const UpdatePurchaseRequest = lazy(() => import('./crud_purchase_request/UpdatePurchaseRequest.jsx'))
+const PDFViewerPage = lazy(() => import('./crud_purchase_request/PDFViewerPage.jsx'))
 
 const ListPurchaseOrder = lazy(() => import('./crud_purchase_order/ListPurchaseOrder.jsx'))
 const UpdatePurchaseOrder = lazy(() => import('./crud_purchase_order/UpdatePurchaseOrder.jsx'))
@@ -218,6 +219,7 @@ const MyApp = () => {
                   <Route path='/purchase-request/list-purchase-request' element={<ListPurchaseRequest />} />
                   <Route path='/purchase-request/detail-purchase-request/:id' element={<DetailPurchaseRequest />} />
                   <Route path='/purchase-request/update-purchase-request/:id' element={<UpdatePurchaseRequest />} />
+                  
 
                   <Route path='/make-purchase-request/list-make-purchase-request' element={<CreateListPurchaseRequest />} />
                   <Route path='/make-purchase-request/create-purchase-request/:id' element={<CreatePurchaseRequest />} />
@@ -286,6 +288,7 @@ const MyApp = () => {
                   <Route path='/navigation-groups/detail-navigation-groups/:id' element={<DetailNavigationGroup/>}/>
 
                   <Route path='/navigation-menu/list-navigation-menu' element={<NavigationMenuList/>}/>
+                  <Route path='/pdf-viewer/:type/:id' element={<PDFViewerPage />} />
                   
                 </Route>
 

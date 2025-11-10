@@ -37,41 +37,47 @@ function Login() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
+    
+        if (isSubmitting) return;
+        setIsSubmitting(true);
+    
         try {
-            if (isSubmitting) {
+            // Validasi angka
+            if (!/^\d+$/.test(credential.employee_code)) {
+                setErrorMessage('EmpCode harus berupa angka');
+                setIsSubmitting(false);
                 return;
             }
-            setIsSubmitting(true)
-            // Post login credentials to the API
+    
+            // Kirim data login ke API
             const response = await api.post('/login', {
                 EmpCode: credential.employee_code,
                 password: credential.password
             });
     
             const token = response.data.access_token;
-            
-            // Store token in localStorage
-            localStorage.setItem('authToken', token);; 
+            if (!token) {
+                setErrorMessage('EmpCode tidak dikenali');
+                return;
+            }
     
-            // Set authentication state
-            setAuth({
-                employee_code: credential.employee_code,
-                token,
-                role: ''
-            });
+            localStorage.setItem('authToken', token);
     
-            // Decode token to get role
             const decoded = jwtDecode(token);
             const role = decoded.role;
     
-            // Navigate based on role
+            setAuth({
+                employee_code: credential.employee_code,
+                token,
+                role,
+            });
+    
             if (role) {
                 navigate('/dashboard', { replace: true });
             } else {
-                // Handle cases where the role is not recognized
-                setErrorMessage('Login failed: Unrecognized role');
+                setErrorMessage('EmpCode tidak dikenali');
             }
+    
         } catch (error) {
             // Handle errors during login
             setErrorMessage('Login failed: ' + (error.response?.data?.message || error.message));
@@ -79,9 +85,11 @@ function Login() {
                 setErrorMessage('Kode atau Password Anda salah')
             }
         } finally {
-            setIsSubmitting(false)
+            setIsSubmitting(false);
         }
     };
+    
+    
 
     const isFormInvalid = !credential.employee_code || !credential.password;
     
@@ -93,17 +101,23 @@ function Login() {
             </div>
             <h2 className="text-2xl font-bold text-center text-white mb-6">Sign In</h2>
             <form onSubmit={handleSubmit}>
-                <div className='mb-6'>
-                    <label className='text-gray-200 text-xs mb-2 px-0'>Employee Code</label>
+            <div className='mb-6'>
+                <label className='text-gray-200 text-xs mb-2 px-0'>Employee Code</label>
                     <div className='mt-1 py-2 px-3 bg-stone-800 focus-within:bg-stone-700/50 border-2 border-stone-900 rounded-md transition-colors focus-within:border-stone-500'>
                         <input
-                            type="text"
-                            className='w-full !text-white placeholder:text-stone-400'
-                            placeholder='Masukkan employee code'
-                            value={credential.employee_code}
-                            onChange={handleInputChange('employee_code')}
-                            required
-                            autoFocus
+                        type="text"
+                        inputMode="numeric"        // tampilkan keyboard angka di mobile
+                        pattern="[0-9]*"           // hanya izinkan angka
+                        className='w-full !text-white placeholder:text-stone-400'
+                        placeholder='Masukkan employee code'
+                        value={credential.employee_code}
+                        onChange={(e) => {
+                            // hapus semua karakter non-digit
+                            const onlyNumbers = e.target.value.replace(/\D/g, '');
+                            setCredential({ ...credential, employee_code: onlyNumbers });
+                          }}
+                        required
+                        autoFocus
                         />
                     </div>
                 </div>

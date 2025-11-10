@@ -6,7 +6,6 @@ const LPBCards = forwardRef(({ item, goToUpdate, goToDetail, isList, goToCreate,
     const [open, setOpen] = useState(false)
 
     const infoPO = item?.purchase_order ?? {}
-    const infoPR = item?.purchase_request ?? item?.purchase_order?.purchase_request ?? {}
     const UpdatedBool = item.canBeUpdated ? 1 : 0
     const FullApprove = item.is_full_approval ? 1 : 0
 
