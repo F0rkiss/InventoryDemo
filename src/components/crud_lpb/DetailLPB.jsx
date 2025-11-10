@@ -121,11 +121,11 @@ function DetailLPB() {
     const qtyMap = useMemo(() => {
         const map = new Map();
         (prDetailQty || []).forEach(q => {
-        map.set(String(q.barang_id), q);
+            if (q.barang_id) map.set(String(q.barang_id), q);
         });
         return map;
     }, [prDetailQty]);
-
+    
     const getQty = (prRow, type = 'requested_qty') => {
         if (!prRow) return '-';
         const barangId = prRow.invent_barangs_id ?? prRow.barangs?.id;
@@ -203,9 +203,9 @@ function DetailLPB() {
                             <p className="text-sm text-gray-500 mb-4">{DateFormat(infoPO.tanggal, false)}</p>
                             <div className="space-y-2 lg:space-y-3">
                                 {/* <InfoRow label="Pembuat Permintaan" value={infoPO.user_id} /> */}
-                                <InfoRow label="Kode Suplier" value={infoPO.suplier.nama_perusahaan} />
-                                <InfoRow label="Phone Suplier" value={infoPO.suplier.phone} />
-                                <InfoRow label="Alamat Suplier" value={infoPO.suplier.alamat} />
+                                <InfoRow label="Kode Suplier" value={infoPO.suplier?.nama_perusahaan} />
+                                <InfoRow label="Phone Suplier" value={infoPO.suplier?.phone} />
+                                <InfoRow label="Alamat Suplier" value={infoPO.suplier?.alamat} />
                                 <InfoRow label="Estimasi Tanggal Penyerahan" value={DateFormat(infoPO.tanggal_penyerahan)} />
                                 <InfoRow label="Keterangan" value={infoPO.keterangan} />
                             </div>
