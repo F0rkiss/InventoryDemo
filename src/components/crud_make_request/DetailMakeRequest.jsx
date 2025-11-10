@@ -11,6 +11,7 @@ import { useAuth } from '../../auth/AuthContext';
 import useMenuAccess from '../../hooks/useMenuAccess'
 import Swal from 'sweetalert2';
 import ImagePreviewModal from '../component/modal/ImagePreviewModal';
+import { isMobileSafari } from '../../helper/DeviceHelper';
 
 function DetailMakeRequest() {
   const [item, setItem] = useState({})
@@ -77,81 +78,78 @@ function DetailMakeRequest() {
   };
 
   const handlePreview = async () => {
-      if (isPreviewLoading) return; // Mencegah klik ganda
-      setIsPreviewLoading(true);
-      try {
-          // Menggunakan decryptedId dari state
-          const response = await api.get(`/pdf/preview_mr/${decryptedId}`, {
-              responseType: 'blob', // Penting: minta response sebagai blob (file)
-          });
+    if (isPreviewLoading) return;
+    setIsPreviewLoading(true);
+    try {
+      const response = await api.get(`/pdf/preview_mr/${decryptedId}`, {
+          responseType: 'blob',
+      });
 
-          // Cek jika response adalah PDF
-          if (response.data.type === 'application/pdf') {
-              // Buat URL objek dari blob
-              const file = new Blob([response.data], { type: 'application/pdf' });
-              const fileURL = URL.createObjectURL(file);
-              
-              // Coba buka di tab baru
-              const newWindow = window.open(fileURL, '_blank');
-
-              // Cek apakah tab baru diblokir
-              if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
-                  // Jika diblokir, berikan notifikasi dan paksa download
-                  Swal.fire({
-                      icon: 'info',
-                      title: 'Preview Gagal Dibuka',
-                      text: 'Browser Anda mungkin memblokir tab baru. Memulai unduhan PDF...',
-                      timer: 2500,
-                      showConfirmButton: false
-                  });
-
-                  const link = document.createElement('a');
-                  link.href = fileURL;
-                  const fileName = mainMR.kode ? `${mainMR.kode}.pdf` : 'preview-mr.pdf';
-                  link.setAttribute('download', fileName);
-                  document.body.appendChild(link);
-                  link.click();
-                  
-                  // Bersihkan link dan blob URL
-                  document.body.removeChild(link);
-                  URL.revokeObjectURL(fileURL);
-
-              } else {
-                  // Jika berhasil dibuka, revoke URL setelah 1 menit
-                  setTimeout(() => {
-                      URL.revokeObjectURL(fileURL);
-                  }, 1000 * 60); 
-              }
-
+      if (response.data.type === 'application/pdf') {
+          const file = new Blob([response.data], { type: 'application/pdf' });
+          const fileURL = URL.createObjectURL(file);
+          
+          // --- LOGIKA BARU UNTUK iOS ---
+          if (isMobileSafari()) {
+            // Untuk iOS Safari, buka di tab yang sama.
+            // Ini adalah satu-satunya cara yang andal untuk blob URL.
+            window.location.href = fileURL;
+            // Kita tidak bisa revoke URL di sini karena navigasi baru saja dimulai
           } else {
-              // Handle jika API mengembalikan error (misal, JSON error)
-              // Coba baca blob sebagai teks untuk melihat pesan error
-              const errText = await response.data.text();
-              let errJson = {};
-              try {
-                errJson = JSON.parse(errText); // Asumsi error adalah JSON
-              } catch(e) {
-                errJson = { message: 'Format respons tidak valid.' }
-              }
-              Swal.fire({
-                  icon: 'error',
-                  title: 'Gagal Membuat Preview',
-                  text: errJson.message || 'Format respons tidak valid.'
-              });
+            // Logika lama untuk browser lain (Chrome, Firefox, PC)
+            const newWindow = window.open(fileURL, '_blank');
+
+            if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Preview Gagal Dibuka',
+                    text: 'Browser Anda mungkin memblokir tab baru. Memulai unduhan PDF...',
+                    timer: 2500,
+                    showConfirmButton: false
+                });
+
+                const link = document.createElement('a');
+                link.href = fileURL;
+                const fileName = item.kode ? `${item.kode}.pdf` : 'preview-mr.pdf';
+                link.setAttribute('download', fileName);
+                document.body.appendChild(link);
+                link.click();
+                
+                document.body.removeChild(link);
+                URL.revokeObjectURL(fileURL);
+
+            } else {
+                setTimeout(() => {
+                    URL.revokeObjectURL(fileURL);
+                }, 1000 * 60); 
+            }
           }
 
-      } catch (error) {
-          console.error("Error generating preview: ", error);
+      } else {
+          const errText = await response.data.text();
+          let errJson = {};
+          try {
+            errJson = JSON.parse(errText);
+          } catch(e) {
+            errJson = { message: 'Format respons tidak valid.' }
+          }
           Swal.fire({
               icon: 'error',
               title: 'Gagal Membuat Preview',
-              text: error.message || 'Terjadi kesalahan pada server.'
+              text: errJson.message || 'Format respons tidak valid.'
           });
-      } finally {
-          setIsPreviewLoading(false);
       }
+    } catch (error) {
+      console.error("Error generating preview: ", error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Gagal Membuat Preview',
+            text: error.message || 'Terjadi kesalahan pada server.'
+        });
+    } finally {
+        setIsPreviewLoading(false);
+    }
   };
-  // --- AKHIR FUNGSI DIPERBARUI ---
 
   const cancelRequest = async () => {
     try {

@@ -28,7 +28,7 @@ const ModalMR = ({ open, onClose, onSave, initialData, requestMode, apiUrl }) =>
         try {
             if (mode === 'ya') {
                 // Mode "ya" (Stok) menggunakan {term} sebagai bagian dari URL
-                endpoint = '/inventStok';
+                endpoint = '/inventStok-user';
                 if (term.trim()) {
                     endpoint = `${endpoint}/${term.trim()}`;
                 }
