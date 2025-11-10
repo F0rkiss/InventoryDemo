@@ -54,6 +54,7 @@ const menus = [
     { key: "Role", label: "Role", icon: "bx bx-tag", path: "/role/list-role" },
     { key: "Billing", label: "Billing", icon: "bx bx-spreadsheet", path: "/billing/list-billing" },
     { key: "Suplier", label: "Supplier", icon: "bx bxs-truck", path: "/supplier/list-supplier" },
+    { key: "TingkatKebutuhan", label: "TingkatKebutuhan", icon: "bx bx-trending-up", path: "/tk/list-tk" },
     { key: "NavigationGroup", label: "Navigation Group", icon: "bx bx-navigation", path: "/navigation-groups/list-navigation-groups" },
     {
         key: "InventMutasi" || "InventLog" || "PPN" || "PaymentType" || "MataUang",

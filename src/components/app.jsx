@@ -61,6 +61,10 @@ const StatusList = lazy(() => import('./crud_status/StatusList.jsx'));
 const CreateStatus = lazy(() => import('./crud_status/CreateStatus.jsx'));
 const UpdateStatus = lazy(() => import('./crud_status/UpdateStatus.jsx'));
 
+const TKList = lazy(() => import('./crud_tingkat_kebutuhan/TingkatKebutuhanList.jsx'));
+const CreateTK = lazy(() => import('./crud_tingkat_kebutuhan/CreateTingkatKebutuhan.jsx'));
+const UpdateTK = lazy(() => import('./crud_tingkat_kebutuhan/UpdateTingkatKebutuhan.jsx'));
+
 const JenisMemoList = lazy(() => import('./crud_jenis_memo/jenisMemoList.jsx'));
 const CreateJenisMemo = lazy(() => import('./crud_jenis_memo/CreatejenisMemo.jsx'));
 const UpdateJenisMemo = lazy(() => import('./crud_jenis_memo/UpdatejenisMemo.jsx'));
@@ -261,6 +265,10 @@ const MyApp = () => {
                   <Route path='/status/list-status' element={<StatusList />} />
                   <Route path='/status/update-status/:id' element={<UpdateStatus />} />
                   <Route path='/status/create-status' element={<CreateStatus />} />
+
+                  <Route path='/tk/list-tk' element={<TKList />} />
+                  <Route path='/tk/update-tk/:id' element={<UpdateTK />} />
+                  <Route path='/tk/create-tk' element={<CreateTK />} />
 
                   <Route path='/jenismemo/list-jenismemo' element={<JenisMemoList />} />
                   <Route path='/jenismemo/update-jenismemo/:id' element={<UpdateJenisMemo />} />
