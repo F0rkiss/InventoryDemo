@@ -16,6 +16,8 @@ import Loader from './component/Loader.jsx';
 // Lazy load components
 const Notifications = lazy(() => import('./informationPage/NotificationsPages'));
 const ApprovalMakeRequest = lazy(() => import('./approval-page/approvalMR'));
+const ApprovalPurchaseRequest = lazy(() => import('./approval-page/approvalPR'));
+const ApprovalPurchaseOrder = lazy(() => import('./approval-page/approvalPO'));
 const ApprovalLPB = lazy(() => import('./approval-page/approvalLPB'));
 
 const BarangList = lazy(() => import('./crud_barang/BarangList.jsx'));
@@ -86,8 +88,13 @@ const DetailApprovalStep = lazy(() => import('./crud_approval_step/DetailApprova
 const UpdateApprovalStep = lazy(() => import('./crud_approval_step/UpdateApprovalStep.jsx'))
 const CreateApprovalStep = lazy(() => import('./crud_approval_step/CreateApprovalStep.jsx'))
 
+const ListApprovalStepPurchase = lazy(() => import('./crud_approval_purchase/ApprovalStepPurchaseList.jsx'))
+const DetailApprovalStepPurchase = lazy(() => import('./crud_approval_purchase/DetailApprovalStepPurchase.jsx'))
+const UpdateApprovalStepPurchase = lazy(() => import('./crud_approval_purchase/UpdateApprovalStepPurchase.jsx'))
+const CreateApprovalStepPurchase = lazy(() => import('./crud_approval_purchase/CreateApprovalStepPurchase.jsx'))
+
 const ListApprovalStepLPB = lazy(() => import('./crud_approval_step_lpb/ListApprovalStepLPB.jsx'))
-const DetailApprovalStepLPB = lazy(() => import('./crud_approval_step_lpb/DetailApprovalStepLPB.jsx'))
+// const DetailApprovalStepLPB = lazy(() => import('./crud_approval_step_lpb/DetailApprovalStepLPB.jsx'))
 const UpdateApprovalStepLPB = lazy(() => import('./crud_approval_step_lpb/UpdateApprovalStepLPB.jsx'))
 const CreateApprovalStepLPB = lazy(() => import('./crud_approval_step_lpb/CreateApprovalStepLPB.jsx'))
 
@@ -96,7 +103,7 @@ const CreateListPurchaseRequest = lazy(() => import('./crud_purchase_request/Cre
 const CreatePurchaseRequest = lazy(() => import('./crud_purchase_request/CreatePurchaseRequest.jsx'))
 const DetailPurchaseRequest = lazy(() => import('./crud_purchase_request/DetailPurchaseRequest.jsx'))
 const UpdatePurchaseRequest = lazy(() => import('./crud_purchase_request/UpdatePurchaseRequest.jsx'))
-const PDFViewerPage = lazy(() => import('./crud_purchase_request/PDFViewerPage.jsx'))
+// const PDFViewerPage = lazy(() => import('./crud_purchase_request/PDFViewerPage.jsx'))
 
 const ListPurchaseOrder = lazy(() => import('./crud_purchase_order/ListPurchaseOrder.jsx'))
 const UpdatePurchaseOrder = lazy(() => import('./crud_purchase_order/UpdatePurchaseOrder.jsx'))
@@ -174,6 +181,8 @@ const MyApp = () => {
 
                   <Route path="/notifications" element={<Notifications />} />
                   <Route path="/approvalStepHistory-makeRequest/detail/:id" element={<ApprovalMakeRequest />} />
+                  <Route path="/approvalStepHistory-purchaseRequest/detail/:id" element={<ApprovalPurchaseRequest />} />
+                  <Route path="/approvalStepHistory-purchaseOrder/detail/:id" element={<ApprovalPurchaseOrder />} />
                   <Route path="/approvalStepHistory-lpb/detail/:id" element={<ApprovalLPB />} />
 
                   <Route path="/barang/list-barang" element={<BarangList />} />
@@ -214,6 +223,11 @@ const MyApp = () => {
                   <Route path='/approval-step/detail-approval-step/:id' element={<DetailApprovalStep />} />
                   <Route path='/approval-step/update-approval-step/:id' element={<UpdateApprovalStep />} />
                   <Route path='/approval-step/create-approval-step' element={<CreateApprovalStep />} />
+
+                  <Route path='/approval-step-purchase/list-approval-step' element={<ListApprovalStepPurchase />} />
+                  <Route path='/approval-step-purchase/detail-approval-step/:id' element={<DetailApprovalStepPurchase />} />
+                  <Route path='/approval-step-purchase/update-approval-step/:id' element={<UpdateApprovalStepPurchase />} />
+                  <Route path='/approval-step-purchase/create-approval-step' element={<CreateApprovalStepPurchase />} />
 
                   <Route path='/approval-step-lpb/list-approval-step-lpb' element={<ListApprovalStepLPB />} />
                   <Route path='/approval-step-lpb/detail-approval-step-lpb' element={<ListApprovalStepLPB />} />
@@ -296,7 +310,7 @@ const MyApp = () => {
                   <Route path='/navigation-groups/detail-navigation-groups/:id' element={<DetailNavigationGroup/>}/>
 
                   <Route path='/navigation-menu/list-navigation-menu' element={<NavigationMenuList/>}/>
-                  <Route path='/pdf-viewer/:type/:id' element={<PDFViewerPage />} />
+                  {/* <Route path='/pdf-viewer/:type/:id' element={<PDFViewerPage />} /> */}
                   
                 </Route>
 

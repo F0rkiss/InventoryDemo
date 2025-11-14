@@ -44,6 +44,7 @@ const menus = [
         isAccordion: true,
         children: [
             { key: "ApprovalStep", label: "Approval Step", icon: "bx bx-user-check", path: "/approval-step/list-approval-step" },
+            { key: "ApprovalStepPurchase", label: "Approval Step PR & PO", icon: "bx bx-user-check", path: "/approval-step-purchase/list-approval-step" },
             { key: "ApprovalStepLPB", label: "Approval Step LPB", path: "/approval-step-lpb/list-approval-step-lpb" },
         ]
     },

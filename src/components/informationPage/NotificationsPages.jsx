@@ -17,12 +17,12 @@ function Notifications() {
     const [loading, setLoading] = useState(false)
     const [contentVisible, setContentVisible] = useState(false)
     const navigate = useNavigate()
-    const hasFetched = useRef(false) // ✅ Tambahan
+    const hasFetched = useRef(false)
 
     useEffect(() => {
-        if (!hasFetched.current) {      // ✅ Tambahan
+        if (!hasFetched.current) {
             fetchItems()
-            hasFetched.current = true   // ✅ Tambahan
+            hasFetched.current = true
         }
     }, [])
 
@@ -36,6 +36,9 @@ function Notifications() {
                 ...item,
                 isRead: false,
             }))
+
+            // ✅ sort newest first
+            withReadStatus.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
 
             setItems(withReadStatus)
             setNextCursor(response.data?.next_cursor || null)
@@ -66,7 +69,10 @@ function Notifications() {
             setItems((prevItems) => {
                 const existingIds = new Set(prevItems.map((item) => item.id))
                 const uniqueNew = newItems.filter((item) => !existingIds.has(item.id))
-                return [...prevItems, ...uniqueNew]
+                const combined = [...prevItems, ...uniqueNew]
+
+                // ✅ keep newest first
+                return combined.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
             })
 
             setNextCursor(response.data?.next_cursor || null)
@@ -79,11 +85,15 @@ function Notifications() {
     }
 
     const goToPage = (notif) => {
-        const encryptedId = encrypting(notif.id)
+        const encryptedId = encrypting(notif.id);
         if (notif.jenis_request === 'MR') {
-            navigate(`/approvalStepHistory-makeRequest/detail/${encryptedId}`)
-        } else {
-            navigate(`/approvalStepHistory-lpb/detail/${encryptedId}`)
+            navigate(`/approvalStepHistory-makeRequest/detail/${encryptedId}`);
+        } else if (notif.jenis_request === 'PR'){
+            navigate(`/approvalStepHistory-purchaseRequest/detail/${encryptedId}`);
+        } else if (notif.jenis_request === 'PO'){
+            navigate(`/approvalStepHistory-purchaseOrder/detail/${encryptedId}`);
+        } else if (notif.jenis_request === 'LPB'){
+            navigate(`/approvalStepHistory-lpb/detail/${encryptedId}`);
         }
     }
 
@@ -91,22 +101,25 @@ function Notifications() {
         <Layout title={'Notifikasi'}>
             <Block>
                 <Back goHome={() => navigate('/dashboard')} />
-                <p className='text-2xl lg:text-3xl font-semibold capitalize ms-3 my-4'>Daftar Notifikasi</p>
+                <p className='text-2xl lg:text-3xl font-semibold capitalize ms-3 my-4'>
+                    Daftar Notifikasi
+                </p>
                 <Transition contentVisible={contentVisible}>
-                    <ScrollPagination fetchMoreItems={fetchMoreItems} loading={loading} nextCursor={nextCursor}>
-                        {
-                            items.map((item) => (
-                                <NotifCards
-                                    key={item.id}
-                                    item={item}
-                                    goToPage={goToPage}
-                                />
-                            ))
-                        }
+                    <ScrollPagination
+                        fetchMoreItems={fetchMoreItems}
+                        loading={loading}
+                        nextCursor={nextCursor}
+                    >
+                        {items.map((item, index) => (
+                            <NotifCards
+                                key={`${item.id}-${index}`}   // ✅ ensures uniqueness
+                                item={item}
+                                goToPage={goToPage}
+                            />
+                        ))}
                     </ScrollPagination>
-                    {
-                        items.length <= 0 && !loading && <DataEmpty />
-                    }
+
+                    {items.length <= 0 && !loading && <DataEmpty />}
                 </Transition>
                 {loading && <Loader Class={'mt-40'} />}
             </Block>
