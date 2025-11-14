@@ -106,8 +106,8 @@ function Login() {
                     <div className='mt-1 py-2 px-3 bg-stone-800 focus-within:bg-stone-700/50 border-2 border-stone-900 rounded-md transition-colors focus-within:border-stone-500'>
                         <input
                         type="text"
-                        inputMode="numeric"        // tampilkan keyboard angka di mobile
-                        pattern="[0-9]*"           // hanya izinkan angka
+                        inputMode="numeric"        
+                        pattern="[0-9]*" 
                         className='w-full !text-white placeholder:text-stone-400'
                         placeholder='Masukkan employee code'
                         value={credential.employee_code}

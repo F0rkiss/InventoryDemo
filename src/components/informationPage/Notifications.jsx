@@ -17,25 +17,22 @@ const Notifications = () => {
             setLoading(true);
             const response = await api.get('notification');
             const data = response.data.data;
-
+        
             const withReadStatus = data
-            .map((item) => ({
+                .map((item) => ({
                 ...item,
                 isRead: false,
-            }))
-            .sort((a, b) => new Date(a.created_at) - new Date(b.created_at)); // Sort data terlama
-
-            setItems(withReadStatus);
-
-
+                }))
+                .sort((a, b) => new Date(b.created_at) - new Date(a.created_at)); // 🔄 terbaru duluan
+        
             setItems(withReadStatus);
             setNextCursor(response.data.next_cursor);
-        } catch (error) {
+            } catch (error) {
             console.error('Error fetching notifications:', error);
-        } finally {
+            } finally {
             setLoading(false);
-        }
-    };
+            }
+        };
 
     const fetchMoreItems = async () => {
         if (loading || !nextCursor) return;
@@ -51,7 +48,7 @@ const Notifications = () => {
                 ...item,
                 isRead: false,
             }))
-            .sort((a, b) => new Date(a.created_at) - new Date(b.created_at)); // Sort newest first
+            .sort((a, b) => new Date(b.created_at) - new Date(a.created_at)); // Sort newest first
 
             setItems((prevItems) => {
             const existingIds = new Set(prevItems.map((item) => item.id));
@@ -77,7 +74,11 @@ const Notifications = () => {
         const encryptedId = encrypting(notif.id);
         if (notif.jenis_request === 'MR') {
             navigate(`/approvalStepHistory-makeRequest/detail/${encryptedId}`);
-        } else {
+        } else if (notif.jenis_request === 'PR'){
+            navigate(`/approvalStepHistory-purchaseRequest/detail/${encryptedId}`);
+        } else if (notif.jenis_request === 'PO'){
+            navigate(`/approvalStepHistory-purchaseOrder/detail/${encryptedId}`);
+        } else if (notif.jenis_request === 'LPB'){
             navigate(`/approvalStepHistory-lpb/detail/${encryptedId}`);
         }
     };
@@ -131,57 +132,60 @@ const Notifications = () => {
                         }}
                     >
                         {items.length > 0 ? (
-                            items.map((notif) => (
-                                <div
-                                    key={notif.id}
-                                    onClick={() => handleNotificationClick(notif)}
-                                    className={`px-4 py-3 border-b border-gray-100 cursor-pointer ${
-                                        notif.isRead ? 'bg-gray-100' : 'bg-white hover:bg-gray-50'
-                                    }`}
-                                >
-                                    <div className="flex items-start justify-between">
-                                        <div className="flex-1">
-                                            <div className="flex justify-between items-center">
-                                                <h4 className="text-sm font-medium text-gray-800">
-                                                    {/* {notif.username} */}
-                                                    {notif.jenis_request === "MR"
-                                                        ? notif.username
-                                                        : notif.jenis_request === "LPB"
-                                                            ? notif.penerima
-                                                            : notif.penerima}
-                                                    {/* {notif.kode || notif.penerima} */}
-                                                </h4>
-                                                <p className="text-xs text-gray-400 ml-2">
-                                                    {dayjs(notif.created_at).fromNow()}
-                                                </p>
-                                            </div>
-                                            <p className="text-sm text-gray-600 mt-1">{notif.message_approval}</p>
-                                            <div className="flex justify-between items-center mt-1">
-                                                <p className="text-xs text-gray-400">
-                                                    {notif.should_approve ? 'Perlu approval' : 'Tidak perlu approval'}
-                                                </p>
-                                                <span
-                                                className={`px-2 py-1 rounded-full font-semibold text-xs ${
-                                                    notif.jenis_request === 'LPB'
-                                                    ? 'bg-blue-500 bg-opacity-30 text-blue-700'
-                                                    : notif.jenis_request === 'MR'
-                                                    ? 'bg-green-500 bg-opacity-30 text-green-700'
-                                                    : 'bg-gray-400 bg-opacity-30 text-gray-700'
-                                                }`}
-                                                >
-                                                {notif.jenis_request}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            ))
-                        ) : (
-                            <div className="px-4 py-8 text-center text-gray-500">
-                                <i className="bx bx-bell text-3xl mb-2"></i>
-                                <p>No notifications</p>
-                            </div>
-                        )}
+    items.map((notif, index) => (
+        <div
+            key={`${notif.id}-${index}`}   // ✅ ensures uniqueness
+            onClick={() => handleNotificationClick(notif)}
+            className={`px-4 py-3 border-b border-gray-100 cursor-pointer ${
+                notif.isRead ? 'bg-gray-100' : 'bg-white hover:bg-gray-50'
+            }`}
+        >
+            <div className="flex items-start justify-between">
+                <div className="flex-1">
+                    <div className="flex justify-between items-center">
+                        <h4 className="text-sm font-medium text-gray-800">
+                            {["MR", "PR", "PO"].includes(notif.jenis_request)
+                                ? notif.username
+                                : notif.jenis_request === "LPB"
+                                    ? notif.penerima
+                                    : "Not Set Yet"}
+                        </h4>
+                        <p className="text-xs text-gray-400 ml-2">
+                            {dayjs(notif.created_at).fromNow()}
+                        </p>
+                    </div>
+                    <p className="text-sm text-gray-600 mt-1">{notif.message_approval}</p>
+                    <div className="flex justify-between items-center mt-1">
+                        <p className="text-xs text-gray-400">
+                            {notif.should_approve ? 'Perlu approval' : 'Tidak perlu approval'}
+                        </p>
+                        <span
+                            className={`px-2 py-1 rounded-full font-semibold text-xs ${
+                                notif.jenis_request === 'LPB'
+                                    ? 'bg-blue-500 bg-opacity-30 text-blue-700'
+                                    : notif.jenis_request === 'MR'
+                                    ? 'bg-green-500 bg-opacity-30 text-green-700'
+                                    : notif.jenis_request === 'PR'
+                                    ? 'bg-yellow-500 bg-opacity-30 text-yellow-700'
+                                    : notif.jenis_request === 'PO'
+                                    ? 'bg-purple-500 bg-opacity-30 text-purple-700'
+                                    : 'bg-gray-400 bg-opacity-30 text-gray-700'
+                            }`}
+                        >
+                            {notif.jenis_request}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    ))
+) : (
+    <div className="px-4 py-8 text-center text-gray-500">
+        <i className="bx bx-bell text-3xl mb-2"></i>
+        <p>No notifications</p>
+    </div>
+)}
+
 
                         {loading && (
                             <div className="text-center py-2 text-gray-500 text-sm">

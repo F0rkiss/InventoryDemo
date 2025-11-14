@@ -1,9 +1,7 @@
 import React, { forwardRef } from 'react'
 import dayjs from 'dayjs'
 import { useNavigate } from 'react-router-dom'
-import { encrypting } from '../../../helper/EncryptHelper'
 import relativeTime from 'dayjs/plugin/relativeTime'
-import ApprovalActions from '../ApprovalActions'
 
 dayjs.extend(relativeTime)
 
@@ -15,16 +13,17 @@ const NotifCards = forwardRef(({ item, goToPage }, ref) => {
             <div className="p-4 flex flex-col border-b w-full">
                 <div className="flex justify-between items-center mb-1">
                     <h4 className="text-sm font-medium text-gray-800 truncate">
-                    {item.jenis_request === "MR"
-                        ? item.username
-                        : item.jenis_request === "LPB"
-                            ? item.penerima
-                            : item.penerima}
+                        {["MR", "PR", "PO"].includes(item.jenis_request)
+                            ? item.username
+                            : item.jenis_request === "LPB"
+                                ? item.penerima
+                                : "Not Set Yet"}
                     </h4>
                     <p className="text-xs text-gray-400 ml-2 whitespace-nowrap">
                         {dayjs(item.created_at).format('DD-MM-YYYY, [pukul] HH:mm')}
                     </p>
                 </div>
+
                 <p className="text-sm text-gray-600 mb-1">{item.message_approval}</p>
 
                 <div className="flex justify-between items-center">
@@ -33,15 +32,19 @@ const NotifCards = forwardRef(({ item, goToPage }, ref) => {
                             {item.should_approve ? 'Perlu approval' : 'Tidak perlu approval'}
                         </p>
                         <span
-                        className={`px-2 py-1 rounded-full font-semibold ${
-                            item.jenis_request === 'LPB'
-                            ? 'bg-blue-500 bg-opacity-30 text-blue-700'
-                            : item.jenis_request === 'MR'
-                            ? 'bg-green-500 bg-opacity-30 text-green-700'
-                            : 'bg-gray-400 bg-opacity-30 text-gray-700'
-                        }`}
+                            className={`px-2 py-1 rounded-full font-semibold text-xs ${
+                                item.jenis_request === 'LPB'
+                                    ? 'bg-blue-500 bg-opacity-30 text-blue-700'
+                                    : item.jenis_request === 'MR'
+                                    ? 'bg-green-500 bg-opacity-30 text-green-700'
+                                    : item.jenis_request === 'PR'
+                                    ? 'bg-yellow-500 bg-opacity-30 text-yellow-700'
+                                    : item.jenis_request === 'PO'
+                                    ? 'bg-purple-500 bg-opacity-30 text-purple-700'
+                                    : 'bg-gray-400 bg-opacity-30 text-gray-700'
+                            }`}
                         >
-                        {item.jenis_request}
+                            {item.jenis_request}
                         </span>
                     </div>
                     <p className="text-xs text-gray-400">
@@ -49,10 +52,10 @@ const NotifCards = forwardRef(({ item, goToPage }, ref) => {
                     </p>
                 </div>
             </div>
-            
-            
+
             <div className='flex justify-end px-4 py-2'>
-                <button className='text-cyan-500 font-semibold text-sm'
+                <button
+                    className='text-cyan-500 font-semibold text-sm'
                     onClick={() => goToPage(item)}
                 >
                     Lihat Detail

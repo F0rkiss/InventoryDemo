@@ -1,20 +1,19 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { Block } from 'framework7-react';
 import { useNavigate, useParams } from 'react-router-dom';
-
 import api from '../../api/api';
 import Layout from '../component/Layout';
 import Back from '../component/Back';
 import Transition from '../component/Transition';
 import DateFormat from '../../helper/DateFormatHelper';
-import InfoRow from '../component/infoRow';
 import { DecryptID } from '../../helper/EncryptHelper';
 import { useAuth } from '../../auth/AuthContext';
 import ImagePreviewModal from '../component/modal/ImagePreviewModal';
 import Swal from 'sweetalert2';
-import { isMobileSafari } from '../../helper/DeviceHelper';
+import InfoRow from '../component/infoRow';
+import ApprovalActions from '../component/ApprovalActions';
 
-function DetailPurchaseRequest() {
+function ApprovalPR() {
     const [item, setItem] = useState({});
     const [detailPR, setDetailPR] = useState([]);
     const [prDetailQty, setPrDetailQty] = useState([]);
@@ -23,10 +22,10 @@ function DetailPurchaseRequest() {
     const [contentVisible, setContentVisible] = useState(false);
     const [selectedImageUrl, setSelectedImageUrl] = useState('');
     const [isPreviewOpen, setIsPreviewOpen] = useState(false);
-    const [isPreviewLoading, setIsPreviewLoading] = useState(false);
+    const [actionLoading, setActionLoading] = useState(false);
+    const [message, setMessage] = useState('');
 
     const { id } = useParams();
-    const { role } = useAuth();
     const navigate = useNavigate();
     const apiUrl = import.meta.env.VITE_URL;
     const mainMR = item.make_request || {};
@@ -56,28 +55,51 @@ function DetailPurchaseRequest() {
         }
     };
 
-    const cancelOrder = async () => {
+    const handleApprove = async (itemId, note = '') => {
+        const result = await Swal.fire({
+            title: 'Apakah Anda yakin ingin menyetujui?',
+            text: 'Tindakan ini akan menyetujui request.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Ya, Setujui',
+            cancelButtonText: 'Batal',
+        });
+        if (!result.isConfirmed) return;
+
+        setActionLoading(true);
+        setMessage('');
         try {
-            const result = await Swal.fire({
-                title: `Apakah Anda Yakin Ingin Menghapus Order Ini?`,
-                icon: 'question',
-                showDenyButton: true,
-                confirmButtonText: 'Yes',
-                denyButtonText: 'No',
+            await api.post(`/purchaseRequest-approval/${itemId}`, {
+                status: 'approved',
+                note: note || '',
+                tanggal: getToday(),
             });
-            if (result.isConfirmed) {
-                const response = await api.delete(`/purchaseRequest-delete/${decryptedId}`);
-                if (response?.data?.status === 'error' || response?.data?.message?.toLowerCase().includes('tidak ditemukan')) {
-                    Swal.fire({ icon: 'error', title: 'Gagal Menghapus', text: response.data.message || 'Data tidak ditemukan' });
-                } else {
-                    Swal.fire('Order Dihapus!', '', 'success');
-                    navigate('/purchase-request/list-purchase-request');
-                }
-            }
-        } catch (error) {
-            Swal.fire({ icon:'error', title:'Tidak Dapat Menghapus Order', text:'Ada Kesalahan Dalam Sistem' });
+            Swal.fire({ title: 'Berhasil di Approve!', icon: 'success', timer: 2000, showConfirmButton: false });
+            setTimeout(() => navigate('/notifications'), 1200);
+        } catch {
+            Swal.fire({ title: 'Tidak berhasil di Approve!', icon: 'error', timer: 2000, showConfirmButton: false });
+        } finally {
+            setActionLoading(false);
         }
-    }
+    };
+
+    const handleDecline = async (itemId, note = '') => {
+        setActionLoading(true);
+        setMessage('');
+        try {
+            await api.post(`/purchaseRequest-approval/${itemId}`, {
+                status: 'reject',
+                note: note || '',
+                tanggal: getToday(),
+            });
+            Swal.fire({ title: 'Berhasil di Reject!', icon: 'success', timer: 2000, showConfirmButton: false });
+            setTimeout(() => navigate('/notifications'), 1200);
+        } catch {
+            Swal.fire({ title: 'Tidak berhasil di Tolak!', icon: 'error', timer: 2000, showConfirmButton: false });
+        } finally {
+            setActionLoading(false);
+        }
+    };
 
     const qtyMap = useMemo(() => {
         const map = new Map();
@@ -103,98 +125,18 @@ function DetailPurchaseRequest() {
         setIsPreviewOpen(true);
     };
 
-    const handlePreview = async () => {
-        if (isPreviewLoading) return;
-        setIsPreviewLoading(true);
-        try {
-            const response = await api.get(`/pdf/preview_pr/${decryptedId}`, {
-                responseType: 'blob',
-            });
-
-            if (response.data.type === 'application/pdf') {
-                const file = new Blob([response.data], { type: 'application/pdf' });
-                const fileURL = URL.createObjectURL(file);
-                
-                if (isMobileSafari()) {
-                    window.location.href = fileURL;
-                } else {
-                    const newWindow = window.open(fileURL, '_blank');
-
-                    if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
-                        Swal.fire({
-                            icon: 'info',
-                            title: 'Preview Gagal Dibuka',
-                            text: 'Browser Anda mungkin memblokir tab baru. Memulai unduhan PDF...',
-                            timer: 2500,
-                            showConfirmButton: false
-                        });
-
-                        const link = document.createElement('a');
-                        link.href = fileURL;
-                        const fileName = item.kode ? `${item.kode}.pdf` : 'preview-pr.pdf';
-                        link.setAttribute('download', fileName);
-                        document.body.appendChild(link);
-                        link.click();
-                        
-                        document.body.removeChild(link);
-                        URL.revokeObjectURL(fileURL);
-
-                    } else {
-                        setTimeout(() => {
-                            URL.revokeObjectURL(fileURL);
-                        }, 1000 * 60); 
-                    }
-                }
-
-            } else {
-                const errText = await response.data.text();
-                let errJson = {};
-                try {
-                    errJson = JSON.parse(errText);
-                } catch(e) {
-                    errJson = { message: 'Format respons tidak valid.' }
-                }
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Gagal Membuat Preview',
-                    text: errJson.message || 'Format respons tidak valid.'
-                });
-            }
-        } catch (error) {
-            console.error("Error generating preview: ", error);
-            Swal.fire({
-                icon: 'error',
-                title: 'Gagal Membuat Preview',
-                text: error.message || 'Terjadi kesalahan pada server.'
-            });
-        } finally {
-            setIsPreviewLoading(false);
-        }
-    };
+    const getToday = () => new Date().toISOString().split('T')[0];
 
     return (
-        <Layout title="Detail Purchase Request">
+        <Layout title="Detail Penerimaan Barang">
             <Block>
-                <div className="px-2 lg:px-4">
+                <div className="px-4">
                     <Transition contentVisible={contentVisible}>
-                        <Back goHome={() => navigate('/purchase-request/list-purchase-request')} />
+                    <Back goHome={() => navigate('/purchase-request/list-purchase-request')} />
                         <div className="flex items-center justify-between my-4">
-                            <p className='lg:text-3xl text-2xl font-semibold capitalize'>Detail Purchase Request</p>
+                            <p className='lg:text-3xl text-2xl font-semibold capitalize'>Approval Purchase Request</p>
                         </div>
-
                         <div className="flex justify-between items-center">
-                        <button
-                            type="button"
-                            onClick={handlePreview}
-                            disabled={isPreviewLoading}
-                            className="flex items-center gap-2 py-2 px-3 w-fit rounded-md border border-slate-300 font-medium text-sm bg-white text-gray-700 hover:bg-gray-100 transition-colors duration-200 disabled:opacity-50"
-                            title="Preview PDF"
-                        >
-                            <i className={`bx ${isPreviewLoading ? 'bx-loader-alt bx-spin' : 'bx-file'}`}></i>
-                            <span className="sm:inline">
-                                {isPreviewLoading ? 'Loading...' : 'Preview'}
-                            </span>
-                        </button>
 
                         <p className={`flex py-1 px-2 lg:py-2 lg:px-3 items-center text-xs lg:text-sm text-center gap-1 rounded-md font-medium ${!item.can_be_deleted ? 'text-green-700 bg-green-100 border border-green-500' : 'text-amber-700 bg-amber-100 border border-amber-500'}`}>
                             {!item.can_be_deleted ? 'Sudah Masuk Purchase Order' : 'Belum Masuk Purchase Order'}
@@ -212,11 +154,6 @@ function DetailPurchaseRequest() {
                                     <InfoRow label="Employee Name" value={item.user?.EmpName} />
                                     <InfoRow label="Employee Code" value={item.user?.EmpCode} />
                                     <InfoRow label="Employee Email" value={item.user?.email} />
-                                    <InfoRow label="Status Purchase Order" value={
-                                        <p className={`flex py-1 px-2 lg:py-2 lg:px-3 items-center text-xs lg:text-sm text-center gap-1 rounded-md font-medium ${!item.can_be_deleted ? 'text-green-700 bg-green-100 border border-green-500' : 'text-amber-700 bg-amber-100 border border-amber-500'}`}>
-                                            {!item.can_be_deleted ? 'Sudah Masuk Purchase Order' : 'Belum Masuk Purchase Order'}
-                                        </p>
-                                    }/>
                                 </div>
                             </div>
 
@@ -291,34 +228,26 @@ function DetailPurchaseRequest() {
                                     </table>
                                 </div>
                             )}
-                            {item.can_be_deleted ? (
-                                <>
-                                    <div className='flex justify-end mt-5'>
-                                    <button
-                                        onClick={cancelOrder}
-                                        className='delete-button transition-colors duration-200 max-w-xs py-2 rounded-md text-white font-medium'
-                                    >
-                                        Delete Order
-                                    </button>
-                                    </div>
-
-                                    {/* <button
-                                        className='px-3 py-1.5 update-button text-sm sm:text-base'
-                                        onClick={() => goToPR(item.id)}
-                                    >
-                                        Update
-                                    </button> */}
-                                </>
-                                ) : (
-                                <></>
-                            )}
                         </div>
+
+                        <ApprovalActions
+                            itemId={decryptedId}
+                            onApprove={handleApprove}
+                            onDecline={handleDecline}
+                            approveText="Setujui Request"
+                            declineText="Tolak Request"
+                            showReasonInput
+                            reasonRequired
+                            className="max-w-2xl mx-auto mt-4"
+                            disabled={actionLoading}
+                        />
                     </Transition>
                 </div>
             </Block>
+
             <ImagePreviewModal isOpen={isPreviewOpen} onClose={handleClosePreview} imageUrl={selectedImageUrl} />
         </Layout>
     );
 }
 
-export default DetailPurchaseRequest;
+export default ApprovalPR;
