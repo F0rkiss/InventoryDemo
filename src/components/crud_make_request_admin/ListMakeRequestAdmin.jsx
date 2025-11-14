@@ -51,11 +51,11 @@ import FilterStatusToggle from '../component/FilterStatusToggle';
       } else {
           if (filterStatus === 'completed') {
             // For filtering without a search
-            url = 'inventMakeRequest-toggle';
+            url = 'inventMakeRequest-admin-toggle';
             params.is_full_approval = 1
           } else if (filterStatus === 'not_completed') {
             // Default URL for listing all items
-            url = 'inventMakeRequest-toggle';
+            url = 'inventMakeRequest-admin-toggle';
             params.is_full_approval = 0
           }
       }

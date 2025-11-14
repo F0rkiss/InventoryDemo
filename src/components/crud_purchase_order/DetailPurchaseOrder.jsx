@@ -32,19 +32,9 @@ function DetailPurchaseOrder() {
   const [selectedImageUrl, setSelectedImageUrl] = useState('');
 
   const [isPreviewLoading, setIsPreviewLoading] = useState(false);
-
-  // --- DIHAPUS ---
-  // const [isPdfPreviewOpen, setIsPdfPreviewOpen] = useState(false);
-  // const [selectedPdfUrl, setSelectedPdfUrl] = useState('');
   
-  // const handleClosePdfPreview = () => {
-  //   setIsPdfPreviewOpen(false);
-  //   // Hapus blob URL dari memori saat modal ditutup
-  //   if (selectedPdfUrl) {
-  //     URL.revokeObjectURL(selectedPdfUrl);
-  //   }
-  //   setSelectedPdfUrl('');
-  // };
+  // Ambil data lampiran (sesuai struktur JSON sebelumnya)
+  const lampiran = item.lampiran || [];
 
   useEffect(() => {
     const decryptedId = DecryptID(id)
@@ -85,6 +75,7 @@ function DetailPurchaseOrder() {
   };
 
   const handlePreview = async () => {
+    // ... (fungsi handlePreview tetap sama)
     if (isPreviewLoading) return;
     setIsPreviewLoading(true);
     try {
@@ -96,16 +87,10 @@ function DetailPurchaseOrder() {
           const file = new Blob([response.data], { type: 'application/pdf' });
           const fileURL = URL.createObjectURL(file);
           
-          // --- LOGIKA BARU UNTUK iOS ---
           if (isMobileSafari()) {
-            // Untuk iOS Safari, buka di tab yang sama.
-            // Ini adalah satu-satunya cara yang andal untuk blob URL.
             window.location.href = fileURL;
-            // Kita tidak bisa revoke URL di sini karena navigasi baru saja dimulai
           } else {
-            // Logika lama untuk browser lain (Chrome, Firefox, PC)
             const newWindow = window.open(fileURL, '_blank');
-
             if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
                 Swal.fire({
                     icon: 'info',
@@ -114,33 +99,23 @@ function DetailPurchaseOrder() {
                     timer: 2500,
                     showConfirmButton: false
                 });
-
                 const link = document.createElement('a');
                 link.href = fileURL;
                 const fileName = item.kode ? `${item.kode}.pdf` : 'preview-po.pdf';
                 link.setAttribute('download', fileName);
                 document.body.appendChild(link);
                 link.click();
-                
                 document.body.removeChild(link);
                 URL.revokeObjectURL(fileURL);
-
             } else {
-                setTimeout(() => {
-                    URL.revokeObjectURL(fileURL);
-                }, 1000 * 60); 
+                setTimeout(() => { URL.revokeObjectURL(fileURL); }, 1000 * 60); 
             }
           }
-          // --- AKHIR LOGIKA BARU ---
-
       } else {
           const errText = await response.data.text();
           let errJson = {};
-          try {
-            errJson = JSON.parse(errText);
-          } catch(e) {
-            errJson = { message: 'Format respons tidak valid.' }
-          }
+          try { errJson = JSON.parse(errText); } 
+          catch(e) { errJson = { message: 'Format respons tidak valid.' } }
           Swal.fire({
               icon: 'error',
               title: 'Gagal Membuat Preview',
@@ -160,6 +135,7 @@ function DetailPurchaseOrder() {
   };
 
   const cancelOrder = async () => {
+    // ... (fungsi cancelOrder tetap sama)
     try {
       const result = await Swal.fire({
         title: `Apakah Anda Yakin Ingin Menghapus Order Ini?`,
@@ -174,10 +150,7 @@ function DetailPurchaseOrder() {
         },
       });
       if (result.isConfirmed) {
-        // console.log('Request cancelled:', id);
         const response = await api.delete(`/purchaseOrder-delete/${decryptedId}`);
-        
-        // Cek jika respons mengandung pesan error walau status 200
         if (response?.data?.status === 'error' || response?.data?.message?.toLowerCase().includes('tidak ditemukan')) {
           Swal.fire({
             icon: 'error',
@@ -202,15 +175,11 @@ function DetailPurchaseOrder() {
     <Layout title={'Detail Purchase Order'}>
       <Block>
         <div className="xs:px-0 md:px-4">
-          {/* Main Info & Detail */}
             <Transition contentVisible={contentVisible}>
             <Back goHome={() => navigate('/purchase-order/list-purchase-order')} />
             <div className="my-4">
                 <p className='lg:text-3xl text-2xl font-semibold capitalize'>Detail Purchase Order</p>
-                
-                {/* Wrapper untuk status dan tombol preview */}
                 <div className="flex items-center justify-between sm: gap-3 pt-4"> 
-                  {/* Tombol Preview Baru */}
                   <button
                       type="button"
                       onClick={handlePreview}
@@ -218,7 +187,6 @@ function DetailPurchaseOrder() {
                       className="flex items-center gap-2 py-2 px-3 w-fit rounded-md border border-slate-300 font-medium text-sm bg-white text-gray-700 hover:bg-gray-100 transition-colors duration-200 disabled:opacity-50"
                       title="Preview PDF"
                   >
-                      {/* Menggunakan icon boxicons */}
                       <i className={`bx ${isPreviewLoading ? 'bx-loader-alt bx-spin' : 'bx-file'}`}></i>
                       <span className="sm:inline">
                           {isPreviewLoading ? 'Loading...' : 'Preview'}
@@ -226,41 +194,16 @@ function DetailPurchaseOrder() {
                   </button>
                   <p className={`flex py-2 px-3 items-center lg:text-[14px] xs:text-xs text-center gap-1 rounded-md font-medium ${item.is_completed ? 'text-green-700 bg-green-100 border border-green-500' : 'text-amber-700 bg-amber-100 border border-amber-500'}`}>
                   {item.is_completed ? <><i className='bx bxs-check-circle lg/md:text-sm xs:text-lg pe-1'></i>Selesai</> : <><i className='bx bxs-time lg/md:text-sm xs:text-lg pe-1'></i>Belum selesai</> }</p>
-
                 </div>
-                {/* --- Akhir Wrapper --- */}
             </div>
               <>
               <div className="flex flex-col lg:flex-row gap-4 mt-3">
                 <div className="bg-white border rounded-md p-6 flex-1 min-h-[200px]">
                   <p className="font-semibold text-gray-400 mb-2 text-xl">Main Information</p>
                   <p className="text-xl font-bold capitalize">{item.kode}</p>
-                  {/* CATATAN: Total harga ini (item.harga) diasumsikan dalam IDR (default).
-                    Jika total harga ini seharusnya mencerminkan mata uang lain,
-                    logikanya perlu diubah, karena PO ini bisa memiliki banyak mata uang.
-                    Untuk saat ini, saya biarkan default ke IDR.
-                  */}
-                  {/* { item.is_ppn !== 0 ? (
-                      <div className="flex gap-3 items-center mb-4">
-                        <p className="text-lg font-semibold">
-                          {PriceFormat(item.harga_after_ppn)}
-                        </p>
-                        <p className="text-md text-gray-500">
-                          {PriceFormat(item.harga)}
-                        </p>
-                        <p className="text-amber-600 font-medium">PPN {item.nilai_ppn}%</p>
-                      </div>
-                    ) : 
-                    (
-                      <p className="text-lg font-medium mb-4">
-                          {PriceFormat(item.harga)}
-                      </p>
-                    )
-                  } */}
+                  
+                  {/* ... (Info Harga, Pembayaran, Keterangan, Tanggal) ... */}
                   <div className="text-right space-y-3 pb-2">
-                    <div className="flex justify-between">
-                        {/* <p className='text-gray-500'>Supplier</p><p className='font-medium'>{item.suplier}</p> */}
-                    </div>
                     <div className="flex justify-between">
                         <p className='text-gray-500'>Pembayaran</p><p className='font-medium'>{item.payment?.cara_pembayaran}</p>
                     </div>
@@ -273,24 +216,57 @@ function DetailPurchaseOrder() {
                     <div className="flex justify-between">
                         <p className='text-gray-500'>Tgl. Penyerahan</p><p className='font-medium'>{DateFormat(item.tanggal_penyerahan)}</p>
                     </div>
-                </div>
-                <div className="text-right space-y-3 border-t border-gray-300 pt-2">
-                  <div className="flex justify-between">
-                      <p className='text-gray-500'>Supplier</p><p className='font-medium'>{suplier?.nama_perusahaan}</p>
                   </div>
-                  <div className="flex justify-between">
-                      <p className='text-gray-500'>Alamat</p><p className='font-medium'>{suplier?.alamat}</p>
-                  </div>
-                  <div className="flex space-x-10 justify-between">
-                      <p className='text-gray-500'>Phone</p><p className='font-medium'>{suplier?.phone}</p>
-                  </div>
-                  <div className="flex space-x-5 justify-between">
-                      <p className='text-gray-500'>PIC</p><p className='font-medium'>{suplier?.PIC || '-'}</p>
-                  </div>
-                </div>
-              </div>
 
+                  {/* Info Supplier */}
+                  <div className="text-right space-y-3 border-t border-gray-300 pt-2">
+                    <div className="flex justify-between">
+                        <p className='text-gray-500'>Supplier</p><p className='font-medium'>{suplier?.nama_perusahaan}</p>
+                    </div>
+                    <div className="flex justify-between">
+                        <p className='text-gray-500'>Alamat</p><p className='font-medium'>{suplier?.alamat}</p>
+                    </div>
+                    <div className="flex space-x-10 justify-between">
+                        <p className='text-gray-500'>Phone</p><p className='font-medium'>{suplier?.phone}</p>
+                    </div>
+                    <div className="flex space-x-5 justify-between">
+                        <p className='text-gray-500'>PIC</p><p className='font-medium'>{suplier?.PIC || '-'}</p>
+                    </div>
+                  </div>
+
+                  {/* === BAGIAN LAMPIRAN BARU === */}
+                  {lampiran.length > 0 && (
+                    <div className="border-t border-gray-300 mt-4 pt-4">
+                      <p className='text-gray-500 mb-3 font-medium'>Lampiran</p>
+                      <div className="flex flex-wrap gap-3">
+                        {lampiran.map((fileUrl, index) => (
+                          <div 
+                            key={index} 
+                            className="relative w-20 h-20 rounded-md overflow-hidden border border-gray-200 group cursor-pointer"
+                            onClick={() => handleImageClick(`${apiUrl}${fileUrl}`)}
+                          >
+                            <img
+                              src={`${apiUrl}${fileUrl}`}
+                              alt={`Lampiran ${index + 1}`}
+                              className="w-full h-full object-cover"
+                              onError={(e) => { e.target.onerror = null; e.garget.src = 'https://placehold.co/100?text=Err'; }}
+                            />
+                            {/* Overlay saat hover */}
+                            <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all flex items-center justify-center">
+                              <i className='bx bx-search-alt-2 text-white text-2xl opacity-0 group-hover:opacity-100 transition-opacity'></i>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {/* === AKHIR BAGIAN LAMPIRAN === */}
+
+                </div>
+
+                {/* Card Detail PO */}
                 <div className="bg-white border rounded-md p-6 flex-1 min-h-[200px]">
+                  {/* ... (Isi card Detail PO tetap sama) ... */}
                   <p className="font-semibold text-gray-400 mb-4 text-xl">Detail</p>
                   { detailPO.length === 0 ? (
                     <p className="text-gray-400 italic">No detail data</p>
@@ -321,12 +297,7 @@ function DetailPurchaseOrder() {
                                 </div>
                               </td>
                               <td className="px-4 py-4 rounded-r-md">{item.requested_qty}</td>
-                              
-                              {/* --- PERBAIKAN DI SINI --- */}
-                              {/* Meneruskan kode mata uang (item.mata_uang?.kode) ke PriceFormat */}
                               <td className="px-4 py-4 rounded-r-md">{PriceFormat(item.harga_sub_total, item.mataUang?.kode)}</td>
-                              {/* --- AKHIR PERBAIKAN --- */}
-
                             </tr>
                           ))}
                         </tbody>
@@ -421,12 +392,13 @@ function DetailPurchaseOrder() {
                     </div>
                   </div>
                 </div> }
-                {
-                  item.can_be_deleted &&
-                  <div className='flex lg:justify-end justify-center mt-5'>
-                    <button onClick={() => cancelOrder()} className='bg-red-500 hover:bg-red-600 transition-color duration-200 max-w-xs py-2 rounded-lg text-white font-medium'>Delete Purchase Order</button>
-                  </div>
-                }
+
+              {
+                item.can_be_deleted &&
+                <div className='flex lg:justify-end justify-center mt-5'>
+                  <button onClick={() => cancelOrder()} className='bg-red-500 hover:bg-red-600 transition-color duration-200 max-w-xs py-2 rounded-lg text-white font-medium'>Delete Purchase Order</button>
+                </div>
+              }
               </>
           </Transition>
         </div>

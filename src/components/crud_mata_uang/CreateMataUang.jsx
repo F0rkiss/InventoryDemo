@@ -80,11 +80,11 @@ function CreateMataUang() {
   return (
     <Layout title={'Create Mata Uang'}>
       <Block>
-        <div className="px-4">
+        <div className="xs:px-0 md:px-4">
           <Back goHome={() => navigate('/mata-uang/list-mata-uang')} />
           <p className="lg:text-3xl text-2xl font-semibold capitalize my-4">Create Mata Uang</p>
           <Transition contentVisible={contentVisible}>
-            <div className="p-8 bg-white shadow-sm rounded-lg border">
+            <div className="p-8 bg-white shadow-xl shadow-gray-200 rounded-lg border">
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div className="mb-5 space-y-2">
                   <label className="font-semibold">Kode</label>
@@ -96,7 +96,7 @@ function CreateMataUang() {
                       maxLength={50}
                       onChange={(e) => setItems({ ...items, kode: e.target.value })}
                       placeholder="Kode mata uang"
-                      className="w-full p-2 placeholder:text-gray-400 placeholder:font-light capitalize"
+                      className="w-full p-2 placeholder:text-gray-400 placeholder:font-light"
                       required
                     />
                   </div>

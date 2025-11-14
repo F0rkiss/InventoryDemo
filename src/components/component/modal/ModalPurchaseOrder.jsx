@@ -50,7 +50,13 @@ const ModalPurchaseOrder = ({ onClose, onSave, open, initialData, apiUrl, prItem
                     harga: initialData.harga_sub_total || initialData.harga_satuan,
                     // --- PERUBAHAN: Muat objek mata uang langsung dari initialData ---
                     // (Asumsi `onSave` menyimpan keseluruhan objek)
-                    selectedMataUang: initialData.selectedMataUang || null
+                    selectedMataUang:  
+                        initialData.mataUang ? {
+                                ...initialData.mataUang,
+                                value: initialData.mataUang.id,
+                                label: initialData.mataUang.kode
+                            }
+                            : null
                 });
                 setSearchTerm(existingBarang.name);
             } else {
@@ -141,6 +147,8 @@ const ModalPurchaseOrder = ({ onClose, onSave, open, initialData, apiUrl, prItem
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
+                        console.log(modalData.selectedMataUang)
+
             // --- PERUBAHAN: Validasi mata uang ---
             if (!modalData.selectedBarang || !modalData.qty || !modalData.harga || !modalData.selectedMataUang) {
                 Swal.fire({
@@ -172,7 +180,10 @@ const ModalPurchaseOrder = ({ onClose, onSave, open, initialData, apiUrl, prItem
                 qty: qty,
                 harga_satuan: harga,
                 harga_sub_total: harga,
-                selectedMataUang: modalData.selectedMataUang // --- PERUBAHAN ---
+                selectedMataUang: {
+                    id: modalData.selectedMataUang.id,
+                    kode: modalData.selectedMataUang.kode
+                }
             });
 
             // Reset state and close modal
@@ -190,7 +201,7 @@ const ModalPurchaseOrder = ({ onClose, onSave, open, initialData, apiUrl, prItem
     return (
         <MiModal
             onClose={onClose}
-            contentClass="maxw-2xl w-full min-h-[64vh] overflow-y-auto"
+            contentClass="max-w-2xl w-full min-h-[64vh] overflow-y-auto"
             closeModal={false}
         >
             <div className='py-16 px-6'>
@@ -319,7 +330,7 @@ const ModalPurchaseOrder = ({ onClose, onSave, open, initialData, apiUrl, prItem
                                 <SelectPaginate
                                     source={'mataUang'}
                                     selectValue={modalData.selectedMataUang}
-                                    selectName="Mata Uang"
+                                    selectName="mata uang"
                                     itemLabel={['kode']}
                                     handleSelectChange={(value) => 
                                         setModalData(prev => ({ ...prev, selectedMataUang: value }))

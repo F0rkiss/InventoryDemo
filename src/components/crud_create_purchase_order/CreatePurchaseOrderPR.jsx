@@ -12,7 +12,9 @@ import Transition from '../component/Transition'
 import SelectPaginate from '../component/SelectPaginate'
 import PriceFormat from '../../helper/PriceFormatHelper'
 import ImagePreviewModal from '../component/modal/ImagePreviewModal'
+import CustomCheckbox from '../component/CustomCheckBox' // Import CustomCheckbox component
 import DateFormat from '../../helper/DateFormatHelper' // Import DateFormat helper
+import MultiUpload from '../component/MultiUpload'
 
 function CreatePurchaseOrderPR() {
     // State for the creation form
@@ -25,6 +27,7 @@ function CreatePurchaseOrderPR() {
         cara_pembayaran: null,
         tanggal_penyerahan: '',
         is_ppn: 0,
+        lampiran: []
     }) 
     const [details, setDetails] = useState([]); // Details for the new PO being created
 
@@ -81,6 +84,22 @@ function CreatePurchaseOrderPR() {
          }
     };
 
+    const handleUploadLampiran = (e) => {
+        const files = Array.from(e.target.files);
+        // Gabungkan file lama dengan file baru
+        setItems(prev => ({
+            ...prev,
+            lampiran: [...prev.lampiran, ...files]
+        }));
+    };
+
+    const handleDeleteLampiran = (index) => {
+        setItems(prev => ({
+            ...prev,
+            lampiran: prev.lampiran.filter((_, i) => i !== index)
+        }));
+    };
+
     // Fungsi untuk validasi input
     const validate = () => {
         const newErrors = {};
@@ -116,11 +135,19 @@ function CreatePurchaseOrderPR() {
             }
             fd.append('is_ppn', items.is_ppn);
 
+            // 4. APPEND LAMPIRAN KE FORMDATA
+            if (items.lampiran && items.lampiran.length > 0) {
+                items.lampiran.forEach((file) => {
+                    // Menggunakan 'lampiran[]' agar backend membacanya sebagai array
+                    fd.append('lampiran[]', file);
+                });
+            }
+
             details.forEach(d => {
                 fd.append('invent_barangs_id[]', d.selectedBarang?.id);
                 fd.append('qty[]', d.qty);
                 fd.append('harga_sub_total[]', d.harga_sub_total);
-                fd.append('invent_mata_uang_id[]', d.selectedMataUang?.id); // Asumsi .id
+                fd.append('invent_mata_uang_id[]', d.selectedMataUang?.id); 
             });
 
             const res = await api.post(`purchaseOrder-create/${decryptedId}`, fd, {
@@ -189,6 +216,7 @@ function CreatePurchaseOrderPR() {
                 cara_pembayaran: null,
                 tanggal_penyerahan: '',
                 is_ppn: 0,
+                lampiran: []
             });
             setDetails([]);
         }
@@ -331,16 +359,12 @@ function CreatePurchaseOrderPR() {
                                 <input 
                                     type={items.tanggal ? 'date' : 'text'}
                                     onFocus={(e) => e.target.type = 'date'}
-                                    onBlur={(e) => {
-                                        if (!e.target.value) {
-                                            e.target.type = 'text';
-                                        }
-                                    }}
+                                    onBlur={(e) => { if (!e.target.value) e.target.type = 'text'; }}
                                     name="tanggal" 
                                     value={items.tanggal} 
                                     onChange={handleChange}
                                     className="w-full p-2 placeholder:text-gray-400"
-                                    placeholder='Pilih Tanggal'
+                                    placeholder='Pilih tanggal pembuatan'
                                 />
                                 </div>
                             </div>
@@ -351,7 +375,7 @@ function CreatePurchaseOrderPR() {
                                 </div>
                                 <div className={`bg-white rounded-md mt-2 ${errors.supplier ? 'border-red-500' : 'border-gray-300'}`}>
                                 <SelectPaginate 
-                                    selectName="Supplier"
+                                    selectName="supplier"
                                     source={'suplier'} 
                                     selectValue={items.supplier} 
                                     itemLabel={['nama_perusahaan']}
@@ -371,19 +395,17 @@ function CreatePurchaseOrderPR() {
                                 <input 
                                     type={items.tanggal_penyerahan ? 'date' : 'text'}
                                     onFocus={(e) => e.target.type = 'date'}
-                                    onBlur={(e) => {
-                                        if (!e.target.value) {
-                                            e.target.type = 'text';
-                                        }
-                                    }}
+                                    onBlur={(e) => { if (!e.target.value) e.target.type = 'text'; }}
                                     name="tanggal_penyerahan" 
                                     value={items.tanggal_penyerahan} 
                                     onChange={handleChange}
                                     className="w-full p-2 placeholder:text-gray-400"
-                                    placeholder='Pilih Tanggal Penyerahan'
+                                    placeholder='Pilih tanggal penyerahan'
                                 />
                                 </div>
                             </div>
+                            
+                            {/* FIELD KETERANGAN */}
                             <div className="mb-4">
                                 <div className="flex justify-between items-center">
                                     <label className='font-semibold'>Keterangan</label>
@@ -396,11 +418,23 @@ function CreatePurchaseOrderPR() {
                                     onChange={handleChange}
                                     className="w-full min-h-fit p-2 placeholder:text-gray-400"
                                     maxLength={225}
-                                    placeholder='Keterangan'
+                                    placeholder='Berikan keterangan...'
                                     rows="3"
                                 />
                                 </div>
                             </div>
+
+                            <div className="mb-4">
+                                <label className='font-semibold mb-2'>Lampiran Gambar</label>
+                                <MultiUpload
+                                    items={{ image: items.lampiran }}
+                                    handleUpload={handleUploadLampiran}
+                                    handleDelete={handleDeleteLampiran}
+                                    onImageClick={handleImageClick}
+                                />
+                                <p className="text-xs text-gray-400 mt-1">Format: .jpg, .png</p>
+                            </div>
+
                             <div className="grid md:grid-cols-2 md:gap-6">
                                 <div className="mb-4">
                                     <div className="flex justify-between items-center">
@@ -410,46 +444,34 @@ function CreatePurchaseOrderPR() {
                                     <SelectPaginate 
                                         source={'paymentType'}
                                         selectValue={items.cara_pembayaran}
-                                        selectName="Metode pembayaran"
+                                        selectName="metode pembayaran"
                                         itemLabel={['payment']}
                                         handleSelectChange={(value) => handleSelectChange('cara_pembayaran', value)}
                                         className="w-full pt-2 placeholder:text-gray-400"
                                     />
                                 </div>
-                                <div className="mb-4">
-                                    <label className='font-semibold'>PPN</label>
-                                    <div className="bg-white p-2 rounded-md mt-2 flex items-center h-fit"> 
-                                        <label htmlFor="is_ppn_checkbox" className="flex items-center cursor-pointer w-full">
-                                            <input 
-                                                type="checkbox" 
-                                                id="is_ppn_checkbox"
-                                                name="is_ppn" 
-                                                checked={items.is_ppn == 1}
-                                                onChange={handleChange}
-                                                className="w-6 h-6 text-blue-600 bg-gray-100 border-gray-100 rounded focus:ring-blue-500"
-                                            />
-                                            <span className="ml-3 text-gray-700">Dikenakan PPN</span>
-                                        </label>
-                                    </div>
+                                <div className="mb-4 md:mt-7">
+                                    <CustomCheckbox 
+                                        label="Dikenakan PPN"
+                                        checked={items.is_ppn === 1} // Pastikan perbandingan boolean
+                                        onChange={(val) => setItems({ ...items, is_ppn: val ? 1 : 0 })} // Konversi true/false kembali ke 1/0 untuk API
+                                    />
+                                    <p className="text-xs text-gray-400 mt-1 ml-9">
+                                        Centang jika PO ini dikenakan PPN
+                                    </p>
                                 </div>
                             </div>
 
+                            {/* ... (Bagian Detail Items tetap sama) ... */}
                             <div className="mt-2 pt-3">
-                            <div className="flex justify-between items-center">
+                                <div className="flex justify-between items-center">
                                     <p className='text-lg font-semibold'>Detail</p>
                                     {errors.details && <span className="text-red-500 text-sm">{errors.details}</span>}
                                 </div>
                             </div>
                             <div className="space-y-3 my-3">
                                 {details.map((item, id) => (
-                                <div
-                                    key={id}
-                                    className="
-                                    border border-gray-300 rounded-xl p-3
-                                    grid grid-cols-[80px,1fr] md:grid-cols-[160px,1fr,80px,auto,64px]
-                                    items-center gap-x-4
-                                    "
-                                >
+                                <div key={id} className="border border-gray-300 rounded-xl p-3 grid grid-cols-[80px,1fr] md:grid-cols-[160px,1fr,80px,auto,64px] items-center gap-x-4">
                                 <div className="overflow-hidden rounded-lg bg-gray-50 w-full aspect-[4/3]">
                                 {item.selectedBarang?.image ? (
                                     <img
@@ -459,47 +481,29 @@ function CreatePurchaseOrderPR() {
                                     onClick={() => handleImageClick(`${apiUrl}${item.selectedBarang?.image}`)}                                
                                     />
                                 ) : (
-                                    <div className="w-full h-full flex items-center justify-center text-xs text-gray-400">
-                                    No Image
-                                    </div>
+                                    <div className="w-full h-full flex items-center justify-center text-xs text-gray-400">No Image</div>
                                 )}
                                 </div>
-
                                 <div className="flex flex-col items-start h-full md:contents">
                                     <div className="hidden md:block" />
                                     <div className="md:contents">
                                         <div className="md:text-right">
-                                            <span className="text-sm text-gray-400 ">Qty: </span>
-                                            {item.qty}
+                                            <span className="text-sm text-gray-400 ">Qty: </span>{item.qty}
                                         </div>
-
                                         <div className="mt-1 md:mt-0 md:text-right font-medium">
                                             {PriceFormat(item.harga_sub_total, item.selectedMataUang?.kode)}
                                         </div>
                                     </div>
-
                                     <div className="flex items-center gap-2 mt-2 w-full justify-end md:w-auto md:mt-0 md:justify-self-end md:border-l-2 md:pl-3">
-                                        <button
-                                            type="button"
-                                            onClick={e => {
-                                            e.preventDefault();
-                                            setEditIndex(id);
-                                            setOpenModal(true);
-                                            }}
-                                        >
+                                        <button type="button" onClick={e => { e.preventDefault(); setEditIndex(id); setOpenModal(true); }}>
                                             <i className="bx bx-edit text-xl text-cyan-600"></i>
                                         </button>
-                                        <button
-                                            type="button"
-                                            onClick={e => {
+                                        <button type="button" onClick={e => {
                                             e.preventDefault();
                                             const newDetails = details.filter((_, i) => i !== id);
                                             setDetails(newDetails);
-                                            if (newDetails.length > 0 && errors.details) {
-                                                setErrors(prev => ({...prev, details: undefined}))
-                                            }
-                                            }}
-                                        >
+                                            if (newDetails.length > 0 && errors.details) setErrors(prev => ({...prev, details: undefined}))
+                                        }}>
                                             <i className="bx bx-trash text-xl text-red-500"></i>
                                         </button>
                                     </div>
@@ -508,23 +512,14 @@ function CreatePurchaseOrderPR() {
                             ))}
                             </div>
                                 <div className="flex mt-4">
-                                    <button
-                                        type="button"
-                                        className="w-full rounded-lg py-2 px-4 flex items-center font-medium bg-blue-50 text-blue-600 hover:bg-blue-100 transition-color duration-200"
-                                        onClick={() => {
-                                            setOpenModal(!openModal);
-                                            setEditIndex(null);
-                                        }}>
+                                    <button type="button" className="w-full rounded-lg py-2 px-4 flex items-center font-medium bg-blue-50 text-blue-600 hover:bg-blue-100 transition-color duration-200"
+                                        onClick={() => { setOpenModal(!openModal); setEditIndex(null); }}>
                                         <i className='bx bx-plus mr-2 font-semibold text-base'></i>
                                         <span>{ details.length === 0 ? 'Tambah detail' : 'Tambah detail lain'}</span>
                                     </button>
                                 </div>
                             <div className="flex flex-col items-center justify-self-center mt-10 max-w-full w-[25rem] space-y-2 text-center">
-                                <button 
-                                    disabled={isSubmitting} 
-                                    type='submit' 
-                                    className='py-2 px-4 w-full rounded-lg font-medium bg-blue-500 hover:bg-blue-600 transition-color duration-200 text-white disabled:bg-blue-200'
-                                >
+                                <button disabled={isSubmitting} type='submit' className='py-2 px-4 w-full rounded-lg font-medium bg-blue-500 hover:bg-blue-600 transition-color duration-200 text-white disabled:bg-blue-200'>
                                     {isSubmitting ? 'Submitting...' : 'Submit'}
                                 </button>
                                 <button className='py-2 px-4 w-full rounded-lg font-medium border border-red-200 bg-red-50 hover:bg-red-100 transition-color duration-200 text-red-600' onClick={resetValue} type='button'>Reset</button>

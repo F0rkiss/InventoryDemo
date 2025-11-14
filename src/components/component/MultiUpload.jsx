@@ -1,57 +1,66 @@
-import React from 'react'
+import React from 'react';
 
-const MultiUpload = ({ items = { image: [] }, required, handleDelete, handleUpload }) => {
+const MultiUpload = ({
+  items,
+  handleUpload,
+  handleDelete,
+  onImageClick, // PROPS BARU, default ke 'image'
+}) => {
+  // Gunakan imageKey untuk mengakses array yang benar
+  const images = items?.image || [];
   return (
-    <div className="bg-white p-4 rounded-lg border border-gray-300 font-inter text-gray-700 space-y-4">
-      {/* Upload Button */}
-      <div>
-        <label htmlFor="img">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500 text-white text-sm font-medium rounded-md cursor-pointer hover:bg-blue-600 transition">
-            <i className="bx bx-upload text-lg"></i>
-            Pilih Gambar
-          </div>
-        </label>
+    <div className="flex flex-wrap gap-4 p-2">
+      {/* Tombol Upload */}
+      <label className="flex flex-col items-center justify-center w-28 h-28 border-2 border-dashed border-gray-300 rounded-md cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors">
+        <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"></path>
+        </svg>
+        <span className="mt-2 text-xs text-gray-500 text-center">Upload File</span>
         <input
           type="file"
-          id="img"
-          name="img"
           multiple
-          required={required}
-          accept="image/png, image/jpeg"
-          onChange={handleUpload}
           className="hidden"
+          onChange={handleUpload}
+          accept="image/jpeg,image/png,image/gif"
         />
-      </div>
+      </label>
 
-      {/* Image Previews */}
-      {items.image?.length > 0 && (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-          {items.image.map((file, index) => {
-            const imageUrl = file instanceof File ? URL.createObjectURL(file) : file
-            return (
+      {/* Daftar Gambar */}
+      {images.map((image, index) => {
+        // Tentukan URL berdasarkan tipe data (File baru atau string URL lama)
+        const imageUrl = image instanceof File ? URL.createObjectURL(image) : image;
+        
+        return (
+          <div key={index} className="relative w-28 h-28 group">
+            {/* Pembungkus Gambar */}
+            <div className="w-full h-full rounded-md overflow-hidden border border-gray-200 shadow-sm">
               <div
-                key={index}
-                className="relative group rounded-md overflow-hidden border border-gray-200 shadow-sm"
+                className="w-full h-full bg-gray-100 flex items-center justify-center cursor-pointer hover:opacity-90 transition"
+                onClick={() => onImageClick && onImageClick(imageUrl)}
               >
                 <img
                   src={imageUrl}
-                  alt={`Preview ${index + 1}`}
-                  className="w-full h-28 object-cover transition duration-200 group-hover:blur-sm"
+                  alt={`preview-${index}`}
+                  className="w-full h-full object-cover"
+                  onError={(e) => { e.target.onerror = null; e.target.src = 'https://placehold.co/100?text=No+Img'; }}
                 />
-                <button
-                  type="button"
-                  onClick={() => handleDelete(index)}
-                  className="absolute inset-0 flex items-center justify-center text-white text-base font-semibold opacity-0 group-hover:opacity-100 transition-opacity z-10"
-                >
-                  <span className="bg-red-600 rounded-full px-3 py-1">✕</span>
-                </button>
               </div>
-            )
-          })}
-        </div>
-      )}
-    </div>
-  )
-}
+            </div>
 
-export default MultiUpload
+            {/* Tombol Delete */}
+            <button
+              type="button"
+              onClick={() => handleDelete(index)}
+              className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm shadow-md z-10 hover:bg-red-600 transition-colors"
+              title="Hapus gambar"
+            >
+              &times;
+            </button>
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
+export default MultiUpload;

@@ -9,15 +9,18 @@ const SupplierCards = forwardRef(({item, deleteItems, goToDetail, goToUpdate, ca
                     {item.nama_perusahaan}
                 </p>
             </div>
-            <div className='space-y-1'>
+            <div className='space-y-2'>
                 <div className='flex justify-between'>
-                    <p className="">Alamat: <span className="text-right">{item.alamat}</span></p>
+                    <p className="text-gray-500">Alamat</p>
+                    <p className="text-right">{item.alamat}</p>
                 </div>
                 <div className='flex justify-between'>
-                    <p className="">No. Telp: <span>{item.phone}</span></p>
+                    <p className="text-gray-500">Telepon</p>
+                    <p>{item.phone}</p>
                 </div>
                 <div className='flex justify-between'>
-                    <p className="">PIC: <span>{item.PIC}</span></p>
+                    <p className="text-gray-500">PIC</p>
+                    <p>{item.PIC}</p>
                 </div>
             </div>
 

@@ -31,10 +31,11 @@ const menus = [
         icon: "bx bx-package",
         isAccordion: true,
         children: [
+            { key: "InventStokAsset", label: "Daftar Stok Aset", path: "/stok-asset/list-stok" },
             { key: "InventStok", label: "Daftar Stok", path: "/stok/list-stok" },
             { key: "Barang", label: "Daftar Barang", path: "/barang/list-barang" },
-            { key: "JenisBarang", label: "Jenis Barang", path: "/jenis-barang/list-jenis-barang" },
-            { key: "SumberBarang", label: "Sumber Barang", path: "/sumber-barang/list-sumber-barang" },
+            // { key: "JenisBarang", label: "Jenis Barang", path: "/jenis-barang/list-jenis-barang" },
+            // { key: "SumberBarang", label: "Sumber Barang", path: "/sumber-barang/list-sumber-barang" },
         ]
     },
     {
@@ -47,17 +48,27 @@ const menus = [
             { key: "ApprovalStepLPB", label: "Approval Step LPB", path: "/approval-step-lpb/list-approval-step-lpb" },
         ]
     },
+    {
+        key: "JenisBarang" || "SumberBarang",
+        label: "Konfigurasi Barang",
+        icon: "bx bx-book-content",
+        isAccordion: true,
+        children: [
+            { key: "JenisBarang", label: "Jenis Barang", path: "/jenis-barang/list-jenis-barang" },
+            { key: "SumberBarang", label: "Sumber Barang", path: "/sumber-barang/list-sumber-barang" },
+            { key: "Categories", label: "Category", path: "/category/list-category" },
+            { key: "TingkatKebutuhan", label: "Tingkat Kebutuhan", path: "/tk/list-tk" },
+
+        ]
+    },
     { key: "User", label: "Data User", icon: "bx bxs-user-badge", path: "/user/list-user" },
-    { key: "Categories", label: "Category", icon: "bx bx-category-alt", path: "/category/list-category" },
     { key: "TypeRequest", label: "Type Request", icon:"bx bx-comment-detail" ,path: "/type-request/list-type-request" },
     { key: "Status", label: "Status", icon: "bx bxs-checkbox-checked", path: "/status/list-status" },
     { key: "Role", label: "Role", icon: "bx bx-tag", path: "/role/list-role" },
-    { key: "Billing", label: "Billing", icon: "bx bx-spreadsheet", path: "/billing/list-billing" },
     { key: "Suplier", label: "Supplier", icon: "bx bxs-truck", path: "/supplier/list-supplier" },
-    { key: "TingkatKebutuhan", label: "TingkatKebutuhan", icon: "bx bx-trending-up", path: "/tk/list-tk" },
     { key: "NavigationGroup", label: "Navigation Group", icon: "bx bx-navigation", path: "/navigation-groups/list-navigation-groups" },
     {
-        key: "InventMutasi" || "InventLog" || "PPN" || "PaymentType" || "MataUang",
+        key: "InventMutasi" || "InventLog" || "PPN" || "PaymentType" || "MataUang" || "Billing",
         label: "Information",
         icon: "bx bx-info-circle",
         isAccordion: true,
@@ -66,7 +77,8 @@ const menus = [
             { key: "InventLog", label: "Log", path: "/log" },
             { key: "PPN", label: "PPN", path: "/ppn" },
             { key: "PaymentType", label: "Payment Method", path: "/list-payment-method" },
-            { key: "MataUang", label: "Mata Uang", path: "/mata-uang/list-mata-uang" }
+            { key: "MataUang", label: "Mata Uang", path: "/mata-uang/list-mata-uang" },
+            { key: "Billing", label: "Billing", path: "/billing/list-billing" },
         ]
     },
     { key: "JenisMemo", label: "Jenis Memo", icon: "bx bx-note", path: "/jenismemo/list-jenismemo" },

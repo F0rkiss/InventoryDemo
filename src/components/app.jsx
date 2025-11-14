@@ -22,10 +22,13 @@ const BarangList = lazy(() => import('./crud_barang/BarangList.jsx'));
 const CreateBarang = lazy(() => import('./crud_barang/CreateBarang.jsx'));
 const UpdateBarang = lazy(() => import('./crud_barang/UpdateBarang.jsx'));
 const DetailBarang = lazy(() => import('./crud_barang/DetailBarang.jsx'));
-// const RestoreBarang = lazy(() => import('./crud_barang/RestoreBarang.jsx'))
 
 const StokList = lazy(() => import('./crud_stok/ListStok.jsx'));
 const DetailStok = lazy(() => import('./crud_stok/DetailStok.jsx'));
+
+const ListStokAsset = lazy(() => import('./crud_stok_asset/ListStokAsset.jsx'));
+const DetailStokAsset = lazy(() => import('./crud_stok_asset/DetailStokAsset.jsx'));
+const CreateStok = lazy(() => import('./crud_stok_asset/CreateStok.jsx'))
 
 const ListJenisBarang = lazy(() => import('./crud_jenis_barang/ListJenisBarang.jsx'));
 const CreateJenisBarang = lazy(() => import('./crud_jenis_barang/CreateJenisBarang.jsx'));
@@ -183,6 +186,10 @@ const MyApp = () => {
 
                   <Route path='/stok/list-stok' element={<StokList/>} />
                   <Route path='/stok/detail-stok/:id' element={<DetailStok/>} />
+                  
+                  <Route path='/stok-asset/list-stok' element={<ListStokAsset/>} />
+                  <Route path='/stok-asset/detail-stok/:id' element={<DetailStokAsset/>} />
+                  <Route path='/stok-asset/create-stok/' element={<CreateStok/>} />
 
                   <Route path='/jenis-barang/list-jenis-barang' element={<ListJenisBarang/>} />
                   <Route path='/jenis-barang/create-jenis-barang' element={<CreateJenisBarang/>} />

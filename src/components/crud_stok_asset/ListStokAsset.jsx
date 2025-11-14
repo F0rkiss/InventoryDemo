@@ -8,21 +8,19 @@ import Transition from '../component/Transition';
 import SearchBar from '../component/SearchBar';
 import Layout from '../component/Layout';
 import ScrollPagination from '../component/ScrollPagination';
+import FlyingButton from '../component/FlyingButton';
 import DataEmpty from '../component/DataEmpty';
+import { encrypting } from '../../helper/EncryptHelper';
 import useMenuAccess from '../../hooks/useMenuAccess';
 import ImagePreviewModal from '../component/modal/ImagePreviewModal';
-// import FilterAssetToggle from '../component/FilterAssetToggle'; // <-- DIHAPUS
-import { encrypting } from '../../helper/EncryptHelper';
 
-function StokList() {
+function AssetStokList() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
   const [nextCursor, setNextCursor] = useState(null);
   const [searchQuery, setSearchQuery] = useState(''); // For input value
   const [searchTerm, setSearchTerm] = useState(''); // For actual search term used in fetching
-  // const [filterAsset, setFilterAsset] = useState('all'); // <-- DIHAPUS
   const [contentVisible, setContentVisible] = useState(false);
-  const { canCreate } = useMenuAccess('InventStok');
   const [empty, setEmpty] = useState(false)
   const navigate = useNavigate()
 
@@ -30,8 +28,7 @@ function StokList() {
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [selectedImageUrl, setSelectedImageUrl] = useState('');
 
-  // --- LOGIKA FETCH DIPERBARUI ---
-
+  // --- LOGIKA buildParams DIPERBARUI ---
   // Helper untuk membangun parameter request secara konsisten
   const buildParams = (cursor) => {
     const params = {};
@@ -39,21 +36,26 @@ function StokList() {
       params.cursor = cursor;
     }
 
-    const url = `/inventStok`; // Selalu gunakan endpoint utama
+    let url;
     const isSearching = !!searchTerm;
 
     if (isSearching) {
-      params.search = searchTerm;
+      // SearchTerm disertakan di URL
+      url = `/inventStok-admin/${searchTerm}`; 
+    } else {
+      // Endpoint standar jika tidak ada search
+      url = `/inventStok-admin`; 
     }
     
     return { url, params };
   };
+  // --- BATAS PERUBAHAN ---
 
-  // Memicu fetch ulang saat searchTerm atau filterAsset berubah
+  // Memicu fetch ulang saat searchTerm berubah
   useEffect(() => {
     setContentVisible(false); // Sembunyikan konten saat memuat data baru
     fetchItems(); 
-  }, [searchTerm]); // <-- filterAsset dihapus dari dependency
+  }, [searchTerm]); 
 
   const fetchItems = async () => {
     setLoading(true);
@@ -116,12 +118,11 @@ function StokList() {
   // cleanup on unmount
     return () => debounceRef.current && clearTimeout(debounceRef.current);
   }, []);
-
   
   const handleDetailClick = async (id) => {
       const encryptedId = await encrypting(id)
       if (encryptedId) {
-        navigate(`/stok/detail-stok/${encryptedId}`)
+        navigate(`/stok-asset/detail-stok/${encryptedId}`)
       }
   };
 
@@ -141,7 +142,7 @@ function StokList() {
     <Layout title={'List Stok'}>
         <Block>
           <div className='mb-4 flex flex-col md:flex-row items-center justify-between gap-2'>
-                <p className='ms-3 lg:text-3xl text-2xl font-semibold capitalize w-full md:w-auto'>Daftar Stok Barang</p>
+                <p className='ms-3 lg:text-3xl text-2xl font-semibold capitalize w-full md:w-auto'>Daftar Stok Barang Aset</p>
                 <div className="flex items-center gap-2 w-full md:w-auto">
                   <SearchBar
                       onChange={handleSearchChange}
@@ -177,6 +178,7 @@ function StokList() {
         { loading && <Loader Class="mt-20" />}
         { !loading && contentVisible && items.length === 0 && <DataEmpty/>}
       </Block>
+      <FlyingButton goTo={'/stok-asset/create-stok'} />
       <ImagePreviewModal
         isOpen={isPreviewOpen}
         onClose={handleClosePreview}
@@ -187,4 +189,4 @@ function StokList() {
   );
 }
 
-export default StokList;
+export default AssetStokList;

@@ -11,10 +11,12 @@ const MataUangCards = forwardRef(({item, deleteItems, goToUpdate, canUpdate, can
             </div>
             <div className='space-y-1'>
                 <div className='flex justify-between'>
-                    <p className="">Nama: <span className="text-right">{item.name}</span></p>
+                    <p className="text-gray-500">Nama </p>
+                    <p className="font-medium">{item.name}</p>
                 </div>
                 <div className='flex justify-between'>
-                    <p className="">Symbol: <span>{item.symbol}</span></p>
+                    <p className="text-gray-500">Simbol </p>
+                    <p className="font-medium">{item.symbol}</p>
                 </div>
             </div>
             <div className='flex justify-end gap-2 pt-3'>
