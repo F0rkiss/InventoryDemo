@@ -16,16 +16,21 @@ import Loader from './component/Loader.jsx';
 // Lazy load components
 const Notifications = lazy(() => import('./informationPage/NotificationsPages'));
 const ApprovalMakeRequest = lazy(() => import('./approval-page/approvalMR'));
+const ApprovalPurchaseRequest = lazy(() => import('./approval-page/approvalPR'));
+const ApprovalPurchaseOrder = lazy(() => import('./approval-page/approvalPO'));
 const ApprovalLPB = lazy(() => import('./approval-page/approvalLPB'));
 
 const BarangList = lazy(() => import('./crud_barang/BarangList.jsx'));
 const CreateBarang = lazy(() => import('./crud_barang/CreateBarang.jsx'));
 const UpdateBarang = lazy(() => import('./crud_barang/UpdateBarang.jsx'));
 const DetailBarang = lazy(() => import('./crud_barang/DetailBarang.jsx'));
-// const RestoreBarang = lazy(() => import('./crud_barang/RestoreBarang.jsx'))
 
 const StokList = lazy(() => import('./crud_stok/ListStok.jsx'));
 const DetailStok = lazy(() => import('./crud_stok/DetailStok.jsx'));
+
+const ListStokAsset = lazy(() => import('./crud_stok_asset/ListStokAsset.jsx'));
+const DetailStokAsset = lazy(() => import('./crud_stok_asset/DetailStokAsset.jsx'));
+const CreateStok = lazy(() => import('./crud_stok_asset/CreateStok.jsx'))
 
 const ListJenisBarang = lazy(() => import('./crud_jenis_barang/ListJenisBarang.jsx'));
 const CreateJenisBarang = lazy(() => import('./crud_jenis_barang/CreateJenisBarang.jsx'));
@@ -61,6 +66,10 @@ const StatusList = lazy(() => import('./crud_status/StatusList.jsx'));
 const CreateStatus = lazy(() => import('./crud_status/CreateStatus.jsx'));
 const UpdateStatus = lazy(() => import('./crud_status/UpdateStatus.jsx'));
 
+const TKList = lazy(() => import('./crud_tingkat_kebutuhan/TingkatKebutuhanList.jsx'));
+const CreateTK = lazy(() => import('./crud_tingkat_kebutuhan/CreateTingkatKebutuhan.jsx'));
+const UpdateTK = lazy(() => import('./crud_tingkat_kebutuhan/UpdateTingkatKebutuhan.jsx'));
+
 const JenisMemoList = lazy(() => import('./crud_jenis_memo/jenisMemoList.jsx'));
 const CreateJenisMemo = lazy(() => import('./crud_jenis_memo/CreatejenisMemo.jsx'));
 const UpdateJenisMemo = lazy(() => import('./crud_jenis_memo/UpdatejenisMemo.jsx'));
@@ -82,8 +91,13 @@ const DetailApprovalStep = lazy(() => import('./crud_approval_step/DetailApprova
 const UpdateApprovalStep = lazy(() => import('./crud_approval_step/UpdateApprovalStep.jsx'))
 const CreateApprovalStep = lazy(() => import('./crud_approval_step/CreateApprovalStep.jsx'))
 
+const ListApprovalStepPurchase = lazy(() => import('./crud_approval_purchase/ApprovalStepPurchaseList.jsx'))
+const DetailApprovalStepPurchase = lazy(() => import('./crud_approval_purchase/DetailApprovalStepPurchase.jsx'))
+const UpdateApprovalStepPurchase = lazy(() => import('./crud_approval_purchase/UpdateApprovalStepPurchase.jsx'))
+const CreateApprovalStepPurchase = lazy(() => import('./crud_approval_purchase/CreateApprovalStepPurchase.jsx'))
+
 const ListApprovalStepLPB = lazy(() => import('./crud_approval_step_lpb/ListApprovalStepLPB.jsx'))
-const DetailApprovalStepLPB = lazy(() => import('./crud_approval_step_lpb/DetailApprovalStepLPB.jsx'))
+// const DetailApprovalStepLPB = lazy(() => import('./crud_approval_step_lpb/DetailApprovalStepLPB.jsx'))
 const UpdateApprovalStepLPB = lazy(() => import('./crud_approval_step_lpb/UpdateApprovalStepLPB.jsx'))
 const CreateApprovalStepLPB = lazy(() => import('./crud_approval_step_lpb/CreateApprovalStepLPB.jsx'))
 
@@ -92,6 +106,7 @@ const CreateListPurchaseRequest = lazy(() => import('./crud_purchase_request/Cre
 const CreatePurchaseRequest = lazy(() => import('./crud_purchase_request/CreatePurchaseRequest.jsx'))
 const DetailPurchaseRequest = lazy(() => import('./crud_purchase_request/DetailPurchaseRequest.jsx'))
 const UpdatePurchaseRequest = lazy(() => import('./crud_purchase_request/UpdatePurchaseRequest.jsx'))
+// const PDFViewerPage = lazy(() => import('./crud_purchase_request/PDFViewerPage.jsx'))
 
 const ListPurchaseOrder = lazy(() => import('./crud_purchase_order/ListPurchaseOrder.jsx'))
 const UpdatePurchaseOrder = lazy(() => import('./crud_purchase_order/UpdatePurchaseOrder.jsx'))
@@ -129,6 +144,14 @@ const ListPaymentMethod = lazy(() => import('./crud_payment_method/ListPaymentMe
 const CreatePaymentMethod = lazy(() => import('./crud_payment_method/CreatePaymentMethod.jsx'))
 const UpdatePaymentMethod = lazy(() => import('./crud_payment_method/UpdatePaymentMethod.jsx'))
 
+const ListSupplier = lazy(() => import('./crud_supplier/ListSupplier.jsx'));
+const CreateSupplier = lazy(() => import('./crud_supplier/CreateSupplier.jsx'));
+const UpdateSupplier = lazy(() => import('./crud_supplier/UpdateSupplier.jsx'));
+
+const ListMataUang = lazy(() => import('./crud_mata_uang/ListMataUang.jsx'));
+const CreateMataUang = lazy(() => import('./crud_mata_uang/CreateMataUang.jsx'));
+const UpdateMataUang = lazy(() => import('./crud_mata_uang/UpdateMataUang.jsx'));
+
 // const TableMR = lazy(() => import('./Table/TableMR/TabelMR.jsx'))
 const TableBilling = lazy(() => import('./Table/TableBilling/TableBilling.jsx'))
 
@@ -161,6 +184,8 @@ const MyApp = () => {
 
                   <Route path="/notifications" element={<Notifications />} />
                   <Route path="/approvalStepHistory-makeRequest/detail/:id" element={<ApprovalMakeRequest />} />
+                  <Route path="/approvalStepHistory-purchaseRequest/detail/:id" element={<ApprovalPurchaseRequest />} />
+                  <Route path="/approvalStepHistory-purchaseOrder/detail/:id" element={<ApprovalPurchaseOrder />} />
                   <Route path="/approvalStepHistory-lpb/detail/:id" element={<ApprovalLPB />} />
 
                   <Route path="/barang/list-barang" element={<BarangList />} />
@@ -170,6 +195,10 @@ const MyApp = () => {
 
                   <Route path='/stok/list-stok' element={<StokList/>} />
                   <Route path='/stok/detail-stok/:id' element={<DetailStok/>} />
+                  
+                  <Route path='/stok-asset/list-stok' element={<ListStokAsset/>} />
+                  <Route path='/stok-asset/detail-stok/:id' element={<DetailStokAsset/>} />
+                  <Route path='/stok-asset/create-stok/' element={<CreateStok/>} />
 
                   <Route path='/jenis-barang/list-jenis-barang' element={<ListJenisBarang/>} />
                   <Route path='/jenis-barang/create-jenis-barang' element={<CreateJenisBarang/>} />
@@ -202,6 +231,11 @@ const MyApp = () => {
                   <Route path='/approval-step/update-approval-step/:id' element={<UpdateApprovalStep />} />
                   <Route path='/approval-step/create-approval-step' element={<CreateApprovalStep />} />
 
+                  <Route path='/approval-step-purchase/list-approval-step' element={<ListApprovalStepPurchase />} />
+                  <Route path='/approval-step-purchase/detail-approval-step/:id' element={<DetailApprovalStepPurchase />} />
+                  <Route path='/approval-step-purchase/update-approval-step/:id' element={<UpdateApprovalStepPurchase />} />
+                  <Route path='/approval-step-purchase/create-approval-step' element={<CreateApprovalStepPurchase />} />
+
                   <Route path='/approval-step-lpb/list-approval-step-lpb' element={<ListApprovalStepLPB />} />
                   <Route path='/approval-step-lpb/detail-approval-step-lpb' element={<ListApprovalStepLPB />} />
                   <Route path='/approval-step-lpb/update-approval-step-lpb/:id' element={<UpdateApprovalStepLPB />} />
@@ -210,6 +244,7 @@ const MyApp = () => {
                   <Route path='/purchase-request/list-purchase-request' element={<ListPurchaseRequest />} />
                   <Route path='/purchase-request/detail-purchase-request/:id' element={<DetailPurchaseRequest />} />
                   <Route path='/purchase-request/update-purchase-request/:id' element={<UpdatePurchaseRequest />} />
+                  
 
                   <Route path='/make-purchase-request/list-make-purchase-request' element={<CreateListPurchaseRequest />} />
                   <Route path='/make-purchase-request/create-purchase-request/:id' element={<CreatePurchaseRequest />} />
@@ -252,6 +287,10 @@ const MyApp = () => {
                   <Route path='/status/update-status/:id' element={<UpdateStatus />} />
                   <Route path='/status/create-status' element={<CreateStatus />} />
 
+                  <Route path='/tk/list-tk' element={<TKList />} />
+                  <Route path='/tk/update-tk/:id' element={<UpdateTK />} />
+                  <Route path='/tk/create-tk' element={<CreateTK />} />
+
                   <Route path='/jenismemo/list-jenismemo' element={<JenisMemoList />} />
                   <Route path='/jenismemo/update-jenismemo/:id' element={<UpdateJenisMemo />} />
                   <Route path='/jenismemo/create-jenismemo' element={<CreateJenisMemo />} />
@@ -264,12 +303,21 @@ const MyApp = () => {
                   <Route path='/create-payment-method' element={<CreatePaymentMethod/>} />
                   <Route path='/update-payment-method/:id' element={<UpdatePaymentMethod/>} />
 
+                  <Route path='/supplier/list-supplier' element={<ListSupplier/>} />
+                  <Route path='/supplier/create-supplier' element={<CreateSupplier/>} />
+                  <Route path='/supplier/update-supplier/:id' element={<UpdateSupplier/>} />
+                  
+                  <Route path='/mata-uang/list-mata-uang' element={<ListMataUang/>} />
+                  <Route path='/mata-uang/create-mata-uang' element={<CreateMataUang/>} />
+                  <Route path='/mata-uang/update-mata-uang/:id' element={<UpdateMataUang/>} />
+
                   <Route path='/navigation-groups/list-navigation-groups' element={<NavigationGroupList/>}/>
                   <Route path='/navigation-groups/create-navigation-groups' element={<CreateNavigationGroup/>}/>
                   <Route path='/navigation-groups/update-navigation-groups/:id' element={<UpdateNavigationGroup/>}/>
                   <Route path='/navigation-groups/detail-navigation-groups/:id' element={<DetailNavigationGroup/>}/>
 
                   <Route path='/navigation-menu/list-navigation-menu' element={<NavigationMenuList/>}/>
+                  {/* <Route path='/pdf-viewer/:type/:id' element={<PDFViewerPage />} /> */}
                   
                 </Route>
 

@@ -24,11 +24,10 @@ const ModalMR = ({ open, onClose, onSave, initialData, requestMode, apiUrl }) =>
         setBarangLoading(true);
         let endpoint = '';
         let config = {}; // Objek konfigurasi untuk Axios (untuk params)
-
         try {
             if (mode === 'ya') {
                 // Mode "ya" (Stok) menggunakan {term} sebagai bagian dari URL
-                endpoint = '/inventStok';
+                endpoint = '/inventStok-user';
                 if (term.trim()) {
                     endpoint = `${endpoint}/${term.trim()}`;
                 }
@@ -44,7 +43,6 @@ const ModalMR = ({ open, onClose, onSave, initialData, requestMode, apiUrl }) =>
                 setBarangLoading(false);
                 return;
             }
-
             // DIUBAH: Panggilan api.get() sekarang menyertakan 'config'
             const response = await api.get(endpoint, config);
             

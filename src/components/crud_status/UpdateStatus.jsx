@@ -113,7 +113,6 @@ function UpdateStatus() {
         <div className="px-4">
           <Back goHome={() => navigate('/status/list-status')} />
           <p className="lg:text-3xl text-2xl font-semibold capitalize my-4">Update Status</p>
-
           <Transition contentVisible={contentVisible}>
             <div className="p-8 bg-white shadow-sm rounded-lg border">
               <form onSubmit={handleSubmit} className="space-y-5">

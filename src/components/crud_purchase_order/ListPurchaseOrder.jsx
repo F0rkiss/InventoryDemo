@@ -64,7 +64,9 @@ function PurchaseOrderList() {
     };
 
     const fetchMoreItems = async () => {
+      // Guard clause ini sekarang menjadi lebih penting
       if (!nextCursor || loading) return;
+      
       try {
         setLoading(true);
 
@@ -80,24 +82,49 @@ function PurchaseOrderList() {
             params.is_completed = 1;
           } else if (filterStatus === 'not_completed') {
             endpoint = 'purchaseOrder-toggle';
-            params.is_completed = 0; // Filter for not completed
+            params.is_completed = 0;
           }
         }
 
         const response = await api.get(endpoint, { params });
         const data = response.data.data;
-  
-        setItems(
-          (prevItems) => {
-          const existingIds = new Set(prevItems.map(item => item.id));
-          const newItems = data.data.filter(item => !existingIds.has(item.id));
-          return [...prevItems, ...newItems];
+        
+        // Cek apakah data baru (dari API) benar-benar ada
+        const newItemsFromApi = Array.isArray(data.data) ? data.data : [];
+
+        // 1. Cek jika API mengembalikan array kosong
+        if (newItemsFromApi.length === 0) {
+            setNextCursor(null); // Paksa berhenti, data sudah habis
+            setLoading(false);
+            return; // Hentikan fungsi
         }
-      );
-        setNextCursor(data.next_cursor);
+        
+        // 2. Cek jika data yang dikembalikan hanya duplikat
+        let newItemsAdded = false;
+        setItems((prevItems) => {
+            const existingIds = new Set(prevItems.map(item => item.id));
+            const newItems = newItemsFromApi.filter(item => !existingIds.has(item.id));
+            
+            if (newItems.length > 0) {
+              newItemsAdded = true; // Tandai bahwa ada item baru
+            }
+            return [...prevItems, ...newItems];
+          }
+        );
+
+        // 3. Tentukan cursor berikutnya
+        if (newItemsAdded) {
+            // Jika ada item baru, gunakan cursor dari API
+            setNextCursor(data.next_cursor);
+        } else {
+            // Jika tidak ada item baru (karena duplikat), paksa berhenti
+            setNextCursor(null); 
+        }
+
         setLoading(false);
       } catch (error) {
         setLoading(false);
+        console.error("Failed to fetch more items:", error);
       }
     };
 

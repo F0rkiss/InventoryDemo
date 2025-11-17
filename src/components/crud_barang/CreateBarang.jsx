@@ -54,7 +54,6 @@ function CreateBarang() {
   const validate = () => {
     if (
       !items.name ||
-      !items.kode_gudang ||
       !items.satuan ||
       !items.is_asset ||
       !items.jenis_barang ||
@@ -134,7 +133,7 @@ function CreateBarang() {
   return (
     <Layout title={'Create Barang'}>
       <Block>
-        <div className="px-4">
+        <div className="xs:px-0 md:px-4">
           <Back goHome={goHome} />
           <p className="lg:text-3xl text-2xl font-semibold capitalize my-4">Create Barang</p>
 
@@ -142,7 +141,7 @@ function CreateBarang() {
             <div className="p-8 bg-white shadow-sm rounded-lg border">
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div className="mb-5 space-y-2">
-                  <label className="font-semibold">Name</label>
+                  <label className="font-semibold">Nama</label>
                   <div className="bg-white p-2 rounded-md border border-gray-300 mt-2">
                     <input
                       type="text"
@@ -157,27 +156,24 @@ function CreateBarang() {
                   </div>
                 </div>
 
-                {/* Kode & Gudang side-by-side on md+ */}
-                <div className="md:grid md:grid-cols-2 md:gap-x-4">
-                  <div className="space-y-2">
-                    <label className="font-semibold">Kode Gudang</label>
-                    <div className="bg-white p-2 rounded-md border border-gray-300 mt-2">
-                      <input
-                        type="text"
-                        name="kode_gudang"
-                        value={items.kode_gudang}
-                        onChange={(e) => setItems({ ...items, kode_gudang: e.target.value })}
-                        className="w-full p-2 placeholder:text-gray-400 "
-                        maxLength={80}
-                        placeholder="Kode Gudang"
-                      />
-                    </div>
+                <div className="space-y-2">
+                  <label className="font-semibold">Kode Gudang</label>
+                  <div className="bg-white p-2 rounded-md border border-gray-300 mt-2">
+                    <input
+                      type="text"
+                      name="kode_gudang"
+                      value={items.kode_gudang}
+                      onChange={(e) => setItems({ ...items, kode_gudang: e.target.value })}
+                      className="w-full p-2 placeholder:text-gray-400 "
+                      maxLength={80}
+                      placeholder="Kode Gudang"
+                    />
                   </div>
                 </div>
 
                 {/* Satuan & Asset side-by-side on md+ */}
                 <div className="md:grid md:grid-cols-2 md:gap-x-4">
-                  <div className="mb-5 space-y-2">
+                  <div className="space-y-2">
                     <label className="font-semibold">Satuan</label>
                     <div className="bg-white p-2 rounded-md border border-gray-300 mt-2">
                       <input
@@ -192,7 +188,7 @@ function CreateBarang() {
                       />
                     </div>
                   </div>
-                  <div className="mb-5 space-y-2">
+                  <div className="space-y-2">
                     <label className="font-semibold">Aset</label>
                     <Select
                       options={isAsset}
@@ -217,7 +213,7 @@ function CreateBarang() {
                 </div>
 
                 <div className="mb-5 space-y-2">
-                  <label className="font-semibold">Categories</label>
+                  <label className="font-semibold">Kategori</label>
                   <SelectPaginate
                     source={'inventCategories'}
                     selectValue={items.categories}

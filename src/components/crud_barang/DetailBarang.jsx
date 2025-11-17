@@ -8,6 +8,7 @@ import { DecryptID } from '../../helper/EncryptHelper';
 import Transition from '../component/Transition';
 import ImagePreviewModal from '../component/modal/ImagePreviewModal';
 import DateFormat from '../../helper/DateFormatHelper';
+import PriceFormat from '../../helper/PriceFormatHelper';
 import { use } from 'react';
 
 function DetailItem() {
@@ -40,7 +41,7 @@ function DetailItem() {
       // Promise.all runs both requests in parallel
       const [itemResponse, historyResponse] = await Promise.all([
         api.get(`/inventBarang-detail/${decryptedId}`),
-        api.get(`/inventHistory/${decryptedId}`)
+        api.get(`/inventBarang-history/${decryptedId}`)
       ]);
       setItem(itemResponse.data.data);
       setHistory(historyResponse.data.data.data);
@@ -165,38 +166,22 @@ function DetailItem() {
                     <table className="w-full text-sm text-left border-collapse">
                       <thead>
                         <tr className="bg-gray-100">
-                          <th className="p-3 rounded-l-md">User Info.</th>
-                          <th className="p-3">Notes</th>
-                          <th className="p-3">Tgl. Stok</th>
-                          <th className="p-3 rounded-r-md">Status</th>
+                          <th className="p-3 rounded-l-md">Kode</th>
+                          <th className="p-3">Nama Perusahaan</th>
+                          <th className="p-3">Tanggal</th>
+                          <th className="p-3 rounded-r-md">Harga</th>
                           <th className="p-3 rounded-r-md">Qty. Stok</th>
-                          <th className="p-3 rounded-r-md">Lokasi</th>
-                          <th className="p-3 rounded-r-md">Image</th>
                         </tr>
                       </thead>
                       <tbody>
                         {history.map((i, index) => (
                           // BUG FIX: Mengganti 'step.id' dengan 'index' untuk zebra-striping
                           <tr key={i.id} className={`${i % 2 === 0 ? 'bg-gray-50' : 'bg-white'} align-top`}>
-                            <td className="p-3 whitespace-pre-line rounded-l-md">
-                              <div>{i.namaPemilik}</div>
-                              <div className="mt-1">{i.codePemilik || '-'}</div>
-                              <div className="mt-1">{i.emailPemilik || '-'}</div>
-                            </td>
-                            <td className="p-3 w-1/3 whitespace-pre-line">
-                              <div className="mt-1">{i.note || '-'}</div>
-                            </td>
-                            <td className="p-3">{DateFormat(i.tanggalStok)}</td>
-                            <td className="p-3">{i.statusName}</td>
-                            <td className="p-3">{i.qtyStok}</td>
-                            <td className="p-3">{i.lokasi || '-'}</td>
-                            <td className="p-3">
-                              { i.image ?
-                                (<img src={`${apiUrl}${i.image}`} alt="item image" className="max-w-xs w-full rounded shadow" />)
-                                :
-                                (<p className="text-gray-400 italic">No Image</p>)
-                              }
-                            </td>
+                            <td className="p-3 whitespace-pre-line rounded-l-md">{i.kode}</td>
+                            <td className="p-3 w-1/3 whitespace-pre-line">{i.nama_perusahaan}</td>
+                            <td className="p-3">{DateFormat(i.tanggal)}</td>
+                            <td className="p-3">{PriceFormat(i.harga_sub_total)}</td>
+                            <td className="p-3">{i.qty}</td>
                           </tr>
                         ))}
                       </tbody>

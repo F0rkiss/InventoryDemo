@@ -8,9 +8,10 @@ import { DecryptID, encrypting } from '../../helper/EncryptHelper';
 import Transition from '../component/Transition';
 import DateFormat from '../../helper/DateFormatHelper'
 import { useAuth } from '../../auth/AuthContext';
+import useMenuAccess from '../../hooks/useMenuAccess'
 import Swal from 'sweetalert2';
 import ImagePreviewModal from '../component/modal/ImagePreviewModal';
-import PdfPreviewModal from '../component/modal/PdfPreviewModal';
+import { isMobileSafari } from '../../helper/DeviceHelper';
 
 function DetailMakeRequest() {
   const [item, setItem] = useState({})
@@ -23,8 +24,9 @@ function DetailMakeRequest() {
   const purchaseOrders = item.purchaseOrder;
   const navigate = useNavigate();
   const { id } = useParams();
-  const { role, navigation_menu } = useAuth()
-  const [decryptedId, setDecryptedId] = useState('')
+  const { role, navigation_menu } = useAuth();
+  const [decryptedId, setDecryptedId] = useState('');
+  const { canRead } = useMenuAccess('PreviewMR');
 
   const [loading, setLoading] = useState(false)
   const [contentVisible, setContentVisible] = useState(false)
@@ -35,18 +37,6 @@ function DetailMakeRequest() {
   const [selectedImageUrl, setSelectedImageUrl] = useState('');
 
   const [isPreviewLoading, setIsPreviewLoading] = useState(false);
-
-  const [isPdfPreviewOpen, setIsPdfPreviewOpen] = useState(false);
-  const [selectedPdfUrl, setSelectedPdfUrl] = useState('');
-  
-  const handleClosePdfPreview = () => {
-    setIsPdfPreviewOpen(false);
-    // Hapus blob URL dari memori saat modal ditutup
-    if (selectedPdfUrl) {
-      URL.revokeObjectURL(selectedPdfUrl);
-    }
-    setSelectedPdfUrl('');
-  };
 
   useEffect(() => {
     const decryptedId = DecryptID(id)
@@ -88,50 +78,77 @@ function DetailMakeRequest() {
   };
 
   const handlePreview = async () => {
-      if (isPreviewLoading) return; // Mencegah klik ganda
-      setIsPreviewLoading(true);
-      try {
-          // Menggunakan decryptedId dari state
-          const response = await api.get(`/pdf/preview_mr/${decryptedId}`, {
-              responseType: 'blob', // Penting: minta response sebagai blob (file)
-          });
+    if (isPreviewLoading) return;
+    setIsPreviewLoading(true);
+    try {
+      const response = await api.get(`/pdf/preview_mr/${decryptedId}`, {
+          responseType: 'blob',
+      });
 
-          // Cek jika response adalah PDF
-          if (response.data.type === 'application/pdf') {
-              // Buat URL objek dari blob
-              const file = new Blob([response.data], { type: 'application/pdf' });
-              const fileURL = URL.createObjectURL(file);
-              
-              // Buka di tab baru
-              setSelectedPdfUrl(fileURL); // Set URL untuk modal
-              setIsPdfPreviewOpen(true);  // Buka modal
+      if (response.data.type === 'application/pdf') {
+          const file = new Blob([response.data], { type: 'application/pdf' });
+          const fileURL = URL.createObjectURL(file);
+          
+          // --- LOGIKA BARU UNTUK iOS ---
+          if (isMobileSafari()) {
+            // Untuk iOS Safari, buka di tab yang sama.
+            // Ini adalah satu-satunya cara yang andal untuk blob URL.
+            window.location.href = fileURL;
+            // Kita tidak bisa revoke URL di sini karena navigasi baru saja dimulai
           } else {
-              // Handle jika API mengembalikan error (misal, JSON error)
-              // Coba baca blob sebagai teks untuk melihat pesan error
-              const errText = await response.data.text();
-              let errJson = {};
-              try {
-                errJson = JSON.parse(errText); // Asumsi error adalah JSON
-              } catch(e) {
-                errJson = { message: 'Format respons tidak valid.' }
-              }
-              Swal.fire({
-                  icon: 'error',
-                  title: 'Gagal Membuat Preview',
-                  text: errJson.message || 'Format respons tidak valid.'
-              });
+            // Logika lama untuk browser lain (Chrome, Firefox, PC)
+            const newWindow = window.open(fileURL, '_blank');
+
+            if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Preview Gagal Dibuka',
+                    text: 'Browser Anda mungkin memblokir tab baru. Memulai unduhan PDF...',
+                    timer: 2500,
+                    showConfirmButton: false
+                });
+
+                const link = document.createElement('a');
+                link.href = fileURL;
+                const fileName = item.kode ? `${item.kode}.pdf` : 'preview-mr.pdf';
+                link.setAttribute('download', fileName);
+                document.body.appendChild(link);
+                link.click();
+                
+                document.body.removeChild(link);
+                URL.revokeObjectURL(fileURL);
+
+            } else {
+                setTimeout(() => {
+                    URL.revokeObjectURL(fileURL);
+                }, 1000 * 60); 
+            }
           }
 
-      } catch (error) {
-          console.error("Error generating preview: ", error);
+      } else {
+          const errText = await response.data.text();
+          let errJson = {};
+          try {
+            errJson = JSON.parse(errText);
+          } catch(e) {
+            errJson = { message: 'Format respons tidak valid.' }
+          }
           Swal.fire({
               icon: 'error',
               title: 'Gagal Membuat Preview',
-              text: error.message || 'Terjadi kesalahan pada server.'
+              text: errJson.message || 'Format respons tidak valid.'
           });
-      } finally {
-          setIsPreviewLoading(false);
       }
+    } catch (error) {
+      console.error("Error generating preview: ", error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Gagal Membuat Preview',
+            text: error.message || 'Terjadi kesalahan pada server.'
+        });
+    } finally {
+        setIsPreviewLoading(false);
+    }
   };
 
   const cancelRequest = async () => {
@@ -173,7 +190,6 @@ function DetailMakeRequest() {
     }
   }
   
-  console.log(navigation_menu)
   return (
     <Layout title={'Detail Make Request'}>
       <Block>
@@ -183,11 +199,8 @@ function DetailMakeRequest() {
             <Back goHome={() => navigate('/material-request/list-material-request')} />
             <div className="my-4">
                 <p className='lg:text-3xl text-2xl font-semibold capitalize'>Detail Material Request</p>
-                
-                {/* Wrapper untuk status dan tombol preview */}
                 <div className="flex items-center justify-between sm: gap-3 pt-4"> 
-                  {/* Tombol Preview Baru */}
-                  { 
+                  { canRead &&
                     <button
                         type="button"
                         onClick={handlePreview}
@@ -195,14 +208,12 @@ function DetailMakeRequest() {
                         className="flex items-center gap-2 py-2 px-3 w-fit rounded-md border border-slate-300 font-medium text-sm bg-white text-gray-700 hover:bg-gray-100 transition-colors duration-200 disabled:opacity-50"
                         title="Preview PDF"
                     >
-                        {/* Menggunakan icon boxicons */}
                         <i className={`bx ${isPreviewLoading ? 'bx-loader-alt bx-spin' : 'bx-file'}`}></i>
                         <span className="sm:inline">
                             {isPreviewLoading ? 'Loading...' : 'Preview'}
                         </span>
                     </button>
                   }
-                  {/* --- Akhir Tombol Preview --- */}
                   {
                     role === 'admin' ? 
                     (
@@ -421,13 +432,13 @@ function DetailMakeRequest() {
                               </tr>
                             </thead>
                             <tbody>
-                              {approvers?.map((item) => (
-                                <tr key={item.id} className={` ${item.id % 2 === 0 ? 'bg-gray-50' : 'bg-white'}`}>
-                                  <td className="px-4 py-4 rounded-l-md">{item.approval_step}</td>
-                                  <td className="px-4 py-4">{item.user_name}</td>
-                                  <td className="px-4 py-4">{item.is_upline ? 'Atasan' : 'Bukan Atasan'}</td>
-                                  <td className="px-4 py-4 rounded-r-md">{item.note}</td>
-                                  <td className="px-4 py-4 rounded-r-md">{item.EmpPhone}</td>
+                              {approvers?.map((data) => (
+                                <tr key={data.id} className={` ${item.id % 2 === 0 ? 'bg-gray-50' : 'bg-white'}`}>
+                                  <td className="px-4 py-4 rounded-l-md">{data.approval_step}</td>
+                                  <td className="px-4 py-4">{data.user_name}</td>
+                                  <td className="px-4 py-4">{data.is_upline ? 'Atasan' : 'Bukan Atasan'}</td>
+                                  <td className="px-4 py-4 rounded-r-md">{data.note}</td>
+                                  <td className="px-4 py-4 rounded-r-md">{data.EmpPhone}</td>
                                 </tr>
                               ))}
                             </tbody>
@@ -533,15 +544,7 @@ function DetailMakeRequest() {
         onClose={handleClosePreview}
         imageUrl={selectedImageUrl}
       />
-       <PdfPreviewModal
-          isOpen={isPdfPreviewOpen}
-          onClose={handleClosePdfPreview}
-          pdfUrl={selectedPdfUrl}
-          // isMobile={isMobile()}
-          // isMobileSafari={isMobileSafari()}
-          fileName={item.kode ? `${item.kode}.pdf` : 'preview-po.pdf'}
-          disabled
-        />
+
     </Layout>
   );
 

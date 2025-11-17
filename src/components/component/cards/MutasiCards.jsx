@@ -5,11 +5,11 @@ import relativeTime from 'dayjs/plugin/relativeTime'
 dayjs.extend(relativeTime)
 
 const MutasiCards = forwardRef(({ item, goToPage }, ref) => {
+
     return (
         <div
             className="bg-white mt-3 border rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all cursor-pointer"
             ref={ref}
-            onClick={() => goToPage(item)}
         >
             {/* Header */}
             <div className="flex items-center justify-between p-3 sm:p-4 border-b">
@@ -51,8 +51,8 @@ const MutasiCards = forwardRef(({ item, goToPage }, ref) => {
                     <p className="font-medium">{dayjs(item.tanggalMR).format('DD MMM YYYY')}</p>
                 </div>
                 <div>
-                    <span className="text-gray-500">Tipe Barang:</span>
-                    <p className="font-medium">{item.isAssetBarang === 1 ? 'Asset' : 'Non-Asset'}</p>
+                    <span className="text-gray-500">Aset / Bukan Aset / Other:</span>
+                    <p className="font-medium">{item.isAssetBarang === 'ya' ? 'Aset' : item.isAssetBarang === 'tidak' ? 'Bukan Aset' : 'Other'}</p>
                 </div>
             </div>
         </div>

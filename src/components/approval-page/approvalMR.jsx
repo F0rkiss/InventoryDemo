@@ -266,7 +266,7 @@ function ApprovalMR() {
                         { detailMR.length === 0 ? (
                         <p className="text-gray-400 italic">No detail data</p>
                         ) : (
-                        <div className={Number(mainMR?.is_stok) === 1 ? "overflow-x-auto" : ""}>
+                        <div className={"overflow-x-auto"}>
                             <table className="w-full text-sm text-left">
                                 <thead>
                                 <tr className="bg-gray-100">

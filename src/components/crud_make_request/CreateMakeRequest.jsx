@@ -66,6 +66,7 @@ function CreateMakeRequest() {
       setIsPreviewOpen(true);
   };
   
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (disabled) return;
@@ -87,7 +88,7 @@ function CreateMakeRequest() {
 
       if (isStockRequest === 'ya' || isStockRequest === 'other') {
         // Jika "ya" (Stok) atau "other" (Barang), kirim ID barang
-        payload.invent_barang_id = details.map((d) => d.selectedBarang?.id || d.selectedBarang?.invent_barangs_id || d.invent_barang_id);
+        payload.invent_barang_id = details.map((d) => d.selectedBarang?.kodeBarang || d.invent_barang_id);
       } else if (isStockRequest === 'tidak') {
         // Jika "tidak", kirim note
         payload.note_barang = details.map((d) => d.note_barang);
@@ -150,7 +151,7 @@ function CreateMakeRequest() {
                     type="date" 
                     value={items.tanggal} 
                     onChange={(e) => setItems({ ...items, tanggal: e.target.value })} 
-                    className="w-full p-2 active:outline-sky-500" 
+                    className="w-full bg-transparent active:outline-sky-500 p-2" // <--- p-2 SUDAH DIHAPUS
                     required />
                   </div>
                 </div>

@@ -12,6 +12,7 @@ import { DecryptID } from '../../helper/EncryptHelper';
 import { useAuth } from '../../auth/AuthContext';
 import ImagePreviewModal from '../component/modal/ImagePreviewModal';
 import Swal from 'sweetalert2';
+import { isMobileSafari } from '../../helper/DeviceHelper';
 
 function DetailPurchaseRequest() {
     const [item, setItem] = useState({});
@@ -103,29 +104,53 @@ function DetailPurchaseRequest() {
     };
 
     const handlePreview = async () => {
-        if (isPreviewLoading) return; // Mencegah klik ganda
+        if (isPreviewLoading) return;
         setIsPreviewLoading(true);
         try {
-            // Menggunakan decryptedId dari state
             const response = await api.get(`/pdf/preview_pr/${decryptedId}`, {
-                responseType: 'blob', // Penting: minta response sebagai blob (file)
+                responseType: 'blob',
             });
-            // Cek jika response adalah PDF
+
             if (response.data.type === 'application/pdf') {
-                // Buat URL objek dari blob
                 const file = new Blob([response.data], { type: 'application/pdf' });
                 const fileURL = URL.createObjectURL(file);
                 
-                // Buka di tab baru
-                window.open(fileURL, '_blank');
-                URL.revokeObjectURL(fileURL); // Bersihkan memori setelah tab terbuka
+                if (isMobileSafari()) {
+                    window.location.href = fileURL;
+                } else {
+                    const newWindow = window.open(fileURL, '_blank');
+
+                    if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
+                        Swal.fire({
+                            icon: 'info',
+                            title: 'Preview Gagal Dibuka',
+                            text: 'Browser Anda mungkin memblokir tab baru. Memulai unduhan PDF...',
+                            timer: 2500,
+                            showConfirmButton: false
+                        });
+
+                        const link = document.createElement('a');
+                        link.href = fileURL;
+                        const fileName = item.kode ? `${item.kode}.pdf` : 'preview-pr.pdf';
+                        link.setAttribute('download', fileName);
+                        document.body.appendChild(link);
+                        link.click();
+                        
+                        document.body.removeChild(link);
+                        URL.revokeObjectURL(fileURL);
+
+                    } else {
+                        setTimeout(() => {
+                            URL.revokeObjectURL(fileURL);
+                        }, 1000 * 60); 
+                    }
+                }
+
             } else {
-                // Handle jika API mengembalikan error (misal, JSON error)
-                // Coba baca blob sebagai teks untuk melihat pesan error
                 const errText = await response.data.text();
                 let errJson = {};
                 try {
-                  errJson = JSON.parse(errText); // Asumsi error adalah JSON
+                    errJson = JSON.parse(errText);
                 } catch(e) {
                     errJson = { message: 'Format respons tidak valid.' }
                 }
@@ -167,7 +192,7 @@ function DetailPurchaseRequest() {
                         >
                             <i className={`bx ${isPreviewLoading ? 'bx-loader-alt bx-spin' : 'bx-file'}`}></i>
                             <span className="sm:inline">
-                            {isPreviewLoading ? 'Loading...' : 'Preview'}
+                                {isPreviewLoading ? 'Loading...' : 'Preview'}
                             </span>
                         </button>
 

@@ -26,7 +26,7 @@ function MakeRequestList() {
     const navigate = useNavigate()
     const { role } = useAuth()
     const { canCreate, canUpdate } = useMenuAccess('MakeRequest');
-
+    const { canRead } = useMenuAccess('ExportData')
     const [filterStatus, setFilterStatus] = useState('all');
     const onFilterChange = (next) => setFilterStatus(next);
 
@@ -149,7 +149,9 @@ function MakeRequestList() {
                     value={filterStatus}
                     onChange={onFilterChange}
                 />
-                <ExportButton/>
+                { canRead &&
+                  <ExportButton/>
+                }
               </div>
             </div>
             

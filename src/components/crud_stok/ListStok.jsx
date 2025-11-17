@@ -8,13 +8,11 @@ import Transition from '../component/Transition';
 import SearchBar from '../component/SearchBar';
 import Layout from '../component/Layout';
 import ScrollPagination from '../component/ScrollPagination';
-import FlyingButton from '../component/FlyingButton';
 import DataEmpty from '../component/DataEmpty';
-import ModalBarang from '../component/modal/ModalBarang';
-import Swal from 'sweetalert2';
-import { encrypting } from '../../helper/EncryptHelper';
-// import useMenuAccess from '../../hooks/useMenuAccess';
+import useMenuAccess from '../../hooks/useMenuAccess';
 import ImagePreviewModal from '../component/modal/ImagePreviewModal';
+// import FilterAssetToggle from '../component/FilterAssetToggle'; // <-- DIHAPUS
+import { encrypting } from '../../helper/EncryptHelper';
 
 function StokList() {
   const [items, setItems] = useState([]);
@@ -22,34 +20,61 @@ function StokList() {
   const [nextCursor, setNextCursor] = useState(null);
   const [searchQuery, setSearchQuery] = useState(''); // For input value
   const [searchTerm, setSearchTerm] = useState(''); // For actual search term used in fetching
+  // const [filterAsset, setFilterAsset] = useState('all'); // <-- DIHAPUS
   const [contentVisible, setContentVisible] = useState(false);
-  const [openModal, setOpenModal] = useState(false)
+  const { canCreate } = useMenuAccess('InventStok');
   const [empty, setEmpty] = useState(false)
   const navigate = useNavigate()
-//   const { canCreate, canUpdate, canDelete } = useMenuAccess('InventStok');
 
   // image preview state
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [selectedImageUrl, setSelectedImageUrl] = useState('');
 
+  // --- LOGIKA FETCH DIPERBARUI ---
+
+  // Helper untuk membangun parameter request secara konsisten
+  const buildParams = (cursor) => {
+    const params = {};
+    if (cursor) {
+      params.cursor = cursor;
+    }
+
+    const url = `/inventStok`; // Selalu gunakan endpoint utama
+    const isSearching = !!searchTerm;
+
+    if (isSearching) {
+      params.search = searchTerm;
+    }
+    
+    return { url, params };
+  };
+
+  // Memicu fetch ulang saat searchTerm atau filterAsset berubah
   useEffect(() => {
+    setContentVisible(false); // Sembunyikan konten saat memuat data baru
     fetchItems(); 
-  }, [searchTerm]);
+  }, [searchTerm]); // <-- filterAsset dihapus dari dependency
 
   const fetchItems = async () => {
     setLoading(true);
+    setItems([]); // Selalu reset item saat filter/search berubah
+    setNextCursor(null); // Reset cursor
     try {
-        const response = await api.get(searchTerm ? `/inventStok/${searchTerm}` : '/inventStok');
+        const { url, params } = buildParams(null); // Dapatkan url dinamis dan params
+        const response = await api.get(url, { params }); // Gunakan url dan params dari helper
         const data = response.data.data;
-        if (data.data.length <= 0) {
+        
+        if (!data.data || data.data.length === 0) {
           setEmpty(true)
         } else {
           setEmpty(false)
         }
-        setItems(data.data);
+        setItems(data.data || []); // Pastikan items adalah array
         setNextCursor(data.next_cursor);
     } catch (error) {
-      
+      console.error("Error fetching items:", error);
+      setEmpty(true); // Tampilkan empty state jika ada error
+      setItems([]);
     } finally {
       setLoading(false);
       setTimeout(() => setContentVisible(true), 100);
@@ -60,20 +85,18 @@ function StokList() {
     if (!nextCursor || loading) return;
     setLoading(true);
     try {
-      const response = await api.get(searchTerm ? `/inventStok/${searchTerm}` : '/inventStok', {
-        params: {
-          cursor: nextCursor,
-        },
-      });
+      const { url, params } = buildParams(nextCursor); // Dapatkan url dinamis dan params
+      const response = await api.get(url, { params }); // Gunakan url dan params dari helper
       const data = response.data.data;
+      
       setItems((prevItems) => {
         const existingIds = new Set(prevItems.map(item => item.id));
-        const newItems = data.data.filter(item => !existingIds.has(item.id));
+        const newItems = (data.data || []).filter(item => !existingIds.has(item.id));
         return [...prevItems, ...newItems];
       });
       setNextCursor(data.next_cursor);
     } catch (error) {
-
+      console.error("Error fetching more items:", error);
     } finally {
       setLoading(false);
     }
@@ -95,42 +118,6 @@ function StokList() {
   }, []);
 
   
-//   const handleDeleteClick = async (id) => {
-//     try {
-//       const result = await Swal.fire({
-//         title: `Apakah Anda Mau Menghapus Barang ini?`,
-//         icon: 'question',
-//         showDenyButton: true,
-//         confirmButtonText: 'Yes',
-//         denyButtonText: 'No',
-//         customClass: {
-//           actions: 'my-actions',
-//           confirmButton: 'order-2',
-//           denyButton: 'order-3',
-//         },
-//       });
-
-//       if (result.isConfirmed) {
-//         const response = await api.delete(`/inventBarang-delete/${id}`);
-//         setItems((prevItems) => prevItems.filter((item) => item.id !== id));
-//         await Swal.fire('Terhapus!', '', 'success');
-//       }
-//     } catch (error) {
-//       Swal.fire({
-//         icon:'error',
-//         title:'Tidak Dapat Menghapus Barang',
-//         text:'Ada Kesalahan Dalam Sistem'
-//     })
-//     }
-//   };
-
-//   const handleUpdateClick = async (id) => {
-//     const encryptingID = await encrypting(id)
-//     if (encryptingID){
-//       navigate(`/barang/update-barang/${encryptingID}`);
-//     }
-//   };
-
   const handleDetailClick = async (id) => {
       const encryptedId = await encrypting(id)
       if (encryptedId) {
@@ -153,14 +140,18 @@ function StokList() {
     <>  
     <Layout title={'List Stok'}>
         <Block>
-          <div className='ms-3 mb-4 flex items-center justify-between'>
-                <p className='lg:text-3xl text-2xl font-semibold capitalize'>Stok Barang List</p>
-                <SearchBar
-                    onChange={handleSearchChange}
-                    disable={loading}
-                    values={searchQuery}
-                />
+          <div className='mb-4 flex flex-col md:flex-row items-center justify-between gap-2'>
+                <p className='ms-3 lg:text-3xl text-2xl font-semibold capitalize w-full md:w-auto'>Daftar Stok Barang</p>
+                <div className="flex items-center gap-2 w-full md:w-auto">
+                  <SearchBar
+                      onChange={handleSearchChange}
+                      disable={loading}
+                      values={searchQuery}
+                      containerClass="w-full md:w-auto" // Tambahkan class untuk searchbar
+                  />
+                </div>
           </div>  
+
             <Transition contentVisible={contentVisible}>
                 <div className="space-y-4">
                     <ScrollPagination
@@ -184,7 +175,7 @@ function StokList() {
                 </div>
             </Transition>
         { loading && <Loader Class="mt-20" />}
-        { items.length <= 0 && !loading &&  <DataEmpty/>}
+        { !loading && contentVisible && items.length === 0 && <DataEmpty/>}
       </Block>
       <ImagePreviewModal
         isOpen={isPreviewOpen}

@@ -98,9 +98,9 @@ const CustomSidebar = ({ showProfile = true, navOpen, setNavOpen }) => {
                 )}
                 <div className="bottom-nav flex flex-col font-inter mt-1 mb-8">
                     <button className={`rounded-lg my-1 ${isActive('/dashboard') ? 'bg-coklat-mi text-white' : 'hover:bg-stone-200 transition-colors duration-200'}`} onClick={() => handleNavigation('/dashboard')}>
-                        <div className={`flex items-center w-60 py-1`}>
-                            <i className="bx bxs-dashboard text-3xl ms-5 me-4"></i>
-                            <p className="text-lg font-medium">Dashboard</p>
+                        <div className={`flex items-center w-60 py-2`}>
+                            <i className="bx bxs-dashboard text-[28px] ms-5 me-4"></i>
+                            <p className="text-[17px] font-medium">Dashboard</p>
                         </div>
                     </button>
                     {allowedMenus.map(menu => (
@@ -110,9 +110,9 @@ const CustomSidebar = ({ showProfile = true, navOpen, setNavOpen }) => {
                                     onClick={() => handleAccordionToggle(menu.key)}
                                     className="flex items-center my-1 justify-between rounded-lg hover:bg-stone-200 transition-colors duration-200"
                                 >
-                                    <div className={`flex items-center py-1`}>
-                                        <i className={`${menu.icon} text-3xl ms-5 me-4`}></i>
-                                        <p className='text-lg font-medium'>{menu.label}</p>
+                                    <div className={`flex items-center py-2`}>
+                                        <i className={`${menu.icon} text-[28px] ms-5 me-4`}></i>
+                                        <p className='text-[17px] font-medium text-left'>{menu.label}</p>
                                     </div>
                                     <i className={`bx bx-chevron-${openAccordions[menu.key] ? 'up' : 'down'} text-4xl ios-chevron me-3`}></i>
                                 </button>
@@ -120,7 +120,7 @@ const CustomSidebar = ({ showProfile = true, navOpen, setNavOpen }) => {
                                     {menu.children.filter(sub => navigation_menu.some(nav => nav.name === sub.key)).map(sub => (
                                         <button key={sub.key} onClick={() => handleNavigation(sub.path)} className='rounded-r-lg'>
                                             <div className={`flex text-left items-center ms-8 transition-all duration-200 border-l-2 hover:border-transparent hover:rounded-r-lg border-stone-200 py-2 ${isActive(sub.path) ? 'bg-coklat-mi text-white rounded-r-lg hover:border-stone-200' : 'hover:bg-stone-200'}`}>
-                                                <p className='text-base font-medium ps-10 pe-4'>{sub.label}</p>
+                                                <p className='text-[17px] font-medium ps-8 pe-4'> {sub.label}</p>
                                             </div>
                                         </button>
                                     ))}
@@ -128,9 +128,9 @@ const CustomSidebar = ({ showProfile = true, navOpen, setNavOpen }) => {
                             </div>
                         ) : (
                             <button key={menu.key} onClick={() => handleNavigation(menu.path)} className={`rounded-lg my-1 ${isActive(menu.path) ? 'bg-coklat-mi text-white' : 'hover:bg-stone-200 transition-colors duration-200'}`}>
-                                <div className={`flex items-center w-60 py-1`}>
-                                    <i className={`${menu.icon} text-3xl ms-5 me-4`}></i>
-                                    <p className='text-lg font-medium'>{menu.label}</p>
+                                <div className={`flex items-center w-60 py-2`}>
+                                    <i className={`${menu.icon} text-[28px] ms-5 me-4`}></i>
+                                    <p className='text-[17px] font-medium'>{menu.label}</p>
                                 </div>
                             </button>
                         )

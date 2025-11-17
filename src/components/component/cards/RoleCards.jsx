@@ -4,33 +4,16 @@ import DateFormat from '../../../helper/DateFormatHelper';
 const RoleCards = forwardRef(({item, deleteItems, goToDetail, goToUpdate, restoreItems, restore = false, canDelete, canUpdate}, ref) => {
 
     return (
-        <div className='rounded-lg bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200 p-4 flex flex-col justify-between min-h-[200px]' ref={ref}>
+        <div className='rounded-lg bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200 p-4 flex flex-col justify-between min-h-[120px]' ref={ref}>
             {/* Header Section */}
-            <div className='flex mb-3 border-b items-center pb-3'>
-                <h3 className='font-bold text-xl capitalize leading-tight'>
+            <div className='flex border-b items-center pb-3'>
+                <p className='font-bold text-xl capitalize leading-tight'>
                     {item.name}
-                </h3>
-            </div>
-
-            {/* Content Section */}
-            <div className='flex-1 space-y-2'>
-                <div className="flex justify-between items-start">
-                    <span className="text-gray-500">Tgl. Dibuat</span>
-                    <p className="text-s font-medium text-gray-800 text-right max-w-[60%] break-words">
-                        {DateFormat(item.created_at)}
-                    </p>
-                </div>
-                
-                <div className="flex justify-between items-start">
-                    <span className="text-gray-500">Tgl. Diubah</span>
-                    <p className="text-sm font-medium text-gray-800 text-right max-w-[60%] break-words">
-                        {DateFormat(item.updated_at)}
-                    </p>
-                </div>
+                </p>
             </div>
 
             {/* Action Buttons Section */}
-            <div className='flex justify-end gap-2 pt-3 mt-3'>
+            <div className='flex justify-end gap-2'>
                 {canUpdate && (
                     <button
                         className="px-3 py-1.5 update-button text-sm"

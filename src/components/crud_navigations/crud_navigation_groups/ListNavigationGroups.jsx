@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import api from '../../../api/api';
 import SearchBar from '../../component/SearchBar';
-import { Page, Block, Fab, Icon } from 'framework7-react';
+import { Block } from 'framework7-react'; // Hapus import yang tidak terpakai jika perlu
 import ScrollPagination from '../../component/ScrollPagination';
 import Loader from '../../component/Loader';
 import Transition from '../../component/Transition';
@@ -21,6 +21,10 @@ function ListNavigationGroup() {
     const [nextCursor, setNextCursor] = useState(null)
     const [loading, setLoading] = useState(false)
     const [contentVisible, setContentVisible] = useState(false)
+    
+    // REF BARU: Untuk mencegah spam request (State update itu async, Ref itu sync)
+    const loadingRef = useRef(false); 
+    
     const navigate = useNavigate();
     const { canCreate, canUpdate, canDelete } = useMenuAccess('NavigationGroup')
     const typingTimeoutRef = useRef(null)
@@ -29,47 +33,90 @@ function ListNavigationGroup() {
         fetchItems()
     }, [searchTerm])
 
-    
-
     const fetchItems = async () => {
-        try {
-            setLoading(true)
-            const response = await api.get(searchTerm ? `inventNavigationGroup/${searchTerm}` : `inventNavigationGroup`)
-            const data = response.data.data
-            setItems(data.data.filter(item => item.deleted_at === null));               setNextCursor(data.next_cursor)
-        } catch (error) {
+        if (loadingRef.current) return;
 
+        try {
+            loadingRef.current = true;
+            setLoading(true);
+            setNextCursor(null); 
+
+            const url = searchTerm ? `inventNavigationGroup/${searchTerm}` : `inventNavigationGroup`;
+            const response = await api.get(url);
+            
+            // Kita ambil Wrapper-nya dulu (Object yang membungkus 'data' dan 'next_cursor')
+            const wrapper = response.data.data; 
+            
+            // Ambil array data dari dalam wrapper
+            const dataArray = Array.isArray(wrapper.data) ? wrapper.data : [];
+            
+            setItems(dataArray);
+
+            // Ambil next_cursor dari Wrapper, BUKAN dari dataArray
+            if (wrapper && wrapper.next_cursor) {
+                console.log("Next Cursor ditemukan:", wrapper.next_cursor); // Debugging
+                setNextCursor(wrapper.next_cursor);
+            } else {
+                console.log("Next Cursor habis / tidak ada");
+                setNextCursor(null);
+            }
+
+        } catch (error) {
+            console.error("Error fetching initial items:", error);
+            setItems([]);
         } finally {
-            setLoading(false)
-            setTimeout(() => setContentVisible(true), 50)
+            loadingRef.current = false;
+            setLoading(false);
+            setTimeout(() => setContentVisible(true), 50);
         }
     }
 
     const fetchMoreItems = async () => {
-        if (!nextCursor || loading) return;
+        // Guard: Jika tidak ada cursor atau sedang loading, berhenti.
+        if (!nextCursor || loadingRef.current) return;
+
         try {
-            setLoading(true)
-            const response = await api.get(
-                searchTerm ? `inventNavigationGroup/${searchTerm}` : `inventNavigationGroup`
-                , {
-                params: {
-                    cursor: nextCursor
-                }
-            })
-            const data = response.data.data
+            loadingRef.current = true;
+            // Jangan setLoading(true) global jika ingin UX lebih mulus (opsional),
+            // tapi untuk konsistensi biarkan saja dulu.
+            setLoading(true); 
+
+            const url = searchTerm ? `inventNavigationGroup/${searchTerm}` : `inventNavigationGroup`;
+            const response = await api.get(url, {
+                params: { cursor: nextCursor }
+            });
+
+            const wrapper = response.data.data;
+            const newDataRaw = wrapper.data || []; 
+
+            if (newDataRaw.length === 0) {
+                setNextCursor(null);
+                return;
+            }
+
             setItems((prevItems) => {
+                // Filter duplikat berdasarkan ID
                 const existingIds = new Set(prevItems.map(item => item.id));
-                const newItems = data.data
-                .filter(item => item.deleted_at === null)
-                .filter(item => !existingIds.has(item.id));
+                const newItems = newDataRaw
+                    // .filter(item => item.deleted_at === null)
+                    .filter(item => !existingIds.has(item.id));
+                
                 return [...prevItems, ...newItems];
             });
-            setNextCursor(data.next_cursor);
-        } catch (error) {
 
+            // Update cursor untuk halaman berikutnya dari wrapper
+            if (wrapper.next_cursor) {
+                setNextCursor(wrapper.next_cursor);
+            } else {
+                setNextCursor(null);
+            }
+
+        } catch (error) {
+            console.error("Error fetching more items:", error);
+            setNextCursor(null);
         } finally {
-            setLoading(false)
-            setTimeout(() => setContentVisible(true), 50)
+            loadingRef.current = false;
+            setLoading(false);
         }
     }
 
@@ -79,6 +126,9 @@ function ListNavigationGroup() {
             clearTimeout(typingTimeoutRef.current);
         }
         typingTimeoutRef.current = setTimeout(() => {
+            // Reset items saat mengetik agar UI bersih dulu
+            setItems([]); 
+            setNextCursor(null);
             setSearchTerm(query);
         }, 750);
     };
@@ -91,11 +141,6 @@ function ListNavigationGroup() {
                 showDenyButton: true,
                 confirmButtonText: 'Yes',
                 denyButtonText: 'No',
-                customClass: {
-                    actions: 'my-actions',
-                    confirmButton: 'order-2',
-                    denyButton: 'order-3',
-                },
             });
 
             if (result.isConfirmed) {
@@ -106,7 +151,7 @@ function ListNavigationGroup() {
         } catch (error) {
             Swal.fire({
                 icon:'error',
-                title:'Tidak Dapat Menghapus User',
+                title:'Gagal Menghapus',
                 text:'Ada Kesalahan Dalam Sistem'
             })
         }
@@ -117,11 +162,12 @@ function ListNavigationGroup() {
         navigate(`/navigation-groups/detail-navigation-groups/${encryptingID}`)
     } 
 
-    if (!canUpdate){}
     const goToUpdate = async(id) => {
         const encryptingID = await encrypting(id)
         navigate(`/navigation-groups/update-navigation-groups/${encryptingID}`)
     }
+
+    console.log('Rendered with items:', items);
     
     return (
         <Layout title={'List Navigations'}>
@@ -135,26 +181,28 @@ function ListNavigationGroup() {
                     />
                 </div>
                 <Transition contentVisible={contentVisible}>
-                    <ScrollPagination rootSelector=".page-content" fetchMoreItems={fetchMoreItems} loading={loading} nextCursor={nextCursor}>
-                        <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
-                            {
-                                ( items?.map((item) => (
+                    {/* Tambahkan kondisi: Jangan render ScrollPagination jika items kosong, 
+                        gunakan div biasa agar tidak trigger scroll event di halaman kosong */}
+                    
+                    {items.length > 0 ? (
+                        <ScrollPagination rootSelector=".page-content" fetchMoreItems={fetchMoreItems} loading={loading} nextCursor={nextCursor}>
+                            <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
+                                {items.map((item) => (
                                     <NavigationCards
-                                    key={item.id}
-                                    item={item}
-                                    goToDetail={goToDetail}
-                                    goToUpdate={goToUpdate}
-                                    deleteItems={deleteItems}
-                                    canDelete={canDelete}
-                                    canUpdate={canUpdate}
+                                        key={item.id}
+                                        item={item}
+                                        goToDetail={goToDetail}
+                                        goToUpdate={goToUpdate}
+                                        deleteItems={deleteItems}
+                                        canDelete={canDelete}
+                                        canUpdate={canUpdate}
                                     />
-                                )))
-                            }
-                        </div>
-                    </ScrollPagination>
-                    {
-                        items.length <= 0 && !loading && <DataEmpty/>
-                    }
+                                ))}
+                            </div>
+                        </ScrollPagination>
+                    ) : (
+                        !loading && <DataEmpty/>
+                    )}
                 </Transition>
                 {loading && <Loader Class={'mt-44'} />}
             </Block>
