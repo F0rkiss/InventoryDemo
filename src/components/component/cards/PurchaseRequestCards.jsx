@@ -42,22 +42,22 @@ const PurchaseRequestCards = forwardRef(
                         {isList && (
                             <div
                                 className={`max-h-max min-w-max max-w-max rounded-md border ${
-                                    Update === true || POLength === 0
+                                    !item.is_completed
                                         ? 'bg-amber-50 border-amber-400'
                                         : 'bg-green-50 border-green-400'
                                 }`}
                             >
                                 <p
                                     className={`py-1 px-2 flex items-center gap-1 text-xs font-medium ${
-                                        Update === true || POLength === 0
+                                        !item.is_completed
                                             ? 'text-amber-600'
                                             : 'text-green-700'
                                     }`}
                                 >
                                     <i className="bx bxs-time"></i>
-                                    {Update === true || POLength === 0
-                                        ? 'Belum Masuk Purchase Order'
-                                        : 'Sudah Masuk Purchase Order'}
+                                    {!item.is_completed
+                                        ? 'Belum Selesai'
+                                        : 'Sudah Selesai'}
                                 </p>
                             </div>
                         )}
