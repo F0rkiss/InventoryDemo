@@ -32,7 +32,7 @@ function CreateApprovalLPB() {
     if (items.back_to_approval_step === '' || isNaN(Number(items.back_to_approval_step))) {
       e.back_to_approval_step = 'Back to approval step wajib diisi (angka).';
     }
-    if (!items.user_id) e.user_id = 'User wajib dipilih.';
+    if (!items.user) e.user = 'User wajib dipilih.';
     if (!items.note?.trim()) e.note = 'Note wajib diisi.';
     if (!items.is_upline || ![0,1].includes(items.is_upline.value)) {
         e.is_upline = 'Pilih Ya atau Tidak.';
@@ -94,7 +94,7 @@ function CreateApprovalLPB() {
       const payload = {
         approval_step: Number(items.approval_step),
         back_to_approval_step: Number(items.back_to_approval_step),
-        user_id: items.user.value, 
+        user_id: items.user?.value, 
         note: items.note,
         is_upline: items.is_upline.value,
       };

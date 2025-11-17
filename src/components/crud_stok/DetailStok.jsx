@@ -12,10 +12,7 @@ import DateFormat from '../../helper/DateFormatHelper';
 function DetailStok() {
   const [item, setItem] = useState({}); // Initialize as null
   const isAsset = item.is_asset;
-
-  // Mengambil data records (sekarang langsung berisi data mutasi)
-  // const types = item.type_data; // <-- DIHAPUS
-  const records = item.records;
+  const [mutasi, setMutasi] = useState([]);
   
   const navigate = useNavigate();
   const { id } = useParams();
@@ -36,6 +33,7 @@ function DetailStok() {
   useEffect(() => {
     if (decryptedId) {
       fetchItems()
+      fetchMutasi()
     }
   }, [decryptedId])
 
@@ -58,6 +56,16 @@ function DetailStok() {
       setTimeout(() => setContentVisible(true), 50);
     }
   };
+
+  const fetchMutasi = async () => {
+    try {
+      const response = await api.get(`/inventStok-mutasi/${decryptedId}`);
+      setMutasi(response.data.data.data || []);
+    } catch (error) {
+      console.error("Error fetching mutasi:", error);
+    }
+  };
+
     
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [selectedImageUrl, setSelectedImageUrl] = useState('');
@@ -152,17 +160,11 @@ function DetailStok() {
               </div>
             </div>
             
-            {/* --- Blok History Dihapus --- */}
-
-            {/* --- BLOK KONDISIONAL BARU UNTUK MUTASI --- */}
-            {/* Selalu tampilkan Mutasi jika records ada */}
             <div className="bg-white border rounded-md p-6 mt-6 min-h-[150px]">
               <h2 className="text-xl font-semibold text-gray-400 mb-3">Mutasi</h2>
-              { !records || records.length === 0 ? (
-                // Tampilan jika records kosong
+              { mutasi.length === 0 ? (
                 <p className="text-gray-400 italic">Belum ada mutasi.</p>
               ) : (
-                // Tampilan baru untuk array mutasi (sebagai tabel)
                 <div className='overflow-x-auto'>
                   <table className="w-full text-sm text-left border-collapse">
                     <thead>
@@ -174,12 +176,17 @@ function DetailStok() {
                       </tr>
                     </thead>
                     <tbody>
-                      {records.map((m, index) => (
+                      {mutasi.map((m, index) => (
                         <tr key={m.id || index} className={`${index % 2 !== 0 ? 'bg-gray-50' : 'bg-white'} align-top`}>
                           <td className="p-3">{DateFormat(m.tanggal)}</td>
                           <td className="p-3">{m.stok_awal}</td>
+
                           <td className={`p-3 ${m.stok_awal <= m.stok_akhir ? 'text-green-600' : 'text-red-600'}`}>
-                            {m.stok_awal <= m.stok_akhir ? <p>+{m.stok_change}</p> : <p>-{m.stok_change}</p>}
+                            {m.stok_awal <= m.stok_akhir ? (
+                              <p>+{m.stok_change}</p>
+                            ) : (
+                              <p>-{m.stok_change}</p>
+                            )}
                           </td>
                           <td className="p-3 rounded-r-md">{m.stok_akhir}</td>
                         </tr>

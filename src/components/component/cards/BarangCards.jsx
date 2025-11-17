@@ -55,7 +55,7 @@ const ItemCard = forwardRef(({ item, handleDetailClick, handleUpdateClick, handl
       >
           {/* --- Top Action Buttons --- */}
           <div className="flex justify-end items-center gap-2 mb-4">
-            {canUpdate && (
+            { canUpdate && (
                 <button
                   className="w-fit px-5 py-2 update-button flex items-center text-sm gap-2"
                   onClick={() => handleUpdateClick(item.id)}
@@ -64,7 +64,7 @@ const ItemCard = forwardRef(({ item, handleDetailClick, handleUpdateClick, handl
                   <i className="bx bx-edit"></i>
                 </button>
             )}
-            {canDelete && (
+            { canDelete && (
                 <button
                   className="w-fit px-5 py-2 delete-button flex items-center text-sm gap-2"
                   onClick={() => handleDeleteClick(item.id)}

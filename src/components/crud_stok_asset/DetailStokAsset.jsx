@@ -8,14 +8,13 @@ import { DecryptID } from '../../helper/EncryptHelper';
 import Transition from '../component/Transition';
 import ImagePreviewModal from '../component/modal/ImagePreviewModal';
 import DateFormat from '../../helper/DateFormatHelper';
+// --- 1. IMPORT MODAL BARU ---
+import ModalStokHistory from '../component/modal/ModalStokHistory'; // Sesuaikan path jika perlu
 
 function AdminStokDetail() {
-  const [item, setItem] = useState({}); // Initialize as null
+  const [item, setItem] = useState({});
   const isAsset = item.is_asset;
-
-  // Mengambil data records (sekarang langsung berisi data history)
-  // const types = item.type_data; // <-- DIHAPUS
-  const records = item.records;
+  const [histories, setHistories] = useState([]);
   
   const navigate = useNavigate();
   const { id } = useParams();
@@ -23,6 +22,10 @@ function AdminStokDetail() {
   const [contentVisible, setContentVisible] = useState(false);
   const apiUrl = import.meta.env.VITE_URL;
   const [decryptedId, setDecryptedId] = useState('');
+
+  // --- 2. TAMBAHKAN STATE UNTUK MODAL EDIT ---
+  const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
+  const [selectedHistory, setSelectedHistory] = useState(null); // Menyimpan data histori yang akan diedit
 
 
   useEffect(() => {
@@ -36,29 +39,33 @@ function AdminStokDetail() {
   useEffect(() => {
     if (decryptedId) {
       fetchItems()
+      fetchHistories()
     }
   }, [decryptedId])
 
   const fetchItems = async () => {
     try {
       setLoading(true);
-
-      // --- Hanya fetch data stok utama ---
       const response = await api.get(`/inventStok-detail/admin/${decryptedId}`);
       const mainItem = response.data.data;
-      console.log(mainItem)
       setItem(mainItem);
-
-      // --- Logika untuk fetch history dan mutasi telah dihapus ---
-
     } catch (error) {
       console.error("Error fetching stock details:", error);
-      // Handle error appropriately, maybe navigate back or show a message
     } finally {
       setLoading(false);
       setTimeout(() => setContentVisible(true), 50);
     }
   };
+
+  const fetchHistories = async () => {
+  try {
+    const response = await api.get(`/inventStok-history/${decryptedId}`);
+    setHistories(response.data.data.data || []);
+  } catch (error) {
+    console.error("Error fetching histories:", error);
+  }
+};
+
     
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [selectedImageUrl, setSelectedImageUrl] = useState('');
@@ -72,6 +79,26 @@ function AdminStokDetail() {
     setSelectedImageUrl(imageUrl);
     setIsPreviewOpen(true);
   };
+  
+  // --- 3. FUNGSI UNTUK REFRESH SETELAH MODAL TERSIMPAN/DIEDIT ---
+  const handleHistoryActionSuccess = () => {
+    setIsHistoryModalOpen(false);
+    setSelectedHistory(null); 
+    fetchHistories(); 
+  };
+
+  // --- 4. FUNGSI UNTUK MEMBUKA MODAL DALAM MODE CREATE ---
+  const openCreateHistoryModal = () => {
+    setSelectedHistory(null); 
+    setIsHistoryModalOpen(true);
+  };
+
+  // --- 5. FUNGSI UNTUK MEMBUKA MODAL DALAM MODE EDIT ---
+  const openEditHistoryModal = (history) => {
+    setSelectedHistory(history); 
+    setIsHistoryModalOpen(true);
+  };
+
 
   return (
     <Layout title={'Detail Stok Barang'}>
@@ -88,7 +115,6 @@ function AdminStokDetail() {
                 <div>
                   <h2 className="font-bold capitalize text-2xl ">{item.nama_barang || 'Nama Barang'}</h2>
                   <p className="mb-4 text-base">
-                    {/* Logika ini masih relevan untuk label Aset/Non Aset */}
                     {isAsset === 'ya' ? 'Aset' : isAsset === 'tidak' ? 'Non Aset' : 'Bangunan'}
                   </p>
                   <div className="space-y-2 text-sm">
@@ -120,8 +146,6 @@ function AdminStokDetail() {
               <div className="bg-white border rounded-lg p-6">
                 <h2 className="font-semibold text-xl text-gray-400 mb-6">Detail Stok</h2>
                 <div className="space-y-5 text-sm">
-
-                  {/* Info Stok */}
                   <div className="flex justify-between">
                     <p className="text-gray-500">Quantity</p>
                     <p className="font-medium">{item?.qty}</p>
@@ -134,35 +158,46 @@ function AdminStokDetail() {
                     <p className="text-gray-500">Catatan Stok</p>
                     <p className="font-medium text-right">{item?.note || '-'}</p>
                   </div>
-                  
                 </div>
               </div>
             </div>
             
-            {/* Selalu tampilkan History jika records ada */}
             <div className="bg-white border rounded-md p-6 mt-6 min-h-[150px]">
-              <h2 className="text-xl font-semibold text-gray-400 mb-3">Histories</h2>
-              { !records || records.length === 0 ? (
-                // Tampilan jika records kosong
+              <div className="flex justify-between items-center mb-3">
+                <h2 className="text-xl font-semibold text-gray-400">Histories</h2>
+                <button 
+                  onClick={openCreateHistoryModal} // <-- Panggil fungsi baru untuk create
+                  className="py-2 px-3 rounded-lg font-medium bg-blue-500 hover:bg-blue-600 transition-color duration-200 text-white text-sm flex items-center w-fit gap-1"
+                >
+                  <i className='bx bx-plus font-semibold'></i>
+                  Tambah Histori
+                </button>
+              </div>
+              
+              { histories.length === 0 ? (
                 <p className="text-gray-400 italic">Belum ada histori penggunaan</p>
               ) : (
-                // Tampilan jika records memiliki data
-                <div className='overflow-x-auto'> 
+                <div className='overflow-x-auto'>
                   <table className="w-full text-sm text-left border-collapse">
                     <thead>
                       <tr className="bg-gray-100">
-                        <th className="p-3 rounded-l-md">User ID.</th>
+                        <th className="p-3 rounded-l-md">Status</th>
+                        <th className="p-3">User</th>
                         <th className="p-3">Note</th>
                         <th className="p-3">Lokasi</th>
-                        <th className="p-3 rounded-r-md">Foto</th>
-                        <th className="p-3 rounded-r-md">Tanggal</th>
+                        <th className="p-3">Foto</th>
+                        <th className="p-3">Tanggal</th>
+                        <th className="p-3 rounded-r-md"></th>
                       </tr>
                     </thead>
                     <tbody>
-                      {records.map((i, index) => (
+                      {histories.map((i, index) => (
                         <tr key={i.id} className={`${index % 2 !== 0 ? 'bg-gray-50' : 'bg-white'} align-top`}>
-                          <td className="p-3 whitespace-pre-line rounded-l-md">
-                            {i.user_id}
+                          <td className="p-3 whitespace-pre-line">
+                            <span className="font-medium">{i.status || 'N/A'}</span>
+                          </td>
+                          <td className="p-3 whitespace-pre-line">
+                            { i.EmpName }
                           </td>
                           <td className="p-3 w-1/3 whitespace-pre-line">
                             {i.note || '-'}
@@ -170,13 +205,25 @@ function AdminStokDetail() {
                           <td className="p-3">{i.lokasi || '-'}</td>
                           <td className="p-3">
                             { i.image ?
-                              (<img src={`${apiUrl}${i.image}`} alt="item" className="max-w-xs w-full rounded shadow" />)
+                              (<img 
+                                src={`${apiUrl}/${i.image}`} 
+                                alt="history" 
+                                className="min-w-32 max-w-36 h-32 object-cover rounded border cursor-pointer" 
+                                onClick={() => handleImageClick(`${apiUrl}/${i.image}`)}
+                              />)
                               :
                               (<p className="text-gray-400 italic">No Image</p>)
                             }
                           </td>
+                          <td className="p-3 min-w-[18vh]">{DateFormat(i.updated_at)}</td>
+
                           <td className="p-3 rounded-r-md">
-                            {DateFormat(i.updated_at)}
+                            <button
+                              onClick={() => openEditHistoryModal(i)}
+                              className="bg-yellow-500 hover:bg-yellow-600 text-white p-1 rounded-md transition duration-200 text-lg"
+                            >
+                              <i className='bx bx-edit'></i>
+                            </button>
                           </td>
                         </tr>
                       ))}
@@ -185,17 +232,28 @@ function AdminStokDetail() {
                 </div>
               )}
             </div>
-
-            {/* --- Blok Mutasi Dihapus --- */}
             
           </Transition>
         </div>
       </Block>
+
       <ImagePreviewModal
         isOpen={isPreviewOpen}
         onClose={handleClosePreview}
         imageUrl={selectedImageUrl}
       />
+      {decryptedId && (
+        <ModalStokHistory
+          open={isHistoryModalOpen}
+          onClose={() => {
+            setIsHistoryModalOpen(false);
+            setSelectedHistory(null); // Pastikan reset saat ditutup secara manual
+          }}
+          stokId={decryptedId}
+          historyData={selectedHistory} // Kirim data histori jika sedang mode edit
+          onHistoryActionSuccess={handleHistoryActionSuccess}
+        />
+      )}
     </Layout>
   );
 }
