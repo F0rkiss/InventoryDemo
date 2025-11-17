@@ -168,7 +168,7 @@ function AssetStokList() {
                                 handleDetailClick={handleDetailClick}
                                 handleImageClick={handleImageClick}
                                 key={item.id}
-                                initial={'Stok'}
+                                initial={'StokAsset'}
                             />
                             ))
                         }

@@ -59,12 +59,11 @@ const menus = [
             { key: "SumberBarang", label: "Sumber Barang", path: "/sumber-barang/list-sumber-barang" },
             { key: "Categories", label: "Category", path: "/category/list-category" },
             { key: "TingkatKebutuhan", label: "Tingkat Kebutuhan", path: "/tk/list-tk" },
-
+            { key: "Status", label: "Status", icon: "bx bxs-checkbox-checked", path: "/status/list-status" },
         ]
     },
     { key: "User", label: "Data User", icon: "bx bxs-user-badge", path: "/user/list-user" },
     { key: "TypeRequest", label: "Type Request", icon:"bx bx-comment-detail" ,path: "/type-request/list-type-request" },
-    { key: "Status", label: "Status", icon: "bx bxs-checkbox-checked", path: "/status/list-status" },
     { key: "Role", label: "Role", icon: "bx bx-tag", path: "/role/list-role" },
     { key: "Suplier", label: "Supplier", icon: "bx bxs-truck", path: "/supplier/list-supplier" },
     { key: "NavigationGroup", label: "Navigation Group", icon: "bx bx-navigation", path: "/navigation-groups/list-navigation-groups" },

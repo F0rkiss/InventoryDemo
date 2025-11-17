@@ -64,7 +64,7 @@ const ApprovalActions = ({
     }
 
     return (
-        <div className={`flex flex-col gap-2 px-4 py-3 bg-gray-50 ${className}`}>
+        <div className={`flex flex-col gap-2 px-4 py-3 ${className}`}>
             {/* Reason Input Field */}
             {showReasonField && (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">

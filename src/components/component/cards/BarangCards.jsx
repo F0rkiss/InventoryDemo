@@ -93,7 +93,7 @@ const ItemCard = forwardRef(({ item, handleDetailClick, handleUpdateClick, handl
                 </div>
               )}
 
-              {initial === 'Stok' && (
+              {(initial === 'Stok' || initial === 'StokAsset') && (
                 <div className="text w-full space-y-2 pb-2">
                   <div className="text-gray-500">
                     Kode Barang <p className='text-black font-medium'>{item.kodeBarang}</p>
@@ -104,9 +104,11 @@ const ItemCard = forwardRef(({ item, handleDetailClick, handleUpdateClick, handl
                   <div className=" text-gray-500">
                     Tgl. Masuk <p className='text-black font-medium'>{DateFormat(item.tanggal_barang_masuk)}</p>
                   </div>
-                  <div className="text-gray-500">
-                    Quantity <p className='text-black font-medium'>{item.qty}</p>
-                  </div>
+                  { initial === 'Stok' &&
+                    <div className="text-gray-500">
+                      Quantity <p className='text-black font-medium'>{item.qty}</p>
+                    </div>
+                  }
                   <div className="text-gray-500 space-x-2">
                     Note <p className='text-black font-medium'>{item.note}</p>
                   </div>

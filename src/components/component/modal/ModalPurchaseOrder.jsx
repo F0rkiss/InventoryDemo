@@ -215,7 +215,7 @@ const ModalPurchaseOrder = ({ onClose, onSave, open, initialData, apiUrl, prItem
                     {/* Barang Selection */}
                     <div className="mb-4">
                         {/* ... (JSX untuk pilih barang tidak berubah) ... */}
-                        <label className="font-semibold">Pilih Barang (dari Purchase Request)</label>
+                        <label className="font-semibold">Pilih Barang (berdasarkan Purchase Request)</label>
                         <div className="relative mt-1" ref={searchContainerRef}>
                             {modalData.selectedBarang ? (
                                 <div className="relative border rounded-lg p-3 bg-white flex items-start gap-3 shadow-sm">
