@@ -152,10 +152,11 @@ const PurchaseRequestCards = forwardRef(
                     ) : (
                         <div className="flex justify-end gap-2 mt-3">
                             <button
-                                className="px-3 py-1.5 purchase-button text-sm sm:text-base"
+                                className="flex justify-center items-center w-full px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white  font-semibold rounded-lg transition-colors duration-200"
                                 onClick={() => goToCreate(item.id)}
                             >
                                 Buat Pembelian 
+                                <i className="bx bx-chevron-right text-lg"></i>
                             </button>
                         </div>
                     )}
