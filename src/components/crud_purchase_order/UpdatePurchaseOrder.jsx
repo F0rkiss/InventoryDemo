@@ -123,7 +123,6 @@ function UpdatePurchaseOrder() {
             }
 
             const fetchedLampiran = data.lampiran?.map(fileString => `${apiUrl}${fileString}`) || [];
-            console.log(fetchedLampiran)
             const fetchedItems = {
                 purchase_request : data.purchase_request.kode, 
                 purchase_request_id: data.purchase_request.id, 

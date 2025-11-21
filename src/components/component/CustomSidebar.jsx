@@ -60,9 +60,9 @@ const CustomSidebar = ({ showProfile = true, navOpen, setNavOpen }) => {
                 onClick={() => [setOpens(false), setTimeout(() => setNavOpen(false), 350)]}
             />
             <div className={`bg-white absolute px-3 top-0 left-0 z-50 h-screen ease-out ${opens ? 'opacity-100 w-[19rem] overflow-y-scroll max-h-full transition-all duration-300' : 'w-0 opacity-0 transition-all duration-300'} overflow-hidden`}>
-                <div className="flex justify-between items-center my-5 mx-3 px-2">
+                <div className="flex justify-between items-center my-5 mx-3 ps-2">
                     <img src={logo} style={{ maxWidth: '32px', maxHeight: '30px' }} className='ps-1' alt="" />
-                    <button className='w-[29px]' onClick={() => [setOpens(false), setTimeout(() => setNavOpen(false), 350)]}>
+                    <button className='w-fit rounded-md hover:bg-gray-200 transition-color duration-300' onClick={() => [setOpens(false), setTimeout(() => setNavOpen(false), 350)]}>
                         <i className='bx bx-x text-4xl'></i>
                     </button>
                 </div>

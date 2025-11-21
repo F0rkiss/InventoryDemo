@@ -142,54 +142,59 @@ function CreateBarang() {
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div className="mb-5 space-y-2">
                   <label className="font-semibold">Nama</label>
-                  <div className="bg-white p-2 rounded-md border border-gray-300 mt-2">
+                  <div className="bg-white p-3 rounded-md border border-gray-300 mt-2">
                     <input
                       type="text"
                       name="name"
                       value={items.name}
                       onChange={(e) => setItems({ ...items, name: e.target.value })}
-                      className="w-full p-2 placeholder:text-gray-400 "
+                      className="w-full p-3 placeholder:text-gray-400 "
                       maxLength={80}
-                      placeholder="Nama Barang"
+                      placeholder="Masukkan nama barang"
                       required
                     />
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <label className="font-semibold">Kode Gudang</label>
-                  <div className="bg-white p-2 rounded-md border border-gray-300 mt-2">
+                  <label className="font-semibold">Kode Gudang (Opsional)</label>
+                  <div className="bg-white p-3 rounded-md border border-gray-300 mt-2">
                     <input
                       type="text"
                       name="kode_gudang"
                       value={items.kode_gudang}
                       onChange={(e) => setItems({ ...items, kode_gudang: e.target.value })}
-                      className="w-full p-2 placeholder:text-gray-400 "
+                      className="w-full p-3 placeholder:text-gray-400 "
                       maxLength={80}
-                      placeholder="Kode Gudang"
+                      placeholder="Masukkan kode gudang"
                     />
                   </div>
                 </div>
 
                 {/* Satuan & Asset side-by-side on md+ */}
-                <div className="md:grid md:grid-cols-2 md:gap-x-4">
+                {/* <div className="md:grid md:grid-cols-2 md:gap-x-4"> */}
                   <div className="space-y-2">
                     <label className="font-semibold">Satuan</label>
-                    <div className="bg-white p-2 rounded-md border border-gray-300 mt-2">
+                    <div className="bg-white p-3 rounded-md border border-gray-300 mt-2">
                       <input
                         type="text"
                         name="satuan"
                         value={items.satuan}
                         onChange={(e) => setItems({ ...items, satuan: e.target.value })}
-                        className="w-full p-2 placeholder:text-gray-400 "
+                        className="w-full p-3 placeholder:text-gray-400 "
                         maxLength={80}
                         placeholder="Satuan"
                         required
                       />
                     </div>
                   </div>
-                  <div className="space-y-2">
-                    <label className="font-semibold">Aset</label>
+                  <div className="space-y-2 xs:mt-3 md:mt-0">
+                    <div className="grid">
+                      <label className="font-semibold">Aset</label>
+                      <label className="font-regular text-xs text-gray-500">
+                        Pilih "Yes" jika barang tergolong aset, "No" barang bukan termasuk aset, "Other" jika barang tidak masuk di keduanya.
+                        </label>
+                    </div>
                     <Select
                       options={isAsset}
                       value={items.is_asset}
@@ -198,7 +203,7 @@ function CreateBarang() {
                       required
                     />
                   </div>
-                </div>
+                {/* </div> */}
 
                 <div className="mb-5 space-y-2">
                   <label className="font-semibold">Jenis Barang</label>

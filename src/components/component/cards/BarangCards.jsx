@@ -55,7 +55,7 @@ const ItemCard = forwardRef(({ item, handleDetailClick, handleUpdateClick, handl
       >
           {/* --- Top Action Buttons --- */}
           <div className="flex justify-end items-center gap-2 mb-4">
-            {canUpdate && (
+            { canUpdate && (
                 <button
                   className="w-fit px-5 py-2 update-button flex items-center text-sm gap-2"
                   onClick={() => handleUpdateClick(item.id)}
@@ -64,7 +64,7 @@ const ItemCard = forwardRef(({ item, handleDetailClick, handleUpdateClick, handl
                   <i className="bx bx-edit"></i>
                 </button>
             )}
-            {canDelete && (
+            { canDelete && (
                 <button
                   className="w-fit px-5 py-2 delete-button flex items-center text-sm gap-2"
                   onClick={() => handleDeleteClick(item.id)}
@@ -93,7 +93,7 @@ const ItemCard = forwardRef(({ item, handleDetailClick, handleUpdateClick, handl
                 </div>
               )}
 
-              {initial === 'Stok' && (
+              {(initial === 'Stok' || initial === 'StokAsset') && (
                 <div className="text w-full space-y-2 pb-2">
                   <div className="text-gray-500">
                     Kode Barang <p className='text-black font-medium'>{item.kodeBarang}</p>
@@ -104,9 +104,11 @@ const ItemCard = forwardRef(({ item, handleDetailClick, handleUpdateClick, handl
                   <div className=" text-gray-500">
                     Tgl. Masuk <p className='text-black font-medium'>{DateFormat(item.tanggal_barang_masuk)}</p>
                   </div>
-                  <div className="text-gray-500">
-                    Quantity <p className='text-black font-medium'>{item.qty}</p>
-                  </div>
+                  { initial === 'Stok' &&
+                    <div className="text-gray-500">
+                      Quantity <p className='text-black font-medium'>{item.qty}</p>
+                    </div>
+                  }
                   <div className="text-gray-500 space-x-2">
                     Note <p className='text-black font-medium'>{item.note}</p>
                   </div>

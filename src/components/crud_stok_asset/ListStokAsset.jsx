@@ -13,6 +13,7 @@ import DataEmpty from '../component/DataEmpty';
 import { encrypting } from '../../helper/EncryptHelper';
 import useMenuAccess from '../../hooks/useMenuAccess';
 import ImagePreviewModal from '../component/modal/ImagePreviewModal';
+import Swal from 'sweetalert2';
 
 function AssetStokList() {
   const [items, setItems] = useState([]);
@@ -21,6 +22,7 @@ function AssetStokList() {
   const [searchQuery, setSearchQuery] = useState(''); // For input value
   const [searchTerm, setSearchTerm] = useState(''); // For actual search term used in fetching
   const [contentVisible, setContentVisible] = useState(false);
+  const { canUpdate, canCreate, canDelete } = useMenuAccess('InventStokAsset');
   const [empty, setEmpty] = useState(false)
   const navigate = useNavigate()
 
@@ -118,12 +120,48 @@ function AssetStokList() {
   // cleanup on unmount
     return () => debounceRef.current && clearTimeout(debounceRef.current);
   }, []);
+
+  const handleDeleteClick = async (id) => {
+    try {
+      const result = await Swal.fire({
+        title: `Apakah Anda mau menghapus stok aset ini?`,
+        icon: 'question',
+        showDenyButton: true,
+        confirmButtonText: 'Yes',
+        denyButtonText: 'No',
+        customClass: {
+          actions: 'my-actions',
+          confirmButton: 'order-2',
+          denyButton: 'order-3',
+        },
+      });
+
+      if (result.isConfirmed) {
+        const response = await api.delete(`/inventStok-delete/${id}`);
+        setItems((prevItems) => prevItems.filter((item) => item.id !== id));
+        await Swal.fire('Terhapus!', '', 'success');
+      }
+    } catch (error) {
+      Swal.fire({
+        icon:'error',
+        title:'Tidak dapat menghapus stok aset',
+        text:'Ada Kesalahan Dalam Sistem'
+    })
+    }
+  };
   
   const handleDetailClick = async (id) => {
       const encryptedId = await encrypting(id)
       if (encryptedId) {
         navigate(`/stok-asset/detail-stok/${encryptedId}`)
       }
+  };
+
+  const handleUpdateClick = async (id) => {
+    const encryptingID = await encrypting(id)
+    if (encryptingID){
+      navigate(`/stok-asset/update-stok/${encryptingID}`);
+    }
   };
 
   const handleClosePreview = () => {
@@ -166,9 +204,13 @@ function AssetStokList() {
                             <BarangCards
                                 item={item}
                                 handleDetailClick={handleDetailClick}
+                                handleUpdateClick={handleUpdateClick}
+                                handleDeleteClick={handleDeleteClick}
                                 handleImageClick={handleImageClick}
                                 key={item.id}
-                                initial={'Stok'}
+                                initial={'StokAsset'}
+                                canUpdate={canUpdate}
+                                canDelete={canDelete}
                             />
                             ))
                         }
@@ -178,7 +220,7 @@ function AssetStokList() {
         { loading && <Loader Class="mt-20" />}
         { !loading && contentVisible && items.length === 0 && <DataEmpty/>}
       </Block>
-      <FlyingButton goTo={'/stok-asset/create-stok'} />
+      {canCreate && <FlyingButton goTo={'/stok-asset/create-stok'} />}
       <ImagePreviewModal
         isOpen={isPreviewOpen}
         onClose={handleClosePreview}

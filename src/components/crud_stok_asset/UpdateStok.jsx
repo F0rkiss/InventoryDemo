@@ -1,89 +1,144 @@
-import React, { useState, useEffect } from 'react'
-import api from '../../api/api'
-import { useNavigate } from 'react-router-dom'
-import Back from '../component/Back'
+import React, { useEffect, useState } from 'react'
+import api from '../../api/api' // Adjusted path as per your original file
+import { useNavigate, useParams } from 'react-router-dom'
 import { Block } from 'framework7-react'
-import Layout from '../component/Layout'
+import { DecryptID } from '../../helper/EncryptHelper' // From your original file
+import Transition from '../../components/component/Transition' // Adjusted path
+import Back from '../../components/component/Back' // Adjusted path
+import Layout from '../../components/component/Layout' // Adjusted path
 import Swal from 'sweetalert2'
-import Transition from '../component/Transition'
-import SelectPaginate from '../component/SelectPaginateBarang' // Sesuaikan path jika perlu
-import CustomCheckbox from '../component/CustomCheckBox' // IMPORT BARU
+import SelectPaginateBarang from '../../components/component/SelectPaginateBarang' // From CreateStok reference
+import CustomCheckbox from '../../components/component/CustomCheckBox' // From CreateStok reference
 
-function CreateStok() {
+function UpdateStokAsset() {
   const navigate = useNavigate()
-
-  const API_IMG_URL = import.meta.env.VITE_URL;
+  const { id } = useParams()
+  const API_IMG_URL = import.meta.env.VITE_URL
 
   const [items, setItems] = useState({
     barang: null,
     qty: '',
     tanggal: '',
     note: '',
-    is_access: false, // Default boolean false untuk checkbox
+    is_access: false,
   })
 
   const [disabled, setDisabled] = useState(false)
+  const [decryptedId, setDecryptedId] = useState('')
   const [contentVisible, setContentVisible] = useState(false)
-
-  useEffect(() => {
-    const t = setTimeout(() => setContentVisible(true), 50)
-    return () => clearTimeout(t)
-  }, [])
+  const [originalItems, setOriginalItems] = useState(null)
+  const [isUnchanged, setIsUnchanged] = useState(true)
 
   const goHome = () => navigate('/stok-asset/list-stok')
 
-  const validate = () => {
-    if (
-      !items.barang ||
-      !items.qty ||
-      !items.tanggal ||
-      !items.note 
-      // !items.is_access dihapus dari validasi karena false (tidak dicentang) adalah nilai yang valid
-    ) {
+  // 1. Decrypt ID from URL
+  useEffect(() => {
+    const decryptedIds = DecryptID(id)
+    setDecryptedId(decryptedIds)
+    if (!decryptedIds) navigate(-1) // Go back if ID is invalid
+  }, [id, navigate])
+
+  // 2. Fetch existing data when decryptedId is set
+  useEffect(() => {
+    if (decryptedId) fetchItems()
+  }, [decryptedId])
+
+  const fetchItems = async () => {
+    try {
+      // Assumed API endpoint for stok detail, based on your other files
+      const res = await api.get(`inventStok-detail/admin/${decryptedId}`)
+      const data = res.data.data
+
+      const constructedBarang = {
+        id: data.invent_barangs_id,    // Use invent_barangs_id from screenshot
+        name: data.nama_barang,        // Use nama_barang from screenshot
+        image: data.image,             // Use image from screenshot
+        kode_barang: data.kode_barang, // Pass this along
+        satuan: data.satuan || null    // Pass satuan or null if it doesn't exist
+      };
+
+      // Map fetched data to state
+      const fetched = {
+        barang: constructedBarang,     // Pass the new object we just built
+        qty: data.qty,
+        tanggal: data.tanggal_barang_masuk,
+        note: data.note,
+        is_access: !!data.is_access,
+      }
+
+      setItems(fetched)
+      setOriginalItems(fetched) // Save original data for comparison
+      setIsUnchanged(true)
+    } catch (err) {
       Swal.fire({
-        icon: 'warning',
-        title: 'Data belum lengkap',
-        text: 'Mohon lengkapi data barang, quantity, tanggal, dan note.',
+        icon: 'error',
+        title: 'Gagal memuat data',
+        text: 'Data stok tidak ditemukan. Silakan coba lagi.',
       })
-      return false
+      goHome() // Go back to list if fetch fails
+    } finally {
+      setTimeout(() => setContentVisible(true), 50)
     }
-    return true
   }
 
+  // 3. Check for changes to enable/disable Update button
+  useEffect(() => {
+    if (!originalItems) return
+    
+    // Check if the selected barang ID is different
+    const barangIdChanged = (items.barang?.id ?? null) !== (originalItems.barang?.id ?? null)
+
+    const changed =
+      barangIdChanged ||
+      String(items.qty) !== String(originalItems.qty) || // Use string for safe comparison
+      items.tanggal !== originalItems.tanggal ||
+      items.note !== originalItems.note ||
+      items.is_access !== originalItems.is_access
+
+    setIsUnchanged(!changed)
+  }, [items, originalItems])
+
+  // 4. Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
-      if (disabled) return
+      if (disabled || isUnchanged) return
       setDisabled(true)
-      if (!validate()) {
+
+      // Validation
+      if (!items.barang || !items.qty || !items.tanggal || !items.note) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Data belum lengkap',
+          text: 'Mohon lengkapi data barang, quantity, tanggal, dan note.',
+        })
         setDisabled(false)
         return
       }
 
       const barangId = items.barang.id || items.barang.value;
 
-      await api.post('inventStok-create', {
+      // Use PUT request for update
+      await api.put(`inventStok-update/${decryptedId}`, {
         invent_barangs_id: barangId,
         qty: items.qty,
         tanggal_barang_masuk: items.tanggal,
         note: items.note,
-        // Konversi boolean true/false ke format yang diinginkan API (biasanya 1/0 atau "1"/"0")
-        is_access: items.is_access ? 1 : 0, 
+        is_access: items.is_access ? 1 : 0, // Convert boolean to 1/0
       })
 
       Swal.fire({
-        title: 'Barang baru berhasil dibuat!',
+        title: 'Berhasil diubah!',
         icon: 'success',
         timer: 2000,
         showConfirmButton: false,
       })
-      navigate('/stok-asset/list-stok')
-      resetValue()
+      goHome()
     } catch (error) {
-      console.error(error);
+      console.error(error)
       Swal.fire({
         icon: 'error',
-        title: 'Tidak Dapat Membuat Stok Barang',
+        title: 'Tidak Dapat Mengubah Stok Barang',
         text: 'Ada kesalahan dalam sistem',
       })
     } finally {
@@ -91,22 +146,18 @@ function CreateStok() {
     }
   }
 
+  // 5. Reset changes back to original fetched data
   const resetValue = () => {
-    setItems({
-      barang: null,
-      qty: '',
-      tanggal: '',
-      note: '',
-      is_access: false,
-    })
+    if (originalItems) setItems(originalItems)
   }
 
   return (
-    <Layout title={'Create Stok'}>
+    <Layout title={'Update Stok'}>
       <Block>
         <div className="xs:px-0 md:px-4">
           <Back goHome={goHome} />
-          <p className="lg:text-3xl text-2xl font-semibold capitalize my-4">Create Stok Barang</p>
+          <p className="lg:text-3xl text-2xl font-semibold capitalize my-4">Update Stok Barang</p>
+
           <Transition contentVisible={contentVisible}>
             <div className="p-8 bg-white shadow-sm rounded-lg border">
               <form onSubmit={handleSubmit} className="space-y-5">
@@ -114,14 +165,15 @@ function CreateStok() {
                 {/* --- BARANG --- */}
                 <div className="mb-5 space-y-2">
                   <label className="font-semibold">Barang</label>
-                  <SelectPaginate
+                  <SelectPaginateBarang
                     apiUrl={API_IMG_URL}
-                    value={items.barang}
+                    value={items.barang} // Pass the full object
                     placeholder="Pilih barang untuk dijadikan stok"
                     onSelect={(selectedBarang) => setItems({ ...items, barang: selectedBarang })}
+                    disabled={true}
                   />
                   {!items.barang && disabled && (
-                      <p className="text-red-500 text-xs mt-1">Barang wajib dipilih</p>
+                    <p className="text-red-500 text-xs mt-1">Barang wajib dipilih</p>
                   )}
                 </div>
 
@@ -174,27 +226,27 @@ function CreateStok() {
                     />
                   </div>
                 </div>
-                
+
                 {/* --- AKSES (CUSTOM CHECKBOX) --- */}
                 <div className="mb-5 pt-2">
-                    <CustomCheckbox 
-                        label="Dapat Diakses (Public)"
-                        checked={items.is_access}
-                        onChange={(val) => setItems({ ...items, is_access: val })}
-                    />
-                    <p className="text-xs text-gray-400 mt-1 ml-9">
-                        Centang jika stok ini boleh diakses oleh pengguna lain.
-                    </p>
+                  <CustomCheckbox
+                    label="Dapat Diakses (Public)"
+                    checked={items.is_access}
+                    onChange={(val) => setItems({ ...items, is_access: val })}
+                  />
+                  <p className="text-xs text-gray-400 mt-1 ml-9">
+                    Centang jika stok ini boleh diakses oleh pengguna lain.
+                  </p>
                 </div>
-                
+
                 {/* --- BUTTONS --- */}
                 <div className="flex flex-col items-center justify-self-center mt-10 max-w-full w-[25rem] space-y-2 text-center">
                   <button
-                    disabled={disabled}
+                    disabled={disabled || isUnchanged} // Disable if no changes
                     type="submit"
                     className="py-2 px-2 rounded-lg font-medium bg-blue-500/85 hover:bg-blue-500 transition-color duration-200 text-white disabled:bg-blue-200 w-full"
                   >
-                    Create
+                    Update
                   </button>
                   <button
                     type="button"
@@ -213,4 +265,4 @@ function CreateStok() {
   )
 }
 
-export default CreateStok;
+export default UpdateStokAsset
