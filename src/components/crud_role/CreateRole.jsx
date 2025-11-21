@@ -68,29 +68,32 @@ function CreateRole() {
     <div>
         <Layout title={'Create role'}>
             <Block>
-                <Back goHome={() => navigate('/role/list-role')}/>
-                <div className='bg-white rounded-lg shadow-sm p-5'>
-                    <form onSubmit={handleSubmit}>
-                        <div className="mb-5">
-                            <label>Nama:</label>
-                            <div className='bg-white p-2 rounded-md border-solid border-gray-300 border'>
-                                <input 
-                                    type="text" 
-                                    name="name" 
-                                    value={items.name} 
-                                    maxLength={50}
-                                    onChange={  e => setItems({ ...items, name: e.target.value })}
-                                    placeholder='Nama'
-                                    className="w-full p-2 border rounded placeholder:text-gray-400 placeholder:font-inter placeholder:font-light"
-                                    required 
-                                />
+                <div className="xs:px-0 md:px-4">
+                    <Back goHome={() => navigate('/role/list-role')}/>
+                    <p className="lg:text-3xl text-2xl font-semibold capitalize my-4">Create Role</p>
+                    <div className='bg-white rounded-lg shadow-xl shadow-gray-200 border p-8'>
+                        <form onSubmit={handleSubmit}>
+                            <div className="mb-5">
+                                <label className="font-semibold">New Role</label>
+                                <div className='bg-white mt-2 p-3 rounded-md border-solid border-gray-300 border'>
+                                    <input 
+                                        type="text" 
+                                        name="name" 
+                                        value={items.name} 
+                                        maxLength={50}
+                                        onChange={e => setItems({ ...items, name: e.target.value })}
+                                        placeholder='Masukkan nama role baru'
+                                        className="w-full p-3 border rounded placeholder:text-gray-400 placeholder:font"
+                                        required 
+                                    />
+                                </div>
                             </div>
-                        </div>
-                        <div className="flex">
-                            <button disabled={disabled} type="submit" className="bg-cyan-400 text-white p-2 rounded w-1/2 me-3">Create role</button>
-                            <button type="button" onClick={clearAll} className="bg-red-400 text-white p-2 rounded w-1/2">Clear</button>
-                        </div>
-                    </form>
+                            <div className="flex flex-col items-center justify-center mt-10 mx-auto max-w-full w-[25rem] space-y-2 text-center">
+                                <button disabled={disabled} type='submit' className='w-full py-2 px-2 rounded-lg font-medium bg-blue-500 hover:bg-blue-600 transition-colors duration-200 text-white disabled:bg-blue-300'>Submit</button>
+                                <button className='w-full py-2 px-2 rounded-lg font-medium border border-red-200 bg-red-50 hover:bg-red-100 transition-colors duration-200 text-red-600' onClick={clearAll} type='button'>Reset</button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </Block>
         </Layout>

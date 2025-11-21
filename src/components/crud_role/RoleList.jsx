@@ -125,7 +125,7 @@ function RoleList() {
         <Layout title={''}>
             <Block>
             <div className='ms-3 mb-4 flex items-center justify-between'>
-                <p className='lg:text-3xl text-2xl font-semibold capitalize'>Role List</p>
+                <p className='lg:text-3xl text-2xl font-semibold capitalize'>Daftar Role</p>
                 <SearchBar
                     onChange={handleSearchChange}
                     disable={loading}

@@ -6,18 +6,23 @@ import { useParams } from 'react-router-dom';
 import Back from '../component/Back';
 import Layout from '../component/Layout';
 import { DecryptID } from '../../helper/EncryptHelper';
+import Swal from 'sweetalert2';
+// [1] IMPORT KOMPONEN TAMBAHAN
+import Loader from '../component/Loader';
+import Transition from '../component/Transition';
 
 function UpdateRole() {
     const [items, setItems] = useState({
         name : '',
     })
     const [decryptedId, setDecryptedId] = useState('')
-    const role = ([
-        {value : 'admin', label : 'Admin'},
-        {value : 'user', label : 'User'}
-    ])
     const [error, setError] = useState(0)
     const [disabled, setDisabled] = useState(false)
+    
+    // [2] STATE UNTUK LOADING
+    const [loading, setLoading] = useState(false)
+    const [contentVisible, setContentVisible] = useState(false)
+    
     const {id} = useParams()
     const navigate = useNavigate();
 
@@ -27,7 +32,7 @@ function UpdateRole() {
         if (!decryptedIds) {
             navigate(-1)
         }
-    }, [id])
+    }, [id, navigate])
 
     useEffect(() => {
         if (decryptedId) {
@@ -37,17 +42,27 @@ function UpdateRole() {
 
     const fetchItems = async () => {
         try {
+            setLoading(true) // [3] MULAI LOADING
             const response = await api.get(`role-detail/${decryptedId}`);
             const data = response.data.data;
             setItems({
                 name: data?.name || '',
-                role: data?.role?.id
             });
         } catch (error) {
-
+            Swal.fire({
+                icon:'error',
+                title:'Gagal Memuat Data',
+                text:'Role tidak ditemukan.'
+            })
+            navigate('/role/list-role');
+        } finally {
+            // [4] SELESAI LOADING
+            setTimeout(() => {
+                setLoading(false);
+                setContentVisible(true);
+            }, 50)
         }
     };
-    // console.log(data)
     
     const handleSubmit = async (e) => {
         e.preventDefault();        
@@ -57,13 +72,23 @@ function UpdateRole() {
             setDisabled(true);
             await api.put(`role-update/${decryptedId}`, {
                 name : items.name,
-                role : items.role
+            });
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil!',
+                text: 'Role berhasil diperbarui.',
+                timer: 2000,
+                showConfirmButton: false
             });
             navigate('/role/list-role');
         } catch (error) {
             console.error('Submit Error:', error);
-    
-            // Cek error yang aman
+            
+            Swal.fire({
+                icon:'error',
+                title:'Gagal Memperbarui Role',
+                text: error?.response?.data?.message || 'Ada Kesalahan Dalam Sistem'
+            })
             const statusCode = error?.response?.data?.statusCode || 500;
             setError(statusCode);
         } finally {
@@ -71,36 +96,51 @@ function UpdateRole() {
         }
     }
     
-    
   return (
-        <Layout title={'Update User'}>
-            <Block>
-                <Back goHome={() => navigate('/role/list-role')} />
-                <div className='bg-white rounded shadow-sm p-3 mt-4'>
-                    <form onSubmit={handleSubmit}>
-                        <div className="mb-5">
-                            <label>Nama Role:</label>
-                            <div className='bg-white p-2 rounded-md border-solid border-gray-300 border'>
-                                <input 
-                                    type="text" 
-                                    name="name" 
-                                    value={items.name} 
-                                    onChange={e => setItems({ ...items, name: e.target.value })}
-                                    maxLength={50}
-                                    placeholder='Nama'
-                                    className="w-full p-2 border rounded placeholder:text-gray-400 placeholder:font-inter placeholder:font-light capitalize"
-                                    required
-                                />
+        <div> 
+            <Layout title={'Update Role'}>
+                <Block>
+                    <div className="xs:px-0 md:px-4">
+                        <Back goHome={() => navigate('/role/list-role')} />
+                        <p className="lg:text-3xl text-2xl font-semibold capitalize my-4">Update Role</p>
+                        
+                        {/* [5] TAMPILKAN LOADER */}
+                        { loading && <Loader Class="mt-44"/> }
+
+                        {/* [6] WRAP DENGAN TRANSITION */}
+                        <Transition contentVisible={contentVisible}>
+                            <div className='bg-white rounded-lg shadow-xl shadow-gray-200 border p-8'>
+                                <form onSubmit={handleSubmit}>
+                                    <div className="mb-5">
+                                        <label className="font-semibold">New Role</label>
+                                        <div className='bg-white mt-2 p-3 rounded-md border-solid border-gray-300 border'>
+                                            <input 
+                                                type="text" 
+                                                name="name" 
+                                                value={items.name} 
+                                                onChange={e => setItems({ ...items, name: e.target.value })}
+                                                maxLength={50}
+                                                placeholder='Masukkan nama role'
+                                                className="w-full p-3 border rounded placeholder:text-gray-400 placeholder:font"
+                                                required
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="flex flex-col items-center justify-center mt-10 mx-auto max-w-full w-[25rem] space-y-2 text-center">
+                                        <button disabled={disabled} type='submit' className='w-full py-2 px-2 rounded-lg font-medium bg-blue-500 hover:bg-blue-600 transition-colors duration-200 text-white disabled:bg-blue-300'>
+                                            Update
+                                        </button>
+                                        <button className='w-full py-2 px-2 rounded-lg font-medium border border-red-200 bg-red-50 hover:bg-red-100 transition-colors duration-200 text-red-600' onClick={fetchItems} type='button'>
+                                            Reset
+                                        </button>
+                                    </div>
+                                </form>
                             </div>
-                        </div>
-                        <div className="flex">
-                            <button disabled={disabled} type="submit" className="bg-cyan-400 text-white p-2 rounded w-1/2 me-3">Update User</button>
-                            <button type="button" onClick={fetchItems} className="bg-red-400 text-white p-2 rounded w-1/2">Clear</button>
-                        </div>
-                    </form>
-                </div>
-            </Block>
-        </Layout>
+                        </Transition>
+                    </div>
+                </Block>
+            </Layout>
+        </div>
   )
 }
 

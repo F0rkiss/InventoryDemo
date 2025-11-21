@@ -16,6 +16,7 @@ import { isMobileSafari } from '../../helper/DeviceHelper';
 function DetailPurchaseOrder() {
   const [item, setItem] = useState({})
   const detailPO = item.details || []
+  const approver = item.approver || []
   const purchaseRequest = item.purchase_request;
   const suplier = item.suplier;
   const detailPR = item.purchase_request?.details || [];
@@ -306,10 +307,47 @@ function DetailPurchaseOrder() {
                   )}
                 </div>
               </div>
+              {/* Approver Infor Section */}
+              { approver &&
+                <div className="bg-white border rounded-md p-6 mt-6">
+                  <div className='flex justify-between items-center mb-4'>
+                    <p className="text-xl text-gray-400 font-semibold mb-2">Approver Info.</p>
+                  </div>
+                  { !approver ?
+                    (
+                      <p className="text-gray-400 italic">No Approver</p>
+                    ) : (
+                      <>
+                        <div className="overflow-x-auto">
+                          <table className="w-full text-sm text-left">
+                            <thead>
+                              <tr className="bg-gray-100">
+                                <th className="px-3 py-2 rounded-l-md">Step</th>
+                                <th className="px-3 py-1">Name</th>
+                                <th className="px-3 py-1">Email</th>
+                                <th className="px-3 py-1 rounded-r-md">Note</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {approver?.map((item, i) => (
+                                <tr key={item.id} className={` ${item.id % 2 !== 0 ? 'bg-gray-50' : 'bg-white'}`}>
+                                  <td className="px-4 py-4 rounded-l-md">{item.approval_step}</td>
+                                  <td className="px-4 py-4 rounded-r-md">{item.EmpName}</td>
+                                  <td className="px-4 py-4 rounded-r-md">{item.email}</td>
+                                  <td className="px-4 py-4 rounded-r-md">{item.note}</td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      </>
+                    )
+                  }
+                </div>
+              }
 
               {/* Purchase Request Section */}
-              {
-              purchaseRequest &&
+              { purchaseRequest &&
                 <div className="bg-white border rounded-md p-6 mt-6">
                   <div className='flex justify-between items-center mb-4'>
                     <p className="text-xl text-gray-400 font-semibold mb-2">Purchase Request</p>
