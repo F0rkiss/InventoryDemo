@@ -81,7 +81,9 @@ function ApprovalMR() {
 
         const handleApprove = async (itemId, note = '') => {
             const result = await Swal.fire({
-                title: 'Apakah Anda yakin ingin menyetujui?',
+                title: isAdminApproval 
+                ? 'Apakah barang yang diinput sudah sesuai dengan note barang?' 
+                : 'Apakah Anda yakin ingin menyetujui?',
                 icon: 'question',
                 showCancelButton: true,
                 confirmButtonText: 'Ya, Setujui',

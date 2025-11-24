@@ -2,7 +2,7 @@ import React from 'react';
 
 function InfoRow({ label, value, showInfo = false, infoText = "" }) {
   return (
-    <div className="flex flex-col sm:flex-row justify-between gap-1 sm:gap-0">
+    <div className="flex flex-col sm:flex-row justify-between gap-1 sm:gap-4">
       <div className="flex items-start sm:items-center gap-1 relative group">
         <span className="text-gray-500 break-words">{label}</span>
         {showInfo && (
@@ -15,7 +15,7 @@ function InfoRow({ label, value, showInfo = false, infoText = "" }) {
         )}
       </div>
 
-      <span className="font-medium break-words">{value || '-'}</span>
+      <span className="font-medium break-words sm:ml-4 whitespace-pre-line">{value || '-'}</span>
     </div>
   );
 }

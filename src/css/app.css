@@ -1,6 +1,20 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE & Edge */
+  scrollbar-width: none;     /* Firefox */
+}
+
+.no-scrollbar {
+  -webkit-overflow-scrolling: touch;
+}
+
 /* Sembunyikan tombol "show password" bawaan di Chrome, Edge, Safari */
 input[type="password"]::-webkit-password-reveal-button {
   display: none;

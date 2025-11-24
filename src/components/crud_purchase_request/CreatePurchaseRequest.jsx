@@ -295,7 +295,7 @@ function CreatePurchaseRequest() {
                                         onChange={handleChange}
                                         className="w-full min-h-fit p-2 placeholder:text-gray-400"
                                         maxLength={225}
-                                        placeholder="Note"
+                                        placeholder="Note Harus Terisi"
                                         rows="3"
                                         required
                                     />
@@ -311,7 +311,7 @@ function CreatePurchaseRequest() {
                         <div className="flex flex-col items-center justify-self-center mt-10 max-w-full w-[25rem] space-y-2 text-center">
                             <button
                                 onClick={handleCreatePurchaseRequest}
-                                disabled={submitting || !item.note}
+                                disabled={submitting}
                                 className='py-2 px-4 w-full rounded-lg font-medium bg-blue-500 hover:bg-blue-600 transition-color duration-200 text-white disabled:bg-blue-200'>
                                 {submitting ? 'Creating...' : 'Create Purchase Request'}
                             </button>

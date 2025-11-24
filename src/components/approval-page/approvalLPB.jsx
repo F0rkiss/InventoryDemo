@@ -155,10 +155,10 @@ function ApprovalLPB() {
                                 <p className="text-lg font-bold">{infoPO.kode}</p>
                                 <p className="text-sm text-gray-500 mb-4">{DateFormat(infoPO.tanggal, false)}</p>
                                 <div className="space-y-3">
-                                    <InfoRow label="Pembuat Permintaan" value={infoPO.user_id} />
-                                    <InfoRow label="Keterangan" value={infoPO.Keterangan} />
+                                    <InfoRow label="Pembuat Permintaan" value={infoPO.user?.EmpName} />
+                                    <InfoRow label="Keterangan" value={infoPO.keterangan} />
                                     <InfoRow label="Estimasi Tanggal Penyerahan" value={DateFormat(infoPO.tanggal_penyerahan)} />
-                                    <InfoRow label="Kode Suplier" value={infoPO.kode_suplier} />
+                                    <InfoRow label="Kode Suplier" value={infoPO.suplier?.nama_perusahaan} />
                                 </div>
                             </div>
                         </div>
