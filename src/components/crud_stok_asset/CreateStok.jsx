@@ -107,7 +107,6 @@ function CreateStok() {
         <div className="xs:px-0 md:px-4">
           <Back goHome={goHome} />
           <p className="lg:text-3xl text-2xl font-semibold capitalize my-4">Create Stok Barang</p>
-
           <Transition contentVisible={contentVisible}>
             <div className="p-8 bg-white shadow-sm rounded-lg border">
               <form onSubmit={handleSubmit} className="space-y-5">

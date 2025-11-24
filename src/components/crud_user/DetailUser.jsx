@@ -84,7 +84,7 @@ function DetailUser() {
                                 <div>
                                     <p className="text-gray-500 text-sm">Role</p>
                                     <p className="text-gray-900 font-medium capitalize">
-                                        {item?.role || '-'}
+                                        {user?.role?.name || '-'}
                                     </p>
                                 </div>
                                 <div>

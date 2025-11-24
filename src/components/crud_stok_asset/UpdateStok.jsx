@@ -253,7 +253,7 @@ function UpdateStokAsset() {
                     onClick={resetValue}
                     className="py-2 px-2 rounded-lg font-medium border border-red-200 bg-red-50 hover:bg-red-100 transition-color duration-200 text-red-600 w-full"
                   >
-                    Reset Changes
+                    Reset
                   </button>
                 </div>
               </form>

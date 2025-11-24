@@ -83,11 +83,11 @@ function CreateStatus() {
           <p className="lg:text-3xl text-2xl font-semibold capitalize my-4">Create Status</p>
 
           <Transition contentVisible={contentVisible}>
-            <div className="p-8 bg-white shadow-sm rounded-lg border">
+            <div className="p-8 bg-white shadow-xl shadow-gray-200 rounded-lg border">
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div className="mb-5 space-y-2">
                   <label className="font-semibold">Status</label>
-                  <div className="bg-white p-2 rounded-md border border-gray-300 mt-2">
+                  <div className="bg-white p-3 rounded-md border border-gray-300 mt-2">
                     <input
                       type="text"
                       name="name"
@@ -95,7 +95,7 @@ function CreateStatus() {
                       maxLength={50}
                       onChange={(e) => setItems({ ...items, name: e.target.value })}
                       placeholder="Nama status"
-                      className="w-full p-2 placeholder:text-gray-400 placeholder:font-inter placeholder:font-light capitalize"
+                      className="w-full p-2 placeholder:text-gray-400 "
                       required
                     />
                   </div>
@@ -103,14 +103,14 @@ function CreateStatus() {
 
                 <div className="mb-4">
                   <label className="font-semibold">Deskripsi</label>
-                  <div className="bg-white p-2 rounded-md border border-gray-300 mt-2">
+                  <div className="bg-white p-3 rounded-md border border-gray-300 mt-2">
                     <input
                       type="text"
                       name="description"
                       value={items.description}
                       onChange={(e) => setItems({ ...items, description: e.target.value })}
-                      className="w-full p-2 placeholder:text-gray-400 placeholder:font-inter placeholder:font-light"
-                      placeholder="Deskripsi"
+                      className="w-full p-2 placeholder:text-gray-400 "
+                      placeholder="Berikan deskripsi"
                       required
                     />
                   </div>
@@ -122,7 +122,7 @@ function CreateStatus() {
                     type="submit"
                     className="py-2 px-2 rounded-lg font-medium bg-blue-500/85 hover:bg-blue-500 transition-color duration-200 text-white disabled:bg-blue-200"
                   >
-                    Create
+                    Submit
                   </button>
                   <button
                     type="button"

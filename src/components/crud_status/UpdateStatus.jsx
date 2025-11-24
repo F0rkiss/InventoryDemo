@@ -114,19 +114,19 @@ function UpdateStatus() {
           <Back goHome={() => navigate('/status/list-status')} />
           <p className="lg:text-3xl text-2xl font-semibold capitalize my-4">Update Status</p>
           <Transition contentVisible={contentVisible}>
-            <div className="p-8 bg-white shadow-sm rounded-lg border">
+            <div className="p-8 bg-white shadow-xl shadow-gray-200 rounded-lg border">
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div className="mb-5 space-y-2">
                   <label className="font-semibold">Nama Status</label>
-                  <div className="bg-white p-2 rounded-md border border-gray-300 mt-2">
+                  <div className="bg-white p-3 rounded-md border border-gray-300 mt-2">
                     <input
                       type="text"
                       name="name"
                       value={items.name}
                       onChange={(e) => setItems({ ...items, name: e.target.value })}
                       maxLength={50}
-                      placeholder="Nama"
-                      className="w-full p-2 placeholder:text-gray-400 placeholder:font-inter placeholder:font-light capitalize"
+                      placeholder="Nama status"
+                      className="w-full p-2 placeholder:text-gray-400"
                       required
                     />
                   </div>
@@ -134,14 +134,14 @@ function UpdateStatus() {
 
                 <div className="mb-4">
                   <label className="font-semibold">Deskripsi</label>
-                  <div className="bg-white p-2 rounded-md border border-gray-300 mt-2">
+                  <div className="bg-white p-3 rounded-md border border-gray-300 mt-2">
                     <input
                       type="text"
                       name="description"
                       value={items.description}
                       onChange={(e) => setItems({ ...items, description: e.target.value })}
-                      className="w-full p-2 placeholder:text-gray-400 placeholder:font-inter placeholder:font-light"
-                      placeholder="Deskripsi"
+                      className="w-full p-2 placeholder:text-gray-400 "
+                      placeholder="Berikan deskripsi"
                       required
                     />
                   </div>

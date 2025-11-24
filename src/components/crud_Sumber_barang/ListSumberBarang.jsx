@@ -129,7 +129,7 @@ import useMenuAccess from '../../hooks/useMenuAccess'
       <Layout title={'List Sumber Barang'}>
           <Block>
             <div className='ms-3 mb-4 flex items-center justify-between'>
-                <p className='lg:text-3xl text-2xl font-semibold capitalize'>Sumber Barang List</p>
+                <p className='lg:text-3xl text-2xl font-semibold capitalize'>Daftar Sumber Barang</p>
                 <SearchBar
                     onChange={handleSearchChange}
                     disable={loading}

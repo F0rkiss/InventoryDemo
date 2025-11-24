@@ -69,8 +69,9 @@ const CustomNavbar = ({ scrollRootSelector, scrollRootRef }) => {
               <button
                 aria-label="sidebar-button"
                 onClick={() => setOpenSidebar(!openSidebar)}
+                className="w-fit px-1 ms-4 rounded-md hover:bg-gray-200 transition-color duration-300"
               >
-                <i className="bx bx-menu text-black text-3xl ms-4"></i>
+                <i className="bx bx-menu text-black text-3xl"></i>
               </button>
             )}
             <span className="ml-3 pl-4 border-l-2 text-xl font-semibold max-w-fit whitespace-nowrap">

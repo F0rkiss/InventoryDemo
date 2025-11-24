@@ -191,26 +191,25 @@ function UpdateBarang() {
                 <div className="p-8 bg-white shadow-sm rounded-lg border">
                 <form onSubmit={handleSubmit} className="space-y-5">
                     <div className="mb-5 space-y-2">
-                    <label className="font-semibold">Name</label>
-                    <div className="bg-white p-2 rounded-md border border-gray-300 mt-2">
+                    <label className="font-semibold">Nama</label>
+                    <div className="bg-white p-3 rounded-md border border-gray-300 mt-2">
                         <input
                         type="text"
                         name="name"
                         value={item.name}
                         onChange={(e) => setItem({ ...item, name: e.target.value })}
-                        className="w-full p-2 placeholder:text-gray-400 placeholder:font-inter placeholder:font-light"
+                        className="w-full p-3 placeholder:text-gray-400 placeholder:font-inter placeholder:font-light"
                         maxLength={80}
-                        placeholder="Name"
+                        placeholder="Masukkan nama barang"
                         required
                         />
                     </div>
                     </div>
 
                     {/* Kode & Gudang side-by-side on md+ */}
-                    <div className="md:grid md:grid-cols-2 md:gap-x-4">
                     <div className="mb-5 space-y-2">
-                        <label className="font-semibold">Kode Gudang</label>
-                        <div className="bg-white p-2 rounded-md border border-gray-300 mt-2">
+                        <label className="font-semibold">Kode Gudang (Opsional)</label>
+                        <div className="bg-white p-3 rounded-md border border-gray-300 mt-2">
                         <input
                             type="text"
                             name="kode_gudang"
@@ -218,18 +217,16 @@ function UpdateBarang() {
                             onChange={(e) => setItem({ ...item, kode_gudang: e.target.value })}
                             className="w-full p-2 placeholder:text-gray-400 placeholder:font-inter placeholder:font-light"
                             maxLength={80}
-                            placeholder="Kode Gudang"
+                            placeholder="Masukkan kode gudang"
                             required
                         />
                         </div>
                     </div>
-                    </div>
 
                     {/* Satuan & Asset side-by-side on md+ */}
-                    <div className="md:grid md:grid-cols-2 md:gap-x-4">
                     <div className="mb-5 space-y-2">
                         <label className="font-semibold">Satuan</label>
-                        <div className="bg-white p-2 rounded-md border border-gray-300 mt-2">
+                        <div className="bg-white p-3 rounded-md border border-gray-300 mt-2">
                         <input
                             type="text"
                             name="satuan"
@@ -242,8 +239,13 @@ function UpdateBarang() {
                         />
                         </div>
                     </div>
-                    <div className="mb-5 space-y-2">
-                        <label className="font-semibold">Aset</label>
+                    <div className="space-y-2 xs:mt-3 md:mt-0">
+                        <div className="grid">
+                            <label className="font-semibold">Aset</label>
+                            <label className="font-regular text-xs text-gray-500">
+                                Pilih "Yes" jika barang tergolong aset, "No" barang bukan termasuk aset, "Other" jika barang tidak masuk di keduanya.
+                            </label>
+                        </div>
                         <Select
                         options={isAsset}
                         value={item.is_asset}
@@ -251,7 +253,6 @@ function UpdateBarang() {
                         onChange={(is_asset) => setItem({ ...item, is_asset })}
                         required
                         />
-                    </div>
                     </div>
 
                     <div className="mb-5 space-y-2">
