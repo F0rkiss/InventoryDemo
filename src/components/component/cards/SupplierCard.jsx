@@ -16,6 +16,10 @@ const SupplierCards = forwardRef(({item, deleteItems, goToDetail, goToUpdate, ca
                 </div>
                 <div className='flex justify-between'>
                     <p className="text-gray-500">Telepon</p>
+                    <p>{item.telp}</p>
+                </div>
+                <div className='flex justify-between'>
+                    <p className="text-gray-500">Mobile Telp.</p>
                     <p>{item.phone}</p>
                 </div>
                 <div className='flex justify-between'>

@@ -217,12 +217,12 @@ function AdminStokDetail() {
                           </td>
                           <td className="p-3 min-w-[18vh]">{DateFormat(i.updated_at)}</td>
 
-                          <td className="p-3 rounded-r-md">
+                          <td className="p-3 rounded-r-md ">
                             <button
                               onClick={() => openEditHistoryModal(i)}
-                              className="bg-yellow-500 hover:bg-yellow-600 text-white p-1 rounded-md transition duration-200 text-lg"
+                              className="bg-yellow-500 hover:bg-yellow-600 text-white py-1 md:px-1 px-2 rounded-md transition duration-200 text-lg"
                             >
-                              <i className='bx bx-edit'></i>
+                              <i className='bx bx-edit pt-1'></i>
                             </button>
                           </td>
                         </tr>

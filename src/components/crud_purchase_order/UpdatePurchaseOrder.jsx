@@ -13,8 +13,9 @@ import { useAuth } from '../../auth/AuthContext'
 import PriceFormat from '../../helper/PriceFormatHelper'
 import ImagePreviewModal from '../component/modal/ImagePreviewModal'
 import Loader from '../component/Loader'
-import MultiUpload from '../component/MultiUpload' // [1] IMPORT MultiUpload
-import CustomCheckbox from '../component/CustomCheckBox' // [1] IMPORT CustomCheckbox
+import MultiUpload from '../component/MultiUpload' 
+import CustomCheckbox from '../component/CustomCheckBox'
+import DatePicker from '../component/DatePicker'
 
 function UpdatePurchaseOrder() {
     const [items, setItems] = useState({
@@ -96,7 +97,7 @@ function UpdatePurchaseOrder() {
             return (
                 detail.invent_barangs_id !== orig.invent_barangs_id ||
                 String(detail.qty) !== String(orig.qty) || 
-                String(detail.harga_sub_total) !== String(orig.harga_sub_total) ||
+                String(detail.harga_per_item) !== String(orig.harga_per_item) ||
                 newMataUangId !== oldMataUangId
             );
             });
@@ -243,7 +244,7 @@ function UpdatePurchaseOrder() {
                 if (!quantity || Number(quantity) <= 0) {
                     throw new Error(`Baris #${i+1}: Kuantitas (Qty) harus lebih dari 0.`);
                 }
-                if (d.harga_sub_total == null || isNaN(Number(String(d.harga_sub_total).replace(/,/g, '')))) {
+                if (d.harga_per_item == null || isNaN(Number(String(d.harga_per_item).replace(/,/g, '')))) {
                     throw new Error(`Baris #${i+1}: Harga Sub Total tidak valid.`);
                 }
                 if (!mataUangId) {
@@ -300,7 +301,7 @@ function UpdatePurchaseOrder() {
                 const mataUangId = d.selectedMataUang?.id || d.mata_uang_id;
                 fd.append('invent_barangs_id[]', String(barangId)); 
                 fd.append('qty[]', String(quantity));
-                fd.append('harga_sub_total[]', String(d.harga_sub_total).replace(/,/g, ''));
+                fd.append('harga_per_item[]', String(d.harga_per_item).replace(/,/g, ''));
                 fd.append('invent_mata_uang_id[]', String(mataUangId));
             });
             fd.append('_method', 'PUT');
@@ -309,9 +310,6 @@ function UpdatePurchaseOrder() {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
 
-            // =================================================================
-            // TAHAP 3: SUKSES
-            // =================================================================
             Swal.fire({
                 title:'Purchase Order berhasil diubah!',
                 icon:'success', 
@@ -321,9 +319,6 @@ function UpdatePurchaseOrder() {
             navigate('/purchase-order/list-purchase-order');
         
         } catch (err) {
-            // =================================================================
-            // TAHAP 4: PENANGANAN GAGAL (DARI TAHAP 1 ATAU 2)
-            // =================================================================
             const msg = err.message || err?.response?.data?.message || 'Terjadi kesalahan pada sistem.';
             Swal.fire({ 
                 icon:'error',
@@ -383,9 +378,10 @@ function UpdatePurchaseOrder() {
                             </div>
                             <div className="mb-4">
                                 <label className='font-semibold'>Tanggal</label>
-                                <div className='bg-white py-2 px-4 rounded-md border border-gray-300 mt-2'>
-                                <input type="date" name="tanggal" value={items.tanggal} onChange={e => setItems({ ...items, tanggal: e.target.value })} className="w-full" required />
-                                </div>
+                                <DatePicker
+                                value={items.tanggal_penyerahan}
+                                onChange={(val) => setItems({ ...items, tanggal_penyerahan: val })}
+                                />
                             </div>
                             <div className='mb-4'>
                                 <label className='font-semibold'>Supplier</label>
@@ -401,9 +397,10 @@ function UpdatePurchaseOrder() {
                             </div>
                             <div className="mb-4">
                                 <label className='font-semibold'>Tanggal Penyerahan</label>
-                                <div className='bg-white px-4 py-2 rounded-md border border-gray-300 mt-2'>
-                                <input type="date" name="tanggal_penyerahan" value={items.tanggal_penyerahan} onChange={e => setItems({ ...items, tanggal_penyerahan: e.target.value })} className="w-full p-2" required />
-                                </div>
+                                <DatePicker
+                                value={items.tanggal_penyerahan}
+                                onChange={(val) => setItems({ ...items, tanggal_penyerahan: val })}
+                                />
                             </div>
                             
                             {/* KETERANGAN */}
@@ -494,7 +491,7 @@ function UpdatePurchaseOrder() {
                                         <div className="flex flex-col justify-between flex-grow p-1 md:p-0 md:contents">
                                             <div><div className="font-semibold text-gray-800">{item.barang_detail?.name || item.selectedBarang?.name || 'Item Name'}</div></div>
                                             <div className="flex flex-col items-start mt-2 md:mt-0 md:contents">
-                                                <div className="font-medium">{PriceFormat(item.harga_sub_total, item.selectedMataUang?.kode || item.mata_uang?.kode)}</div>
+                                                <div className="font-medium">{PriceFormat(item.harga_per_item, item.selectedMataUang?.kode || item.mata_uang?.kode)}</div>
                                                 <div className="font-medium md:text-right"><span className="font-normal text-sm text-gray-400">Qty: </span>{item.requested_qty || item.qty}</div>
                                             </div>
                                         </div>

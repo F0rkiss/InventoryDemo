@@ -27,20 +27,24 @@ import useMenuAccess from '../../hooks/useMenuAccess'
     const { canUpdate, canDelete, canCreate } = useMenuAccess('ApprovalStepLPB')
 
     useEffect(() => {
+      setContentVisible(false);
       fetchItems();
     }, [searchTerm] )
 
     const fetchItems = async () => {
+      setLoading(true);
+      setItems([]);
+      setNextCursor(null);
       try {
-        setLoading(true);
         const response = await api.get(searchTerm ? `approvalStepLPB/${searchTerm}` : 'approvalStepLPB');
         const data = response.data.data;
-        setItems(data.data);
+        setItems(data.data || []);
         setNextCursor(data.next_cursor);
+      } catch (error) {
+        setItems([])
+      } finally {
         setLoading(false);
         setTimeout(() => setContentVisible(true), 50);
-      } catch (error) {
-        setLoading(false);
       }
     };
 
@@ -118,7 +122,7 @@ import useMenuAccess from '../../hooks/useMenuAccess'
     return (
       <Layout title={'List Approval Step'}>
           <Block>
-              <div className='ms-3 mb-4 flex items-center justify-between'>
+              <div className='flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-2'>
                 <p className='lg:text-3xl text-2xl font-semibold capitalize'>Approval Step LPB List</p>
                 <SearchBar
                     onChange={handleSearchChange}
@@ -134,7 +138,6 @@ import useMenuAccess from '../../hooks/useMenuAccess'
                                 <ApprovalStepCard
                                 key={item.id}
                                 item={item}
-                                // goToDetail={goToDetail}
                                 deleteItems={deleteItems}
                                 goToUpdate={goToUpdate}
                                 canDelete={canDelete}
@@ -145,10 +148,13 @@ import useMenuAccess from '../../hooks/useMenuAccess'
                         }
                       </div>
                     </ScrollPagination>
-                    {
-                      items.length <= 0 && !loading && <DataEmpty/>
-                    }
                   </Transition>
+                    {
+                      items.length <= 0 && 
+                      contentVisible &&
+                      !loading && 
+                      <DataEmpty/>
+                    }
                   {loading && <Loader Class="mt-44" />}
           </Block>
         { canCreate && <FlyingButton goTo={'/approval-step-lpb/create-approval-step-lpb'} />}

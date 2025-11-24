@@ -36,10 +36,11 @@ import useMenuAccess from '../../hooks/useMenuAccess'
         const data = response.data.data;
         setItems(data.data);
         setNextCursor(data.next_cursor);
-        setLoading(false);
-        setTimeout(() => setContentVisible(true), 50);
       } catch (error) {
         setLoading(false);
+      } finally {
+        setLoading(false);
+        setTimeout(() => setContentVisible(true), 50);
       }
     };
     
@@ -130,7 +131,7 @@ import useMenuAccess from '../../hooks/useMenuAccess'
     return (
       <Layout title={'List Jenis Barang'}>
           <Block>
-              <div className='ms-3 mb-4 flex items-center justify-between'>
+              <div className='flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-2'>
                     <p className='lg:text-3xl text-2xl font-semibold capitalize'>Daftar Jenis Barang</p>
                     <SearchBar
                         onChange={handleSearchChange}
@@ -139,8 +140,8 @@ import useMenuAccess from '../../hooks/useMenuAccess'
                     />
                 </div>
                   <Transition contentVisible={contentVisible}>
-                    <ScrollPagination rootSelector=".page-content" fetchMoreItems={fetchMoreItems} loading={loading} nextCursor={nextCursor}>
                     <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
+                    <ScrollPagination rootSelector=".page-content" fetchMoreItems={fetchMoreItems} loading={loading} nextCursor={nextCursor}>
                       {
                           (items.map((item) => (
                               <JenisBarangCards
@@ -154,13 +155,16 @@ import useMenuAccess from '../../hooks/useMenuAccess'
                             />
                           )))
                       }
-                    </div>
                     </ScrollPagination>
-                    {
-                      items.length <= 0 && !loading && <DataEmpty/>
-                    }
+                    </div>
                   </Transition>
-                  {loading && <Loader Class="mt-10" />}
+                  {loading && <Loader Class="mt-20" />}
+                  {
+                    items.length <= 0 && 
+                    contentVisible && 
+                    !loading && 
+                    <DataEmpty/>
+                  }
           </Block>
           { canCreate && <FlyingButton goTo={'/jenis-barang/create-jenis-barang'} />}
       </Layout>

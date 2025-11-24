@@ -23,14 +23,12 @@ function AssetStokList() {
   const [searchTerm, setSearchTerm] = useState(''); // For actual search term used in fetching
   const [contentVisible, setContentVisible] = useState(false);
   const { canUpdate, canCreate, canDelete } = useMenuAccess('InventStokAsset');
-  const [empty, setEmpty] = useState(false)
   const navigate = useNavigate()
 
   // image preview state
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [selectedImageUrl, setSelectedImageUrl] = useState('');
 
-  // --- LOGIKA buildParams DIPERBARUI ---
   // Helper untuk membangun parameter request secara konsisten
   const buildParams = (cursor) => {
     const params = {};
@@ -51,7 +49,6 @@ function AssetStokList() {
     
     return { url, params };
   };
-  // --- BATAS PERUBAHAN ---
 
   // Memicu fetch ulang saat searchTerm berubah
   useEffect(() => {
@@ -67,17 +64,9 @@ function AssetStokList() {
         const { url, params } = buildParams(null); // Dapatkan url dinamis dan params
         const response = await api.get(url, { params }); // Gunakan url dan params dari helper
         const data = response.data.data;
-        
-        if (!data.data || data.data.length === 0) {
-          setEmpty(true)
-        } else {
-          setEmpty(false)
-        }
         setItems(data.data || []); // Pastikan items adalah array
         setNextCursor(data.next_cursor);
     } catch (error) {
-      console.error("Error fetching items:", error);
-      setEmpty(true); // Tampilkan empty state jika ada error
       setItems([]);
     } finally {
       setLoading(false);
@@ -92,7 +81,6 @@ function AssetStokList() {
       const { url, params } = buildParams(nextCursor); // Dapatkan url dinamis dan params
       const response = await api.get(url, { params }); // Gunakan url dan params dari helper
       const data = response.data.data;
-      
       setItems((prevItems) => {
         const existingIds = new Set(prevItems.map(item => item.id));
         const newItems = (data.data || []).filter(item => !existingIds.has(item.id));
@@ -179,16 +167,14 @@ function AssetStokList() {
     <>  
     <Layout title={'List Stok'}>
         <Block>
-          <div className='mb-4 flex flex-col md:flex-row items-center justify-between gap-2'>
-                <p className='ms-3 lg:text-3xl text-2xl font-semibold capitalize w-full md:w-auto'>Daftar Stok Barang Aset</p>
-                <div className="flex items-center gap-2 w-full md:w-auto">
-                  <SearchBar
-                      onChange={handleSearchChange}
-                      disable={loading}
-                      values={searchQuery}
-                      containerClass="w-full md:w-auto" // Tambahkan class untuk searchbar
-                  />
-                </div>
+          <div className='mb-4 flex flex-col md:flex-row md:items-center md:justify-between gap-2'>
+                <p className='ms-3 md:text-3xl text-2xl font-semibold capitalize w-full md:w-auto'>Daftar Stok Barang Aset</p>
+                <SearchBar
+                    onChange={handleSearchChange}
+                    disable={loading}
+                    values={searchQuery}
+                    containerClass="w-full md:w-auto" // Tambahkan class untuk searchbar
+                />
           </div>  
 
             <Transition contentVisible={contentVisible}>

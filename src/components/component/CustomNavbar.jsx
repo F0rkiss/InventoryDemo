@@ -79,9 +79,9 @@ const CustomNavbar = ({ scrollRootSelector, scrollRootRef }) => {
               MI Inventory
             </span>
           </span>
-          <div className='flex gap-2'>
-          <RefreshButton onRefresh={() => window.location.reload()} />
-          <Notifications />
+          <div className='flex gap-1'>
+            <RefreshButton onRefresh={() => window.location.reload()} />
+            <Notifications />
           </div>
         </div>
       </div>

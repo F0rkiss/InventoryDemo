@@ -8,7 +8,8 @@ import Back from '../../components/component/Back' // Adjusted path
 import Layout from '../../components/component/Layout' // Adjusted path
 import Swal from 'sweetalert2'
 import SelectPaginateBarang from '../../components/component/SelectPaginateBarang' // From CreateStok reference
-import CustomCheckbox from '../../components/component/CustomCheckBox' // From CreateStok reference
+import CustomCheckbox from '../../components/component/CustomCheckBox'
+import DatePicker from '../component/DatePicker'
 
 function UpdateStokAsset() {
   const navigate = useNavigate()
@@ -182,7 +183,7 @@ function UpdateStokAsset() {
                   {/* Quantity */}
                   <div className="space-y-2">
                     <label className="font-semibold">Quantity</label>
-                    <div className="bg-white p-2 rounded-md border border-gray-300">
+                    <div className="bg-white p-3 rounded-md border border-gray-300">
                       <input
                         type="number"
                         name="Quantity"
@@ -197,16 +198,10 @@ function UpdateStokAsset() {
                   {/* Tanggal */}
                   <div className="space-y-2">
                     <label className="font-semibold">Tanggal Barang Masuk</label>
-                    <div className="bg-white p-2 rounded-md border border-gray-300">
-                      <input
-                        type="date"
-                        name="tanggal"
-                        value={items.tanggal}
-                        onChange={(e) => setItems({ ...items, tanggal: e.target.value })}
-                        className="w-full focus:outline-none placeholder:text-gray-400"
-                        required
-                      />
-                    </div>
+                    <DatePicker
+                    value={items.tanggal}
+                    onChange={(val) => setItems({ ...items, tanggal: val })}
+                    />
                   </div>
                 </div>
 

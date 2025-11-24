@@ -13,6 +13,12 @@ input[type="password"]::-ms-reveal {
   display: none;
 }
 
+/* input[type="date"] {
+  appearance: none;
+  -webkit-appearance: none;
+  height: 44px;
+} */
+
 .navbar[class*="bg-color-"] {
     --f7-navbar-bg-color: var(--f7-theme-color-bg-color);
   }

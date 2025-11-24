@@ -29,14 +29,14 @@ const PurchaseOrderCards = forwardRef(({item, goToUpdate, goToDetail, canUpdate,
                     <p className='flex font-bold text-lg sm:text-md capitalize items-center'>
                         {item.kode}
                     </p>
-                        <p className='text-base pe-2'>
-                            {DateFormat(item.tanggal)}
-                        </p>
-                        <div className={`max-h-max min-w-max max-w-max rounded-md border ${item.is_completed ? 'bg-green-50 border-green-400' : 'bg-amber-50 border-amber-400'}`} >
-                            <p className={`py-1 px-2 flex gap-1 text-left items-center text-xs font-medium ${item.is_completed ? 'text-green-700' : 'text-amber-600'}`}>
-                                <i className={`${item.is_completed ? 'bx bxs-check-circle' : 'bx bxs-time'}`}></i> 
-                                { item.is_completed ? 'Selesai' : 'Belum selesai'}</p>
-                        </div>
+                    <p className='text-base pe-2'>
+                        {DateFormat(item.tanggal)}
+                    </p>
+                    <div className={`max-h-max min-w-max max-w-max rounded-md border ${item.is_completed ? 'bg-green-50 border-green-400' : 'bg-amber-50 border-amber-400'}`} >
+                        <p className={`py-1 px-2 flex gap-1 text-left items-center text-xs font-medium ${item.is_completed ? 'text-green-700' : 'text-amber-600'}`}>
+                            <i className={`${item.is_completed ? 'bx bxs-check-circle' : 'bx bxs-time'}`}></i> 
+                            { item.is_completed ? 'Selesai' : 'Belum selesai'}</p>
+                    </div>
                 </div>
                 <button
                     className='px-2 py-1 detail-button self-center'

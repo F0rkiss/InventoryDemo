@@ -26,20 +26,24 @@ function ApprovalStepList() {
   const { canUpdate, canDelete } = useMenuAccess('ApprovalStep')
 
   useEffect(() => {
+    setContentVisible(false)
     fetchItems()
   }, [searchTerm])
 
   const fetchItems = async () => {
+    setLoading(true)
+    setItems([])
+    setNextCursor(null)
     try {
-      setLoading(true)
       const response = await api.get(searchTerm ? `inventApprovalStep/${searchTerm}` : 'inventApprovalStep')
       const data = response.data.data
-      setItems(data.data)
+      setItems(data.data || [])
       setNextCursor(data.next_cursor)
+    } catch (error) {
+      setItems([])
+    } finally {
       setLoading(false)
       setTimeout(() => setContentVisible(true), 50)
-    } catch (error) {
-      setLoading(false)
     }
   }
 
@@ -57,10 +61,11 @@ function ApprovalStepList() {
         return [...prevItems, ...newItems]
       })
       setNextCursor(data.next_cursor)
+    } catch (error) {
+
+    } finally {
       setLoading(false)
       setTimeout(() => setContentVisible(true), 50)
-    } catch (error) {
-      setLoading(false)
     }
   }
 
@@ -116,7 +121,7 @@ function ApprovalStepList() {
   return (
     <Layout title={'List Approval Step'}>
       <Block>
-        <div className='ms-3 mb-4 flex items-center justify-between'>
+        <div className='flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-2'>
           <p className='lg:text-3xl text-2xl font-semibold capitalize'>Approval Step List</p>
           <SearchBar onChange={handleSearchChange} disable={loading} values={searchQuery} />
         </div>
@@ -137,13 +142,11 @@ function ApprovalStepList() {
               ))}
             </div>
           </ScrollPagination>
-
-          {items.length <= 0 && !loading && <DataEmpty />}
         </Transition>
-
-        {loading && <Loader Class='mt-44' />}
-      </Block>
+        { loading && <Loader Class='mt-20' /> }
+        { items.length === 0 && contentVisible && !loading && <DataEmpty /> }
       <FlyingButton goTo={'/approval-step/create-approval-step'} />
+      </Block>
     </Layout>
   )
 }

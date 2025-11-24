@@ -24,7 +24,6 @@ function ListBarang() {
   const [searchTerm, setSearchTerm] = useState(''); // For actual search term used in fetching
   const [contentVisible, setContentVisible] = useState(false);
   const [openModal, setOpenModal] = useState(false)
-  const [empty, setEmpty] = useState(false)
   const navigate = useNavigate()
   const { canCreate, canUpdate, canDelete } = useMenuAccess('Barang');
 
@@ -39,23 +38,20 @@ function ListBarang() {
   }, [searchTerm]);
 
   const fetchItems = async () => {
+    setLoading(true);
+    setItems([]);
+    setNextCursor(null);
     try {
-      setLoading(true);
       const params = {};
         if (searchTerm) {
           params.search = searchTerm;
       }
       const response = await api.get('/inventBarang', { params });
       const data = response.data.data;
-      if (data.length == 0) {
-        setEmpty(true)
-      } else {
-        setEmpty(false)
-        setItems(data.data);
-        setNextCursor(data.next_cursor);
-      }
+      setItems(data.data || []);
+      setNextCursor(data.next_cursor);
     } catch (error) {
-      
+      setItems([]);
     } finally {
       setLoading(false);
       setTimeout(() => setContentVisible(true), 50);
@@ -160,13 +156,13 @@ function ListBarang() {
     <>  
     <Layout title={'List Barang'}>
         <Block>
-          <div className='ms-3 mb-4 flex items-center justify-between'>
-                <p className='lg:text-3xl text-2xl font-semibold capitalize'>Daftar Barang</p>
-                <SearchBar
-                    onChange={handleSearchChange}
-                    disable={loading}
-                    values={searchQuery}
-                />
+          <div className='flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-2'>
+            <p className='ms-3 md:text-3xl text-2xl font-semibold capitalize'>Daftar Barang</p>
+            <SearchBar
+                onChange={handleSearchChange}
+                disable={loading}
+                values={searchQuery}
+            />
           </div>  
             <Transition contentVisible={contentVisible}>
               <ScrollPagination
@@ -195,7 +191,7 @@ function ListBarang() {
               </ScrollPagination>
             </Transition>
         {loading && <Loader Class="mt-20" />}
-        { empty && !loading && <DataEmpty /> } 
+        { contentVisible && items.length === 0 && !loading && <DataEmpty /> } 
         {canCreate && <FlyingButton goTo={'/barang/create-barang'}/>}
       </Block>
       <ImagePreviewModal

@@ -298,7 +298,7 @@ function DetailPurchaseOrder() {
                                 </div>
                               </td>
                               <td className="px-4 py-4 rounded-r-md">{item.requested_qty}</td>
-                              <td className="px-4 py-4 rounded-r-md">{PriceFormat(item.harga_sub_total, item.mataUang?.kode)}</td>
+                              <td className="px-4 py-4 rounded-r-md">{PriceFormat(item.harga_per_item, item.mataUang?.kode)}</td>
                             </tr>
                           ))}
                         </tbody>

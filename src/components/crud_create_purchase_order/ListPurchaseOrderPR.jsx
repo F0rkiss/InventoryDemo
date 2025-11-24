@@ -105,8 +105,8 @@ import useMenuAccess from '../../hooks/useMenuAccess'
     return (
       <Layout title={'List Purchase Order'}>
           <Block>
-            <div className='ms-3 mb-4 flex items-center justify-between gap-1'>
-              <p className='lg:text-3xl text-xl font-semibold capitalize'>Create Purchase Order List</p>
+            <div className='flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-2'>
+              <p className='md:text-3xl text-2xl ms-3 font-semibold capitalize'>Create Purchase Order List</p>
               <SearchBar
                 onChange={handleSearchChange}
                 disable={loading}

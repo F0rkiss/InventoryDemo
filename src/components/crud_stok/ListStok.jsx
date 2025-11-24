@@ -140,16 +140,14 @@ function StokList() {
     <>  
     <Layout title={'List Stok'}>
         <Block>
-          <div className='mb-4 flex flex-col md:flex-row items-center justify-between gap-2'>
-                <p className='ms-3 lg:text-3xl text-2xl font-semibold capitalize w-full md:w-auto'>Daftar Stok Barang</p>
-                <div className="flex items-center gap-2 w-full md:w-auto">
-                  <SearchBar
-                      onChange={handleSearchChange}
-                      disable={loading}
-                      values={searchQuery}
-                      containerClass="w-full md:w-auto" // Tambahkan class untuk searchbar
-                  />
-                </div>
+          <div className='mb-4 flex flex-col md:flex-row md:items-center md:justify-between gap-2'>
+                <p className='ms-3 md:text-3xl text-2xl font-semibold capitalize w-full md:w-auto'>Daftar Stok Barang</p>
+                <SearchBar
+                    onChange={handleSearchChange}
+                    disable={loading}
+                    values={searchQuery}
+                    containerClass="w-full md:w-auto" // Tambahkan class untuk searchbar
+                />
           </div>  
 
             <Transition contentVisible={contentVisible}>

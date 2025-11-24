@@ -31,7 +31,7 @@ function ListSupplier() {
     const fetchItems = async () => {
         try {
             setLoading(true)
-            const response = await api.get(`suplier`)
+            const response = await api.get(searchTerm ? `suplier/${searchTerm}`: 'suplier')
             const data = response.data.data
             // console.log('fetched items: ', data.data)
             setItems(data.data);  
@@ -48,7 +48,7 @@ function ListSupplier() {
         if (!nextCursor || loading) return;
         try {
             setLoading(true)
-            const response = await api.get(`suplier`
+            const response = await api.get(searchTerm ? `suplier/${searchTerm}`: 'suplier'
                 , {
                 params: {
                     cursor: nextCursor
@@ -122,13 +122,13 @@ function ListSupplier() {
     return (
         <Layout title={'List Supplier'}>
             <Block>
-                <div className='ms-3 mb-4 flex items-center justify-between'>
+                <div className='flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-2'>
                     <p className='lg:text-3xl text-2xl font-semibold capitalize'>Daftar Supplier</p>
-                    {/* <SearchBar
+                    <SearchBar
                         onChange={handleSearchChange}
                         disable={loading}
                         values={searchQuery}
-                    /> */}
+                    />
                 </div>              
                 <Transition contentVisible={contentVisible}>
                     <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>

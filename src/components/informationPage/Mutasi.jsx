@@ -92,7 +92,7 @@ function Mutasi() {
     return (
         <Layout title={'Mutasi'}>
             <Block>
-                <Back goHome={() => navigate('/dashboard')} />
+                {/* <Back goHome={() => navigate('/dashboard')} /> */}
                 <p className='text-2xl lg:text-3xl font-semibold capitalize ms-3 my-4'>Daftar Mutasi</p>
 
                 <Transition contentVisible={contentVisible}>

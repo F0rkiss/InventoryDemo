@@ -7,7 +7,8 @@ import Layout from '../component/Layout'
 import Swal from 'sweetalert2'
 import Transition from '../component/Transition'
 import SelectPaginate from '../component/SelectPaginateBarang' // Sesuaikan path jika perlu
-import CustomCheckbox from '../component/CustomCheckBox' // IMPORT BARU
+import CustomCheckbox from '../component/CustomCheckBox'
+import DatePicker from '../component/DatePicker'
 
 function CreateStok() {
   const navigate = useNavigate()
@@ -130,7 +131,7 @@ function CreateStok() {
                   {/* Quantity */}
                   <div className="space-y-2">
                     <label className="font-semibold">Quantity</label>
-                    <div className="bg-white p-2 rounded-md border border-gray-300">
+                    <div className="bg-white p-3 rounded-md border border-gray-300">
                       <input
                         type="number"
                         name="Quantity"
@@ -145,23 +146,17 @@ function CreateStok() {
                   {/* Tanggal */}
                   <div className="space-y-2">
                     <label className="font-semibold">Tanggal Barang Masuk</label>
-                    <div className="bg-white p-2 rounded-md border border-gray-300">
-                      <input
-                        type="date"
-                        name="tanggal"
-                        value={items.tanggal}
-                        onChange={(e) => setItems({ ...items, tanggal: e.target.value })}
-                        className="w-full focus:outline-none placeholder:text-gray-400"
-                        required
-                      />
-                    </div>
+                    <DatePicker
+                    value={items.tanggal}
+                    onChange={(val) => setItems({ ...items, tanggal: val })}
+                    />
                   </div>
                 </div>
 
                 {/* --- NOTE (TEXTAREA DI BAWAH) --- */}
                 <div className="space-y-2">
                   <label className="font-semibold">Note</label>
-                  <div className="bg-white p-2 rounded-md border border-gray-300">
+                  <div className="bg-white p-3 rounded-md border border-gray-300">
                     <textarea
                       rows="3"
                       name="note"

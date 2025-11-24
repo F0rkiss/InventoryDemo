@@ -58,7 +58,7 @@ function CreateTypeRequest() {
     const resetValue = () => {
         setItems({
             name: '',
-            jesnis: '',
+            jenis: '',
             description: '',
             is_stok: ''
         })
@@ -67,74 +67,89 @@ function CreateTypeRequest() {
     return (
     <Layout title={'Create Type Request'}>
         <Block>
-            <Back goHome={() => navigate('/type-request/list-type-request')} />
-            <div className="p-6 mt-6 bg-white shadow-sm rounded-lg">
-                <form onSubmit={handleSubmit}>
-                    <div className="mb-5">
-                        <label className='font-semibold'>Name</label>
-                        <div className='bg-white p-2 rounded-md border-solid border-gray-300 border mt-2'>
-                        <input 
-                            type="text" 
-                            name="Nama" 
-                            value={items.name} 
-                            onChange={e => setItems({ ...items, name: e.target.value })}
-                            className="w-full p-2 border rounded placeholder:text-gray-400 placeholder:font-inter placeholder:font-light "
-                            placeholder='Nama Type Request'
-                            required
-                        />
+            <div className="xs:px-0 md:px-4">
+                <Back goHome={() => navigate('/type-request/list-type-request')} />
+                <p className="lg:text-3xl text-2xl font-semibold capitalize my-4">Create Type Request</p>
+                
+                <div className="bg-white rounded-lg shadow-xl shadow-gray-200 border p-8">
+                    <form onSubmit={handleSubmit}>
+                        <div className="mb-5">
+                            <label className='font-semibold'>Name</label>
+                            <div className='bg-white mt-2 p-3 rounded-md border-solid border-gray-300 border'>
+                                <input 
+                                    type="text" 
+                                    name="Nama" 
+                                    value={items.name} 
+                                    onChange={e => setItems({ ...items, name: e.target.value })}
+                                    className="w-full p-3 border rounded placeholder:text-gray-400 placeholder:font"
+                                    placeholder='Nama Type Request'
+                                    required
+                                />
+                            </div>
                         </div>
-                    </div>
-                    <div className="mb-4">
-                        <label className='font-semibold'>Jenis</label>
-                        <div className='bg-white p-2 rounded-md border border-gray-300 border mt-2'>
-                        <input 
-                            type="text" 
-                            name="jenis" 
-                            value={items.jenis} 
-                            onChange={e => setItems({ ...items, jenis: e.target.value })}
-                            className="w-full p-2 placeholder:text-gray-400 placeholder:font-inter placeholder:font-light"
-                            placeholder='Jenis'
-                            required
-                        />
+                        <div className="mb-5">
+                            <label className='font-semibold'>Jenis</label>
+                            <div className='bg-white mt-2 p-3 rounded-md border border-gray-300 border'>
+                                <input 
+                                    type="text" 
+                                    name="jenis" 
+                                    value={items.jenis} 
+                                    onChange={e => setItems({ ...items, jenis: e.target.value })}
+                                    className="w-full p-3 border rounded placeholder:text-gray-400 placeholder:font"
+                                    placeholder='Jenis'
+                                    required
+                                />
+                            </div>
                         </div>
-                        {/* <p className='text-xs text-red-500 mt-1 ms-1'>Kode Hanya Boleh 2 Karakter dan Tidak Boleh Nomor</p> */}
-                    </div>
-                    <div className="mb-4">
-                        <label className='font-semibold'>Description</label>
-                        <div className='bg-white p-2 rounded-md border border-gray-300 border mt-2'>
-                        <input 
-                            type="text" 
-                            name="description" 
-                            value={items.description} 
-                            onChange={e => setItems({ ...items, description: e.target.value })}
-                            className="w-full p-2 placeholder:text-gray-400 placeholder:font-inter placeholder:font-light"
-                            placeholder='Description'
-                            required
-                        />
+                        <div className="mb-5">
+                            <label className='font-semibold'>Description</label>
+                            <div className='bg-white mt-2 p-3 rounded-md border border-gray-300 border'>
+                                <input 
+                                    type="text" 
+                                    name="description" 
+                                    value={items.description} 
+                                    onChange={e => setItems({ ...items, description: e.target.value })}
+                                    className="w-full p-3 border rounded placeholder:text-gray-400 placeholder:font"
+                                    placeholder='Description'
+                                    required
+                                />
+                            </div>
                         </div>
-                        {/* <p className='text-xs text-red-500 mt-1 ms-1'>Kode Hanya Boleh 2 Karakter dan Tidak Boleh Nomor</p> */}
-                    </div>
-                    <div className="mb-4">
-                    <label className='font-semibold'>Diambil Dari Stok</label>
-                        <div className='bg-white p-2 rounded-md border border-gray-300 border mt-2'>
-                            <select
-                            value={items.is_stok}
-                            onChange={e => setItems({ ...items, is_stok: e.target.value })}
-                            className="w-full p-2 border rounded appearance-none placeholder:text-gray-400 placeholder:font-inter placeholder:font-light"
-                            required
+                        <div className="mb-5">
+                            <label className='font-semibold'>Diambil Dari Stok</label>
+                            <div className='bg-white mt-2 p-3 rounded-md border border-gray-300 border'>
+                                <select
+                                    value={items.is_stok}
+                                    onChange={e => setItems({ ...items, is_stok: e.target.value })}
+                                    className="w-full p-3 border rounded appearance-none bg-white placeholder:text-gray-400 placeholder:font"
+                                    required
+                                >
+                                    <option value="" disabled>Pilih status stok</option>
+                                    <option value="ya">Iya</option>
+                                    <option value="tidak">Tidak</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div className="flex flex-col items-center justify-center mt-10 mx-auto max-w-full w-[25rem] space-y-2 text-center">
+                            <button 
+                                disabled={disabled} 
+                                type='submit' 
+                                className='w-full py-2 px-2 rounded-lg font-medium bg-blue-500 hover:bg-blue-600 transition-colors duration-200 text-white disabled:bg-blue-300'
                             >
-                            <option value="" disabled>Pilih status stok</option>
-                            <option value="ya">Iya</option>
-                            <option value="tidak">Tidak</option>
-                            <option value="other">Other</option>
-                            </select>
+                                Submit
+                            </button>
+                            <button 
+                                className='w-full py-2 px-2 rounded-lg font-medium border border-red-200 bg-red-50 hover:bg-red-100 transition-colors duration-200 text-red-600' 
+                                onClick={resetValue} 
+                                type='button'
+                            >
+                                Reset
+                            </button>
                         </div>
-                    </div>
-                    <div className="flex justify-center mt-6">
-                        <button disabled={disabled} type='submit' className='w-4/12 py-2 rounded-md bg-teal-400 text-white me-2'>Submit</button>
-                        <button className='w-4/12 py-2 rounded-md bg-red-400 text-white' onClick={resetValue} type='button'>Reset</button>
-                    </div>
-                </form>
+                    </form>
+                </div>
             </div>
         </Block>
     </Layout>

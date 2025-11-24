@@ -120,8 +120,8 @@ function PaymentMethodList() {
     return (
         <Layout title={'List Payment Method'}>
             <Block>
-                <div className='ms-3 mb-4 flex items-center justify-between'>
-                    <p className='lg:text-3xl text-2xl font-semibold capitalize'>Daftar Metode Pembayaran</p>
+                <div className='flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-2'>
+                    <p className='lg:text-3xl text-2xl font-semibold capitalize'>Daftar Payment Method</p>
                     <SearchBar
                         onChange={handleSearchChange}
                         disable={loading}
