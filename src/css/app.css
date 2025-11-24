@@ -1,6 +1,20 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE & Edge */
+  scrollbar-width: none;     /* Firefox */
+}
+
+.no-scrollbar {
+  -webkit-overflow-scrolling: touch;
+}
+
 /* Sembunyikan tombol "show password" bawaan di Chrome, Edge, Safari */
 input[type="password"]::-webkit-password-reveal-button {
   display: none;
@@ -12,6 +26,12 @@ input[type="password"]::-webkit-password-reveal-button {
 input[type="password"]::-ms-reveal {
   display: none;
 }
+
+/* input[type="date"] {
+  appearance: none;
+  -webkit-appearance: none;
+  height: 44px;
+} */
 
 .navbar[class*="bg-color-"] {
     --f7-navbar-bg-color: var(--f7-theme-color-bg-color);

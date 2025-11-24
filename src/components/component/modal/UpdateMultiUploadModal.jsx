@@ -76,14 +76,22 @@ function UpdateMultiUploadModal({ open = false, initialBukti = [], lpbId, onClos
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
             <div className="absolute inset-0 bg-black/40" onClick={onClose} />
+    
+            {/* Modal Wrapper */}
             <div className="relative bg-white w-full max-w-3xl mx-4 rounded-lg shadow-lg border p-4">
+
+                {/* HEADER DENGAN BUTTON DI KANAN */}
                 <div className="flex items-center justify-between mb-3">
                     <h3 className="text-lg font-semibold">Kelola Gambar</h3>
-                    <button type="button" onClick={onClose} className="text-gray-500 hover:text-gray-700">
-                        <i className="bx bx-x text-2xl"></i>
+                    <button
+                        type="button"
+                        onClick={onClose}
+                        className="text-gray-500 hover:text-gray-700"
+                    >
+                        <i className="bx bx-x text-3xl"></i>
                     </button>
                 </div>
-
+    
                 <div className="mb-4">
                     <label htmlFor="modal-img-input">
                         <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500 text-white text-sm font-medium rounded-md cursor-pointer hover:bg-blue-600 transition">
@@ -101,7 +109,7 @@ function UpdateMultiUploadModal({ open = false, initialBukti = [], lpbId, onClos
                         className="hidden"
                     />
                 </div>
-
+    
                 {localBukti?.length > 0 && (
                     <div className="rounded-md border border-dashed border-gray-300 p-3 mb-4">
                         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
@@ -114,22 +122,20 @@ function UpdateMultiUploadModal({ open = false, initialBukti = [], lpbId, onClos
                                             alt={`Preview ${index + 1}`}
                                             className="w-full h-28 object-cover transition duration-200 group-hover:blur-sm"
                                         />
-                                        {
-                                            <button
-                                                type="button"
-                                                onClick={() => handleDelete(index)}
-                                                className="absolute inset-0 flex items-center justify-center text-white text-base font-semibold opacity-0 group-hover:opacity-100 transition-opacity"
-                                            >
-                                                <span className="bg-red-600 rounded-full px-3 py-1">✕</span>
-                                            </button>
-                                        }
+                                        <button
+                                            type="button"
+                                            onClick={() => handleDelete(index)}
+                                            className="absolute inset-0 flex items-center justify-center text-white text-base font-semibold opacity-0 group-hover:opacity-100 transition-opacity"
+                                        >
+                                            <span className="bg-red-600 rounded-full px-3 py-1">✕</span>
+                                        </button>
                                     </div>
                                 )
                             })}
                         </div>
                     </div>
                 )}
-
+    
                 <div className="flex items-center justify-end gap-2">
                     <button type="button" onClick={onClose} className="px-4 py-2 rounded-md border bg-white hover:bg-gray-50">Batal</button>
                     <button

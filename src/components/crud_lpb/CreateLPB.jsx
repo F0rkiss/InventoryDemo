@@ -391,7 +391,7 @@ function CreateLPB() {
                             </div>
 
                             <div className="mb-5 space-y-3">
-                                <label className="font-semibold">Image</label>
+                                <label className="font-semibold">Bukti penerimaan</label>
                                 {items.image?.length > 0 && (
                                     <div className="rounded-md border border-dashed border-gray-300 p-3">
                                         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 w-full">

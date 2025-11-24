@@ -201,7 +201,7 @@ const ModalMR = ({ open, onClose, onSave, initialData, requestMode, apiUrl }) =>
                                                 value={searchTerm}
                                                 onChange={(e) => handleSearchChange(e.target.value)}
                                                 onFocus={() => setShowResults(true)}
-                                                placeholder="Cari berdasarkan nama atau kode barang"
+                                                placeholder="Pilih atau cari berdasarkan nama atau kode barang"
                                                 className="w-full focus:outline-none placeholder-gray-400"
                                             />
                                         </div>

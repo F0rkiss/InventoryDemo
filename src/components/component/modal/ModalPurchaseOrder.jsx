@@ -47,7 +47,7 @@ const ModalPurchaseOrder = ({ onClose, onSave, open, initialData, apiUrl, prItem
                 setModalData({
                     selectedBarang: existingBarang,
                     qty: initialData.requested_qty || initialData.qty,
-                    harga: initialData.harga_sub_total || initialData.harga_satuan,
+                    harga: initialData.harga_per_item || initialData.harga_satuan,
                     // --- PERUBAHAN: Muat objek mata uang langsung dari initialData ---
                     // (Asumsi `onSave` menyimpan keseluruhan objek)
                     selectedMataUang:  
@@ -147,21 +147,16 @@ const ModalPurchaseOrder = ({ onClose, onSave, open, initialData, apiUrl, prItem
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-                        console.log(modalData.selectedMataUang)
-
-            // --- PERUBAHAN: Validasi mata uang ---
             if (!modalData.selectedBarang || !modalData.qty || !modalData.harga || !modalData.selectedMataUang) {
                 Swal.fire({
                     icon: 'warning',
                     title: 'Data belum lengkap',
-                    // --- PERUBAHAN: Update teks error ---
                     text: 'Silakan pilih barang, masukkan jumlah, harga, dan mata uang!',
                 });
                 return;
             }
             
             if (maxItems && existingItems.length >= maxItems && (!initialData || !initialData.barangs)) {
-                // ... (Logika tidak berubah)
                 Swal.fire({
                     icon: 'warning',
                     title: 'Batas maksimal tercapai',
@@ -173,13 +168,12 @@ const ModalPurchaseOrder = ({ onClose, onSave, open, initialData, apiUrl, prItem
             const qty = parseInt(modalData.qty);
             const harga = parseInt(modalData.harga);
 
-            // --- PERUBAHAN: Kirim keseluruhan objek selectedMataUang saat onSave ---
             // Ini agar saat "Edit", modal bisa menerima objek ini kembali.
             onSave({
                 selectedBarang: modalData.selectedBarang,
                 qty: qty,
                 harga_satuan: harga,
-                harga_sub_total: harga,
+                harga_per_item: harga,
                 selectedMataUang: {
                     id: modalData.selectedMataUang.id,
                     kode: modalData.selectedMataUang.kode
@@ -310,7 +304,7 @@ const ModalPurchaseOrder = ({ onClose, onSave, open, initialData, apiUrl, prItem
                             </div>
                         </div>
                         <div>
-                            <label className="font-semibold">Biaya Total</label>
+                            <label className="font-semibold">Harga</label>
                             <div className='bg-white mt-1 p-3 rounded-md border border-gray-300'>
                                 <input
                                     type="number"
@@ -318,7 +312,7 @@ const ModalPurchaseOrder = ({ onClose, onSave, open, initialData, apiUrl, prItem
                                     className='w-full focus:outline-none'
                                     onChange={e => setModalData({ ...modalData, harga: e.target.value })}
                                     value={modalData.harga}
-                                    placeholder="Masukkan biaya total"
+                                    placeholder="Masukkan harga item"
                                     required
                                 />
                             </div>

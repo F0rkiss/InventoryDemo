@@ -128,8 +128,8 @@ function UserList() {
     return (
         <Layout title={'List User'}>
             <Block>
-                <div className='ms-3 mb-4 flex items-center justify-between'>
-                    <p className='lg:text-3xl text-2xl font-semibold capitalize'>User Data List</p>
+                <div className='flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-2'>
+                    <p className='lg:text-3xl text-2xl font-semibold capitalize'>Daftar User</p>
                     <SearchBar
                         onChange={handleSearchChange}
                         disable={loading}

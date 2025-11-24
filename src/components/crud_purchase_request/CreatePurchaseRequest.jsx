@@ -262,7 +262,10 @@ function CreatePurchaseRequest() {
 
                             <div className="mb-4">
                                     <div className="flex justify-between items-center">
-                                        <label className='font-semibold'>Tanggal</label>
+                                        <label className='font-semibold'>
+                                            <span>Tanggal</span>
+                                            <span className="text-red-500"> *</span>
+                                        </label>
                                         {errors.tanggal && <span className="text-red-500 text-sm">{errors.tanggal}</span>}
                                     </div>
                                     <div className={`bg-white p-2 rounded-md border mt-2 ${errors.tanggal ? 'border-red-500' : 'border-gray-300'}`}>
@@ -279,7 +282,10 @@ function CreatePurchaseRequest() {
                                 </div>
                                 <div className="mb-4">
                                     <div className="flex justify-between items-center">
-                                        <label className='font-semibold'>note</label>
+                                        <label className='font-semibold'>
+                                            <span>Note</span>
+                                            <span className="text-red-500"> *</span>
+                                        </label>
                                         {errors.note && <span className="text-red-500 text-sm">{errors.note}</span>}
                                     </div>
                                     <div className={`bg-white p-2 rounded-md border mt-2 ${errors.keterangan ? 'border-red-500' : 'border-gray-300'}`}>
@@ -289,17 +295,23 @@ function CreatePurchaseRequest() {
                                         onChange={handleChange}
                                         className="w-full min-h-fit p-2 placeholder:text-gray-400"
                                         maxLength={225}
-                                        placeholder="Note"
+                                        placeholder="Note Harus Terisi"
                                         rows="3"
+                                        required
                                     />
                                     </div>
                                 </div>
+                                {/* === Keterangan wajib diisi === */}
+                                <p className="ms-2">
+                                    <span className="text-red-500">*</span> 
+                                    <span className="text-xs font-medium text-gray-700"> Wajib diisi</span>
+                                </p>
                             </form>
                         {/* === Action Buttons === */}
                         <div className="flex flex-col items-center justify-self-center mt-10 max-w-full w-[25rem] space-y-2 text-center">
                             <button
                                 onClick={handleCreatePurchaseRequest}
-                                disabled={submitting || !item.note}
+                                disabled={submitting}
                                 className='py-2 px-4 w-full rounded-lg font-medium bg-blue-500 hover:bg-blue-600 transition-color duration-200 text-white disabled:bg-blue-200'>
                                 {submitting ? 'Creating...' : 'Create Purchase Request'}
                             </button>

@@ -130,25 +130,22 @@ const fetchMoreItems = async () => {
   return (
     <Layout title={'List Purchase Request'}>
       <Block>
-      <div className="ms-3 mb-4 flex items-center justify-between">
-          <div className="flex justify-between items-center w-full">
-            <p className="lg:text-3xl text-2xl font-semibold capitalize">
-              Laporan Penerimaan Barang List
-            </p>
-            <div className="flex items-center">
-              <FilterStatusToggle
-                value={filterStatus}
-                onChange={onFilterChange}
-              />
-              <SearchBar
-                onChange={handleSearchChange}
-                disable={loading}
-                values={searchQuery}
-              />
-            </div>
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-2">
+          <p className="lg:text-3xl text-2xl font-semibold capitalize">
+            Daftar Laporan Penerimaan Barang
+          </p>
+          <div className="flex items-center gap-2">
+            <SearchBar
+              onChange={handleSearchChange}
+              disable={loading}
+              values={searchQuery}
+            />
+            <FilterStatusToggle
+              value={filterStatus}
+              onChange={onFilterChange}
+            />
           </div>
         </div>
-
         <Transition contentVisible={contentVisible}>
           {items.length > 0 ? (
             <ScrollPagination

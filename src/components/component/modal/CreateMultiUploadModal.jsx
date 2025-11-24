@@ -33,7 +33,11 @@ function CreateMultiUploadModal({ open = false, initialFiles = [], onClose, onSa
             <div className="relative bg-white w-full max-w-3xl mx-4 rounded-lg shadow-lg border p-4">
                 <div className="flex items-center justify-between mb-3">
                     <h3 className="text-lg font-semibold">Kelola Gambar</h3>
-                    <button type="button" onClick={onClose} className="text-gray-500 hover:text-gray-700">
+                    <button
+                        type="button"
+                        onClick={onClose}
+                        className="text-gray-500 hover:text-gray-700"
+                    >
                         <i className="bx bx-x text-2xl"></i>
                     </button>
                 </div>

@@ -111,9 +111,6 @@ function Dashboard() {
                                                 <p className=' text-center font-medium w-32'>MR Pending</p>
                                         </div>
                                     </div>
-                                    <div className='center-button z-20'>
-                                        <button className='bg-slate-400 shadow-sm rounded text-white px-3 py-1 text-sm max-sm:text-xs whitespace-nowrap ' onClick={() => navigate('/table-mr')} >Tabel MR</button>
-                                    </div>
                                     <div className='right-side relative w-max overflow-hidden flex items-center justify-end'>
                                         <img src={MRIcon} className={`max-w-16 me-2 opacity-50`} alt="" />
                                     </div>
@@ -130,9 +127,6 @@ function Dashboard() {
                                                 <p className=' text-center max-sm:text-2xl text-3xl font-bold w-32 overflow-hidden whitespace-nowrap '>{items.billing3MonthWarning}</p>
                                                 <p className=' text-center  font-medium w-32'>Billing Expire</p>
                                         </div>
-                                    </div>
-                                    <div className='center-button'>
-                                        <button className='bg-slate-400 shadow-sm rounded text-white px-3 py-1 text-sm max-sm:text-xs whitespace-nowrap' onClick={() => navigate('/table-billing')}>Tabel Billing</button>
                                     </div>
                                     <div className='right-side relative w-max overflow-hidden flex items-center justify-end'>
                                         <img src={RAIcon} className={`max-w-16 me-2 transition-opacity duration-1000 opacity-50`} alt="" />

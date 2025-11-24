@@ -47,6 +47,8 @@ function ApprovalPO() {
     //   setSelectedPdfUrl('');
     // };
 
+    const lampiran = item.lampiran || [];
+
     useEffect(() => {
         const decryptedId = DecryptID(id)
         setDecryptedId(decryptedId)
@@ -154,49 +156,28 @@ function ApprovalPO() {
                 </div>
                 <>
                 <div className="flex flex-col lg:flex-row gap-4 mt-3">
-                    <div className="bg-white border rounded-md p-6 flex-1 min-h-[200px]">
-                    <p className="font-semibold text-gray-400 mb-2 text-xl">Main Information</p>
-                    <p className="text-xl font-bold capitalize">{item.kode}</p>
-                    {/* CATATAN: Total harga ini (item.harga) diasumsikan dalam IDR (default).
-                        Jika total harga ini seharusnya mencerminkan mata uang lain,
-                        logikanya perlu diubah, karena PO ini bisa memiliki banyak mata uang.
-                        Untuk saat ini, saya biarkan default ke IDR.
-                    */}
-                    {/* { item.is_ppn !== 0 ? (
-                        <div className="flex gap-3 items-center mb-4">
-                            <p className="text-lg font-semibold">
-                            {PriceFormat(item.harga_after_ppn)}
-                            </p>
-                            <p className="text-md text-gray-500">
-                            {PriceFormat(item.harga)}
-                            </p>
-                            <p className="text-amber-600 font-medium">PPN {item.nilai_ppn}%</p>
-                        </div>
-                        ) : 
-                        (
-                        <p className="text-lg font-medium mb-4">
-                            {PriceFormat(item.harga)}
-                        </p>
-                        )
-                    } */}
-                    <div className="text-right space-y-3 pb-2">
-                        <div className="flex justify-between">
-                            {/* <p className='text-gray-500'>Supplier</p><p className='font-medium'>{item.suplier}</p> */}
-                        </div>
-                        <div className="flex justify-between">
-                            <p className='text-gray-500'>Pembayaran</p><p className='font-medium'>{item.payment?.cara_pembayaran}</p>
-                        </div>
-                        <div className="flex space-x-5 justify-between">
-                            <p className='text-gray-500'>Keterangan</p><p className='font-medium'>{item.keterangan}</p>
-                        </div>
-                        <div className="flex justify-between">
-                            <p className='text-gray-500'>Tanggal</p><p className='font-medium'>{DateFormat(item.tanggal)}</p>
-                        </div>
-                        <div className="flex justify-between">
-                            <p className='text-gray-500'>Tgl. Penyerahan</p><p className='font-medium'>{DateFormat(item.tanggal_penyerahan)}</p>
-                        </div>
+                <div className="bg-white border rounded-md p-6 flex-1 min-h-[200px]">
+                  <p className="font-semibold text-gray-400 mb-2 text-xl">Main Information</p>
+                  <p className="text-xl font-bold capitalize">{item.kode}</p>
+                  
+                  {/* ... (Info Harga, Pembayaran, Keterangan, Tanggal) ... */}
+                  <div className="text-right space-y-3 pb-2">
+                    <div className="flex justify-between">
+                        <p className='text-gray-500'>Pembayaran</p><p className='font-medium'>{item.payment?.cara_pembayaran}</p>
                     </div>
-                    <div className="text-right space-y-3 border-t border-gray-300 pt-2">
+                    <div className="flex space-x-5 justify-between">
+                        <p className='text-gray-500'>Keterangan</p><p className='font-medium'>{item.keterangan}</p>
+                    </div>
+                    <div className="flex justify-between">
+                        <p className='text-gray-500'>Tanggal</p><p className='font-medium'>{DateFormat(item.tanggal)}</p>
+                    </div>
+                    <div className="flex justify-between">
+                        <p className='text-gray-500'>Tgl. Penyerahan</p><p className='font-medium'>{DateFormat(item.tanggal_penyerahan)}</p>
+                    </div>
+                  </div>
+
+                  {/* Info Supplier */}
+                  <div className="text-right space-y-3 border-t border-gray-300 pt-2">
                     <div className="flex justify-between">
                         <p className='text-gray-500'>Supplier</p><p className='font-medium'>{suplier?.nama_perusahaan}</p>
                     </div>
@@ -209,7 +190,36 @@ function ApprovalPO() {
                     <div className="flex space-x-5 justify-between">
                         <p className='text-gray-500'>PIC</p><p className='font-medium'>{suplier?.PIC || '-'}</p>
                     </div>
+                  </div>
+
+                  {/* === BAGIAN LAMPIRAN BARU === */}
+                  {lampiran.length > 0 && (
+                    <div className="border-t border-gray-300 mt-4 pt-4">
+                      <p className='text-gray-500 mb-3 font-medium'>Lampiran</p>
+                      <div className="flex flex-wrap gap-3">
+                        {lampiran.map((fileUrl, index) => (
+                          <div 
+                            key={index} 
+                            className="relative w-20 h-20 rounded-md overflow-hidden border border-gray-200 group cursor-pointer"
+                            onClick={() => handleImageClick(`${apiUrl}${fileUrl}`)}
+                          >
+                            <img
+                              src={`${apiUrl}${fileUrl}`}
+                              alt={`Lampiran ${index + 1}`}
+                              className="w-full h-full object-cover"
+                              onError={(e) => { e.target.onerror = null; e.garget.src = 'https://placehold.co/100?text=Err'; }}
+                            />
+                            {/* Overlay saat hover */}
+                            <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all flex items-center justify-center">
+                              <i className='bx bx-search-alt-2 text-white text-2xl opacity-0 group-hover:opacity-100 transition-opacity'></i>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
                     </div>
+                  )}
+                  {/* === AKHIR BAGIAN LAMPIRAN === */}
+
                 </div>
 
                     <div className="bg-white border rounded-md p-6 flex-1 min-h-[200px]">

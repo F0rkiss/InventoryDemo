@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom';
 import CustomSidebar from './CustomSidebar';
 import { useAuth } from '../../auth/AuthContext';
 import Notifications from '../informationPage/Notifications';
+import RefreshButton from './RefreshButton';
 import menus from '../../js/menus';
 
 const CustomNavbar = ({ scrollRootSelector, scrollRootRef }) => {
@@ -78,7 +79,10 @@ const CustomNavbar = ({ scrollRootSelector, scrollRootRef }) => {
               MI Inventory
             </span>
           </span>
-          <Notifications />
+          <div className='flex gap-1'>
+            <RefreshButton onRefresh={() => window.location.reload()} />
+            <Notifications />
+          </div>
         </div>
       </div>
     </>

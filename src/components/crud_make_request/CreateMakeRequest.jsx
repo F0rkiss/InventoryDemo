@@ -9,6 +9,7 @@ import SelectPaginate from '../component/SelectPaginate';
 import Transition from '../component/Transition';
 import ModalDetailRequest from '../component/modal/ModalMR';
 import ImagePreviewModal from '../component/modal/ImagePreviewModal';
+import DatePicker from '../component/DatePicker';
 
 function CreateMakeRequest() {
   const navigate = useNavigate();
@@ -100,7 +101,23 @@ function CreateMakeRequest() {
       navigate('/material-request/list-material-request');
 
     } catch (error) {
-      Swal.fire({ icon: 'error', title: 'Gagal membuat material request', text: error?.response?.data?.message || 'Terjadi kesalahan pada sistem.' });
+      let errorMessage = 'Ada Kesalahan Dalam Sistem';
+      if (error?.response?.data?.msg) {
+          const msg = error.response.data.msg;
+          if (typeof msg === 'string') {
+              errorMessage = msg;
+          } else if (typeof msg === 'object') {
+              const messages = Object.values(msg).flat();
+              if (messages.length > 0) {
+                  errorMessage = messages[0]; 
+              }
+          }
+      }
+      Swal.fire({
+          icon: 'error',
+          title: 'Tidak dapat membuat MR',
+          text: errorMessage,
+      });
     } finally {
       setDisabled(false);
     }
@@ -133,7 +150,10 @@ function CreateMakeRequest() {
             <div className="p-7 bg-white shadow-lg shadow-gray-200 rounded-lg border border-gray-300">
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div className="mb-5 space-y-2">
-                  <label className="font-semibold">Jenis Permintaan</label>
+                  <label className='font-semibold'>
+                      <span>Jenis Permintaan</span>
+                      <span className="text-red-500"> *</span>
+                  </label>
                   <SelectPaginate
                     source={'inventTypeRequest'}
                     selectValue={items.type_request}
@@ -145,21 +165,23 @@ function CreateMakeRequest() {
                 </div>
 
                 <div className="mb-4">
-                  <label className="font-semibold">Tanggal</label>
-                  <div className="bg-white p-2 rounded-md border border-gray-300 mt-2">
-                    <input
-                    type="date" 
-                    value={items.tanggal} 
-                    onChange={(e) => setItems({ ...items, tanggal: e.target.value })} 
-                    className="w-full bg-transparent active:outline-sky-500 p-2" // <--- p-2 SUDAH DIHAPUS
-                    required />
-                  </div>
+                  <label className='font-semibold'>
+                      <span>Tanggal</span>
+                      <span className="text-red-500"> *</span>
+                  </label>
+                  <DatePicker
+                    value={items.tanggal}
+                    onChange={(val) => setItems({ ...items, tanggal: val })}
+                  />
                 </div>
                 {/* DIUBAH: Hanya tampilkan bagian detail jika Type Request sudah dipilih */}
                 {isStockRequest !== null && (
                   <>
                     <div className="mt-2 pt-3">
-                      <p className="text-lg font-semibold">Detail</p>
+                      <label className='font-semibold'>
+                        <span className="text-lg font-semibold">Detail</span>
+                        <span className="text-red-500"> *</span>
+                      </label>
                     </div>
                     <div className="space-y-3 my-3">
                       {details.length === 0 ? (
@@ -244,6 +266,12 @@ function CreateMakeRequest() {
                     </div>
                   </>
                 )}
+                {/* === Keterangan wajib diisi === */}
+                <p className="ms-2">
+                    <span className="text-red-500">*</span> 
+                    <span className="text-xs font-medium text-gray-700"> Wajib diisi</span>
+                </p>
+                {/* === Action Buttons === */}
                 <div className="flex flex-col items-center justify-self-center mt-10 max-w-full w-[25rem] space-y-2 text-center">
                   <button disabled={disabled} type="submit" className='py-2 px-4 w-full rounded-lg font-medium bg-blue-500 hover:bg-blue-600 transition-color duration-200 text-white disabled:bg-blue-300'>Submit</button>
                   <button className='py-2 px-4 w-full rounded-lg font-medium border border-red-200 bg-red-50 hover:bg-red-100 transition-color duration-200 text-red-600' onClick={resetValue} type="button">Reset</button>

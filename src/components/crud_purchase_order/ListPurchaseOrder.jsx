@@ -155,24 +155,22 @@ function PurchaseOrderList() {
     return (
       <Layout title={'List Purchase Order'}>
           <Block>
-            <div className='ms-3 mb-4 flex items-center justify-between'>
-              <div className="flex justify-between items-center w-full">
-                <p className='lg:text-3xl text-2xl font-semibold capitalize'>Purchase Order List</p>
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-2">
+                <p className='md:text-3xl text-2xl ms-3 font-semibold capitalize'>Purchase Order List</p>
                 <div className='flex items-center gap-2'>
+                  <SearchBar
+                    onChange={handleSearchChange}
+                    disable={loading}
+                    values={searchQuery}
+                  />
                   <FilterStatusToggle
                     value={filterStatus}
                     onChange={onFilterChange}
                     // disabled={loading}
                     // showText   // uncomment if you want to show the current label text
                   />
-                  <SearchBar
-                    onChange={handleSearchChange}
-                    disable={loading}
-                    values={searchQuery}
-                  />
                 </div>
               </div>
-            </div>
             <Transition contentVisible={contentVisible}>
               <div className='space-y-4'>
                 <ScrollPagination rootSelector=".page-content" fetchMoreItems={fetchMoreItems} loading={loading} nextCursor={nextCursor}>

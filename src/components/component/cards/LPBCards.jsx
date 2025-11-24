@@ -103,8 +103,8 @@ const LPBCards = forwardRef(({ item, goToUpdate, goToDetail, isList, goToCreate,
             
             <div className="m-4 text-right space-y-2">
             <div className="flex justify-between">
-                <p className="text-gray-500">Pembayaran</p>
-                <p className="font-medium capitalize">{item.cara_pembayaran}</p>
+                <p className="text-gray-500">Nama Suplier</p>
+                <p className="font-medium capitalize">{item.nama_perusahaan}</p>
             </div>
             <div className="flex justify-between">
                 <p className="text-gray-500">Keterangan</p>
@@ -214,11 +214,12 @@ const LPBCards = forwardRef(({ item, goToUpdate, goToDetail, isList, goToCreate,
                 </>
             ) : (
                 <button
-                className="px-3 py-1.5 purchase-button"
-                onClick={() => goToCreate(item.id)}
-                >
-                Buat Laporan
-                </button>
+                                className="flex justify-center items-center w-full px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white  font-semibold rounded-lg transition-colors duration-200 flex justify-end gap-2 mt-3"
+                                onClick={() => goToCreate(item.id)}
+                            >
+                                Buat Pembelian 
+                                <i className="bx bx-chevron-right text-lg"></i>
+                            </button>
             )}
             </div>
         </div>

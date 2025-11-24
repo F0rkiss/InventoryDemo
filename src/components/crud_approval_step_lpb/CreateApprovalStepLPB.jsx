@@ -133,7 +133,7 @@ function CreateApprovalLPB() {
               {/* approval_step */}
               <div className="md:grid md:grid-cols-2 md:gap-x-4">
                 {/* approval_step */}
-                <div className="mb-4">
+                <div className="mb-2">
                     <div className="flex justify-between items-center">
                     <label className="font-semibold">Approval Step</label>
                     {errors.approval_step && (
@@ -157,7 +157,7 @@ function CreateApprovalLPB() {
                 </div>
 
                 {/* back_to_approval_step */}
-                <div className="mb-4">
+                <div className="mb-2">
                     <div className="flex justify-between items-center">
                     <label className="font-semibold">Kembali ke Approval Step</label>
                     {errors.back_to_approval_step && (

@@ -15,6 +15,7 @@ import ImagePreviewModal from '../component/modal/ImagePreviewModal'
 import CustomCheckbox from '../component/CustomCheckBox' // Import CustomCheckbox component
 import DateFormat from '../../helper/DateFormatHelper' // Import DateFormat helper
 import MultiUpload from '../component/MultiUpload'
+import DatePicker from '../component/DatePicker'
 
 function CreatePurchaseOrderPR() {
     // State for the creation form
@@ -146,7 +147,7 @@ function CreatePurchaseOrderPR() {
             details.forEach(d => {
                 fd.append('invent_barangs_id[]', d.selectedBarang?.id);
                 fd.append('qty[]', d.qty);
-                fd.append('harga_sub_total[]', d.harga_sub_total);
+                fd.append('harga_per_item[]', d.harga_per_item);
                 fd.append('invent_mata_uang_id[]', d.selectedMataUang?.id); 
             });
 
@@ -162,13 +163,25 @@ function CreatePurchaseOrderPR() {
             });
             navigate('/purchase-order-pr/list-purchase-order-pr');
             
-        } catch (err) {
-            Swal.fire({ 
-                icon:'error',
-                title:'Gagal Membuat Purchase Order',
-                text: err?.response?.data?.msg || 'Kesalahan pada sistem'
+        } catch (error) {
+            let errorMessage = 'Ada Kesalahan Dalam Sistem';
+            if (error?.response?.data?.msg) {
+                const msg = error.response.data.msg;
+                if (typeof msg === 'string') {
+                    errorMessage = msg;
+                } else if (typeof msg === 'object') {
+                    const messages = Object.values(msg).flat();
+                    if (messages.length > 0) {
+                        errorMessage = messages[0]; 
+                    }
+                }
+            }
+            Swal.fire({
+                icon: 'error',
+                title: 'Tidak dapat membuat purchase order',
+                text: errorMessage,
             });
-            console.log('Update error:', err?.response?.data || err);
+            // resetValue()
         } finally {
             setIsSubmitting(false);
             setDisabled(false);
@@ -283,8 +296,8 @@ function CreatePurchaseOrderPR() {
                                             <span className="text-gray-500">Employee Code</span>
                                             <span className='font-medium'>{prInfo.make_request?.user?.EmpCode}</span>
                                         </div>
-                                        <div className="flex justify-between">
-                                            <span className="text-gray-500">Employee Email</span>
+                                        <div className="flex justify-between space-x-4">
+                                            <span className="text-gray-500 text-left">Employee Email</span>
                                             <span className='font-medium'>{prInfo.make_request?.user?.email}</span>
                                         </div>
                                         <p className={`flex place-self-end w-fit py-2 px-3 items-center justify-center text-sm gap-1 rounded-md font-medium ${
@@ -355,18 +368,10 @@ function CreatePurchaseOrderPR() {
                                     <label className='font-semibold'>Tanggal</label>
                                     {errors.tanggal && <span className="text-red-500 text-sm">{errors.tanggal}</span>}
                                 </div>
-                                <div className={`bg-white p-3 rounded-md border mt-2 ${errors.tanggal ? 'border-red-500' : 'border-gray-300'}`}>
-                                <input 
-                                    type={items.tanggal ? 'date' : 'text'}
-                                    onFocus={(e) => e.target.type = 'date'}
-                                    onBlur={(e) => { if (!e.target.value) e.target.type = 'text'; }}
-                                    name="tanggal" 
-                                    value={items.tanggal} 
-                                    onChange={handleChange}
-                                    className="w-full p-2 placeholder:text-gray-400"
-                                    placeholder='Pilih tanggal pembuatan'
+                                <DatePicker
+                                value={items.tanggal}
+                                onChange={(val) => setItems({ ...items, tanggal: val })}
                                 />
-                                </div>
                             </div>
                             <div className='mb-4'>
                                 <div className="flex justify-between items-center">
@@ -391,18 +396,10 @@ function CreatePurchaseOrderPR() {
                                     <label className='font-semibold'>Tanggal Penyerahan</label>
                                     {errors.tanggal_penyerahan && <span className="text-red-500 text-sm">{errors.tanggal_penyerahan}</span>}
                                 </div>
-                                <div className={`bg-white p-3 rounded-md border mt-2 ${errors.tanggal_penyerahan ? 'border-red-500' : 'border-gray-300'}`}>
-                                <input 
-                                    type={items.tanggal_penyerahan ? 'date' : 'text'}
-                                    onFocus={(e) => e.target.type = 'date'}
-                                    onBlur={(e) => { if (!e.target.value) e.target.type = 'text'; }}
-                                    name="tanggal_penyerahan" 
-                                    value={items.tanggal_penyerahan} 
-                                    onChange={handleChange}
-                                    className="w-full p-2 placeholder:text-gray-400"
-                                    placeholder='Pilih tanggal penyerahan'
+                                <DatePicker
+                                value={items.tanggal_penyerahan}
+                                onChange={(val) => setItems({ ...items, tanggal_penyerahan: val })}
                                 />
-                                </div>
                             </div>
                             
                             {/* FIELD KETERANGAN */}
@@ -491,7 +488,7 @@ function CreatePurchaseOrderPR() {
                                             <span className="text-sm text-gray-400 ">Qty: </span>{item.qty}
                                         </div>
                                         <div className="mt-1 md:mt-0 md:text-right font-medium">
-                                            {PriceFormat(item.harga_sub_total, item.selectedMataUang?.kode)}
+                                            {PriceFormat(item.harga_per_item, item.selectedMataUang?.kode)}
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-2 mt-2 w-full justify-end md:w-auto md:mt-0 md:justify-self-end md:border-l-2 md:pl-3">

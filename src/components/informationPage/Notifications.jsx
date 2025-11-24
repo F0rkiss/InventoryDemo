@@ -105,8 +105,8 @@ const Notifications = () => {
     const unreadCount = items.filter((item) => !item.isRead).length;
 
     return (
-        <div className="notifications-container relative mr-8">
-            <button onClick={toggleDropdown} className="relative">
+        <div className="notifications-container relative mr-5">
+            <button onClick={toggleDropdown} className="relative transition-colors duration-200 hover:bg-gray-200 rounded-md px-2 py-1">
                 <i className="bx bx-bell text-2xl"></i>
                 {unreadCount > 0 && (
                     <span className="absolute top-0 right-0 w-4 h-4 text-xs text-white bg-red-500 rounded-full flex items-center justify-center">
