@@ -30,18 +30,13 @@ function CreateMultiUploadModal({ open = false, initialFiles = [], onClose, onSa
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
             <div className="absolute inset-0 bg-black/40" onClick={onClose} />
-            <div className="relative bg-white w-full max-w-3xl mx-4 rounded-lg shadow-lg border p-4">
-                <div className="flex items-center justify-between mb-3">
-                    <h3 className="text-lg font-semibold">Kelola Gambar</h3>
-                    <button
-                        type="button"
-                        onClick={onClose}
-                        className="text-gray-500 hover:text-gray-700"
-                    >
-                        <i className="bx bx-x text-2xl"></i>
-                    </button>
+            <div className="relative bg-white w-full max-w-2xl rounded-lg shadow-lg border p-4">
+                <div className="flex justify-between items-center mb-3">
+                    <h3 className="text-2xl font-semibold ">Kelola Gambar</h3>
+                    <div className="text-gray-500 hover:text-gray-700 cursor-pointer">
+                        <i className="bx bx-x text-3xl" onClick={onClose}></i>
+                    </div>
                 </div>
-
                 <div className="mb-4">
                     <label htmlFor="create-modal-img-input">
                         <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500 text-white text-sm font-medium rounded-md cursor-pointer hover:bg-blue-600 transition">

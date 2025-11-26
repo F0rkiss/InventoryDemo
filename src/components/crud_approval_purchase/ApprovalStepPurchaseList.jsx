@@ -13,6 +13,7 @@ import { encrypting } from '../../helper/EncryptHelper'
 import Swal from 'sweetalert2'
 import useMenuAccess from '../../hooks/useMenuAccess'
 import FlyingButton from '../component/FlyingButton'
+import Tabs from '../component/Tabs.jsx'
 
 function ApprovalStepPurchaseList() {
   const [items, setItems] = useState([])
@@ -21,9 +22,44 @@ function ApprovalStepPurchaseList() {
   const [searchTerm, setSearchTerm] = useState('')
   const [searchQuery, setSearchQuery] = useState('')
   const [contentVisible, setContentVisible] = useState(false)
+  const [activeType, setActiveType] = useState(null)
+  const [availableTypes, setAvailableTypes] = useState([])
   const typingTimeoutRef = useRef(null)
   const navigate = useNavigate()
   const { canUpdate, canDelete } = useMenuAccess('ApprovalPurchase')
+
+
+  // Extract unique types from items - flexible to handle separators or plain types
+  const extractUniqueTypes = (itemsData) => {
+    const typesSet = new Set()
+    
+    itemsData.forEach(item => {
+      if (item.type) {
+        // Check if type contains separator (comma, semicolon, pipe, etc.)
+        const separators = [',', ';', '|', '/']
+        let hasSeparator = false
+        
+        for (const sep of separators) {
+          if (item.type.includes(sep)) {
+            // Split by separator and add each type
+            item.type.split(sep).forEach(t => {
+              const trimmed = t.trim()
+              if (trimmed) typesSet.add(trimmed)
+            })
+            hasSeparator = true
+            break
+          }
+        }
+        
+        // If no separator found, add the whole type as is
+        if (!hasSeparator) {
+          typesSet.add(item.type.trim())
+        }
+      }
+    })
+    
+    return Array.from(typesSet).sort()
+  }
 
   useEffect(() => {
     setContentVisible(false);
@@ -37,10 +73,21 @@ function ApprovalStepPurchaseList() {
     try {
       const response = await api.get(searchTerm ? `approvalStepPurchase/${searchTerm}` : 'approvalStepPurchase')
       const data = response.data.data
-      setItems(data.data || [])
+      const itemsData = data.data || []
+      setItems(itemsData)
       setNextCursor(data.next_cursor)
+      
+      // Extract unique types from items - handles both separator and non-separator cases
+      const types = extractUniqueTypes(itemsData)
+      setAvailableTypes(types)
+      
+      // Set initial active type if not already set
+      if (!activeType && types.length > 0) {
+        setActiveType(types[0])
+      }
     } catch (error) {
       setItems([])
+      setAvailableTypes([])
     } finally {
       setLoading(false)
       setTimeout(() => setContentVisible(true), 50)
@@ -125,10 +172,25 @@ function ApprovalStepPurchaseList() {
           <SearchBar onChange={handleSearchChange} disable={loading} values={searchQuery} />
         </div>
 
+        {availableTypes.length > 0 && (
+          <Tabs items={availableTypes} active={activeType} onChange={setActiveType}/>
+        )}
         <Transition contentVisible={contentVisible}>
           <ScrollPagination fetchMoreItems={fetchMoreItems} loading={loading} nextCursor={nextCursor}>
             <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
-              {items.map((item) => (
+              {items
+                .filter(item => {
+                  if (!activeType) return true
+                  // Check if item.type matches activeType (handles both separated and non-separated)
+                  const separators = [',', ';', '|', '/']
+                  for (const sep of separators) {
+                    if (item.type?.includes(sep)) {
+                      return item.type.split(sep).map(t => t.trim()).includes(activeType)
+                    }
+                  }
+                  return item.type?.trim() === activeType
+                })
+                .map((item) => (
                 <ApprovalStepCard
                 key={item.id}
                 item={item}
