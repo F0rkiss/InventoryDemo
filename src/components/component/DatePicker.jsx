@@ -57,22 +57,39 @@ export default function DatePicker({ value, onChange }) {
 
       {/* POPUP CALENDAR */}
       {open && (
-        <div
-          className="absolute z-50 mt-2 bg-white p-3 rounded-lg shadow-lg border"
-        //   style={{ width: "100%" }}
-        >
-          <DayPicker
-            mode="single"
-            selected={parsedValue}
-            onSelect={(date) => {
-              onChange(formatToISO(date));
-              setOpen(false);
-            }}
-            captionLayout="dropdown"
-            fromYear={1900}
-            toYear={2100}
-          />
-        </div>
+        <>
+          {/* BACKDROP KHUSUS MOBILE (Biar bisa close pas klik luar di mode mobile) */}
+          <div 
+            className="fixed inset-0 z-40 sm:hidden"
+            onClick={() => setOpen(false)}
+          ></div>
+
+          {/* CONTAINER CALENDAR */}
+          <div
+            className="
+              /* --- STYLE UNTUK MOBILE (Tengah Layar/Modal) --- */
+              fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50
+              
+              /* --- STYLE UNTUK DESKTOP (Dropdown Bawah Input) --- */
+              sm:absolute sm:top-full sm:left-0 sm:translate-x-0 sm:translate-y-0 sm:mt-2
+              
+              /* --- STYLE UMUM --- */
+              bg-white p-3 rounded-lg shadow-lg border
+            "
+          >
+            <DayPicker
+              mode="single"
+              selected={parsedValue}
+              onSelect={(date) => {
+                onChange(formatToISO(date));
+                setOpen(false);
+              }}
+              captionLayout="dropdown"
+              fromYear={1900}
+              toYear={2100}
+            />
+          </div>
+        </>
       )}
     </div>
   );
