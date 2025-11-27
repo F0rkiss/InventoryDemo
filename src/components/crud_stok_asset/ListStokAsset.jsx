@@ -13,6 +13,7 @@ import DataEmpty from '../component/DataEmpty';
 import { encrypting } from '../../helper/EncryptHelper';
 import useMenuAccess from '../../hooks/useMenuAccess';
 import ImagePreviewModal from '../component/modal/ImagePreviewModal';
+import ExportButton from '../component/ExportSheets'
 import Swal from 'sweetalert2';
 
 function AssetStokList() {
@@ -23,6 +24,7 @@ function AssetStokList() {
   const [searchTerm, setSearchTerm] = useState(''); // For actual search term used in fetching
   const [contentVisible, setContentVisible] = useState(false);
   const { canUpdate, canCreate, canDelete } = useMenuAccess('InventStokAsset');
+  const { canRead } = useMenuAccess('ExportData')
   const navigate = useNavigate()
 
   // image preview state
@@ -169,12 +171,20 @@ function AssetStokList() {
         <Block>
           <div className='mb-4 flex flex-col md:flex-row md:items-center md:justify-between gap-2'>
                 <p className='ms-3 md:text-3xl text-2xl font-semibold capitalize w-full md:w-auto'>Daftar Stok Barang Aset</p>
-                <SearchBar
-                    onChange={handleSearchChange}
-                    disable={loading}
-                    values={searchQuery}
-                    containerClass="w-full md:w-auto" // Tambahkan class untuk searchbar
-                />
+                <div className="flex items-center gap-2">
+                  <SearchBar
+                      onChange={handleSearchChange}
+                      disable={loading}
+                      values={searchQuery}
+                      containerClass="w-full md:w-auto" // Tambahkan class untuk searchbar
+                  />
+                  { canRead &&
+                    <ExportButton
+                    endpoint={'/export-stok'}
+                    filenamePrefix={'stok-asset'}
+                    />
+                  }
+                </div>
           </div>  
 
             <Transition contentVisible={contentVisible}>

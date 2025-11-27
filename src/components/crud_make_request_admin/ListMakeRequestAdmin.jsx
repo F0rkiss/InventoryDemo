@@ -13,7 +13,8 @@ import DataEmpty from '../component/DataEmpty'
 import { encrypting } from '../../helper/EncryptHelper'
 import { useAuth } from '../../auth/AuthContext'
 import useMenuAccess from '../../hooks/useMenuAccess'
-import FilterStatusToggle from '../component/FilterStatusToggle';
+import FilterStatusToggle from '../component/FilterStatusToggle'
+import ExportButton from '../component/ExportSheets'
 
   function MakeRequestAdminList() {
 
@@ -25,7 +26,7 @@ import FilterStatusToggle from '../component/FilterStatusToggle';
     const [contentVisible, setContentVisible] = useState(false)
     const navigate = useNavigate()
     const { role } = useAuth()
-    const { canCreate, canUpdate } = useMenuAccess('MakeRequestAdmin');
+    const { canRead } = useMenuAccess('ExportData')
     const [filterStatus, setFilterStatus] = useState('all');
     const onFilterChange = (next) => setFilterStatus(next);
 
@@ -147,6 +148,12 @@ import FilterStatusToggle from '../component/FilterStatusToggle';
                   value={filterStatus}
                   onChange={onFilterChange}
                 />
+                { canRead &&
+                  <ExportButton
+                    endpoint={'/export-materialRequest'}
+                    filenamePrefix={'material-request'}
+                  />
+                }
               </div>
             </div>
             <Transition contentVisible={contentVisible}>

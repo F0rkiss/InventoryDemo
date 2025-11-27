@@ -32,7 +32,7 @@ const menus = [
         isAccordion: true,
         children: [
             { key: "InventStokAsset", label: "Daftar Stok Aset", path: "/stok-asset/list-stok" },
-            { key: "InventStok", label: "Daftar Stok", path: "/stok/list-stok" },
+            { key: "InventStok", label: "Daftar Stok Non-Aset", path: "/stok/list-stok" },
             { key: "Barang", label: "Daftar Barang", path: "/barang/list-barang" },
             // { key: "JenisBarang", label: "Jenis Barang", path: "/jenis-barang/list-jenis-barang" },
             // { key: "SumberBarang", label: "Sumber Barang", path: "/sumber-barang/list-sumber-barang" },

@@ -59,7 +59,7 @@ const CustomNavbar = ({ scrollRootSelector, scrollRootRef }) => {
       )}
 
       <div
-        className={`sticky top-0 z-20 px-1 bg-white border-b border-gray-400/30 transition-shadow duration-200 ${
+        className={`sticky top-0 z-2 px-1 bg-white border-b border-gray-400/30 transition-shadow duration-200 ${
           isScrolled ? 'shadow-md' : 'shadow-none'
         }`}
       >

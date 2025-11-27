@@ -149,7 +149,12 @@ function ApprovalStepList() {
 
         <Transition contentVisible={contentVisible}>
           {/* Dynamic Tabs */}
-          <div className="border-b mb-4 flex gap-4 overflow-x-auto whitespace-nowrap no-scrollbar">
+          <div className="border-b mb-4 flex gap-4 overflow-x-auto whitespace-nowrap [&::-webkit-scrollbar]:h-2
+            [&::-webkit-scrollbar-track]:rounded-full
+            [&::-webkit-scrollbar-track]:bg-gray-100
+            [&::-webkit-scrollbar-thumb]:rounded-full
+            [&::-webkit-scrollbar-thumb]:bg-gray-400
+            [&::-webkit-scrollbar-thumb]:h-1">
           {typeRequests.map((type) => (
             <button
               key={type.id}
