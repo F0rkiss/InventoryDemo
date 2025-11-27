@@ -78,18 +78,14 @@ function UpdateMultiUploadModal({ open = false, initialBukti = [], lpbId, onClos
             <div className="absolute inset-0 bg-black/40" onClick={onClose} />
     
             {/* Modal Wrapper */}
-            <div className="relative bg-white w-full max-w-3xl mx-4 rounded-lg shadow-lg border p-4">
+            <div className="relative bg-white w-full max-w-2xl mx-4 rounded-lg shadow-lg border p-4">
 
                 {/* HEADER DENGAN BUTTON DI KANAN */}
-                <div className="flex items-center justify-between mb-3">
-                    <h3 className="text-lg font-semibold">Kelola Gambar</h3>
-                    <button
-                        type="button"
-                        onClick={onClose}
-                        className="text-gray-500 hover:text-gray-700"
-                    >
-                        <i className="bx bx-x text-3xl"></i>
-                    </button>
+                <div className="flex justify-between items-center mb-3">
+                    <h3 className="text-2xl font-semibold ">Kelola Gambar</h3>
+                    <div className="text-gray-500 hover:text-gray-700 cursor-pointer">
+                        <i className="bx bx-x text-3xl" onClick={onClose}></i>
+                    </div>
                 </div>
     
                 <div className="mb-4">

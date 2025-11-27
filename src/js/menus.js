@@ -1,7 +1,7 @@
 const menus = [
     { key: "Dashboard", label: "Dashboard", icon: "bx bxs-dashboard", path: "/dashboard" },
     {
-        key: "MakeRequest" || "MakeRequestAdmin" || "ListMakequest" || "ListPurchaseRequest" || "PurchaseRequest" || "PurchaseOrder" || "TypeRequest",
+        key: "MakeRequest" || "MakeRequestAdmin" || "ListMakequest" || "ListPurchaseRequest" || "PurchaseRequest" || "TypeRequest",
         label: "Request",
         icon: "bx bx-message-add",
         isAccordion: true,
@@ -10,7 +10,37 @@ const menus = [
             { key: "MakeRequest", label: "Personal Material Request", path: "/material-request/list-material-request" },
             { key: "ListMakeRequest", label: "Create Purchase Request", path: "/make-purchase-request/list-make-purchase-request" },
             { key: "PurchaseRequest", label: "Purchase Request", path: "/purchase-request/list-purchase-request" },
-            { key: "ListPurchaseRequest", label: "Create Purchase Order", path: "/purchase-order-pr/list-purchase-order-pr" },
+            { key: "ListPurchaseOrder", label: "Create Purchase Order", path: "/purchase-order-pr/list-purchase-order-pr" },
+            { key: "PurchaseOrder", label: "Purchase Order", path: "/purchase-order/list-purchase-order" },
+        ]
+    },
+    // {
+    //     key: "PurchaseRequest",
+    //     label: "Purchase Request",
+    //     icon: "bx bx-file",
+    //     isAccordion: true,
+    //     children: [
+    //         { key: "ListMakeRequest", label: "Create Purchase Request", path: "/make-purchase-request/list-make-purchase-request" },
+    //         { key: "PurchaseRequest", label: "Purchase Request", path: "/purchase-request/list-purchase-request" },
+    //     ]
+    // },
+    // {
+    //     key: "PurchaseOrder",
+    //     label: "Purchase Order",
+    //     icon: "bx bx-file",
+    //     isAccordion: true,
+    //     children: [
+    //         { key: "ListPurchaseOrder", label: "Create Purchase Order", path: "/purchase-order-pr/list-purchase-order-pr" },
+    //         { key: "PurchaseOrder", label: "Purchase Order", path: "/purchase-order/list-purchase-order" },
+    //     ]
+    // },
+    {
+        key: "listPurchaseOrder" || "PurchaseOrder",
+        label: "Purchase Order",
+        icon: "bx bx-file",
+        isAccordion: true,
+        children: [
+            { key: "ListPurchaseOrder", label: "Create Purchase Order", path: "/purchase-order-pr/list-purchase-order-pr" },
             { key: "PurchaseOrder", label: "Purchase Order", path: "/purchase-order/list-purchase-order" },
         ]
     },
@@ -34,8 +64,7 @@ const menus = [
             { key: "InventStokAsset", label: "Daftar Stok Aset", path: "/stok-asset/list-stok" },
             { key: "InventStok", label: "Daftar Stok Non-Aset", path: "/stok/list-stok" },
             { key: "Barang", label: "Daftar Barang", path: "/barang/list-barang" },
-            // { key: "JenisBarang", label: "Jenis Barang", path: "/jenis-barang/list-jenis-barang" },
-            // { key: "SumberBarang", label: "Sumber Barang", path: "/sumber-barang/list-sumber-barang" },
+
         ]
     },
     {

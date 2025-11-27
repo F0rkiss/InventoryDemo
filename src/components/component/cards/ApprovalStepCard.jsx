@@ -58,20 +58,6 @@ const ApprovalStepCard = forwardRef(({item, from, goToDetail, canUpdate, canDele
               {item.note || 'Belum Ditentukan'}
             </p>
           </div>
-          {item.nameTypeRequest && item.jenisTypeRequest && (
-            <>
-              <div className="flex justify-between items-start">
-                <span className="text-gray-600">Type Request</span>
-                <p className="text-sm font-medium text-gray-800 text-right max-w-[60%] break-words">
-                  {item.nameTypeRequest}
-                </p>
-              </div>
-              <div className="flex justify-between items-start">
-                <span className="text-gray-600">Keterangan</span>
-                <p className="text-sm font-medium text-gray-800 text-right max-w-[60%] break-words">
-                  {item.jenisTypeRequest}
-                </p>
-              </div>
               <div className="flex justify-between items-center">
                 <div className="flex items-center gap-1 relative group">
                   <span className="text-gray-600">Step Approval</span>
@@ -110,8 +96,6 @@ const ApprovalStepCard = forwardRef(({item, from, goToDetail, canUpdate, canDele
                   {item.isAdminApproved ? "Diperlukan" : "Tidak Diperlukan" }
                 </p>
               </div>
-            </>
-          )}
         </div>
 
         {/* Actions */}

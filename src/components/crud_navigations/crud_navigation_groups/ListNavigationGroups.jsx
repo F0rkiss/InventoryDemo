@@ -1,7 +1,7 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useMemo } from 'react';
 import api from '../../../api/api';
 import SearchBar from '../../component/SearchBar';
-import { Block } from 'framework7-react'; // Hapus import yang tidak terpakai jika perlu
+import { Block } from 'framework7-react';
 import ScrollPagination from '../../component/ScrollPagination';
 import Loader from '../../component/Loader';
 import Transition from '../../component/Transition';
@@ -9,29 +9,61 @@ import { useNavigate } from 'react-router-dom';
 import FlyingButton from '../../component/FlyingButton';
 import Swal from 'sweetalert2';
 import Layout from '../../component/Layout';
+import Tabs from '../../component/Tabs';
 import { encrypting } from '../../../helper/EncryptHelper';
 import NavigationCards from '../../component/cards/NavigationsCards';
 import DataEmpty from '../../component/DataEmpty';
 import useMenuAccess from '../../../hooks/useMenuAccess';
 
 function ListNavigationGroup() {
-    const [items, setItems] = useState([])
+
+    const [groups, setGroups] = useState([])
+    const [roles, setRoles] = useState([])
+    const [activeRole, setActiveRole] = useState(null)
+
     const [searchQuery, setSearchQuery] = useState('')
     const [searchTerm, setSearchTerm] = useState('')
+
     const [nextCursor, setNextCursor] = useState(null)
     const [loading, setLoading] = useState(false)
     const [contentVisible, setContentVisible] = useState(false)
-    
-    // REF BARU: Untuk mencegah spam request (State update itu async, Ref itu sync)
-    const loadingRef = useRef(false); 
-    
+
+    const loadingRef = useRef(false);
+    const typingTimeoutRef = useRef(null);
+
     const navigate = useNavigate();
     const { canCreate, canUpdate, canDelete } = useMenuAccess('NavigationGroup')
-    const typingTimeoutRef = useRef(null)
+
+    // FIX 1 — Extract role lebih aman
+    const extractRoleName = (group) => group.role?.name || 'Unknown Role'
+
+    // FIX 2 — agar tab selalu match data
+    const recomputeRoles = (list) => {
+        const unique = [...new Set(list.map(extractRoleName))];
+        setRoles(unique);
+
+        if (!unique.includes(activeRole)) {
+            setActiveRole(unique[0] || null);
+        }
+    };
 
     useEffect(() => {
-        fetchItems()
-    }, [searchTerm])
+        fetchItems();
+    }, [searchTerm]);
+
+    // FIX 3 — wrapper API benar
+    const unwrap = (response) => {
+        const raw = response.data.data;
+
+        if (Array.isArray(raw)) {
+            return { data: raw, next_cursor: null };
+        }
+
+        return {
+            data: raw?.data || [],
+            next_cursor: raw?.next_cursor || null
+        };
+    };
 
     const fetchItems = async () => {
         if (loadingRef.current) return;
@@ -39,138 +71,121 @@ function ListNavigationGroup() {
         try {
             loadingRef.current = true;
             setLoading(true);
-            setNextCursor(null); 
+            setNextCursor(null);
 
             const url = searchTerm ? `inventNavigationGroup/${searchTerm}` : `inventNavigationGroup`;
             const response = await api.get(url);
-            
-            // Kita ambil Wrapper-nya dulu (Object yang membungkus 'data' dan 'next_cursor')
-            const wrapper = response.data.data; 
-            
-            // Ambil array data dari dalam wrapper
-            const dataArray = Array.isArray(wrapper.data) ? wrapper.data : [];
-            
-            setItems(dataArray);
+            const wrapper = unwrap(response);
 
-            // Ambil next_cursor dari Wrapper, BUKAN dari dataArray
-            if (wrapper && wrapper.next_cursor) {
-                console.log("Next Cursor ditemukan:", wrapper.next_cursor); // Debugging
-                setNextCursor(wrapper.next_cursor);
-            } else {
-                console.log("Next Cursor habis / tidak ada");
-                setNextCursor(null);
-            }
+            setGroups(wrapper.data);
+            recomputeRoles(wrapper.data);
+            setNextCursor(wrapper.next_cursor);
 
-        } catch (error) {
-            console.error("Error fetching initial items:", error);
-            setItems([]);
+        } catch (err) {
+            console.error("Fetch error:", err);
+            setGroups([]);
         } finally {
             loadingRef.current = false;
             setLoading(false);
-            setTimeout(() => setContentVisible(true), 50);
+            setTimeout(() => setContentVisible(true), 80);
         }
-    }
+    };
 
     const fetchMoreItems = async () => {
-        // Guard: Jika tidak ada cursor atau sedang loading, berhenti.
         if (!nextCursor || loadingRef.current) return;
 
         try {
             loadingRef.current = true;
-            // Jangan setLoading(true) global jika ingin UX lebih mulus (opsional),
-            // tapi untuk konsistensi biarkan saja dulu.
-            setLoading(true); 
+            setLoading(true);
 
             const url = searchTerm ? `inventNavigationGroup/${searchTerm}` : `inventNavigationGroup`;
-            const response = await api.get(url, {
-                params: { cursor: nextCursor }
+            const response = await api.get(url, { params: { cursor: nextCursor } });
+
+            const wrapper = unwrap(response);
+
+            setGroups(prev => {
+                const existing = new Set(prev.map(p => p.id));
+                const filtered = wrapper.data.filter(g => !existing.has(g.id));
+                const merged = [...prev, ...filtered];
+                recomputeRoles(merged);
+                return merged;
             });
 
-            const wrapper = response.data.data;
-            const newDataRaw = wrapper.data || []; 
+            setNextCursor(wrapper.next_cursor);
 
-            if (newDataRaw.length === 0) {
-                setNextCursor(null);
-                return;
-            }
-
-            setItems((prevItems) => {
-                // Filter duplikat berdasarkan ID
-                const existingIds = new Set(prevItems.map(item => item.id));
-                const newItems = newDataRaw
-                    // .filter(item => item.deleted_at === null)
-                    .filter(item => !existingIds.has(item.id));
-                
-                return [...prevItems, ...newItems];
-            });
-
-            // Update cursor untuk halaman berikutnya dari wrapper
-            if (wrapper.next_cursor) {
-                setNextCursor(wrapper.next_cursor);
-            } else {
-                setNextCursor(null);
-            }
-
-        } catch (error) {
-            console.error("Error fetching more items:", error);
+        } catch (err) {
+            console.error("Pagination error:", err);
             setNextCursor(null);
         } finally {
             loadingRef.current = false;
             setLoading(false);
         }
-    }
-
-    const handleSearchChange = (query) => {
-        setSearchQuery(query);
-        if (typingTimeoutRef.current) {
-            clearTimeout(typingTimeoutRef.current);
-        }
-        typingTimeoutRef.current = setTimeout(() => {
-            // Reset items saat mengetik agar UI bersih dulu
-            setItems([]); 
-            setNextCursor(null);
-            setSearchTerm(query);
-        }, 750);
     };
 
-    const deleteItems = async (id, name) => {
+    // FIX 4 — reset groups saat ketik
+    const handleSearchChange = (query) => {
+        setSearchQuery(query);
+        clearTimeout(typingTimeoutRef.current);
+
+        typingTimeoutRef.current = setTimeout(() => {
+            setGroups([]);
+            setNextCursor(null);
+            setActiveRole(null); // RESET TAB
+            setSearchTerm(query);
+        }, 700);
+    };
+
+    // FIX 5 — flatten menu lebih stabil
+    const flattenedMenus = useMemo(() => {
+        const group = groups.find(g => extractRoleName(g) === activeRole);
+        return group?.menus?.map(m => ({
+            id: m.id,
+            role: group.role,
+            navigation_menu: { name: m.menu },
+            create_access: m.create_access,
+            read_access: m.read_access,
+            update_access: m.update_access,
+            delete_access: m.delete_access
+        })) || [];
+    }, [groups, activeRole]);
+
+    const deleteItems = async (id) => {
         try {
             const result = await Swal.fire({
-                title: `Apakah Anda ingin menghapus navigasi ini?`,
+                title: 'Apakah Anda ingin menghapus navigasi ini?',
                 icon: 'question',
                 showDenyButton: true,
                 confirmButtonText: 'Yes',
-                denyButtonText: 'No',
             });
 
             if (result.isConfirmed) {
                 await api.delete(`inventNavigationGroup-delete/${id}`);
-                setItems(items.filter((item) => item.id !== id));
+
+                setGroups(prev =>
+                    prev.map(g =>
+                        extractRoleName(g) !== activeRole
+                            ? g
+                            : { ...g, menus: g.menus.filter(m => m.id !== id) }
+                    )
+                );
+
                 Swal.fire('Terhapus!', '', 'success');
             }
-        } catch (error) {
+
+        } catch {
             Swal.fire({
-                icon:'error',
-                title:'Gagal Menghapus',
-                text:'Ada Kesalahan Dalam Sistem'
-            })
+                icon: 'error',
+                title: 'Gagal Menghapus',
+                text: 'Ada Kesalahan Dalam Sistem'
+            });
         }
-    };    
+    };
 
-    const goToDetail = async (id) => {
-        const encryptingID = await encrypting(id)
-        navigate(`/navigation-groups/detail-navigation-groups/${encryptingID}`)
-    } 
+    const goToDetail = async (id) => navigate(`/navigation-groups/detail-navigation-groups/${await encrypting(id)}`);
+    const goToUpdate = async (id) => navigate(`/navigation-groups/update-navigation-groups/${await encrypting(id)}`);
 
-    const goToUpdate = async(id) => {
-        const encryptingID = await encrypting(id)
-        navigate(`/navigation-groups/update-navigation-groups/${encryptingID}`)
-    }
-
-    console.log('Rendered with items:', items);
-    
     return (
-        <Layout title={'List Navigations'}>
+        <Layout title="List Navigations">
             <Block>
                 <div className='flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-2'>
                     <p className='lg:text-3xl text-2xl font-semibold capitalize'>Daftar Navigation Group</p>
@@ -181,13 +196,18 @@ function ListNavigationGroup() {
                     />
                 </div>
                 <Transition contentVisible={contentVisible}>
-                    {/* Tambahkan kondisi: Jangan render ScrollPagination jika items kosong, 
-                        gunakan div biasa agar tidak trigger scroll event di halaman kosong */}
-                    
-                    {items.length > 0 ? (
-                        <ScrollPagination rootSelector=".page-content" fetchMoreItems={fetchMoreItems} loading={loading} nextCursor={nextCursor}>
+                    {roles.length > 0 && (
+                        <Tabs items={roles} active={activeRole} onChange={setActiveRole} />
+                    )}
+                    {flattenedMenus.length > 0 ? (
+                        <ScrollPagination
+                            rootSelector=".page-content"
+                            fetchMoreItems={fetchMoreItems}
+                            loading={loading}
+                            nextCursor={nextCursor}
+                        >
                             <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
-                                {items.map((item) => (
+                                {flattenedMenus.map(item => (
                                     <NavigationCards
                                         key={item.id}
                                         item={item}
@@ -201,14 +221,16 @@ function ListNavigationGroup() {
                             </div>
                         </ScrollPagination>
                     ) : (
-                        !loading && <DataEmpty/>
+                        !loading && <DataEmpty />
                     )}
                 </Transition>
-                {loading && <Loader Class={'mt-44'} />}
+
+                {loading && <Loader Class="mt-44" />}
             </Block>
-            {canCreate && <FlyingButton goTo={'/navigation-groups/create-navigation-groups'} />}
+
+            {canCreate && <FlyingButton goTo="/navigation-groups/create-navigation-groups" />}
         </Layout>
-    )
+    );
 }
 
 export default ListNavigationGroup;
