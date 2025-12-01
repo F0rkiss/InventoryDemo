@@ -1,81 +1,117 @@
 import React, { useState } from 'react';
 import api from '../../api/api';
+import ModalExport from '../component/modal/ModalExport'; 
+import { saveAs } from 'file-saver';
 
-function ExportButton() {
+function ExportButton({ 
+    endpoint = '/export-materialRequest', 
+    filenamePrefix = 'export-data',       
+    label = 'Export'
+}) {
   const [loading, setLoading] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleExport = async () => {
+  const handleOpenModal = () => setIsModalOpen(true);
+  const handleCloseModal = () => !loading && setIsModalOpen(false);
+
+  // Menerima data bisa berupa { start_date, end_date } ATAU { tahun }
+  const handleProcessExport = async (filterData) => {
     setLoading(true);
     try {
-      const response = await api.get('/export', {
-        responseType: 'blob',
+      let params = {};
+      let filenameDatePart = '';
+
+      // === SETUP PARAMETER (Sama seperti sebelumnya) ===
+      if (filterData.tahun) {
+        params = { tahun: filterData.tahun };
+        filenameDatePart = `Year-${filterData.tahun}`;
+      } else {
+        const { start_date, end_date } = filterData;
+        params = { start_date, end_date };
+        
+        const formatFilenameDate = (dateISO) => {
+            if (!dateISO) return '';
+            const parts = dateISO.split('-');
+            return `${parts[2]}${parts[1]}${parts[0]}`;
+        };
+        filenameDatePart = `${formatFilenameDate(start_date)}-to-${formatFilenameDate(end_date)}`;
+      }
+
+      const response = await api.get(endpoint, {
+        params: params,
+        responseType: 'blob', // Wajib
       });
 
-      const fileBlob = response.data;
-      if (fileBlob.size === 0) {
-        alert("Export failed: The server sent an empty file.");
-        return;
+
+      // === DETEKSI ERROR TERSEMBUNYI ===
+      // Kadang status 200, tapi isinya JSON Error (bukan file xlsx)
+      const contentType = response.headers['content-type'] || '';
+      if (contentType.includes('application/json')) {
+          // Kita paksa baca blob sebagai text JSON untuk tau errornya
+          const reader = new FileReader();
+          reader.onload = () => {
+              const errorData = JSON.parse(reader.result);
+              alert("Gagal Export: " + (errorData.message || "Terjadi kesalahan di server."));
+          };
+          reader.readAsText(response.data);
+          return; 
       }
 
-      // Create a temporary URL for the downloaded file
-      const url = window.URL.createObjectURL(fileBlob);
-      // Create a temporary, invisible link element
-      const link = document.createElement('a');
-      link.href = url;
+      // === MEMBUAT FILE BLOB ===
+      const blob = new Blob([response.data], { 
+          type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
+      });
 
-      // Get filename from the server's response headers
-      const contentDisposition = response.headers['content-disposition'];
-      let filename = 'make-request-data.xlsx';
-      if (contentDisposition) {
-        const filenameMatch = contentDisposition.match(/filename="?(.+)"?/);
-        if (filenameMatch && filenameMatch.length > 1) {
-          filename = filenameMatch[1];
-        }
+      // === MENENTUKAN NAMA FILE ===
+      let filename = `${filenamePrefix}-${filenameDatePart}.xlsx`;
+      const disposition = response.headers['content-disposition'];
+      if (disposition && disposition.indexOf('attachment') !== -1) {
+          const matches = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(disposition);
+          if (matches != null && matches[1]) { 
+            filename = matches[1].replace(/['"]/g, '');
+          }
       }
-      link.setAttribute('download', filename);
 
-      // ==> THE FIX: Add these attributes to bypass Framework7's router <==
-      link.target = '_blank';
-      link.className = 'external';
-      // ===================================================================
+      
+      saveAs(blob, filename); 
 
-      // Append the link to the document, click it, and then remove it
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-
-      // Clean up the temporary URL
-      window.URL.revokeObjectURL(url);
+      setIsModalOpen(false);
 
     } catch (error) {
-      console.error("Error during export:", error);
-      alert("An error occurred during the export. Check the console for details.");
+      alert("Terjadi kesalahan sistem. Cek Console (F12) untuk detail.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <button
-      onClick={handleExport}
-      disabled={loading}
-      // PERUBAHAN 1: Ubah px-6 menjadi 'px-3 md:px-6' agar di mobile tombol lebih ramping
-      className="py-2 px-3 md:px-6 w-fit bg-green-600 text-white rounded-full hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:opacity-50 flex items-center justify-center transition-colors duration-200"
-      title="Export to Excel"
-    >
-      {loading ? (
-        <svg className="animate-spin h-5 w-5 text-white mx-1 my-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-        </svg>
-      ) : (
-        <div className="flex items-center space-x-2">
-          {/* PERUBAHAN 2: Tambahkan 'hidden md:block' agar teks hilang di mobile */}
-          <p className="font-medium hidden md:block">Export</p>
-          <i className="bx bx-export text-lg md:!ml-1 !ml-0 md:px-0 py-1 px-1.5"></i>
-        </div>
-      )}
-    </button>
+    <>
+        <button
+            onClick={handleOpenModal}
+            disabled={loading}
+            className="py-2 px-3 md:px-6 w-fit bg-green-600 text-white rounded-full hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:opacity-50 flex items-center justify-center transition-colors duration-200"
+            title="Export Data"
+        >
+            {loading ? (
+                <svg className="animate-spin h-5 w-5 text-white mx-1 my-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+            ) : (
+                <div className="flex items-center space-x-2">
+                    <p className="font-medium hidden md:block">{label}</p>
+                    <i className="bx bx-export text-lg md:!ml-1 !ml-0 md:px-0 py-1 px-1.5"></i>
+                </div>
+            )}
+        </button>
+
+        <ModalExport 
+            isOpen={isModalOpen}
+            onClose={handleCloseModal}
+            onConfirm={handleProcessExport} 
+            loading={loading}
+        />
+    </>
   );
 }
 

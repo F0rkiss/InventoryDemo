@@ -293,21 +293,14 @@ function DetailPurchaseRequest() {
                             )}
                             {item.can_be_deleted ? (
                                 <>
-                                    <div className='flex justify-end mt-5'>
+                                    <div className='flex justify-center mt-5'>
                                     <button
                                         onClick={cancelOrder}
                                         className='delete-button transition-colors duration-200 max-w-xs py-2 rounded-md text-white font-medium'
                                     >
-                                        Delete Order
+                                        Delete Request
                                     </button>
                                     </div>
-
-                                    {/* <button
-                                        className='px-3 py-1.5 update-button text-sm sm:text-base'
-                                        onClick={() => goToPR(item.id)}
-                                    >
-                                        Update
-                                    </button> */}
                                 </>
                                 ) : (
                                 <></>

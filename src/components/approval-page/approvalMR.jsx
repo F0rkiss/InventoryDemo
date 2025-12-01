@@ -81,7 +81,7 @@ function ApprovalMR() {
 
         const handleApprove = async (itemId, note = '') => {
             const result = await Swal.fire({
-                title: isAdminApproval 
+                title: item.isAdminApproval 
                 ? 'Apakah barang yang diinput sudah sesuai dengan note barang?' 
                 : 'Apakah Anda yakin ingin menyetujui?',
                 icon: 'question',

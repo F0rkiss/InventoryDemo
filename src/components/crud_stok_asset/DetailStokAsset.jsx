@@ -8,6 +8,7 @@ import { DecryptID } from '../../helper/EncryptHelper';
 import Transition from '../component/Transition';
 import ImagePreviewModal from '../component/modal/ImagePreviewModal';
 import DateFormat from '../../helper/DateFormatHelper';
+import Swal from 'sweetalert2';
 // --- 1. IMPORT MODAL BARU ---
 import ModalStokHistory from '../component/modal/ModalStokHistory'; // Sesuaikan path jika perlu
 
@@ -99,6 +100,38 @@ function AdminStokDetail() {
     setIsHistoryModalOpen(true);
   };
 
+  const deleteHistory = async (historyId) => {
+    Swal.fire({
+      title: 'Apakah anda yakin ingin menghapus histori?',
+      text: "Anda tidak akan dapat mengembalikan ini!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: 'rgba(173, 173, 173, 1)',
+      confirmButtonText: 'Delete',
+      cancelButtonText: 'Cancel',
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await api.delete(`/inventHistory-delete/${historyId}`);
+          Swal.fire(
+            'Terhapus!',
+            'Data histori telah dihapus.',
+            'success'
+          );
+          fetchHistories();
+        } catch (error) {
+          console.error("Error deleting history:", error);
+          Swal.fire(
+            'Gagal!',
+            'Terjadi kesalahan saat menghapus data.',
+            'error'
+          );
+        }
+      }
+    });
+  };
+
 
   return (
     <Layout title={'Detail Stok Barang'}>
@@ -107,58 +140,60 @@ function AdminStokDetail() {
           <Back goHome={() => navigate('/stok-asset/list-stok')} />
           <p className='lg:text-3xl text-2xl font-semibold capitalize my-4'>Detail Stok Barang</p>
           <Transition contentVisible={contentVisible}>
-            <div className="w-full font-inter grid grid-cols-1 lg:grid-cols-2 gap-6">
-              
-              {/* KARTU 1: INFORMASI UTAMA BARANG & GAMBAR */}
-              <div className="bg-white border rounded-lg p-6 flex flex-col">
-                {/* --- Data Utama Barang --- */}
-                <div>
-                  <h2 className="font-bold capitalize text-2xl ">{item.nama_barang || 'Nama Barang'}</h2>
-                  <p className="mb-4 text-base">
-                    {isAsset === 'ya' ? 'Aset' : isAsset === 'tidak' ? 'Non Aset' : 'Bangunan'}
-                  </p>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-gray-500">Kode Barang</span>
-                      <span className="font-medium">{item.kode_barang}</span>
+            <div className="w-full font-inter bg-white border rounded-lg p-6">
+              <div className="flex flex-col md:flex-row gap-8">
+                {/* Left Side: Info */}
+                <div className="flex-1 flex flex-col gap-6">
+                  {/* Main Info */}
+                  <div>
+                    <h2 className="font-bold capitalize text-2xl ">{item.nama_barang || 'Nama Barang'}</h2>
+                    <p className="mb-4 text-base">
+                      {isAsset === 'ya' ? 'Aset' : isAsset === 'tidak' ? 'Non Aset' : 'Bangunan'}
+                    </p>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-gray-500">Kode Barang</span>
+                        <span className="font-medium">{item.kode_barang}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-500">Satuan</span>
+                        <span className="font-medium">{item.satuan}</span>
+                      </div>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-500">Satuan</span>
-                      <span className="font-medium">{item.satuan}</span>
+                  </div>
+
+                  <hr className="border-gray-200" />
+
+                  {/* Detail Stok Info */}
+                  <div>
+                    <div className="space-y-3 text-sm">
+                      <div className="flex justify-between">
+                        <p className="text-gray-500">Quantity</p>
+                        <p className="font-medium">{item?.qty}</p>
+                      </div>
+                      <div className="flex justify-between">
+                        <p className="text-gray-500">Tanggal Masuk</p>
+                        <p className="font-medium">{DateFormat(item?.tanggal_barang_masuk)}</p>
+                      </div>
+                      <div className="flex justify-between">
+                        <p className="text-gray-500">Catatan Stok</p>
+                        <p className="font-medium text-right">{item?.note || '-'}</p>
+                      </div>
                     </div>
                   </div>
                 </div>
 
-                {/* --- Gambar Barang --- */}
+                {/* Right Side: Image */}
                 {item.image && (
-                  <div className="mt-6">
+                  <div className="md:w-1/3 flex justify-center md:justify-end items-start">
                     <img
                       src={`${apiUrl}${item.image}`}
                       alt="item"
-                      className="w-full max-w-md rounded-lg shadow-md mx-auto cursor-pointer hover:opacity-85 transition-opacity"
+                      className="w-full max-w-xs md:max-w-sm rounded-lg shadow-md object-cover cursor-pointer hover:opacity-85 transition-opacity"
                       onClick={() => handleImageClick(`${apiUrl}${item.image}`)}
                     />
                   </div>
                 )}
-              </div>
-
-              {/* KARTU 2: DETAIL STOK & INFO PENERIMAAN */}
-              <div className="bg-white border rounded-lg p-6">
-                <h2 className="font-semibold text-xl text-gray-400 mb-6">Detail Stok</h2>
-                <div className="space-y-5 text-sm">
-                  <div className="flex justify-between">
-                    <p className="text-gray-500">Quantity</p>
-                    <p className="font-medium">{item?.qty}</p>
-                  </div>
-                  <div className="flex justify-between">
-                    <p className="text-gray-500">Tanggal Masuk</p>
-                    <p className="font-medium">{DateFormat(item?.tanggal_barang_masuk)}</p>
-                  </div>
-                  <div className="flex justify-between">
-                    <p className="text-gray-500">Catatan Stok</p>
-                    <p className="font-medium text-right">{item?.note || '-'}</p>
-                  </div>
-                </div>
               </div>
             </div>
             
@@ -217,12 +252,18 @@ function AdminStokDetail() {
                           </td>
                           <td className="p-3 min-w-[18vh]">{DateFormat(i.updated_at)}</td>
 
-                          <td className="p-3 rounded-r-md ">
+                          <td className="p-3 rounded-r-md flex gap-2">
                             <button
                               onClick={() => openEditHistoryModal(i)}
                               className="bg-yellow-500 hover:bg-yellow-600 text-white py-1 md:px-1 px-2 rounded-md transition duration-200 text-lg"
                             >
                               <i className='bx bx-edit pt-1'></i>
+                            </button>
+                            <button
+                              onClick={() => deleteHistory(i.id)}
+                              className="bg-red-500 hover:bg-red-600 text-white py-1 md:px-1 px-2 rounded-md transition duration-200 text-lg"
+                            >
+                              <i className='bx bx-trash pt-1'></i>
                             </button>
                           </td>
                         </tr>

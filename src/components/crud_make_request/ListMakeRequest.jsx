@@ -13,8 +13,7 @@ import DataEmpty from '../component/DataEmpty'
 import { encrypting } from '../../helper/EncryptHelper'
 import { useAuth } from '../../auth/AuthContext'
 import useMenuAccess from '../../hooks/useMenuAccess'
-import FilterStatusToggle from '../component/FilterStatusToggle';
-import ExportButton from '../component/ExportSheets';
+import FilterStatusToggle from '../component/filters/FilterStatusToggle';
 
 function MakeRequestList() {
     const [items, setItems] = useState([])
@@ -26,7 +25,6 @@ function MakeRequestList() {
     const navigate = useNavigate()
     const { role } = useAuth()
     const { canCreate, canUpdate } = useMenuAccess('MakeRequest');
-    const { canRead } = useMenuAccess('ExportData')
     const [filterStatus, setFilterStatus] = useState('all');
     const onFilterChange = (next) => setFilterStatus(next);
 
@@ -149,9 +147,6 @@ function MakeRequestList() {
                     value={filterStatus}
                     onChange={onFilterChange}
                 />
-                { canRead &&
-                  <ExportButton/>
-                }
               </div>
             </div>
             

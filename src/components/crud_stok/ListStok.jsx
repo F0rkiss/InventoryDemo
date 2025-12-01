@@ -141,7 +141,7 @@ function StokList() {
     <Layout title={'List Stok'}>
         <Block>
           <div className='mb-4 flex flex-col md:flex-row md:items-center md:justify-between gap-2'>
-                <p className='ms-3 md:text-3xl text-2xl font-semibold capitalize w-full md:w-auto'>Daftar Stok Barang</p>
+                <p className='ms-3 md:text-3xl text-2xl font-semibold capitalize w-full md:w-auto'>Daftar Stok Barang Non-Aset</p>
                 <SearchBar
                     onChange={handleSearchChange}
                     disable={loading}

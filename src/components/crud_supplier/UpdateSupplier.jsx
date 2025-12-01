@@ -39,9 +39,9 @@ function UpdateSupplier() {
 
   const fetchItems = async () => {
     try {
-      const response = await api.get(`suplier/${decryptedId}`)
+      const response = await api.get(`suplier-detail/${decryptedId}`)
       const data = response.data.data
-      
+
       // 2. Mapping data dari backend (pastikan backend mengirim field mobile_phone)
       const fetched = {
         nama_perusahaan: data?.nama_perusahaan || '',

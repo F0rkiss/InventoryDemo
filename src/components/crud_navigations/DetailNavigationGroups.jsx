@@ -1,13 +1,13 @@
 import React, {useState, useEffect} from 'react'
-import api from '../../../api/api'
+import api from '../../api/api'
 import { useParams } from 'react-router-dom'
 import { Page, Block } from 'framework7-react';
-import Back from '../../component/Back';
+import Back from '../component/Back';
 import { useNavigate } from 'react-router-dom';
-import Loader from '../../component/Loader';
-import Transition from '../../component/Transition';
-import Layout from '../../component/Layout';
-import { DecryptID } from '../../../helper/EncryptHelper';
+import Loader from '../component/Loader';
+import Transition from '../component/Transition';
+import Layout from '../component/Layout';
+import { DecryptID } from '../../helper/EncryptHelper';
 
 function DetailNavigationGroups() {
 

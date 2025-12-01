@@ -11,7 +11,7 @@ import DataEmpty from '../component/DataEmpty'
 import PurchaseRequestCards from '../component/cards/PurchaseRequestCards'
 import { encrypting } from '../../helper/EncryptHelper'
 import Swal from 'sweetalert2'
-import FilterStatusToggle from '../component/FilterStatusToggle';
+import FilterStatusToggle from '../component/filters/FilterStatusToggle';
 
 function PurchaseRequestList() {
   const [items, setItems] = useState([])

@@ -85,7 +85,7 @@ function DetailStok() {
       <Block>
         <div className="xs:px-0 md:px-4">
           <Back goHome={() => navigate('/stok/list-stok')} />
-          <p className='lg:text-3xl text-2xl font-semibold capitalize my-4'>Detail Stok Barang</p>
+          <p className='lg:text-3xl text-2xl font-semibold capitalize my-4'>Detail Stok Barang Non-Aset</p>
           <Transition contentVisible={contentVisible}>
             <div className="w-full font-inter grid grid-cols-1 lg:grid-cols-2 gap-6">
               

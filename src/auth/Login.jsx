@@ -81,7 +81,7 @@ function Login() {
         } catch (error) {
             // Handle errors during login
             setErrorMessage('Login failed: ' + (error.response?.data?.message || error.message));
-            if (error.response.status === 401) {
+            if (error.response.status === 401 || 404) {
                 setErrorMessage('Kode atau Password Anda salah')
             }
         } finally {

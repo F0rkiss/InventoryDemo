@@ -1,17 +1,18 @@
 import React, { useEffect, useState } from 'react'
-import api from '../../../api/api'
-import { useNavigate, useParams } from 'react-router-dom'
+import api from '../../api/api'
+import { useNavigate } from 'react-router-dom'
 import { Block } from 'framework7-react'
-import SelectPaginate from '../../component/SelectPaginate'
-import { DecryptID } from '../../../helper/EncryptHelper'
+import { accessOptions } from '../../helper/FindOptions'
+import SelectPaginate from '../component/SelectPaginate'
 import Select from 'react-select'
-import Transition from '../../component/Transition'
-import { accessOptions, findAccessOption } from '../../../helper/FindOptions'
-import Back from '../../component/Back'
-import Layout from '../../component/Layout'
+import Back from '../component/Back'
+import Layout from '../component/Layout'
 import Swal from 'sweetalert2'
+import Transition from '../component/Transition'
 
-function UpdateNavigationGroups() {
+function CreateNavigationGroups() {
+  const navigate = useNavigate()
+
   const [items, setItems] = useState({
     role: null,
     navigation_menu: null,
@@ -22,65 +23,12 @@ function UpdateNavigationGroups() {
   })
 
   const [disabled, setDisabled] = useState(false)
-  const [decryptedId, setDecryptedId] = useState('')
   const [contentVisible, setContentVisible] = useState(false)
-  const [originalItems, setOriginalItems] = useState(null)
-  const [isUnchanged, setIsUnchanged] = useState(true)
-
-  const navigate = useNavigate()
-  const { id } = useParams()
 
   useEffect(() => {
-    const decryptedIds = DecryptID(id)
-    setDecryptedId(decryptedIds)
-    if (!decryptedIds) navigate(-1)
-  }, [id])
-
-  useEffect(() => {
-    if (decryptedId) fetchItems()
-  }, [decryptedId])
-
-  const fetchItems = async () => {
-    try {
-      const res = await api.get(`inventNavigationGroup-detail/${decryptedId}`)
-      const data = res.data.data
-      const fetched = {
-        role: data.role ? { value: data.role.id, label: data.role.name } : null,
-        navigation_menu: data.navigation_menu
-          ? { value: data.navigation_menu.id, label: data.navigation_menu.name }
-          : null,
-        read_access: findAccessOption(data.read_access),
-        create_access: findAccessOption(data.create_access),
-        update_access: findAccessOption(data.update_access),
-        delete_access: findAccessOption(data.delete_access),
-      }
-      setItems(fetched)
-      setOriginalItems(fetched)
-      setIsUnchanged(true)
-    } catch (err) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Gagal memuat data',
-        text: 'Silakan coba lagi.',
-      })
-    } finally {
-        setTimeout(() => setContentVisible(true), 50)
-    }
-  }
-
-  // Disable Update until there is a change
-  useEffect(() => {
-    if (!originalItems) return
-    const changed =
-      (items.role?.value ?? null) !== (originalItems.role?.value ?? null) ||
-      (items.navigation_menu?.value ?? null) !== (originalItems.navigation_menu?.value ?? null) ||
-      (items.read_access?.value ?? null) !== (originalItems.read_access?.value ?? null) ||
-      (items.create_access?.value ?? null) !== (originalItems.create_access?.value ?? null) ||
-      (items.update_access?.value ?? null) !== (originalItems.update_access?.value ?? null) ||
-      (items.delete_access?.value ?? null) !== (originalItems.delete_access?.value ?? null)
-
-    setIsUnchanged(!changed)
-  }, [items, originalItems])
+    const t = setTimeout(() => setContentVisible(true), 50)
+    return () => clearTimeout(t)
+  }, [])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -105,7 +53,7 @@ function UpdateNavigationGroups() {
         return
       }
 
-      await api.put(`inventNavigationGroup-update/${decryptedId}`, {
+      await api.post('inventNavigationGroup-create', {
         role_id: items.role?.value,
         invent_navigation_menus_id: items.navigation_menu?.value,
         read_access: items.read_access?.value,
@@ -115,16 +63,17 @@ function UpdateNavigationGroups() {
       })
 
       Swal.fire({
-        title: 'Berhasil diubah!',
+        title: 'Navigations Group berhasil dibuat!',
         icon: 'success',
         timer: 2000,
         showConfirmButton: false,
       })
       navigate('/navigation-groups/list-navigation-groups')
+      resetValue()
     } catch (error) {
       Swal.fire({
         icon: 'error',
-        title: 'Tidak dapat mengubah navigations group',
+        title: 'Tidak dapat membuat navigations group',
         text: 'Kesalahan dalam sistem',
       })
     } finally {
@@ -132,25 +81,22 @@ function UpdateNavigationGroups() {
     }
   }
 
-  const resetValue = () => {
-    if (originalItems) setItems(originalItems)
-    else
-      setItems({
-        role: null,
-        navigation_menu: null,
-        read_access: null,
-        create_access: null,
-        update_access: null,
-        delete_access: null,
-      })
-  }
+  const resetValue = () =>
+    setItems({
+      role: null,
+      navigation_menu: null,
+      read_access: null,
+      create_access: null,
+      update_access: null,
+      delete_access: null,
+    })
 
   return (
-    <Layout title={'Update Navigation Group'}>
+    <Layout title={'Create Navigation Group'}>
       <Block>
         <div className="px-4">
           <Back goHome={() => navigate('/navigation-groups/list-navigation-groups')} />
-          <p className="lg:text-3xl text-2xl font-semibold capitalize my-4">Update Navigation Group</p>
+          <p className="lg:text-3xl text-2xl font-semibold capitalize my-4">Create Navigation Group</p>
 
           <Transition contentVisible={contentVisible}>
             <div className="p-8 bg-white shadow-sm rounded-lg border">
@@ -186,8 +132,8 @@ function UpdateNavigationGroups() {
                     <Select
                       options={accessOptions}
                       value={items.read_access}
+                      placeholder="Pilih Akses Read"
                       onChange={(read_access) => setItems({ ...items, read_access })}
-                      placeholder="Select Read Access"
                       required
                     />
                   </div>
@@ -196,8 +142,8 @@ function UpdateNavigationGroups() {
                     <Select
                       options={accessOptions}
                       value={items.update_access}
+                      placeholder="Pilih Akses Update"
                       onChange={(update_access) => setItems({ ...items, update_access })}
-                      placeholder="Select Update Access"
                       required
                     />
                   </div>
@@ -210,8 +156,8 @@ function UpdateNavigationGroups() {
                     <Select
                       options={accessOptions}
                       value={items.create_access}
+                      placeholder="Pilih Akses Create"
                       onChange={(create_access) => setItems({ ...items, create_access })}
-                      placeholder="Select Create Access"
                       required
                     />
                   </div>
@@ -220,8 +166,8 @@ function UpdateNavigationGroups() {
                     <Select
                       options={accessOptions}
                       value={items.delete_access}
+                      placeholder="Pilih Akses Delete"
                       onChange={(delete_access) => setItems({ ...items, delete_access })}
-                      placeholder="Select Delete Access"
                       required
                     />
                   </div>
@@ -229,11 +175,11 @@ function UpdateNavigationGroups() {
 
                 <div className="flex flex-col items-center justify-self-center mt-10 max-w-full w-[25rem] space-y-2 text-center">
                   <button
-                    disabled={disabled || isUnchanged}
+                    disabled={disabled}
                     type="submit"
                     className="py-2 px-2 rounded-lg font-medium bg-blue-500/85 hover:bg-blue-500 transition-color duration-200 text-white disabled:bg-blue-200"
                   >
-                    Update
+                    Create
                   </button>
                   <button
                     type="button"
@@ -252,4 +198,4 @@ function UpdateNavigationGroups() {
   )
 }
 
-export default UpdateNavigationGroups
+export default CreateNavigationGroups
