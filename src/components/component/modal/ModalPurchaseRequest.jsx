@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react'
-import MiModal from '../MiModal'
+import MiModal from '../modal/MiModal'
 import api from '../../../api/api'
 import Swal from 'sweetalert2'
 import Loader from '../Loader'
