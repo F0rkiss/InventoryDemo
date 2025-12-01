@@ -11,7 +11,7 @@ import DataEmpty from '../component/DataEmpty'
 import PurchaseOrderCards from '../component/cards/PurchaseOrderCards'
 import { encrypting } from '../../helper/EncryptHelper'
 import useMenuAccess from '../../hooks/useMenuAccess'
-import FilterStatusToggle from '../component/FilterStatusToggle';
+import FilterStatusToggle from '../component/filters/FilterStatusToggle';
 
 function PurchaseOrderList() {
     const [items, setItems] = useState([])

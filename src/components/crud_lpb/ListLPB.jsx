@@ -10,7 +10,7 @@ import Layout from '../component/Layout'
 import LPBCards from '../component/cards/LPBCards.jsx'
 import DataEmpty from '../component/DataEmpty'
 import { encrypting } from '../../helper/EncryptHelper'
-import FilterStatusToggle from '../component/FilterStatusToggle'
+import FilterStatusToggle from '../component/filters/FilterStatusToggle'
 
 function ListLPB() {
   const [items, setItems] = useState([])

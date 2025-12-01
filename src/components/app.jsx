@@ -75,12 +75,10 @@ const JenisMemoList = lazy(() => import('./crud_jenis_memo/jenisMemoList.jsx'));
 const CreateJenisMemo = lazy(() => import('./crud_jenis_memo/CreatejenisMemo.jsx'));
 const UpdateJenisMemo = lazy(() => import('./crud_jenis_memo/UpdatejenisMemo.jsx'));
 
-const NavigationGroupList = lazy(() => import('./crud_navigations/crud_navigation_groups/ListNavigationGroups.jsx'));
-const CreateNavigationGroup = lazy(() => import('./crud_navigations/crud_navigation_groups/CreateNavigationGroups.jsx'));
-const UpdateNavigationGroup = lazy(() => import('./crud_navigations/crud_navigation_groups/UpdateNavigationGroups.jsx'));
-const DetailNavigationGroup = lazy(() => import('./crud_navigations/crud_navigation_groups/DetailNavigationGroups.jsx'));
-
-const NavigationMenuList = lazy(() => import('./crud_navigations/crud_navigation_menu/ListNavigationMenu.jsx'));
+const NavigationGroupList = lazy(() => import('./crud_navigations/ListNavigationGroups.jsx'));
+const CreateNavigationGroup = lazy(() => import('./crud_navigations/CreateNavigationGroups.jsx'));
+const UpdateNavigationGroup = lazy(() => import('./crud_navigations/UpdateNavigationGroups.jsx'));
+const DetailNavigationGroup = lazy(() => import('./crud_navigations/DetailNavigationGroups.jsx'));
 
 const ListTypeRequest = lazy(() => import('./crud_type_request/ListTypeRequest.jsx'))
 const DetailTypeRequest = lazy(() => import('./crud_type_request/DetailTypeRequest.jsx'))
@@ -318,8 +316,6 @@ const MyApp = () => {
                   <Route path='/navigation-groups/update-navigation-groups/:id' element={<UpdateNavigationGroup/>}/>
                   <Route path='/navigation-groups/detail-navigation-groups/:id' element={<DetailNavigationGroup/>}/>
 
-                  <Route path='/navigation-menu/list-navigation-menu' element={<NavigationMenuList/>}/>
-                  {/* <Route path='/pdf-viewer/:type/:id' element={<PDFViewerPage />} /> */}
                   
                 </Route>
 
