@@ -17,52 +17,86 @@ import useMenuAccess from '../../../hooks/useMenuAccess';
 
 function ListNavigationGroup() {
 
-    const [groups, setGroups] = useState([])
-    const [roles, setRoles] = useState([])
-    const [activeRole, setActiveRole] = useState(null)
+    const [groups, setGroups] = useState([]);
+    const [roles, setRoles] = useState([]);
+    const [activeRole, setActiveRole] = useState(null);
 
-    const [searchQuery, setSearchQuery] = useState('')
-    const [searchTerm, setSearchTerm] = useState('')
+    const [searchQuery, setSearchQuery] = useState('');
+    const [searchTerm, setSearchTerm] = useState('');
 
-    const [nextCursor, setNextCursor] = useState(null)
-    const [loading, setLoading] = useState(false)
-    const [contentVisible, setContentVisible] = useState(false)
+    const [nextCursor, setNextCursor] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [contentVisible, setContentVisible] = useState(false);
 
     const loadingRef = useRef(false);
     const typingTimeoutRef = useRef(null);
 
     const navigate = useNavigate();
-    const { canCreate, canUpdate, canDelete } = useMenuAccess('NavigationGroup')
+    const { canCreate, canUpdate, canDelete } = useMenuAccess('NavigationGroup');
 
-    // FIX 1 — Extract role lebih aman
-    const extractRoleName = (group) => group.role?.name || 'Unknown Role'
+    const extractRoleName = (group) => group.role?.name || 'Unknown Role';
 
-    // FIX 2 — agar tab selalu match data
+    /** NORMALIZE BACKEND RESULT HERE */
+    const normalizeResponse = (data, isSearchMode) => {
+        if (!isSearchMode) {
+            // mode normal, bentuk sudah sesuai
+            return data;
+        }
+
+        // MODE SEARCH → backend mengembalikan bentuk flat → ubah ke group
+        const grouped = {};
+
+        data.forEach(item => {
+            const roleName = item.role_name || 'Unknown';
+            
+            if (!grouped[roleName]) {
+                grouped[roleName] = {
+                    role: { name: roleName },
+                    menus: []
+                };
+            }
+
+            grouped[roleName].menus.push({
+                id: item.id,
+                menu: item.navigation_menu,
+                create_access: item.create_access,
+                read_access: item.read_access,
+                update_access: item.update_access,
+                delete_access: item.delete_access
+            });
+        });
+
+        return Object.values(grouped); 
+    };
+
+    const unwrap = (res, isSearch) => {
+        const raw = res.data.data;
+
+        // Without search → raw = array
+        if (!isSearch) {
+            return { data: raw, next_cursor: null };
+        }
+
+        // With search → raw = { data: [...], next_cursor? }
+        return {
+            data: raw.data || [],
+            next_cursor: raw.next_cursor || null
+        };
+    };
+
     const recomputeRoles = (list) => {
         const unique = [...new Set(list.map(extractRoleName))];
         setRoles(unique);
 
+        // Saat search → langsung pindah ke role pertama
+        if (searchTerm) {
+            setActiveRole(unique[0] || null);
+            return;
+        }
+
         if (!unique.includes(activeRole)) {
             setActiveRole(unique[0] || null);
         }
-    };
-
-    useEffect(() => {
-        fetchItems();
-    }, [searchTerm]);
-
-    // FIX 3 — wrapper API benar
-    const unwrap = (response) => {
-        const raw = response.data.data;
-
-        if (Array.isArray(raw)) {
-            return { data: raw, next_cursor: null };
-        }
-
-        return {
-            data: raw?.data || [],
-            next_cursor: raw?.next_cursor || null
-        };
     };
 
     const fetchItems = async () => {
@@ -71,19 +105,28 @@ function ListNavigationGroup() {
         try {
             loadingRef.current = true;
             setLoading(true);
+            setGroups([]);
             setNextCursor(null);
 
-            const url = searchTerm ? `inventNavigationGroup/${searchTerm}` : `inventNavigationGroup`;
-            const response = await api.get(url);
-            const wrapper = unwrap(response);
+            const isSearch = !!searchTerm;
+            const url = isSearch 
+                ? `inventNavigationGroup/${searchTerm}` 
+                : 'inventNavigationGroup';
 
-            setGroups(wrapper.data);
-            recomputeRoles(wrapper.data);
+            const response = await api.get(url);
+            const wrapper = unwrap(response, isSearch);
+
+            const normalized = normalizeResponse(wrapper.data, isSearch);
+            setGroups(normalized);
+            recomputeRoles(normalized);
             setNextCursor(wrapper.next_cursor);
 
         } catch (err) {
             console.error("Fetch error:", err);
             setGroups([]);
+            setRoles([]);
+            setActiveRole(null);
+
         } finally {
             loadingRef.current = false;
             setLoading(false);
@@ -98,17 +141,20 @@ function ListNavigationGroup() {
             loadingRef.current = true;
             setLoading(true);
 
-            const url = searchTerm ? `inventNavigationGroup/${searchTerm}` : `inventNavigationGroup`;
-            const response = await api.get(url, { params: { cursor: nextCursor } });
+            const isSearch = !!searchTerm;
+            const url = isSearch 
+                ? `inventNavigationGroup/${searchTerm}` 
+                : 'inventNavigationGroup';
 
-            const wrapper = unwrap(response);
+            const res = await api.get(url, {
+                params: { cursor: nextCursor }
+            });
+
+            const wrapper = unwrap(res, isSearch);
+            const normalized = normalizeResponse(wrapper.data, isSearch);
 
             setGroups(prev => {
-                const existing = new Set(prev.map(p => p.id));
-                const filtered = wrapper.data.filter(g => !existing.has(g.id));
-                const merged = [...prev, ...filtered];
-                recomputeRoles(merged);
-                return merged;
+                return [...prev, ...normalized];
             });
 
             setNextCursor(wrapper.next_cursor);
@@ -116,26 +162,22 @@ function ListNavigationGroup() {
         } catch (err) {
             console.error("Pagination error:", err);
             setNextCursor(null);
+
         } finally {
             loadingRef.current = false;
             setLoading(false);
         }
     };
 
-    // FIX 4 — reset groups saat ketik
-    const handleSearchChange = (query) => {
-        setSearchQuery(query);
+    const handleSearchChange = (q) => {
+        setSearchQuery(q);
         clearTimeout(typingTimeoutRef.current);
 
         typingTimeoutRef.current = setTimeout(() => {
-            setGroups([]);
-            setNextCursor(null);
-            setActiveRole(null); // RESET TAB
-            setSearchTerm(query);
-        }, 700);
+            setSearchTerm(q);
+        }, 500);
     };
 
-    // FIX 5 — flatten menu lebih stabil
     const flattenedMenus = useMemo(() => {
         const group = groups.find(g => extractRoleName(g) === activeRole);
         return group?.menus?.map(m => ({
@@ -181,8 +223,16 @@ function ListNavigationGroup() {
         }
     };
 
-    const goToDetail = async (id) => navigate(`/navigation-groups/detail-navigation-groups/${await encrypting(id)}`);
-    const goToUpdate = async (id) => navigate(`/navigation-groups/update-navigation-groups/${await encrypting(id)}`);
+    const goToDetail = async (id) => 
+        navigate(`/navigation-groups/detail-navigation-groups/${await encrypting(id)}`);
+
+    const goToUpdate = async (id) => 
+        navigate(`/navigation-groups/update-navigation-groups/${await encrypting(id)}`);
+
+    useEffect(() => {
+        setContentVisible(false);
+        fetchItems();
+    }, [searchTerm]);
 
     return (
         <Layout title="List Navigations">
@@ -195,10 +245,12 @@ function ListNavigationGroup() {
                         values={searchQuery}
                     />
                 </div>
+
                 <Transition contentVisible={contentVisible}>
                     {roles.length > 0 && (
                         <Tabs items={roles} active={activeRole} onChange={setActiveRole} />
                     )}
+
                     {flattenedMenus.length > 0 ? (
                         <ScrollPagination
                             rootSelector=".page-content"

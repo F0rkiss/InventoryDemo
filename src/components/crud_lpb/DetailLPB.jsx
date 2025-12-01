@@ -348,7 +348,7 @@ function DetailLPB() {
                         {!item?.bukti || item.bukti.length === 0 ? (
                             <p className="text-gray-400 italic text-center py-4">Tidak ada bukti diunggah</p>
                         ) : (
-                            <div className="rounded-md border border-dashed border-gray-300 p-3">
+                            <div className="rounded-md p-3">
                                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 w-full">
                                     {item.bukti.map((b, i) => {
                                         let src = b
@@ -373,7 +373,7 @@ function DetailLPB() {
                         )}
                     </div>
                         {item.can_be_deleted && (
-                            <div className='flex justify-end mt-5'>
+                            <div className='flex justify-center mt-5'>
                                 <button onClick={() => Avoid()} className='bg-red-500 hover:bg-red-600 transition-colors duration-200 max-w-xs py-2 rounded-md text-white font-medium'>
                                     Hapus Laporan Penerimaan Barang
                                 </button>

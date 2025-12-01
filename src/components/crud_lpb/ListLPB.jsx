@@ -135,14 +135,14 @@ const fetchMoreItems = async () => {
             Daftar Laporan Penerimaan Barang
           </p>
           <div className="flex items-center gap-2">
+            <FilterStatusToggle
+              value={filterStatus}
+              onChange={onFilterChange}
+            />
             <SearchBar
               onChange={handleSearchChange}
               disable={loading}
               values={searchQuery}
-            />
-            <FilterStatusToggle
-              value={filterStatus}
-              onChange={onFilterChange}
             />
           </div>
         </div>
