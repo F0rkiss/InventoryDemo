@@ -1,5 +1,5 @@
     import React, { useEffect, useState } from 'react'
-    import MiModal from '../MiModal'
+    import MiModal from './MiModal'
     import SelectPaginate from '../SelectPaginate'
     import api from '../../../api/api'
     import BarangExport from '../../../excel/BarangExport'
