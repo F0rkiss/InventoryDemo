@@ -1,5 +1,3 @@
-// fileName: ModalExport.jsx
-
 import React, { useState, useEffect } from 'react';
 import DatePicker from '../DatePicker';
 import YearPicker from '../YearPicker';

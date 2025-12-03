@@ -67,6 +67,18 @@ const menus = [
 
         ]
     },
+
+    {
+        key: "Memo" || "JenisMemo",
+        label: "Memo",
+        icon: "bx bx-notepad",
+        isAccordion: true,
+        children: [
+            { key: "Memo", label: "Memo", path: "/memo/list-memo" },
+            { key: "JenisMemo", label: "Jenis Memo", path: "/jenismemo/list-jenismemo" },
+        ]
+    },
+
     {
         key: "ApprovalStep" || "ApprovalStepLPB",
         label: "Approval Step",
@@ -110,7 +122,7 @@ const menus = [
             { key: "Billing", label: "Billing", path: "/billing/list-billing" },
         ]
     },
-    { key: "JenisMemo", label: "Jenis Memo", icon: "bx bx-note", path: "/jenismemo/list-jenismemo" },
+
 ];
 
 export default menus;

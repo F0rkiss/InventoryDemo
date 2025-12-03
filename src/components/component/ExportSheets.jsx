@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import api from '../../api/api';
-import ModalExport from '../component/ModalExport'; 
+import ModalExport from '../component/modal/ModalExport'; 
 import { saveAs } from 'file-saver';
 
 function ExportButton({ 

@@ -13,7 +13,7 @@ import DataEmpty from '../component/DataEmpty'
 import { encrypting } from '../../helper/EncryptHelper'
 import { useAuth } from '../../auth/AuthContext'
 import useMenuAccess from '../../hooks/useMenuAccess'
-import FilterStatusToggle from '../component/FilterStatusToggle';
+import FilterStatusToggle from '../component/filters/FilterStatusToggle';
 
 function MakeRequestList() {
     const [items, setItems] = useState([])

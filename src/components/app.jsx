@@ -75,12 +75,12 @@ const JenisMemoList = lazy(() => import('./crud_jenis_memo/jenisMemoList.jsx'));
 const CreateJenisMemo = lazy(() => import('./crud_jenis_memo/CreatejenisMemo.jsx'));
 const UpdateJenisMemo = lazy(() => import('./crud_jenis_memo/UpdatejenisMemo.jsx'));
 
-const NavigationGroupList = lazy(() => import('./crud_navigations/crud_navigation_groups/ListNavigationGroups.jsx'));
-const CreateNavigationGroup = lazy(() => import('./crud_navigations/crud_navigation_groups/CreateNavigationGroups.jsx'));
-const UpdateNavigationGroup = lazy(() => import('./crud_navigations/crud_navigation_groups/UpdateNavigationGroups.jsx'));
-const DetailNavigationGroup = lazy(() => import('./crud_navigations/crud_navigation_groups/DetailNavigationGroups.jsx'));
+const NavigationGroupList = lazy(() => import('./crud_navigations/ListNavigationGroups.jsx'));
+const CreateNavigationGroup = lazy(() => import('./crud_navigations/CreateNavigationGroups.jsx'));
+const UpdateNavigationGroup = lazy(() => import('./crud_navigations/UpdateNavigationGroups.jsx'));
+const DetailNavigationGroup = lazy(() => import('./crud_navigations/DetailNavigationGroups.jsx'));
 
-const NavigationMenuList = lazy(() => import('./crud_navigations/crud_navigation_menu/ListNavigationMenu.jsx'));
+// const NavigationMenuList = lazy(() => import('./crud_navigations/crud_navigation_menu/ListNavigationMenu.jsx'));
 
 const ListTypeRequest = lazy(() => import('./crud_type_request/ListTypeRequest.jsx'))
 const DetailTypeRequest = lazy(() => import('./crud_type_request/DetailTypeRequest.jsx'))
@@ -128,6 +128,11 @@ const ListMakeRequest = lazy(() => import('./crud_make_request/ListMakeRequest.j
 const DetailMakeRequest = lazy(() => import('./crud_make_request/DetailMakeRequest.jsx'))
 const UpdateMakeRequest = lazy(() => import('./crud_make_request/UpdateMakeRequest.jsx'))
 const CreateMakeRequest = lazy(() => import('./crud_make_request/CreateMakeRequest.jsx'))
+
+const ListMemo = lazy(() => import('./crud_memo/ListMemo.jsx'))
+const DetailMemo = lazy(() => import('./crud_memo/DetailMemo.jsx'))
+const UpdateMemo = lazy(() => import('./crud_memo/UpdateMemo.jsx'))
+const CreateMemo = lazy(() => import('./crud_memo/CreateMemo.jsx'))
 
 const ListMakeRequestAdmin = lazy(() => import('./crud_make_request_admin/ListMakeRequestAdmin.jsx'))
 const DetailMakeRequestAdmin = lazy(() => import('./crud_make_request_admin/DetailMakeRequestAdmin.jsx'))
@@ -246,7 +251,6 @@ const MyApp = () => {
                   <Route path='/purchase-request/list-purchase-request' element={<ListPurchaseRequest />} />
                   <Route path='/purchase-request/detail-purchase-request/:id' element={<DetailPurchaseRequest />} />
                   <Route path='/purchase-request/update-purchase-request/:id' element={<UpdatePurchaseRequest />} />
-                  
 
                   <Route path='/make-purchase-request/list-make-purchase-request' element={<CreateListPurchaseRequest />} />
                   <Route path='/make-purchase-request/create-purchase-request/:id' element={<CreatePurchaseRequest />} />
@@ -274,6 +278,11 @@ const MyApp = () => {
                   <Route path='/material-request-admin/list-material-request-admin' element={<ListMakeRequestAdmin />} />
                   <Route path='/material-request-admin/detail-material-request-admin/:id' element={<DetailMakeRequestAdmin />} />
                   
+                  <Route path='/memo/list-memo' element={<ListMemo />} />
+                  <Route path='/memo/detail-memo/:id' element={<DetailMemo />} />
+                  <Route path='/memo/update-memo/:id' element={<UpdateMemo />} />
+                  <Route path='/memo/create-memo' element={<CreateMemo />} />
+
                   <Route path='/table-billing' element={<TableBilling/>} />
 
                   <Route path='/user/list-user' element={<UserList />} />
@@ -318,7 +327,7 @@ const MyApp = () => {
                   <Route path='/navigation-groups/update-navigation-groups/:id' element={<UpdateNavigationGroup/>}/>
                   <Route path='/navigation-groups/detail-navigation-groups/:id' element={<DetailNavigationGroup/>}/>
 
-                  <Route path='/navigation-menu/list-navigation-menu' element={<NavigationMenuList/>}/>
+                  {/* <Route path='/navigation-menu/list-navigation-menu' element={<NavigationMenuList/>}/> */}
                   {/* <Route path='/pdf-viewer/:type/:id' element={<PDFViewerPage />} /> */}
                   
                 </Route>
