@@ -80,8 +80,6 @@ const CreateNavigationGroup = lazy(() => import('./crud_navigations/CreateNaviga
 const UpdateNavigationGroup = lazy(() => import('./crud_navigations/UpdateNavigationGroups.jsx'));
 const DetailNavigationGroup = lazy(() => import('./crud_navigations/DetailNavigationGroups.jsx'));
 
-// const NavigationMenuList = lazy(() => import('./crud_navigations/crud_navigation_menu/ListNavigationMenu.jsx'));
-
 const ListTypeRequest = lazy(() => import('./crud_type_request/ListTypeRequest.jsx'))
 const DetailTypeRequest = lazy(() => import('./crud_type_request/DetailTypeRequest.jsx'))
 const UpdateTypeRequest = lazy(() => import('./crud_type_request/UpdateTypeRequest.jsx'))
@@ -327,8 +325,6 @@ const MyApp = () => {
                   <Route path='/navigation-groups/update-navigation-groups/:id' element={<UpdateNavigationGroup/>}/>
                   <Route path='/navigation-groups/detail-navigation-groups/:id' element={<DetailNavigationGroup/>}/>
 
-                  {/* <Route path='/navigation-menu/list-navigation-menu' element={<NavigationMenuList/>}/> */}
-                  {/* <Route path='/pdf-viewer/:type/:id' element={<PDFViewerPage />} /> */}
                   
                 </Route>
 
