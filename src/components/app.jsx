@@ -100,6 +100,14 @@ const ListApprovalStepLPB = lazy(() => import('./crud_approval_step_lpb/ListAppr
 const UpdateApprovalStepLPB = lazy(() => import('./crud_approval_step_lpb/UpdateApprovalStepLPB.jsx'))
 const CreateApprovalStepLPB = lazy(() => import('./crud_approval_step_lpb/CreateApprovalStepLPB.jsx'))
 
+const ListApprovalStepMemoStatis = lazy(() => import('./crud_approval_step_memo_statis/ListApprovalStepMemo.jsx'))
+const UpdateApprovalStepMemoStatis = lazy(() => import('./crud_approval_step_memo_statis/UpdateApprovalStepMemo.jsx'))
+const CreateApprovalStepMemoStatis = lazy(() => import('./crud_approval_step_memo_statis/CreateApprovalStepMemo.jsx'))
+
+const ListApprovalStepMemoDynamic = lazy(() => import('./crud_approval_step_memo_dynamic/ListApprovalStepMemo.jsx'))
+const UpdateApprovalStepMemoDynamic = lazy(() => import('./crud_approval_step_memo_dynamic/UpdateApprovalStepMemo.jsx'))
+const CreateApprovalStepMemoDynamic = lazy(() => import('./crud_approval_step_memo_dynamic/CreateApprovalStepMemo.jsx'))
+
 const ListPurchaseRequest = lazy(() => import('./crud_purchase_request/ListPurchaseRequest.jsx'))
 const CreateListPurchaseRequest = lazy(() => import('./crud_purchase_request/CreateListPurchaseRequest.jsx'))
 const CreatePurchaseRequest = lazy(() => import('./crud_purchase_request/CreatePurchaseRequest.jsx'))
@@ -240,7 +248,15 @@ const MyApp = () => {
                   <Route path='/approval-step-lpb/detail-approval-step-lpb' element={<ListApprovalStepLPB />} />
                   <Route path='/approval-step-lpb/update-approval-step-lpb/:id' element={<UpdateApprovalStepLPB />} />
                   <Route path='/approval-step-lpb/create-approval-step-lpb' element={<CreateApprovalStepLPB />} />
-                  
+
+                  <Route path='/approval-step-memo/list-approval-step-memo' element={<ListApprovalStepMemoStatis />} />
+                  <Route path='/approval-step-memo/update-approval-step-memo/:id' element={<UpdateApprovalStepMemoStatis />} />
+                  <Route path='/approval-step-memo/create-approval-step-memo' element={<CreateApprovalStepMemoStatis />} />
+
+                  <Route path='/approval-step-memo-dynamic/list-approval-step-memo' element={<ListApprovalStepMemoDynamic />} />
+                  <Route path='/approval-step-memo-dynamic/update-approval-step-memo/:id' element={<UpdateApprovalStepMemoDynamic />} />
+                  <Route path='/approval-step-memo-dynamic/create-approval-step-memo' element={<CreateApprovalStepMemoDynamic />} />
+
                   <Route path='/purchase-request/list-purchase-request' element={<ListPurchaseRequest />} />
                   <Route path='/purchase-request/detail-purchase-request/:id' element={<DetailPurchaseRequest />} />
                   <Route path='/purchase-request/update-purchase-request/:id' element={<UpdatePurchaseRequest />} />
