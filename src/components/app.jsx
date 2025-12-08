@@ -132,6 +132,8 @@ const DetailMemo = lazy(() => import('./crud_memo/DetailMemo.jsx'))
 const UpdateMemo = lazy(() => import('./crud_memo/UpdateMemo.jsx'))
 const CreateMemo = lazy(() => import('./crud_memo/CreateMemo.jsx'))
 
+const ListMemoAdmin = lazy(() => import('./crud_memo_admin/ListMemoAdmin.jsx'))
+
 const ListMakeRequestAdmin = lazy(() => import('./crud_make_request_admin/ListMakeRequestAdmin.jsx'))
 const DetailMakeRequestAdmin = lazy(() => import('./crud_make_request_admin/DetailMakeRequestAdmin.jsx'))
 
@@ -281,6 +283,8 @@ const MyApp = () => {
                   <Route path='/memo/update-memo/:id' element={<UpdateMemo />} />
                   <Route path='/memo/create-memo' element={<CreateMemo />} />
 
+                  <Route path='/memo-admin/list-memo-admin' element={<ListMemoAdmin />} />
+                  
                   <Route path='/table-billing' element={<TableBilling/>} />
 
                   <Route path='/user/list-user' element={<UserList />} />

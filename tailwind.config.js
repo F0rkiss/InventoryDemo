@@ -41,6 +41,7 @@ export default {
       }
 
       addUtilities(newUtilities, ['responsive', 'hover'])
-    }
+    },
+    require('@tailwindcss/typography'),
   ],
 }

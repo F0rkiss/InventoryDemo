@@ -69,12 +69,13 @@ const menus = [
     },
 
     {
-        key: "Memo" || "JenisMemo",
+        key: "Memo" || "MemoPersonal" || "JenisMemo",
         label: "Memo",
         icon: "bx bx-notepad",
         isAccordion: true,
         children: [
-            { key: "Memo", label: "Memo", path: "/memo/list-memo" },
+            { key: "Memo", label: "Memo", path: "/memo-admin/list-memo-admin" },
+            { key: "MemoPersonal", label: "Personal Memo", path: "/memo/list-memo" },
             { key: "JenisMemo", label: "Jenis Memo", path: "/jenismemo/list-jenismemo" },
         ]
     },

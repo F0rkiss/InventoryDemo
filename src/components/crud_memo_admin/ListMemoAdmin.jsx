@@ -7,16 +7,16 @@ import Loader from '../component/Loader'
 import Transition from '../component/Transition'
 import ScrollPagination from '../component/ScrollPagination'
 import Layout from '../component/Layout'
-import FlyingButton from '../component/FlyingButton'
+// import FlyingButton from '../component/FlyingButton' // Admin biasanya gak create dari sini, tapi kalau butuh tinggal uncomment
 import MemoCards from '../component/cards/MemoCard'
 import DataEmpty from '../component/DataEmpty'
 import { encrypting } from '../../helper/EncryptHelper'
 import { useAuth } from '../../auth/AuthContext'
 import useMenuAccess from '../../hooks/useMenuAccess'
 import FilterDynamicToggle from '../component/filters/FilterDynamicToggle';
-import MemoDetailView from './DetailMemoView';
+import MemoDetailView from '../component/DetailMemoView'; // Pastikan path benar
 
-function MemoList() {
+function MemoListAdmin() {
     const [items, setItems] = useState([])
     const [loading, setLoading] = useState(false)
     const [nextCursor, setNextCursor] = useState(null)
@@ -29,7 +29,9 @@ function MemoList() {
     const [loadingDetail, setLoadingDetail] = useState(false);
 
     const navigate = useNavigate()
-    const { canUpdate } = useMenuAccess('Memo');
+    // Akses menu untuk Admin, sesuaikan 'Memo' dengan nama menu di database permission lu
+    const { canUpdate } = useMenuAccess('Memo'); 
+    
     const [filterStatus, setFilterStatus] = useState('all');
     const onFilterChange = (next) => setFilterStatus(next);
 
@@ -37,27 +39,21 @@ function MemoList() {
       setItems([]);
       setNextCursor(null);
       setContentVisible(false);
-      setSelectedId(null); // Reset pilihan saat filter berubah
+      setSelectedId(null); 
       setDetailData(null);
       fetchItems();
     }, [searchTerm, filterStatus] )
 
-    // 1) One helper to build URL + params consistently
     const buildReq = (cursor) => {
-      // Cek apakah ada search term
       const isSearching = !!searchTerm; 
-
-      // Default URL
-      let url = 'memo';
+      let url = 'memo'; // Endpoint Admin (biasanya get all)
 
       const params = {};
       if (cursor) params.cursor = cursor;
 
       if (isSearching) {
-        // Kita pakai encodeURIComponent biar aman kalau ada spasi atau karakter aneh
         url = `memo/${encodeURIComponent(searchTerm)}`;
       } else {
-        // Logic filter jalan kalau TIDAK sedang searching
         if (filterStatus === 'dynamic') {
             url = 'memo-toggle';
             params.is_dynamic = 1;
@@ -66,7 +62,6 @@ function MemoList() {
             params.is_dynamic = 0;
         }
       }
-      
       return { url, params };
     };
 
@@ -86,7 +81,6 @@ function MemoList() {
       }
     };
 
-    // 3) Next pages
     const fetchMoreItems = async () => {
       if (!nextCursor || loading) return;
       try {
@@ -110,12 +104,10 @@ function MemoList() {
 
         setNextCursor(page?.next_cursor ?? null);
       } catch (e) {
-        // console.error('Error fetching more items:', e);
       } finally {
         setLoading(false);
       }
     };
-
 
     const debounceRef = useRef(null);
         
@@ -131,22 +123,20 @@ function MemoList() {
       return () => debounceRef.current && clearTimeout(debounceRef.current);
     }, []);
 
+    // --- LOGIC HANDLE KLIK CARD ---
     const handleCardClick = async (id) => {
         if (selectedId === id) {
-            // Kalau diklik lagi, tutup detailnya (toggle)
             setSelectedId(null);
             setDetailData(null);
             return;
         }
 
         setSelectedId(id);
-        setDetailData(null); // Kosongkan dulu biar loading kelihatan
+        setDetailData(null); 
         setLoadingDetail(true);
 
         try {
-            // Panggil API Detail sesuai request
-            const res = await api.get(`memo-detail/${id}`);
-            // Asumsi response datanya ada di res.data.data
+            const res = await api.get(`memo-detail/${id}`); // Endpoint detail admin
             setDetailData(res.data.data);
         } catch (error) {
             console.error("Gagal ambil detail:", error);
@@ -155,21 +145,25 @@ function MemoList() {
         }
     };
 
-    // const goToUpdate = async(itemid) => {
-    //   const encryptingID = await encrypting(itemid)
-    //   navigate(`/material-request/update-material-request/${encryptingID}`);
-    // }
-    
-    // const goToDetail = async (id) => {
-    //   const encryptingID = await encrypting(id)
-    //   navigate(`/material-request/detail-material-request/${encryptingID}`)
-    // } 
+    // --- LOGIC BACK BUTTON (MOBILE) ---
+    const handleBackToList = () => {
+        setSelectedId(null);
+        setDetailData(null);
+    }
 
+    // Fungsi update (jika admin boleh update, uncomment logic button di bawah)
+    const goToUpdate = async(itemid) => {
+      const encryptingID = await encrypting(itemid)
+      navigate(`/memo/update-memo/${encryptingID}`); // Pastikan route update ini benar
+    }
+    
     return (
-      <Layout title={'List Memo'}>
+      <Layout title={'List Memo Admin'}>
           <Block>
-            <div className='flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-2'>
-              <p className='md:text-3xl text-2xl ms-3 font-semibold'>Daftar Memo</p>
+            {/* Header: Judul & SearchBar */}
+            {/* Logic: Hidden di Mobile jika sedang buka Detail (biar bersih) */}
+            <div className={`flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-2 ${selectedId ? 'hidden lg:flex' : 'flex'}`}>
+              <p className='md:text-3xl text-2xl ms-3 font-semibold'>Daftar Memo (All)</p>
               <div className="flex items-center gap-2">
                 <SearchBar
                     onChange={handleSearchChange}
@@ -184,9 +178,14 @@ function MemoList() {
             </div>
             
             <Transition contentVisible={contentVisible}>
-                <div className="flex flex-col lg:flex-row gap-6 items-start relative">
+                <div className="flex flex-col lg:flex-row gap-6 items-start relative min-h-[500px]">
                     
-                    <div className={`transition-all duration-300 ease-in-out ${selectedId ? 'w-full lg:w-5/12' : 'w-full'}`}>
+                    {/* --- LIST SECTION --- */}
+                    {/* Mobile: Hidden kalau ada selectedId. Desktop: Lebar 5/12 kalau ada selectedId. */}
+                    <div className={`
+                        transition-all duration-300 ease-in-out
+                        ${selectedId ? 'hidden lg:block lg:w-5/12' : 'w-full'}
+                    `}>
                         <div className='space-y-3'>
                             <ScrollPagination rootSelector=".page-content" fetchMoreItems={fetchMoreItems} loading={loading} nextCursor={nextCursor}>
                                 {items.map((item) => (
@@ -195,6 +194,7 @@ function MemoList() {
                                         item={item}
                                         isSelected={selectedId === item.id}
                                         onClick={() => handleCardClick(item.id)}
+                                        initial={'admin'} // Menampilkan icon user di card
                                     />
                                 ))}
                             </ScrollPagination>
@@ -203,14 +203,17 @@ function MemoList() {
                         {loading && <Loader Class="mt-10" />}
                     </div>
 
+                    {/* --- DETAIL SECTION --- */}
+                    {/* Mobile: Full Width. Desktop: 7/12. Sticky biar enak scrollnya. */}
                     {selectedId && (
-                        <div className="hidden lg:block w-7/12 sticky top-4 h-[calc(100vh-150px)] overflow-y-auto">
+                        <div className="w-full lg:w-7/12 sticky top-4 h-[calc(100vh-150px)] overflow-y-auto animate-fade-in">
                             <MemoDetailView 
                                 data={detailData} 
                                 loading={loadingDetail}
-                                onClose={() => setSelectedId(null)}
-                                // goToUpdate={goToUpdate}
-                                // canUpdate={canUpdate}
+                                onClose={handleBackToList} // Mengaktifkan tombol back di mobile
+                                initial={'admin'} // Menampilkan info user pembuat di footer detail
+                                goToUpdate={goToUpdate} // Pass fungsi update
+                                canUpdate={canUpdate} // Cek permission admin
                             />
                         </div>
                     )}
@@ -222,4 +225,4 @@ function MemoList() {
     )
   }
 
-  export default MemoList;
+  export default MemoListAdmin;

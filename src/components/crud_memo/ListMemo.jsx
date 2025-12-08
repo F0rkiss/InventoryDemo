@@ -11,10 +11,10 @@ import FlyingButton from '../component/FlyingButton'
 import MemoCards from '../component/cards/MemoCard'
 import DataEmpty from '../component/DataEmpty'
 import { encrypting } from '../../helper/EncryptHelper'
-import { useAuth } from '../../auth/AuthContext'
 import useMenuAccess from '../../hooks/useMenuAccess'
 import FilterDynamicToggle from '../component/filters/FilterDynamicToggle';
-import MemoDetailView from './DetailMemoView';
+import MemoDetailView from '../component/DetailMemoView'; // Pastikan path benar
+import Swal from 'sweetalert2';
 
 function MemoList() {
     const [items, setItems] = useState([])
@@ -29,44 +29,37 @@ function MemoList() {
     const [loadingDetail, setLoadingDetail] = useState(false);
 
     const navigate = useNavigate()
-    const { canUpdate } = useMenuAccess('Memo');
+    const { canCreate, canUpdate, canDelete } = useMenuAccess('MemoPersonal');
     const [filterStatus, setFilterStatus] = useState('all');
+
     const onFilterChange = (next) => setFilterStatus(next);
 
     useEffect(() => {
       setItems([]);
       setNextCursor(null);
       setContentVisible(false);
-      setSelectedId(null); // Reset pilihan saat filter berubah
+      setSelectedId(null); 
       setDetailData(null);
       fetchItems();
     }, [searchTerm, filterStatus] )
 
-    // 1) One helper to build URL + params consistently
     const buildReq = (cursor) => {
-      // Cek apakah ada search term
       const isSearching = !!searchTerm; 
-
-      // Default URL
-      let url = 'memo';
-
+      let url = 'memo-personal';
       const params = {};
       if (cursor) params.cursor = cursor;
 
       if (isSearching) {
-        // Kita pakai encodeURIComponent biar aman kalau ada spasi atau karakter aneh
-        url = `memo/${encodeURIComponent(searchTerm)}`;
+        url = `memo-personal/${encodeURIComponent(searchTerm)}`;
       } else {
-        // Logic filter jalan kalau TIDAK sedang searching
         if (filterStatus === 'dynamic') {
-            url = 'memo-toggle';
+            url = 'memo-toggle/personal';
             params.is_dynamic = 1;
         } else if (filterStatus === 'manual') {
-            url = 'memo-toggle';
+            url = 'memo-toggle/personal';
             params.is_dynamic = 0;
         }
       }
-      
       return { url, params };
     };
 
@@ -76,7 +69,6 @@ function MemoList() {
         const { url, params } = buildReq(null);
         const res = await api.get(url, { params });
         const page = res.data.data;
-
         const list = Array.isArray(page?.data) ? page.data : [];
         setItems(list);
         setNextCursor(page?.next_cursor ?? null);
@@ -86,7 +78,6 @@ function MemoList() {
       }
     };
 
-    // 3) Next pages
     const fetchMoreItems = async () => {
       if (!nextCursor || loading) return;
       try {
@@ -94,7 +85,6 @@ function MemoList() {
         const { url, params } = buildReq(nextCursor);
         const res = await api.get(url, { params });
         const page = res.data.data;
-
         const newList = Array.isArray(page?.data) ? page.data : [];
 
         if (!newList.length || page?.next_cursor === nextCursor) {
@@ -107,18 +97,11 @@ function MemoList() {
           const uniq = newList.filter(it => !ids.has(it.id));
           return [...prev, ...uniq];
         });
-
         setNextCursor(page?.next_cursor ?? null);
-      } catch (e) {
-        // console.error('Error fetching more items:', e);
-      } finally {
-        setLoading(false);
-      }
+      } catch (e) { } finally { setLoading(false); }
     };
 
-
     const debounceRef = useRef(null);
-        
     const handleSearchChange = (query) => {
       setSearchQuery(query);
       if (debounceRef.current) clearTimeout(debounceRef.current);
@@ -127,26 +110,22 @@ function MemoList() {
       }, 1200);
     };
 
-    useEffect(() => {
-      return () => debounceRef.current && clearTimeout(debounceRef.current);
-    }, []);
-
+    // --- LOGIC KLIK CARD ---
     const handleCardClick = async (id) => {
+        // Kalau diklik card yg sama, close detailnya
         if (selectedId === id) {
-            // Kalau diklik lagi, tutup detailnya (toggle)
             setSelectedId(null);
             setDetailData(null);
             return;
         }
 
+        // Set state biar UI berubah
         setSelectedId(id);
-        setDetailData(null); // Kosongkan dulu biar loading kelihatan
+        setDetailData(null); 
         setLoadingDetail(true);
 
         try {
-            // Panggil API Detail sesuai request
-            const res = await api.get(`memo-detail/${id}`);
-            // Asumsi response datanya ada di res.data.data
+            const res = await api.get(`memo-detail/personal/${id}`);
             setDetailData(res.data.data);
         } catch (error) {
             console.error("Gagal ambil detail:", error);
@@ -155,38 +134,72 @@ function MemoList() {
         }
     };
 
-    // const goToUpdate = async(itemid) => {
-    //   const encryptingID = await encrypting(itemid)
-    //   navigate(`/material-request/update-material-request/${encryptingID}`);
-    // }
-    
-    // const goToDetail = async (id) => {
-    //   const encryptingID = await encrypting(id)
-    //   navigate(`/material-request/detail-material-request/${encryptingID}`)
-    // } 
+    // --- LOGIC BACK TOMBOL (MOBILE) ---
+    const handleBackToDesktop = () => {
+        setSelectedId(null);
+        setDetailData(null);
+    }
 
+    const handleDeleteClick = async (id) => {
+      try {
+        const result = await Swal.fire({
+          title: `Apakah Anda mau menghapus memo ini?`,
+          icon: 'question',
+          showDenyButton: true,
+          confirmButtonText: 'Yes',
+          denyButtonText: 'No',
+          customClass: {
+            actions: 'my-actions',
+            confirmButton: 'order-2',
+            denyButton: 'order-3',
+          },
+        });
+
+        if (result.isConfirmed) {
+          const response = await api.delete(`/memo-delete/${id}`);
+          setItems((prevItems) => prevItems.filter((item) => item.id !== id));
+          setSelectedId((prevSelectedId) => {
+            if (prevSelectedId === id) {
+              setDetailData(null);
+              return null;
+            }
+            return prevSelectedId;
+          });
+          await Swal.fire('Terhapus!', '', 'success');
+          
+        }
+      } catch (error) {
+        Swal.fire({
+          icon:'error',
+          title:'Tidak dapat menghapus memo',
+          text:'Ada Kesalahan Dalam Sistem'
+      })
+      }
+    };
+
+    const goToUpdate = async(itemid) => {
+      const encryptingID = await encrypting(itemid)
+      navigate(`/memo/update-memo/${encryptingID}`);
+    }
+    
     return (
       <Layout title={'List Memo'}>
           <Block>
-            <div className='flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-2'>
-              <p className='md:text-3xl text-2xl ms-3 font-semibold'>Daftar Memo</p>
+            <div className={`flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-2 ${selectedId ? 'hidden lg:flex' : 'flex'}`}>
+              <p className='md:text-3xl text-2xl ms-3 font-semibold'>Daftar Personal Memo</p>
               <div className="flex items-center gap-2">
-                <SearchBar
-                    onChange={handleSearchChange}
-                    disable={loading}
-                    values={searchQuery}
-                />
-                <FilterDynamicToggle
-                    value={filterStatus}
-                    onChange={onFilterChange}
-                />
+                <SearchBar onChange={handleSearchChange} disable={loading} values={searchQuery} />
+                <FilterDynamicToggle value={filterStatus} onChange={onFilterChange} />
               </div>
             </div>
             
             <Transition contentVisible={contentVisible}>
-                <div className="flex flex-col lg:flex-row gap-6 items-start relative">
+                <div className="flex flex-col lg:flex-row gap-6 items-start relative min-h-[500px]">
                     
-                    <div className={`transition-all duration-300 ease-in-out ${selectedId ? 'w-full lg:w-5/12' : 'w-full'}`}>
+                    <div className={`
+                        transition-all duration-300 ease-in-out
+                        ${selectedId ? 'hidden lg:block lg:w-5/12' : 'w-full'}
+                    `}>
                         <div className='space-y-3'>
                             <ScrollPagination rootSelector=".page-content" fetchMoreItems={fetchMoreItems} loading={loading} nextCursor={nextCursor}>
                                 {items.map((item) => (
@@ -204,20 +217,24 @@ function MemoList() {
                     </div>
 
                     {selectedId && (
-                        <div className="hidden lg:block w-7/12 sticky top-4 h-[calc(100vh-150px)] overflow-y-auto">
+                        <div className="w-full lg:w-7/12 sticky top-4 h-[calc(100vh-150px)] overflow-y-auto animate-fade-in">
                             <MemoDetailView 
                                 data={detailData} 
                                 loading={loadingDetail}
-                                onClose={() => setSelectedId(null)}
-                                // goToUpdate={goToUpdate}
-                                // canUpdate={canUpdate}
+                                onClose={handleBackToDesktop}
+                                goToUpdate={goToUpdate}
+                                canUpdate={canUpdate}
+                                handleDelete={handleDeleteClick}
+                                canDelete={canDelete}
+                                initial="user"
                             />
                         </div>
                     )}
-
                 </div>
             </Transition>
           </Block>
+          {/* Tombol Create (Sembunyikan jika sedang buka detail di mobile) */}
+          { (canCreate && !selectedId) && <FlyingButton goTo={'/memo/create-memo'} />}
       </Layout>
     )
   }
