@@ -7,7 +7,7 @@ import Loader from '../component/Loader'
 import Transition from '../component/Transition'
 import ScrollPagination from '../component/ScrollPagination'
 import Layout from '../component/Layout'
-import ApprovalStepCard from '../component/cards/ApprovalStepPurchaseCard.jsx'
+import ApprovalStepMemoCard from '../component/cards/ApprovalStepMemoCards.jsx'
 import DataEmpty from '../component/DataEmpty'
 import { encrypting } from '../../helper/EncryptHelper'
 import Swal from 'sweetalert2'
@@ -191,7 +191,7 @@ function ApprovalStepPurchaseList() {
                   return item.type?.trim() === activeType
                 })
                 .map((item) => (
-                <ApprovalStepCard
+                <ApprovalStepMemoCard
                 key={item.id}
                 item={item}
                 // goToDetail={goToDetail}
