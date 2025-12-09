@@ -113,7 +113,7 @@ const CreateMemo = () => {
         <Layout title="Buat Memo Baru">
             <Block>
                 <div className="xs:px-0 md:px-4">
-                    <Back goHome={() => navigate(-1)} />
+                    <Back goHome={() => navigate('/memo/list-memo')} />
                     <p className="lg:text-3xl text-2xl font-semibold capitalize my-4">Create Memo</p>
                     <div className="p-7 bg-white shadow-lg shadow-gray-200 rounded-lg border border-gray-300">
                         <form onSubmit={handleSubmit} className="space-y-6">
@@ -165,7 +165,7 @@ const CreateMemo = () => {
                                         value={formData.description}
                                         onChange={handleDescriptionChange}
                                         modules={modules}
-                                        className="h-64 mb-12"
+                                        className="h-64 xs:mb-24 md:mb-12 lg:mb-12 mt-2"
                                         placeholder="Tulis isi memo lengkap disini..."
                                     />
                                 </div>

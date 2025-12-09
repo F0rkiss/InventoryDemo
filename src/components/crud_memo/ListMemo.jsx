@@ -12,9 +12,9 @@ import MemoCards from '../component/cards/MemoCard'
 import DataEmpty from '../component/DataEmpty'
 import { encrypting } from '../../helper/EncryptHelper'
 import useMenuAccess from '../../hooks/useMenuAccess'
-import FilterDynamicToggle from '../component/filters/FilterDynamicToggle';
-import MemoDetailView from '../component/DetailMemoView'; // Pastikan path benar
+import MemoDetailView from '../component/DetailMemoView'; 
 import Swal from 'sweetalert2';
+import FilterApprovalToggle from '../component/filters/FilterApprovalToggle';
 
 function MemoList() {
     const [items, setItems] = useState([])
@@ -45,21 +45,25 @@ function MemoList() {
 
     const buildReq = (cursor) => {
       const isSearching = !!searchTerm; 
-      let url = 'memo-personal';
+      
+      let url = 'memo-personal'; 
       const params = {};
+
       if (cursor) params.cursor = cursor;
 
       if (isSearching) {
         url = `memo-personal/${encodeURIComponent(searchTerm)}`;
       } else {
-        if (filterStatus === 'dynamic') {
-            url = 'memo-toggle/personal';
-            params.is_dynamic = 1;
-        } else if (filterStatus === 'manual') {
-            url = 'memo-toggle/personal';
-            params.is_dynamic = 0;
+        
+        if (filterStatus === 'completed') {
+            url = 'memo-toggle/personal'
+            params.is_full_approval = 1; 
+        } else if (filterStatus === 'not_completed') {
+            url = 'memo-toggle/personal'
+            params.is_full_approval = 0;
         }
       }
+      
       return { url, params };
     };
 
@@ -112,7 +116,6 @@ function MemoList() {
 
     // --- LOGIC KLIK CARD ---
     const handleCardClick = async (id) => {
-        // Kalau diklik card yg sama, close detailnya
         if (selectedId === id) {
             setSelectedId(null);
             setDetailData(null);
@@ -189,7 +192,10 @@ function MemoList() {
               <p className='md:text-3xl text-2xl ms-3 font-semibold'>Daftar Personal Memo</p>
               <div className="flex items-center gap-2">
                 <SearchBar onChange={handleSearchChange} disable={loading} values={searchQuery} />
-                <FilterDynamicToggle value={filterStatus} onChange={onFilterChange} />
+                <FilterApprovalToggle 
+                  value={filterStatus} 
+                  onChange={onFilterChange} 
+                />
               </div>
             </div>
             
@@ -198,7 +204,7 @@ function MemoList() {
                     
                     <div className={`
                         transition-all duration-300 ease-in-out
-                        ${selectedId ? 'hidden lg:block lg:w-5/12' : 'w-full'}
+                        ${selectedId ? 'hidden lg:block lg:w-5/12 ' : 'w-full'}
                     `}>
                         <div className='space-y-3'>
                             <ScrollPagination rootSelector=".page-content" fetchMoreItems={fetchMoreItems} loading={loading} nextCursor={nextCursor}>
@@ -217,7 +223,7 @@ function MemoList() {
                     </div>
 
                     {selectedId && (
-                        <div className="w-full lg:w-7/12 sticky top-4 h-[calc(100vh-150px)] overflow-y-auto animate-fade-in">
+                        <div className="w-full lg:w-7/12 sticky top-24 h-[calc(100vh-150px)] overflow-y-auto animate-fade-in">
                             <MemoDetailView 
                                 data={detailData} 
                                 loading={loadingDetail}
@@ -233,7 +239,6 @@ function MemoList() {
                 </div>
             </Transition>
           </Block>
-          {/* Tombol Create (Sembunyikan jika sedang buka detail di mobile) */}
           { (canCreate && !selectedId) && <FlyingButton goTo={'/memo/create-memo'} />}
       </Layout>
     )

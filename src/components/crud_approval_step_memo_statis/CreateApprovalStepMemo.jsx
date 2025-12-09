@@ -129,7 +129,7 @@ function CreateApprovalLPB() {
       <Block>
         <div className="px-4">
           <Back goHome={() => navigate('/approval-step-memo/list-approval-step-memo')} />
-          <p className="lg:text-3xl text-2xl font-semibold capitalize my-4">Create Approval Step LPB</p>
+          <p className="lg:text-3xl text-2xl font-semibold capitalize my-4">Create Approval Step Memo</p>
 
           <div className="p-8 bg-white shadow-sm rounded-lg border">
             <form onSubmit={handleSubmit} className="space-y-5">

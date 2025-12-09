@@ -16,7 +16,7 @@ const statusToClass = (status) => {
 
 // Icon map (Boxicons)
 const DEFAULT_ICON_MAP = {
-  all: 'bx bxs-sort-alt text-xl',
+  all: 'bx bxs-layer text-xl',
   completed: 'bx bxs-check-circle text-xl',
   not_completed: 'bx bx-time-five text-xl',
 };
@@ -28,7 +28,7 @@ export default function FilterStatusToggle({
   disabled = false,
   className = '',
   showText = false,
-  labels = { all: 'Semua', completed: 'Selesai', not_completed: 'Belum Selesai' },
+  // labels = { all: 'Semua', completed: 'Selesai', not_completed: 'Belum Selesai' },
   iconMap = DEFAULT_ICON_MAP, // <-- you can override if needed
   'data-testid': dataTestId,
 }) {
@@ -41,14 +41,14 @@ export default function FilterStatusToggle({
     if (!disabled) onChange(nextValue);
   };
 
-  const title = `Filter: ${labels[value] || value}`;
+  // const title = `Filter: ${labels[value] || value}`;
   const iconClassName = iconMap[value] ?? iconMap.all;
 
   return (
       <button
         type="button"
-        title={title}
-        aria-label={title}
+        // title={title}
+        // aria-label={title}
         aria-pressed={value !== 'all'}
         onClick={handleClick}
         disabled={disabled}
@@ -57,7 +57,7 @@ export default function FilterStatusToggle({
                     ${statusToClass(value)} ${disabled ? 'opacity-60 cursor-not-allowed' : ''} ${className}`}
       >
         <i className={iconClassName}></i>
-        {showText && <span>{labels[value] || value}</span>}
+        {/* {showText && <span>{labels[value] || value}</span>} */}
       </button>
   );
 }
@@ -69,10 +69,10 @@ FilterStatusToggle.propTypes = {
   disabled: PropTypes.bool,
   className: PropTypes.string,
   showText: PropTypes.bool,
-  labels: PropTypes.shape({
-    all: PropTypes.string,
-    completed: PropTypes.string,
-    not_completed: PropTypes.string,
-  }),
+  // labels: PropTypes.shape({
+  //   all: PropTypes.string,
+  //   completed: PropTypes.string,
+  //   not_completed: PropTypes.string,
+  // }),
   iconMap: PropTypes.object,
 };
