@@ -11,7 +11,6 @@ import MemoCards from '../component/cards/MemoCard'
 import DataEmpty from '../component/DataEmpty'
 import { encrypting } from '../../helper/EncryptHelper'
 import { useAuth } from '../../auth/AuthContext'
-import useMenuAccess from '../../hooks/useMenuAccess'
 import MemoDetailView from '../component/DetailMemoView'; 
 import FilterApprovalToggle from '../component/filters/FilterApprovalToggle'
 
@@ -28,7 +27,6 @@ function MemoListAdmin() {
     const [loadingDetail, setLoadingDetail] = useState(false);
 
     const navigate = useNavigate()
-    const { canUpdate } = useMenuAccess('Memo'); 
     
     const [filterStatus, setFilterStatus] = useState('all');
     const onFilterChange = (next) => setFilterStatus(next);
@@ -201,8 +199,6 @@ function MemoListAdmin() {
                                 loading={loadingDetail}
                                 onClose={handleBackToList} 
                                 initial={'admin'}
-                                goToUpdate={goToUpdate} 
-                                canUpdate={canUpdate} 
                             />
                         </div>
                     )}
