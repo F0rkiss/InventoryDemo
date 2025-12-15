@@ -25,7 +25,7 @@
         const role = getFromToken('role', token);
         const name = getFromToken('user', token);
         const email = getFromToken('email', token);
-        const navigation_menu = getFromToken('navigation menu', token);
+        const navigation_menu = getFromToken('navigation_menu', token);
 
         useEffect(() => {
             // Update localStorage whenever auth changes

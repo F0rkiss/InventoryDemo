@@ -19,6 +19,8 @@ const ApprovalMakeRequest = lazy(() => import('./approval-page/approvalMR'));
 const ApprovalPurchaseRequest = lazy(() => import('./approval-page/approvalPR'));
 const ApprovalPurchaseOrder = lazy(() => import('./approval-page/approvalPO'));
 const ApprovalLPB = lazy(() => import('./approval-page/approvalLPB'));
+const ApprovalMemoStatis = lazy(() => import('./approval-page/approvalMS.jsx'));
+const ApprovalMemoDinamis = lazy(() => import('./approval-page/approvalMD.jsx'));
 
 const BarangList = lazy(() => import('./crud_barang/BarangList.jsx'));
 const CreateBarang = lazy(() => import('./crud_barang/CreateBarang.jsx'));
@@ -197,6 +199,8 @@ const MyApp = () => {
                   <Route path="/approvalStepHistory-purchaseRequest/detail/:id" element={<ApprovalPurchaseRequest />} />
                   <Route path="/approvalStepHistory-purchaseOrder/detail/:id" element={<ApprovalPurchaseOrder />} />
                   <Route path="/approvalStepHistory-lpb/detail/:id" element={<ApprovalLPB />} />
+                  <Route path="/approvalStepHistory-memoStatis/detail/:id" element={<ApprovalMemoStatis />} />
+                  <Route path="/approvalStepHistory-memoDinamis/detail/:id" element={<ApprovalMemoDinamis />} />
 
                   <Route path="/barang/list-barang" element={<BarangList />} />
                   <Route path="/barang/detail-barang/:id" element={<DetailBarang />} />

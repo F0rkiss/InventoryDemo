@@ -6,7 +6,7 @@ import Swal from 'sweetalert2';
 import SelectPaginate from '../component/SelectPaginate'; // Pastikan path ini benar
 import { DecryptID } from '../../helper/EncryptHelper'; // Jika ID di URL terenkripsi
 
-const MemoDetailView = ({ data, loading, onClose, goToUpdate, canUpdate, canDelete, handleDelete, initial }) => {
+const MemoDetailView = ({ data, loading, onClose, goToUpdate, canUpdate, canDelete, handleDelete, initial, showViewerManagement = true }) => {
     const user = data?.user;
     const jenisMemo = data?.jenis_memo;
 
@@ -207,7 +207,7 @@ const MemoDetailView = ({ data, loading, onClose, goToUpdate, canUpdate, canDele
                 
                 {/* KIRI: Tombol 'Dapat dilihat oleh' (Dynamic Viewers) */}
                 {
-                    (!data.is_public && initial !== 'admin') &&        
+                    (!data.is_public && initial !== 'admin' && showViewerManagement) &&        
                 <div className="relative w-full md:w-auto" ref={popoverRef}>
                     <button 
                         onClick={toggleViewers}

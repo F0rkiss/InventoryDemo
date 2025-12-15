@@ -13,7 +13,7 @@ const NotifCards = forwardRef(({ item, goToPage }, ref) => {
             <div className="p-4 flex flex-col border-b w-full">
                 <div className="flex justify-between items-center mb-1">
                     <h4 className="text-sm font-medium text-gray-800 truncate">
-                        {["MR", "PR", "PO"].includes(item.jenis_request)
+                        {["MR", "PR", "PO", "Memo", "LPB", "MemoDinamis"].includes(item.jenis_request)
                             ? item.username
                             : item.jenis_request === "LPB"
                                 ? item.penerima
@@ -41,10 +41,14 @@ const NotifCards = forwardRef(({ item, goToPage }, ref) => {
                                     ? 'bg-yellow-500 bg-opacity-30 text-yellow-700'
                                     : item.jenis_request === 'PO'
                                     ? 'bg-purple-500 bg-opacity-30 text-purple-700'
+                                    : item.jenis_request === 'Memo'
+                                    ? 'bg-cyan-100 text-cyan-700'
+                                    : item.jenis_request === 'MemoDinamis'
+                                    ? 'bg-purple-100 text-purple-700'
                                     : 'bg-gray-400 bg-opacity-30 text-gray-700'
                             }`}
                         >
-                            {item.jenis_request}
+                            {item.jenis_request === "MemoDinamis" ? "Memo Dinamis" : item.jenis_request}
                         </span>
                     </div>
                     <p className="text-xs text-gray-400">
