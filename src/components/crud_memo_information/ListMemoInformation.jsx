@@ -15,9 +15,8 @@ import useMenuAccess from '../../hooks/useMenuAccess'
 import MemoDetailView from '../component/DetailMemoView';
 import Swal from 'sweetalert2';
 import FilterApprovalToggle from '../component/filters/FilterApprovalToggle';
-import FilterDynamicToggle from '../component/filters/FilterDynamicToggle';
 
-function MemoList() {
+function MemoInformationList() {
     const [items, setItems] = useState([])
     const [loading, setLoading] = useState(false)
     const [nextCursor, setNextCursor] = useState(null)
@@ -31,11 +30,9 @@ function MemoList() {
 
     const navigate = useNavigate()
     const { canCreate, canUpdate, canDelete } = useMenuAccess('MemoPersonal');
-   
-    const [filterApproval, setFilterApproval] = useState('all'); // 'all', 'completed', 'not_completed'
-    const [filterDynamic, setFilterDynamic] = useState('all');
-    
-    // const onFilterChange = (next) => setFilterStatus(next);
+    const [filterStatus, setFilterStatus] = useState('all');
+
+    const onFilterChange = (next) => setFilterStatus(next);
 
     useEffect(() => {
       setItems([]);
@@ -44,40 +41,20 @@ function MemoList() {
       setSelectedId(null); 
       setDetailData(null);
       fetchItems();
-    }, [searchTerm, filterApproval, filterDynamic] )
+    }, [searchTerm, filterStatus] )
 
     const buildReq = (cursor) => {
       const isSearching = !!searchTerm; 
       
-      let url = 'memo-personal'; 
+      let url = 'memo-information'; 
       const params = {};
 
       if (cursor) params.cursor = cursor;
 
       if (isSearching) {
-        url = `memo-personal/${encodeURIComponent(searchTerm)}`;
-      } else {
-        const hasApprovalFilter = filterApproval !== 'all';
-        const hasDynamicFilter = filterDynamic !== 'all';
-        
-        if (hasApprovalFilter || hasDynamicFilter) {
-            url = 'memo-toggle/personal'; // Gunakan endpoint toggle jika ada filter
-
-            // Logic Approval
-            if (filterApproval === 'completed') {
-                params.is_full_approval = 1;
-            } else if (filterApproval === 'not_completed') {
-                params.is_full_approval = 0;
-            }
-
-            // Logic Dynamic (bisa digabung dengan approval)
-            if (filterDynamic === 'dynamic') {
-                params.is_dynamic = 1;
-            } else if (filterDynamic === 'manual') {
-                params.is_dynamic = 0;
-            }
-          }
-      }
+        url = `memo-information/search`;
+        params.search = searchTerm
+      } 
       
       return { url, params };
     };
@@ -143,7 +120,7 @@ function MemoList() {
         setLoadingDetail(true);
 
         try {
-            const res = await api.get(`memo-detail/personal/${id}`);
+            const res = await api.get(`memo-information/detail/${id}`);
             setDetailData(res.data.data);
         } catch (error) {
             console.error("Gagal ambil detail:", error);
@@ -204,17 +181,13 @@ function MemoList() {
       <Layout title={'List Memo'}>
           <Block>
             <div className={`flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-2 ${selectedId ? 'hidden lg:flex' : 'flex'}`}>
-              <p className='md:text-3xl text-2xl ms-3 font-semibold'>Daftar Personal Memo</p>
+              <p className='md:text-3xl text-2xl ms-3 font-semibold'>Memo Information</p>
               <div className="flex items-center gap-2">
                 <SearchBar onChange={handleSearchChange} disable={loading} values={searchQuery} />
-                <FilterApprovalToggle
-                    value={filterApproval}
-                    onChange={setFilterApproval}
-                />
-                <FilterDynamicToggle
-                    value={filterDynamic}
-                    onChange={setFilterDynamic}
-                />
+                {/* <FilterApprovalToggle 
+                  value={filterStatus} 
+                  onChange={onFilterChange} 
+                /> */}
               </div>
             </div>
             
@@ -247,20 +220,20 @@ function MemoList() {
                                 data={detailData} 
                                 loading={loadingDetail}
                                 onClose={handleBackToDesktop}
-                                goToUpdate={goToUpdate}
-                                canUpdate={canUpdate}
-                                handleDelete={handleDeleteClick}
-                                canDelete={canDelete}
-                                initial="user"
+                                // goToUpdate={goToUpdate}
+                                // canUpdate={canUpdate}
+                                // handleDelete={handleDeleteClick}
+                                // canDelete={canDelete}
+                                initial="information"
                             />
                         </div>
                     )}
                 </div>
             </Transition>
           </Block>
-          { (canCreate && !selectedId) && <FlyingButton goTo={'/memo/create-memo'} />}
+          {/* { (canCreate && !selectedId) && <FlyingButton goTo={'/memo/create-memo'} />} */}
       </Layout>
     )
   }
 
-  export default MemoList;
+  export default MemoInformationList;

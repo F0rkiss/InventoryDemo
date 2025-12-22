@@ -13,6 +13,7 @@ import { encrypting } from '../../helper/EncryptHelper'
 import { useAuth } from '../../auth/AuthContext'
 import MemoDetailView from '../component/DetailMemoView'; 
 import FilterApprovalToggle from '../component/filters/FilterApprovalToggle'
+import FilterDynamicToggle from '../component/filters/FilterDynamicToggle';
 
 function MemoListAdmin() {
     const [items, setItems] = useState([])
@@ -28,8 +29,9 @@ function MemoListAdmin() {
 
     const navigate = useNavigate()
     
-    const [filterStatus, setFilterStatus] = useState('all');
-    const onFilterChange = (next) => setFilterStatus(next);
+    const [filterApproval, setFilterApproval] = useState('all');
+    const [filterDynamic, setFilterDynamic] = useState('all');
+    // const onFilterChange = (next) => setFilterStatus(next);
 
     useEffect(() => {
       setItems([]);
@@ -38,7 +40,7 @@ function MemoListAdmin() {
       setSelectedId(null); 
       setDetailData(null);
       fetchItems();
-    }, [searchTerm, filterStatus] )
+    }, [searchTerm, filterApproval, filterDynamic] )
 
     const buildReq = (cursor) => {
       const isSearching = !!searchTerm; 
@@ -50,13 +52,26 @@ function MemoListAdmin() {
       if (isSearching) {
         url = `memo/${encodeURIComponent(searchTerm)}`;
       } else {
-        if (filterStatus === 'completed') {
-            url = 'memo-toggle';
-            params.is_full_approval = 1;
-        } else if (filterStatus === 'not_completed') {
-            url = 'memo-toggle';
-            params.is_full_approval = 0;
-        }
+        const hasApprovalFilter = filterApproval !== 'all';
+        const hasDynamicFilter = filterDynamic !== 'all';
+        
+        if (hasApprovalFilter || hasDynamicFilter) {
+            url = 'memo-toggle'; // Gunakan endpoint toggle jika ada filter
+
+            // Logic Approval
+            if (filterApproval === 'completed') {
+                params.is_full_approval = 1;
+            } else if (filterApproval === 'not_completed') {
+                params.is_full_approval = 0;
+            }
+
+            // Logic Dynamic (bisa digabung dengan approval)
+            if (filterDynamic === 'dynamic') {
+                params.is_dynamic = 1;
+            } else if (filterDynamic === 'manual') {
+                params.is_dynamic = 0;
+            }
+          }
       }
       return { url, params };
     };
@@ -119,7 +134,6 @@ function MemoListAdmin() {
       return () => debounceRef.current && clearTimeout(debounceRef.current);
     }, []);
 
-    // --- LOGIC HANDLE KLIK CARD ---
     const handleCardClick = async (id) => {
         if (selectedId === id) {
             setSelectedId(null);
@@ -160,8 +174,12 @@ function MemoListAdmin() {
                     values={searchQuery}
                 />
                 <FilterApprovalToggle 
-                  value={filterStatus} 
-                  onChange={onFilterChange} 
+                  value={filterApproval} 
+                  onChange={setFilterApproval} 
+                />
+                <FilterDynamicToggle
+                    value={filterDynamic}
+                    onChange={setFilterDynamic}
                 />
               </div>
             </div>

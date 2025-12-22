@@ -9,6 +9,10 @@ const statusToClass = (status) => {
       return 'bg-green-100 text-green-700 hover:bg-green-200 border-green-300';
     case 'not_completed':
       return 'bg-orange-100 text-orange-700 hover:bg-orange-200 border-orange-300';
+    case 'dynamic':
+      return 'bg-purple-50 text-purple-700 hover:bg-purple-200 border-purple-300';
+    case 'manual':
+      return 'bg-cyan-50 text-cyan-700 hover:bg-cyan-200 border-cyan-300';
     default:
       return 'bg-white text-gray-700 hover:bg-gray-50';
   }

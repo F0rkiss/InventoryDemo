@@ -2,19 +2,25 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Block } from 'framework7-react';
 import ReactQuill from 'react-quill';
+import Quill from 'quill';
+import ImageResize from 'quill-image-resize-module-react';
+import ImageUploader from 'quill-image-uploader';
+import 'quill-image-uploader/dist/quill.imageUploader.min.css';
 import 'react-quill/dist/quill.snow.css'; 
 import Swal from 'sweetalert2';
-
 import api from '../../api/api';
 import Layout from '../component/Layout';
 import Back from '../component/Back';
 import SelectPaginate from '../component/SelectPaginate'; 
-// import DatePicker from '../component/DatePicker'; // Sudah tidak dipakai
+import DatePicker from '../component/DatePicker'; // Pastikan di-uncomment/import
 import CustomCheckbox from '../component/CustomCheckBox'; 
 import Loader from '../component/Loader';
 import { DecryptID } from '../../helper/EncryptHelper';
 import useAuth from '../../hooks/useAuth';
 import Transition from '../component/Transition';
+
+Quill.register('modules/imageResize', ImageResize);
+Quill.register('modules/imageUploader', ImageUploader);
 
 const UpdateMemo = () => {
     const { id } = useParams();
@@ -35,9 +41,13 @@ const UpdateMemo = () => {
         name: '',
         description: '',
         jenis_memo_id: null, 
-        tanggal: '', // Akan terisi data lama, tapi tidak ditampilkan inputnya
+        tanggal: '', 
+        expired: '', // Field baru
         is_public: 0 
     });
+
+    // State untuk menyimpan data asli (untuk fitur Reset)
+    const [originalData, setOriginalData] = useState(null);
 
     // 1. Decrypt ID
     useEffect(() => {
@@ -61,13 +71,20 @@ const UpdateMemo = () => {
             const response = await api.get(`memo-detail/personal/${decryptedId}`);
             const data = response.data.data;
 
-            setFormData({
+            const initialData = {
                 name: data.name || '',
                 description: data.description || '',
                 jenis_memo_id: data.jenis_memo_id,
-                tanggal: data.tanggal, 
+                // Load tanggal dari API
+                tanggal: data.tanggal || '',
+                expired: data.expired || '', 
                 is_public: data.is_public ? 1 : 0
-            });
+            };
+
+            setFormData(initialData);
+            
+            // Simpan original data untuk tombol Reset
+            setOriginalData({ ...initialData, jenis_memo_obj: data.jenis_memo });
 
             if (data.jenis_memo) {
                 setSelectedJenis({
@@ -122,7 +139,7 @@ const UpdateMemo = () => {
 
         setSubmitting(true);
         try {
-            await api.post(`memo-update/${decryptedId}`, formData);
+            await api.put(`memo-update/${decryptedId}`, formData);
             
             Swal.fire({
                 icon: 'success',
@@ -153,6 +170,7 @@ const UpdateMemo = () => {
                 description: originalData.description,
                 jenis_memo_id: originalData.jenis_memo_id,
                 tanggal: originalData.tanggal,
+                expired: originalData.expired,
                 is_public: originalData.is_public
             });
 
@@ -169,12 +187,56 @@ const UpdateMemo = () => {
 
     const modules = {
         toolbar: [
-            [{ 'header': [1, 2, false] }],
-            ['bold', 'italic', 'underline', 'strike', 'blockquote'],
-            [{'list': 'ordered'}, {'list': 'bullet'}],
-            ['link', 'clean']
+            [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+            [{ 'font': [] }],
+            ['bold', 'italic', 'underline', 'strike', 'blockquote', 'code-block'],
+            [{ 'color': [] }, { 'background': [] }],
+            [{ 'list': 'ordered'}, { 'list': 'bullet' }, { 'indent': '-1'}, { 'indent': '+1' }],
+            [{ 'align': [] }],
+            [{ 'script': 'sub'}, { 'script': 'super' }],
+            ['link', 'image', 'video'],
+            ['clean']
         ],
+        imageUploader: {
+            upload: (file) => {
+                return new Promise((resolve, reject) => {
+                    const formDataImg = new FormData();
+                    formDataImg.append("image", file);
+
+                    api.post('/cms-upload', formDataImg, {
+                        headers: { 'Content-Type': 'multipart/form-data' }
+                    })
+                    .then((res) => {
+                        // Ambil URL dari response API kamu
+                        // Pastikan path ini sesuai dengan response backendmu (misal: res.data.url)
+                        const imageUrl = res.data.url || res.data.data; 
+                        resolve(imageUrl); // Quill akan memasukkan URL ini ke editor
+                    })
+                    .catch((error) => {
+                        console.error("Upload failed", error);
+                        reject("Upload failed");
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Gagal Upload',
+                            text: 'Gagal mengupload gambar ke server.'
+                        });
+                    });
+                });
+            }
+        },
+        // Aktifkan fitur resize di sini
+        imageResize: {
+            parchment: Quill.import('parchment'),
+            modules: ['Resize', 'DisplaySize', 'Toolbar'] 
+        }
     };
+
+    const formats = [
+        'header', 'font',
+        'bold', 'italic', 'underline', 'strike', 'blockquote', 'code-block',
+        'list', 'bullet', 'indent',
+        'link', 'image', 'video', 'color', 'background', 'align', 'script'
+    ];
 
     return (
         <Layout title="Update Memo">
@@ -190,8 +252,34 @@ const UpdateMemo = () => {
                             <div className="p-7 bg-white shadow-lg shadow-gray-200 rounded-lg border border-gray-300">
                                 <form onSubmit={handleSubmit} className="space-y-6">
                                     
-                                    {/* Section 1: Meta Data (Jenis Memo & Public Checkbox) */}
-                                    {/* Input Tanggal dihapus dari sini */}
+                                    {/* --- Section 0: Tanggal & Expired (Baru) --- */}
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        {/* Input Tanggal (Opsional) */}
+                                        <div>
+                                            <label className="text-sm font-semibold text-gray-700 mb-2 ">
+                                                Tanggal
+                                            </label>
+                                            <DatePicker
+                                                value={formData.tanggal}
+                                                onChange={(val) => setFormData(prev => ({ ...prev, tanggal: val }))}
+                                                placeholder="Pilih tanggal..."
+                                            />
+                                        </div>
+
+                                        {/* Input Tanggal Expired (Opsional) */}
+                                        <div>
+                                            <label className="text-sm font-semibold text-gray-700 mb-2 ">
+                                                Tanggal Expired
+                                            </label>
+                                            <DatePicker
+                                                value={formData.expired}
+                                                onChange={(val) => setFormData(prev => ({ ...prev, expired: val }))}
+                                                placeholder="Pilih tanggal expired..."
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {/* Section 1: Meta Data (Jenis Memo) */}
                                     <div className="space-y-4">
                                         <div className="space-y-2">
                                             <label className="text-sm font-semibold text-gray-700 mb-2">
@@ -207,8 +295,6 @@ const UpdateMemo = () => {
                                                 isClearable={true}
                                             />
                                         </div>
-                                        
-                                        
                                     </div>
 
                                     {/* Section 2: Judul Memo */}
@@ -223,7 +309,7 @@ const UpdateMemo = () => {
                                                 value={formData.name}
                                                 onChange={handleChange}
                                                 placeholder="Masukkan judul memo disini..."
-                                                className="w-full text-lg border-b-2 border-gray-200 px-2 py-3 focus:border-blue-500 outline-none transition-colors"
+                                                className="w-full text-lg px-2 py-3 focus:border-blue-500 outline-none transition-colors"
                                             />
                                         </div>
                                     </div>
@@ -239,11 +325,13 @@ const UpdateMemo = () => {
                                                 value={formData.description}
                                                 onChange={handleDescriptionChange}
                                                 modules={modules}
-                                                className="h-64  xs:mb-24 md:mb-12 lg:mb-12  mb-12"
+                                                formats={formats}
+                                                className="[&_.ql-editor]:min-h-fit mb-10"
                                                 placeholder="Tulis isi memo lengkap disini..."
                                             />
                                         </div>
                                     </div>
+
                                     {/* Checkbox Is Public */}
                                     <div className="pt-1">
                                         <CustomCheckbox 

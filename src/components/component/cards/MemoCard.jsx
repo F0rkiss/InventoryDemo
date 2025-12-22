@@ -30,6 +30,9 @@ const MemoCard = ({ item, isSelected, onClick, initial }) => {
             {/* Content: Title & Desc */}
             <div className="flex justify-between items-start gap-2">
                 <div className='flex-1'>
+                    <span className="text-sm text-gray-600 font-regular text-right flex items-center gap-2">
+                        <p className="xs:text-[11px] md:text-[12px]">{DateFormat(item.tanggal)}</p>
+                    </span>
                     <h3 className="font-bold text-gray-800 text-lg mb-1">{item.name || "Judul Memo"}</h3>
                     
                     {/* --- UPDATE BAGIAN INI BRO --- */}
@@ -69,11 +72,12 @@ const MemoCard = ({ item, isSelected, onClick, initial }) => {
                     <span className={`px-3 py-1 rounded-full text-[12px] font-semibold ${item.is_dynamic ? "bg-purple-50 text-purple-600 border border-purple-200" : "bg-cyan-50 text-cyan-700 border border-cyan-200"} `}>
                         {item.is_dynamic ? "Dinamis" : "Statis"}
                     </span>
+
+                    <span className={`px-3 py-1 rounded-full text-[12px] font-semibold ${item.is_public ? "bg-teal-50 text-teal-600 border border-teal-200" : "bg-red-50 text-red-700 border border-red-200"} `}>
+                        {item.is_public ? "Public" : "Private"}
+                    </span>
                 </div>
 
-                <span className="text-sm text-gray-600 font-regular text-right flex items-center gap-2">
-                    <p className="xs:text-[12px] md:text-[15px]">{DateFormat(item.tanggal)}</p>
-                </span>
             </div>
         </div>
     );
