@@ -94,6 +94,10 @@ function Notifications() {
             navigate(`/approvalStepHistory-purchaseOrder/detail/${encryptedId}`);
         } else if (notif.jenis_request === 'LPB'){
             navigate(`/approvalStepHistory-lpb/detail/${encryptedId}`);
+        } else if (notif.jenis_request === 'Memo'){
+            navigate(`/approvalStepHistory-memoStatis/detail/${encryptedId}`);
+        } else if (notif.jenis_request === 'MemoDinamis'){
+            navigate(`/approvalStepHistory-memoDinamis/detail/${encryptedId}`);
         }
     }
 

@@ -80,6 +80,10 @@ const Notifications = () => {
             navigate(`/approvalStepHistory-purchaseOrder/detail/${encryptedId}`);
         } else if (notif.jenis_request === 'LPB'){
             navigate(`/approvalStepHistory-lpb/detail/${encryptedId}`);
+        } else if (notif.jenis_request === 'Memo'){
+            navigate(`/approvalStepHistory-memoStatis/detail/${encryptedId}`);
+        } else if (notif.jenis_request === 'MemoDinamis'){
+            navigate(`/approvalStepHistory-memoDinamis/detail/${encryptedId}`);
         }
     };
 
@@ -144,7 +148,7 @@ const Notifications = () => {
                 <div className="flex-1">
                     <div className="flex justify-between items-center">
                         <h4 className="text-sm font-medium text-gray-800">
-                            {["MR", "PR", "PO"].includes(notif.jenis_request)
+                            {["MR", "PR", "PO", "LPB", "Memo", "MemoDinamis"].includes(notif.jenis_request)
                                 ? notif.username
                                 : notif.jenis_request === "LPB"
                                     ? notif.penerima
@@ -169,10 +173,14 @@ const Notifications = () => {
                                     ? 'bg-yellow-500 bg-opacity-30 text-yellow-700'
                                     : notif.jenis_request === 'PO'
                                     ? 'bg-purple-500 bg-opacity-30 text-purple-700'
+                                    : notif.jenis_request === 'Memo'
+                                    ? 'bg-cyan-100 text-cyan-700'
+                                    : notif.jenis_request === 'MemoDinamis'
+                                    ? 'bg-purple-100 text-purple-700'
                                     : 'bg-gray-400 bg-opacity-30 text-gray-700'
                             }`}
                         >
-                            {notif.jenis_request}
+                            {notif.jenis_request === "MemoDinamis" ? "Memo Dinamis" : notif.jenis_request}
                         </span>
                     </div>
                 </div>
