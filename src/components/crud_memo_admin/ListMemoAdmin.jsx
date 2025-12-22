@@ -14,6 +14,7 @@ import { useAuth } from '../../auth/AuthContext'
 import MemoDetailView from '../component/DetailMemoView'; 
 import FilterApprovalToggle from '../component/filters/FilterApprovalToggle'
 import FilterDynamicToggle from '../component/filters/FilterDynamicToggle';
+import FilterMemoDropdown from '../component/filters/FilterMemoDropdown';
 
 function MemoListAdmin() {
     const [items, setItems] = useState([])
@@ -173,13 +174,12 @@ function MemoListAdmin() {
                     disable={loading}
                     values={searchQuery}
                 />
-                <FilterApprovalToggle 
-                  value={filterApproval} 
-                  onChange={setFilterApproval} 
-                />
-                <FilterDynamicToggle
-                    value={filterDynamic}
-                    onChange={setFilterDynamic}
+                <FilterMemoDropdown 
+                    approvalFilter={filterApproval}
+                    setApprovalFilter={setFilterApproval}
+                    dynamicFilter={filterDynamic}
+                    setDynamicFilter={setFilterDynamic}
+                    disabled={loading}
                 />
               </div>
             </div>
@@ -211,7 +211,7 @@ function MemoListAdmin() {
 
                     {/* --- DETAIL SECTION --- */}
                     {selectedId && (
-                        <div className="w-full lg:w-7/12 sticky top-24 h-[calc(100vh-150px)] overflow-y-auto animate-fade-in">
+                        <div className="w-full lg:w-8/12 sticky top-24 h-[calc(100vh-150px)] overflow-y-auto animate-fade-in">
                             <MemoDetailView 
                                 data={detailData} 
                                 loading={loadingDetail}
