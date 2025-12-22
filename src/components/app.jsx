@@ -19,6 +19,8 @@ const ApprovalMakeRequest = lazy(() => import('./approval-page/approvalMR'));
 const ApprovalPurchaseRequest = lazy(() => import('./approval-page/approvalPR'));
 const ApprovalPurchaseOrder = lazy(() => import('./approval-page/approvalPO'));
 const ApprovalLPB = lazy(() => import('./approval-page/approvalLPB'));
+const ApprovalMemoStatis = lazy(() => import('./approval-page/approvalMS.jsx'));
+const ApprovalMemoDinamis = lazy(() => import('./approval-page/approvalMD.jsx'));
 
 const BarangList = lazy(() => import('./crud_barang/BarangList.jsx'));
 const CreateBarang = lazy(() => import('./crud_barang/CreateBarang.jsx'));
@@ -100,6 +102,10 @@ const ListApprovalStepLPB = lazy(() => import('./crud_approval_step_lpb/ListAppr
 const UpdateApprovalStepLPB = lazy(() => import('./crud_approval_step_lpb/UpdateApprovalStepLPB.jsx'))
 const CreateApprovalStepLPB = lazy(() => import('./crud_approval_step_lpb/CreateApprovalStepLPB.jsx'))
 
+const ListApprovalStepMemoStatis = lazy(() => import('./crud_approval_step_memo_statis/ListApprovalStepMemo.jsx'))
+const UpdateApprovalStepMemoStatis = lazy(() => import('./crud_approval_step_memo_statis/UpdateApprovalStepMemo.jsx'))
+const CreateApprovalStepMemoStatis = lazy(() => import('./crud_approval_step_memo_statis/CreateApprovalStepMemo.jsx'))
+
 const ListPurchaseRequest = lazy(() => import('./crud_purchase_request/ListPurchaseRequest.jsx'))
 const CreateListPurchaseRequest = lazy(() => import('./crud_purchase_request/CreateListPurchaseRequest.jsx'))
 const CreatePurchaseRequest = lazy(() => import('./crud_purchase_request/CreatePurchaseRequest.jsx'))
@@ -126,6 +132,15 @@ const ListMakeRequest = lazy(() => import('./crud_make_request/ListMakeRequest.j
 const DetailMakeRequest = lazy(() => import('./crud_make_request/DetailMakeRequest.jsx'))
 const UpdateMakeRequest = lazy(() => import('./crud_make_request/UpdateMakeRequest.jsx'))
 const CreateMakeRequest = lazy(() => import('./crud_make_request/CreateMakeRequest.jsx'))
+
+const ListMemo = lazy(() => import('./crud_memo/ListMemo.jsx'))
+const DetailMemo = lazy(() => import('./crud_memo/DetailMemo.jsx'))
+const UpdateMemo = lazy(() => import('./crud_memo/UpdateMemo.jsx'))
+const CreateMemo = lazy(() => import('./crud_memo/CreateMemo.jsx'))
+
+const ListMemoAdmin = lazy(() => import('./crud_memo_admin/ListMemoAdmin.jsx'))
+
+const ListMemoInformation = lazy(() => import('./crud_memo_information/ListMemoInformation.jsx'))
 
 const ListMakeRequestAdmin = lazy(() => import('./crud_make_request_admin/ListMakeRequestAdmin.jsx'))
 const DetailMakeRequestAdmin = lazy(() => import('./crud_make_request_admin/DetailMakeRequestAdmin.jsx'))
@@ -186,6 +201,8 @@ const MyApp = () => {
                   <Route path="/approvalStepHistory-purchaseRequest/detail/:id" element={<ApprovalPurchaseRequest />} />
                   <Route path="/approvalStepHistory-purchaseOrder/detail/:id" element={<ApprovalPurchaseOrder />} />
                   <Route path="/approvalStepHistory-lpb/detail/:id" element={<ApprovalLPB />} />
+                  <Route path="/approvalStepHistory-memoStatis/detail/:id" element={<ApprovalMemoStatis />} />
+                  <Route path="/approvalStepHistory-memoDinamis/detail/:id" element={<ApprovalMemoDinamis />} />
 
                   <Route path="/barang/list-barang" element={<BarangList />} />
                   <Route path="/barang/detail-barang/:id" element={<DetailBarang />} />
@@ -240,11 +257,14 @@ const MyApp = () => {
                   <Route path='/approval-step-lpb/detail-approval-step-lpb' element={<ListApprovalStepLPB />} />
                   <Route path='/approval-step-lpb/update-approval-step-lpb/:id' element={<UpdateApprovalStepLPB />} />
                   <Route path='/approval-step-lpb/create-approval-step-lpb' element={<CreateApprovalStepLPB />} />
-                  
+
+                  <Route path='/approval-step-memo/list-approval-step-memo' element={<ListApprovalStepMemoStatis />} />
+                  <Route path='/approval-step-memo/update-approval-step-memo/:id' element={<UpdateApprovalStepMemoStatis />} />
+                  <Route path='/approval-step-memo/create-approval-step-memo' element={<CreateApprovalStepMemoStatis />} />
+
                   <Route path='/purchase-request/list-purchase-request' element={<ListPurchaseRequest />} />
                   <Route path='/purchase-request/detail-purchase-request/:id' element={<DetailPurchaseRequest />} />
                   <Route path='/purchase-request/update-purchase-request/:id' element={<UpdatePurchaseRequest />} />
-                  
 
                   <Route path='/make-purchase-request/list-make-purchase-request' element={<CreateListPurchaseRequest />} />
                   <Route path='/make-purchase-request/create-purchase-request/:id' element={<CreatePurchaseRequest />} />
@@ -271,6 +291,14 @@ const MyApp = () => {
 
                   <Route path='/material-request-admin/list-material-request-admin' element={<ListMakeRequestAdmin />} />
                   <Route path='/material-request-admin/detail-material-request-admin/:id' element={<DetailMakeRequestAdmin />} />
+                  
+                  <Route path='/memo/list-memo' element={<ListMemo />} />
+                  <Route path='/memo/detail-memo/:id' element={<DetailMemo />} />
+                  <Route path='/memo/update-memo/:id' element={<UpdateMemo />} />
+                  <Route path='/memo/create-memo' element={<CreateMemo />} />
+
+                  <Route path='/memo-admin/list-memo-admin' element={<ListMemoAdmin />} />
+                  <Route path='/memo-information' element={<ListMemoInformation />} />
                   
                   <Route path='/table-billing' element={<TableBilling/>} />
 

@@ -67,6 +67,19 @@ const menus = [
 
         ]
     },
+
+    {
+        key: "Memo" || "MemoPersonal" || "JenisMemo",
+        label: "Memo",
+        icon: "bx bx-notepad",
+        isAccordion: true,
+        children: [
+            { key: "Memo", label: "Memo", path: "/memo-admin/list-memo-admin" },
+            { key: "MemoPersonal", label: "Personal Memo", path: "/memo/list-memo" },
+            { key: "JenisMemo", label: "Jenis Memo", path: "/jenismemo/list-jenismemo" },
+        ]
+    },
+
     {
         key: "ApprovalStep" || "ApprovalStepLPB",
         label: "Approval Step",
@@ -76,6 +89,7 @@ const menus = [
             { key: "ApprovalStep", label: "Approval Step", icon: "bx bx-user-check", path: "/approval-step/list-approval-step" },
             { key: "ApprovalStepPurchase", label: "Approval Step PR & PO", icon: "bx bx-user-check", path: "/approval-step-purchase/list-approval-step" },
             { key: "ApprovalStepLPB", label: "Approval Step LPB", path: "/approval-step-lpb/list-approval-step-lpb" },
+            { key: "ApprovalStepMemo", label: "Approval Step Memo", path: "/approval-step-memo/list-approval-step-memo" },
         ]
     },
     {
@@ -110,7 +124,7 @@ const menus = [
             { key: "Billing", label: "Billing", path: "/billing/list-billing" },
         ]
     },
-    { key: "JenisMemo", label: "Jenis Memo", icon: "bx bx-note", path: "/jenismemo/list-jenismemo" },
+
 ];
 
 export default menus;

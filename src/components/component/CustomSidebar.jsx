@@ -103,6 +103,12 @@ const CustomSidebar = ({ showProfile = true, navOpen, setNavOpen }) => {
                             <p className="text-[17px] font-medium">Dashboard</p>
                         </div>
                     </button>
+                    <button className={`rounded-lg my-1 ${isActive('/memo-information') ? 'bg-coklat-mi text-white' : 'hover:bg-stone-200 transition-colors duration-200'}`} onClick={() => handleNavigation('/memo-information')}>
+                        <div className={`flex items-center w-60 py-2`}>
+                            <i className="bx bx-note text-[28px] ms-5 me-4"></i>
+                            <p className="text-[17px] font-medium">Memo Information</p>
+                        </div>
+                    </button>
                     {allowedMenus.map(menu => (
                         menu.isAccordion ? (
                             <div key={menu.key}>

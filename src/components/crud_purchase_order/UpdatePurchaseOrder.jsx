@@ -217,10 +217,6 @@ function UpdatePurchaseOrder() {
             if (disabled) return;
             setDisabled(true); // Matikan tombol di awal
 
-            // =================================================================
-            // TAHAP 1: VALIDASI SINKRON (DATA FORM & DETAIL)
-            // =================================================================
-            
             // Validasi 1: Form Utama
             if (!items.purchase_request_id || !items.tanggal || !items.supplier) {
                 throw new Error('Pastikan PR, Tanggal, dan Supplier telah diisi!');
@@ -327,9 +323,6 @@ function UpdatePurchaseOrder() {
             });
             console.log('Update error:', err?.response?.data || err);
         } finally {
-            // =================================================================
-            // TAHAP 5: SELALU JALANKAN
-            // =================================================================
             setDisabled(false); // Hidupkan lagi tombol
         }
     };
