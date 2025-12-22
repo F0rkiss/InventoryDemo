@@ -5,6 +5,8 @@ import api from '../../api/api';
 import Swal from 'sweetalert2';
 import ViewerAccessModal from './ViewerAccessModal';
 
+import 'react-quill/dist/quill.snow.css';
+
 const MemoDetailView = ({ data, loading, onClose, goToUpdate, canUpdate, canDelete, handleDelete, initial }) => {
     // ... code sebelumnya tidak berubah ...
     
@@ -177,11 +179,26 @@ const MemoDetailView = ({ data, loading, onClose, goToUpdate, canUpdate, canDele
                         {data.is_public ? "Public" : "Private"}
                     </span>
             </div>
-            <div className="text-gray-600 leading-relaxed text-base space-y-4 flex-1 overflow-y-auto pr-2 custom-scrollbar relative">
-                 <div className="prose max-w-none rich-text-content" dangerouslySetInnerHTML={{ __html: data.description }} />
+            <div className="text-gray-600 leading-relaxed text-base space-y-4 flex-1 overflow-y-auto pr-2 custom-scrollbar relative ql-snow">
+                 <div 
+                    className="prose max-w-none rich-text-content ql-editor" 
+                    dangerouslySetInnerHTML={{ __html: data.description }} 
+                 />
             </div>
 
             <div className="mt-8 pt-6 border-t border-gray-100 flex flex-col md:flex-row items-center justify-between gap-4">
+
+                {initial === 'admin' && (
+                    <div className="flex self-start items-center gap-2">
+                        <div className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 text-sm">
+                            <i className='bx bxs-user'></i>
+                        </div>
+                        <div className="flex flex-col">
+                            <span className="text-xs text-gray-500 font-medium">{data.user?.EmpName || "User"}</span>
+                            <span className="text-xs text-gray-500 font-regular">{data.user?.email || "User"}</span>
+                        </div>
+                    </div>
+                )}
                 
                 { (!data.is_public && initial !== 'admin' && initial !== 'information') &&        
                 <div className="relative w-full md:w-auto" ref={popoverRef}>
