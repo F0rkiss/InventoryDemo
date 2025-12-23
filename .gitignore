@@ -1,4 +1,4 @@
-
+.env
 # Logs
 logs
 *.log
@@ -36,4 +36,3 @@ Thumbs.db
 # Production build
 www/
 
-.env
