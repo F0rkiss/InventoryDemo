@@ -72,7 +72,7 @@ const ViewerAccessModal = ({
     if (loading) return <div className="text-center py-8 text-gray-500">Loading data...</div>;
     
     if (dataList.length === 0) {
-      return <div className="text-center py-8 text-gray-400 italic">Belum ada data.</div>;
+      return <div className="text-center py-8 text-gray-400">Belum ada data.</div>;
     }
 
     return (

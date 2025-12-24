@@ -4,7 +4,7 @@ import Loader from './Loader';
 import api from '../../api/api';
 import Swal from 'sweetalert2';
 import ViewerAccessModal from './ViewerAccessModal';
-
+import { isMobileSafari } from '../../helper/DeviceHelper';
 import 'react-quill/dist/quill.snow.css';
 
 const MemoDetailView = ({ data, loading, onClose, goToUpdate, canUpdate, canDelete, handleDelete, initial }) => {
@@ -19,6 +19,87 @@ const MemoDetailView = ({ data, loading, onClose, goToUpdate, canUpdate, canDele
     
     const [showPopover, setShowPopover] = useState(false);
     const popoverRef = useRef(null);
+
+    const [isPreviewLoading, setIsPreviewLoading] = useState(false);
+    const handlePreviewPdf = async () => {
+        if (isPreviewLoading) return; // Mencegah double click
+        setIsPreviewLoading(true);
+        setShowPopover(false); // Tutup popover saat loading mulai
+
+        try {
+            // Gunakan endpoint berbeda jika initial = 'information'
+            const endpoint = initial === 'information'
+                ? `/pdf/preview_memo-information/${data.id}`
+                : `/pdf/preview_memo/${data.id}`;
+
+            const response = await api.get(endpoint, {
+                responseType: 'blob',
+            });
+
+            if (response.data.type === 'application/pdf') {
+                const file = new Blob([response.data], { type: 'application/pdf' });
+                const fileURL = URL.createObjectURL(file);
+                
+                // Logic khusus iOS Safari
+                if (isMobileSafari()) {
+                    window.location.href = fileURL;
+                } else {
+                    // Logic browser desktop/Android
+                    const newWindow = window.open(fileURL, '_blank');
+
+                    // Fallback jika Pop-up Blocker aktif
+                    if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
+                        Swal.fire({
+                            icon: 'info',
+                            title: 'Preview Gagal Dibuka',
+                            text: 'Browser Anda mungkin memblokir tab baru. Memulai unduhan PDF...',
+                            timer: 2500,
+                            showConfirmButton: false
+                        });
+
+                        const link = document.createElement('a');
+                        link.href = fileURL;
+                        // Gunakan nama memo sebagai nama file download
+                        const fileName = data.name ? `${data.name}.pdf` : 'preview-memo.pdf';
+                        link.setAttribute('download', fileName);
+                        document.body.appendChild(link);
+                        link.click();
+                        
+                        document.body.removeChild(link);
+                        URL.revokeObjectURL(fileURL);
+                    } else {
+                        // Bersihkan URL object setelah beberapa saat
+                        setTimeout(() => {
+                            URL.revokeObjectURL(fileURL);
+                        }, 1000 * 60); 
+                    }
+                }
+            } else {
+                // Handle jika response bukan PDF (misal JSON error)
+                const errText = await response.data.text();
+                let errJson = {};
+                try {
+                    errJson = JSON.parse(errText);
+                } catch(e) {
+                    errJson = { message: 'Format respons tidak valid.' }
+                }
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal Membuat Preview',
+                    text: errJson.message || 'Format respons tidak valid.'
+                });
+            }
+        } catch (error) {
+            console.error("Error generating preview: ", error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Gagal Membuat Preview',
+                text: error.message || 'Terjadi kesalahan pada server.'
+            });
+        } finally {
+            setIsPreviewLoading(false);
+        }
+    };
 
     // FETCH DATA (Sama seperti sebelumnya)
     const fetchConfigData = async (mode) => {
@@ -188,79 +269,96 @@ const MemoDetailView = ({ data, loading, onClose, goToUpdate, canUpdate, canDele
 
             <div className="mt-8 pt-6 border-t border-gray-100 flex flex-col md:flex-row items-center justify-between gap-4">
 
-                {initial === 'admin' && (
-                    <div className="flex self-start items-center gap-2">
-                        <div className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 text-sm">
-                            <i className='bx bxs-user'></i>
-                        </div>
-                        <div className="flex flex-col">
-                            <span className="text-xs text-gray-500 font-medium">{data.user?.EmpName || "User"}</span>
-                            <span className="text-xs text-gray-500 font-regular">{data.user?.email || "User"}</span>
-                        </div>
-                    </div>
-                )}
-                
-                {   initial !== 'admin' &&
-                    initial !== 'information' &&
-                    !(data.is_public && !data.jenis_memo?.is_dynamic) && (
-                    <div className="relative w-full md:w-auto" ref={popoverRef}>
-                        <button 
-                            onClick={() => setShowPopover(!showPopover)}
-                            className="flex items-center justify-between gap-3 px-4 py-2 rounded-full border border-gray-200 bg-white hover:bg-gray-50 transition-colors shadow-sm text-gray-600 text-sm font-medium w-full md:w-auto"
-                        >
-                            {showPopover ? <i className='bx bx-chevron-down text-[20px]'></i> : <i className='bx bx-chevron-up text-[20px]'></i>}
-                            <span>Konfigurasi</span>
-                            <i className='bx bxs-cog text-lg text-gray-400'></i>
-                        </button>
+                <div className="relative w-full md:w-auto" ref={popoverRef}>
+                    <button 
+                        onClick={() => setShowPopover(!showPopover)}
+                        className="flex items-center justify-between gap-3 px-4 py-2 rounded-full border border-gray-200 bg-white hover:bg-gray-50 transition-colors shadow-sm text-gray-600 text-sm font-medium w-full md:w-auto"
+                    >
+                        {showPopover ? <i className='bx bx-chevron-down text-[20px]'></i> : <i className='bx bx-chevron-up text-[20px]'></i>}
+                        <span>Konfigurasi</span>
+                        <i className='bx bxs-cog text-lg text-gray-400'></i>
+                    </button>
 
-                        {showPopover && (
-                            <div className="absolute bottom-full left-0 mb-2 w-full md:w-[280px] bg-white border border-gray-200 rounded-xl shadow-xl z-20 animate-fade-in p-1 overflow-hidden">
-                                <div className="flex flex-col">
-                                    
-                                    {/* OPSI 1: Muncul jika Private (is_public = false) */}
-                                    { !data.is_public && (
-                                        <button
-                                            onClick={() => handleOpenConfig('viewer')} 
-                                            className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 text-left transition-colors border-b border-gray-50 last:border-0"
-                                        >
-                                            <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center text-blue-600">
-                                                <i className='bx bxs-show text-lg'></i>
-                                            </div>
-                                            <span className="text-sm font-medium text-gray-700">Dapat dilihat oleh siapa saja</span>
-                                        </button>
-                                    )}
-                                    
-                                    {/* OPSI 2: Muncul jika Dynamic (is_dynamic = true) */}
-                                    { data.jenis_memo?.is_dynamic && (
-                                        <button
-                                            onClick={() => handleOpenConfig('approver')}
-                                            className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 text-left transition-colors border-b border-gray-50 last:border-0"
-                                        >
-                                            <div className="w-8 h-8 rounded-full bg-purple-50 flex items-center justify-center text-purple-600">
-                                                <i className='bx bxs-user-check text-lg'></i>
-                                            </div>
-                                            <span className="text-sm font-medium text-gray-700">Pengaturan Approval</span>
-                                        </button>
-                                    )}
+                    {showPopover && (
+                        <div className="absolute bottom-full left-0 mb-2 w-full md:w-[280px] bg-white border border-gray-200 rounded-xl shadow-xl z-20 animate-fade-in p-1 overflow-hidden">
+                            <div className="flex flex-col">
+                                
+                                {/* OPSI 1: Viewer Access
+                                    Syarat: Memo Private (!) DAN bukan Admin/Information 
+                                */}
+                                { !data.is_public && (initial !== 'admin' && initial !== 'information') && (
+                                    <button
+                                        onClick={() => handleOpenConfig('viewer')} 
+                                        className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 text-left transition-colors border-b border-gray-50 last:border-0"
+                                    >
+                                        <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center text-blue-600">
+                                            <i className='bx bxs-show text-lg'></i>
+                                        </div>
+                                        <span className="text-sm font-medium text-gray-700">Dapat dilihat oleh siapa saja</span>
+                                    </button>
+                                )}
+                                
+                                {/* OPSI 2: Approval Settings
+                                    Syarat: Memo Dinamis DAN bukan Admin/Information 
+                                */}
+                                { data.jenis_memo?.is_dynamic == 1 && (initial !== 'admin' && initial !== 'information') && (
+                                    <button
+                                        onClick={() => handleOpenConfig('approver')}
+                                        className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 text-left transition-colors border-b border-gray-50 last:border-0"
+                                    >
+                                        <div className="w-8 h-8 rounded-full bg-purple-50 flex items-center justify-center text-purple-600">
+                                            <i className='bx bxs-user-check text-lg'></i>
+                                        </div>
+                                        <span className="text-sm font-medium text-gray-700">Pengaturan Approval</span>
+                                    </button>
+                                )}
 
-                                </div>
+                                {/* OPSI 3: Preview PDF
+                                    Syarat: SEMUA BISA (Tidak ada kondisi filtering)
+                                */}
+                                <button
+                                    onClick={handlePreviewPdf}
+                                    disabled={isPreviewLoading}
+                                    className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 text-left transition-colors border-b border-gray-50 last:border-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                    <div className="w-8 h-8 rounded-full bg-red-50 flex items-center justify-center text-red-600">
+                                        <i className={`bx ${isPreviewLoading ? 'bx-loader-alt bx-spin' : 'bx-file'} text-lg`}></i>
+                                    </div>
+                                    <span className="text-sm font-medium text-gray-700">
+                                        {isPreviewLoading ? 'Memuat PDF...' : 'Preview PDF'}
+                                    </span>
+                                </button>
+
                             </div>
-                        )}
-                    </div>
-                )}
-
-                <div className="flex justify-end gap-3 w-full md:w-auto">
-                   {(canUpdate && data.canBeUpdated) && (
-                        <button onClick={() => goToUpdate(data.id)} className="px-5 py-2 rounded-lg update-button flex items-center text-center gap-2 text-sm">
-                            <i className='bx bx-edit'></i> Update
-                        </button>
-                    )} 
-                   {(canDelete) && (
-                        <button onClick={() => handleDelete(data.id)} className="px-5 py-2 rounded-lg delete-button flex items-center gap-2 text-sm">
-                            <i className='bx bx-trash'></i> Delete
-                        </button>
-                    )} 
+                        </div>
+                    )}
                 </div>
+                { (initial !== 'admin' && initial !== 'information') ? 
+                    (<div className="flex justify-end gap-3 w-full md:w-auto">
+                    {(canUpdate && data.canBeUpdated) && (
+                            <button onClick={() => goToUpdate(data.id)} className="px-5 py-2 rounded-lg update-button flex items-center text-center gap-2 text-sm">
+                                <i className='bx bx-edit'></i> Update
+                            </button>
+                        )} 
+                    {(canDelete) && (
+                            <button onClick={() => handleDelete(data.id)} className="px-5 py-2 rounded-lg delete-button flex items-center gap-2 text-sm">
+                                <i className='bx bx-trash'></i> Delete
+                            </button>
+                        )} 
+                    </div>)
+                    :
+                    (
+                        <div className="flex items-center gap-2">
+                            <div className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 text-sm">
+                                <i className='bx bxs-user'></i>
+                            </div>
+                            <div className="flex flex-col">
+                                <span className="text-xs text-gray-500 font-medium">{data.user?.EmpName || "User"}</span>
+                                <span className="text-xs text-gray-500 font-regular">{data.user?.email || "User"}</span>
+                            </div>
+                        </div>
+                    )
+                }
             </div>
 
             {/* Modal */}
