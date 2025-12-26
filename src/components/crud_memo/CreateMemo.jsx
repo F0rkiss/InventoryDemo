@@ -2,6 +2,7 @@ import React, { useState, useRef, useMemo } from 'react'; // Import useRef & use
 import { useNavigate } from 'react-router-dom';
 import { Block } from 'framework7-react';
 import ReactQuill, { Quill } from 'react-quill';
+// import Quill  from 'quill';
 import ImageResize from 'quill-image-resize-module-react';
 import ImageUploader from 'quill-image-uploader';
 import 'react-quill/dist/quill.snow.css'; 
@@ -23,7 +24,6 @@ const CreateMemo = () => {
     const { role } = useAuth();
     const [loading, setLoading] = useState(false);
     
-    // 1. Buat Ref untuk mengakses instance editor Quill
     const quillRef = useRef(null);
 
     const [selectedJenis, setSelectedJenis] = useState(null);
@@ -198,7 +198,7 @@ const CreateMemo = () => {
                             </div>
 
                             <div className="space-y-2">
-                                <label className="text-sm font-semibold text-gray-700 mb-2 ">Nama</label>
+                                <label className="text-sm font-semibold text-gray-700 mb-2 ">Title</label>
                                 <div className="bg-white border border-gray-300 rounded-lg p-3">
                                     <input
                                         type="text"
@@ -212,7 +212,7 @@ const CreateMemo = () => {
                             </div>
 
                             <div>
-                                <label className="text-sm font-semibold text-gray-700 mb-2 ">Memo</label>
+                                <label className="text-sm font-semibold text-gray-700 mb-2 ">Konten</label>
                                 <div className="bg-white mt-2">
                                     {/* 4. Pasang Ref ke komponen ReactQuill */}
                                     <ReactQuill 

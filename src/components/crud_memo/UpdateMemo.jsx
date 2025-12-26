@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState,  useRef, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Block } from 'framework7-react';
 import ReactQuill from 'react-quill';
@@ -19,14 +19,48 @@ import { DecryptID } from '../../helper/EncryptHelper';
 import useAuth from '../../hooks/useAuth';
 import Transition from '../component/Transition';
 
+const BaseImage = Quill.import('formats/image');
+class ImageBlot extends BaseImage {
+  // Fungsi ini memberitahu Quill atribut apa saja yang harus dibaca dari HTML tag <img>
+  static formats(domNode) {
+    const formats = {};
+    if (domNode.hasAttribute('width')) formats.width = domNode.getAttribute('width');
+    if (domNode.hasAttribute('height')) formats.height = domNode.getAttribute('height');
+    if (domNode.hasAttribute('style')) formats.style = domNode.getAttribute('style');
+    return formats;
+  }
+
+  format(name, value) {
+    if (name === 'width' || name === 'height') {
+      if (value) {
+        this.domNode.setAttribute(name, value);
+      } else {
+        this.domNode.removeAttribute(name);
+      }
+    } else if (name === 'style') {
+        if (value) {
+            this.domNode.setAttribute(name, value);
+        } else {
+            this.domNode.removeAttribute(name);
+        }
+    } else {
+      super.format(name, value);
+    }
+  }
+}
+
+// Register Module dan Custom Image Blot
 Quill.register('modules/imageResize', ImageResize);
 Quill.register('modules/imageUploader', ImageUploader);
+Quill.register(ImageBlot, true);
 
 const UpdateMemo = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const { role } = useAuth();
     
+    const quillRef = useRef(null);
+
     // State Logic
     const [loading, setLoading] = useState(false);
     const [submitting, setSubmitting] = useState(false); 
@@ -185,18 +219,20 @@ const UpdateMemo = () => {
         }
     };
 
-    const modules = {
-        toolbar: [
-            [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-            [{ 'font': [] }],
-            ['bold', 'italic', 'underline', 'strike', 'blockquote', 'code-block'],
-            [{ 'color': [] }, { 'background': [] }],
-            [{ 'list': 'ordered'}, { 'list': 'bullet' }, { 'indent': '-1'}, { 'indent': '+1' }],
-            [{ 'align': [] }],
-            [{ 'script': 'sub'}, { 'script': 'super' }],
-            ['link', 'image', 'video'],
-            ['clean']
-        ],
+    const modules = useMemo(() => ({
+        toolbar: {
+            container: [
+                [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+                [{ 'font': [] }],
+                ['bold', 'italic', 'underline', 'strike', 'blockquote', 'code-block'],
+                [{ 'color': [] }, { 'background': [] }],
+                [{ 'list': 'ordered'}, { 'list': 'bullet' }, { 'indent': '-1'}, { 'indent': '+1' }],
+                [{ 'align': [] }],
+                [{ 'script': 'sub'}, { 'script': 'super' }],
+                ['link', 'image', 'video'],
+                ['clean']
+            ],
+        },
         imageUploader: {
             upload: (file) => {
                 return new Promise((resolve, reject) => {
@@ -224,12 +260,11 @@ const UpdateMemo = () => {
                 });
             }
         },
-        // Aktifkan fitur resize di sini
         imageResize: {
             parchment: Quill.import('parchment'),
             modules: ['Resize', 'DisplaySize', 'Toolbar'] 
         }
-    };
+    }), []); // Dependencies array kosong
 
     const formats = [
         'header', 'font',
@@ -300,7 +335,7 @@ const UpdateMemo = () => {
                                     {/* Section 2: Judul Memo */}
                                     <div className="space-y-2">
                                         <label className="text-sm font-semibold text-gray-700 mb-2">
-                                            Judul
+                                            Title
                                         </label>
                                         <div className="bg-white border border-gray-300 rounded-md p-3">
                                             <input
@@ -317,10 +352,11 @@ const UpdateMemo = () => {
                                     {/* Section 3: Deskripsi (Rich Text Editor) */}
                                     <div className="space-y-2">
                                         <label className="text-sm font-semibold text-gray-700 mb-2 ">
-                                            Deskripsi
+                                            Konten
                                         </label>
                                         <div className="bg-white">
                                             <ReactQuill 
+                                                ref={quillRef}
                                                 theme="snow"
                                                 value={formData.description}
                                                 onChange={handleDescriptionChange}

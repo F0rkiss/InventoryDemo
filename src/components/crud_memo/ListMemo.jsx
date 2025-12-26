@@ -14,6 +14,7 @@ import { encrypting } from '../../helper/EncryptHelper'
 import useMenuAccess from '../../hooks/useMenuAccess'
 import MemoDetailView from '../component/DetailMemoView';
 import Swal from 'sweetalert2';
+import FilterMemoDropdown from '../component/filters/FilterMemoDropdown';
 import FilterApprovalToggle from '../component/filters/FilterApprovalToggle';
 import FilterDynamicToggle from '../component/filters/FilterDynamicToggle';
 
@@ -207,13 +208,12 @@ function MemoList() {
               <p className='md:text-3xl text-2xl ms-3 font-semibold'>Daftar Personal Memo</p>
               <div className="flex items-center gap-2">
                 <SearchBar onChange={handleSearchChange} disable={loading} values={searchQuery} />
-                <FilterApprovalToggle
-                    value={filterApproval}
-                    onChange={setFilterApproval}
-                />
-                <FilterDynamicToggle
-                    value={filterDynamic}
-                    onChange={setFilterDynamic}
+                <FilterMemoDropdown 
+                    approvalFilter={filterApproval}
+                    setApprovalFilter={setFilterApproval}
+                    dynamicFilter={filterDynamic}
+                    setDynamicFilter={setFilterDynamic}
+                    disabled={loading}
                 />
               </div>
             </div>
@@ -242,7 +242,7 @@ function MemoList() {
                     </div>
 
                     {selectedId && (
-                        <div className="w-full lg:w-7/12 sticky top-24 h-[calc(100vh-150px)] overflow-y-auto animate-fade-in">
+                        <div className="w-full lg:w-8/12 sticky top-24 h-[calc(100vh-150px)] overflow-y-auto animate-fade-in">
                             <MemoDetailView 
                                 data={detailData} 
                                 loading={loadingDetail}
