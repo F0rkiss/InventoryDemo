@@ -17,7 +17,7 @@ function Login() {
     });
     const [errorMessage, setErrorMessage] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [showPassword, setShowPassword] = useState(false); // <-- TAMBAHKAN INI
+    const [showPassword, setShowPassword] = useState(false);
 
     useEffect(() => {
         const token = localStorage.getItem('authToken');

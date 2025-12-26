@@ -3,33 +3,23 @@ import CustomNavbar from '../component/CustomNavbar'
 import React, { useState, useEffect } from 'react'
 import LogoMi from '../../assets/image/baru.png'
 import api from '../../api/api';
-import barangIcon from '../../assets/image/dashboard-image/package-regular-120.png'
-import departmentIcon from '../../assets/image/dashboard-image/building-regular-120.png'
-import divisiIcon from '../../assets/image/dashboard-image/briefcase-regular-120.png'
-import userIcon from '../../assets/image/dashboard-image/user-circle-regular-120.png'
-import MRIcon from '../../assets/image/dashboard-image/spreadsheet-regular-120.png'
-import RAIcon from '../../assets/image/dashboard-image/cog-regular-120.png'
 import Loader from '../component/Loader';
 import { useNavigate } from 'react-router-dom';
 import Layout from '../component/Layout';
+import { useAuth } from '../../auth/AuthContext';
+import MemoCard from '../component/cards/MemoCard';
+
 
 function Dashboard() {
 
     const [items, setItems] = useState({});
+    const [memoData, setMemoData] = useState([]);
     const [barang, setBarang] = useState([]);
     const [loading, setLoading] = useState(false);
     const [contentVisible, setContentVisible] = useState(false)
-    const [showPending, setShowPending] = useState(true)
     const [disabled, setDisabled] = useState(false)
+    const { name, email, role, navigation_menu } = useAuth();
     const navigate = useNavigate()
-
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setShowPending(prev => !prev)
-        }, 5000)
-
-        return () => clearInterval(interval)
-    }, [])
 
     useEffect(() => {
         fetchItems();
@@ -38,10 +28,24 @@ function Dashboard() {
     const fetchItems = async() => {
         try {
             setLoading(true)
-            // const response = await api.get('dashboard/admin')
-            setItems(response.data)
+            
+            // Determine which dashboard endpoint to use based on role
+            const dashboardEndpoint = role === 'admin' ? 'dashboardAdmin' : 'dashboardUser';
+            
+            // Fetch both dashboard stats and memo data
+            const [dashboardResponse, memoResponse] = await Promise.all([
+                api.get(dashboardEndpoint),
+                api.get('dashboardMemo')
+            ]);
+            
+            // console.log('Memo Response:', memoResponse);
+            // console.log('Memo Data:', memoResponse.data);
+            console.log('Memo Data Data:', memoResponse.data.data.data);
+            
+            setItems(dashboardResponse.data)
+            setMemoData(memoResponse.data.data.data || [])
         } catch (error) {
-
+            console.error('Error fetching dashboard data:', error)
         } finally {
             setLoading(false)
             setTimeout(() => setContentVisible(true), 50)
@@ -58,79 +62,231 @@ function Dashboard() {
                 ) : (
                     <>
                 <div className={`transition-opacity duration-700 ${contentVisible ? 'opacity-100' : 'opacity-0'}`}>
-                    <p className='uppercase text-center font-extrabold text-xl'>inventory</p>
-                    <img src={LogoMi} className='max-w-52 mx-auto mt-4 mb-6'/>
+                    <div className="flex flex-col lg:flex-row gap-4">
+                        {/* Left Section - Stats Grid */}
+                        <div className="lg:w-1/2">
+                            <div>
+                                <h2 className="text-2xl font-bold capitalize">Haloo {name}</h2>
+                                <h3 className='text-1xl font-bold mb-6 capitalize'>Selamat Datang di Inventory Media Indonesia</h3>
+                                {/* <img src={LogoMi} alt="Logo Media Indonesia" className='max-w-52 mx-auto mt-4 mb-6' /> */}
 
-                    <div className='bg-white rounded-md shadow'>
-                        <div className="content px-2 pb-2 pt-4">
-                            <div className="barang  bg-cyan-400 rounded-full mb-4">
-                                <div className="barang-content flex justify-between items-center rounded-full max-h-20">
-                                    <div className="left-side text-white py-3 flex flex-col items-start w-1/2 ">
-                                        <p className={`text-3xl font-bold w-32 text-center`}>{items.barang}</p>
-                                        <p className='font-medium w-32 text-center'>Barang</p>
-                                    </div>
-                                        <img src={barangIcon} className='opacity-50 max-w-16 me-2' alt="" />
-                                </div>
                             </div>
-                            <div className="department bg-teal-400 rounded-full mb-4">
-                                <div className="department-content flex justify-between items-center z-10 overflow-hidden rounded-full max-h-20">
-                                    <div className="left-side text-white py-3 flex flex-col items-start w-1/2 ">
-                                        <p className={`text-3xl font-bold w-32 text-center`}>{items.department}</p>
-                                        <p className='font-medium w-32 text-center'>Department</p>
-                                    </div>
-                                        <img src={departmentIcon} className='opacity-50 max-w-16 me-2' alt="" />
-                                </div>
-                            </div>
-                            <div className="divisi bg-violet-400 rounded-full mb-4">
-                                <div className="divisi-content flex justify-between items-center z-10 overflow-hidden rounded-full max-h-20">
-                                    <div className="left-side text-white py-3 flex flex-col items-start w-1/2 ">
-                                        <p className='text-3xl font-bold w-32 text-center '>{items.divisi}</p>
-                                        <p className='font-medium w-32 text-center'>Divisi</p>
-                                    </div>
-                                        <img src={divisiIcon} className='opacity-50 max-w-16 me-2' alt="" />
-                                </div>
-                            </div>
-                            <div className="user bg-red-400 rounded-full mb-4">
-                                <div className="user-content flex justify-between items-center z-10 overflow-hidden rounded-full max-h-20">
-                                    <div className="left-side text-white py-3 flex flex-col items-start w-1/2 ">
-                                        <p className='text-3xl font-bold w-32 text-center'>{items.user}</p>
-                                        <p className='font-medium w-32 text-center'>User</p>
-                                    </div>
-                                        <img src={userIcon} className='opacity-50 max-w-16 me-2' alt="" />
-                                </div>
-                            </div>
-                            <div className="MR bg-orange-400 rounded-full mb-4">
-                                <div className="MR-content relative flex justify-between items-center overflow-hidden rounded-full">
-                                <div className={`left-side py-3 text-white flex flex-col items-start w-24`}>
-                                        <div className={`total-mr-count duration-1000 ${showPending ? 'opacity-100' : 'opacity-0'}`}>
-                                            <p className='text-center max-sm:text-2xl text-3xl font-bold w-32 overflow-hidden whitespace-nowrap max-sm:text-ellipsis'>{items.makerequest}</p>
-                                            <p className='font-medium w-full text-center'>Make Request</p>
-                                        </div>
-                                        <div className={`teks -z-0 absolute text-white flex flex-col items-start justify-center transition-opacity duration-1000 ${showPending ? 'opacity-0' : 'opacity-100'}`}>
-                                                <p className='text-center max-sm:text-2xl text-3xl font-bold w-32 overflow-hidden whitespace-nowrap  max-sm:text-ellipsis'>{items.mrPending}</p>
-                                                <p className=' text-center font-medium w-32'>MR Pending</p>
+                            <div className="grid grid-cols-2 gap-3">
+                                {/* MR Card */}
+                                <div className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow p-5 relative border border-gray-100">
+                                    {/* Redirect Icon - Top Right */}
+                                    <div className="absolute top-4 right-4">
+                                        <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors cursor-pointer">
+                                            {/* PUT YOUR REDIRECT ICON HERE */}
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                            </svg>
                                         </div>
                                     </div>
-                                    <div className='right-side relative w-max overflow-hidden flex items-center justify-end'>
-                                        <img src={MRIcon} className={`max-w-16 me-2 opacity-50`} alt="" />
+                                    
+                                    {/* Title Badge */}
+                                    <div className="mb-3">
+                                        <span className="px-3 py-1 rounded-full text-sm font-semibold bg-green-50 text-green-600 border border-green-200">Make Request</span>
                                     </div>
+                                    
+                                    {/* Number */}
+                                    <p className="text-4xl font-bold text-gray-900 mb-1">{items.makerequest || 0}</p>
+                                    
+                                    {/* Description */}
+                                    <p className="text-sm text-gray-500">Yang telah dibuat</p>
+                                </div>
+
+                                {/* PR Card */}
+                                <div className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow p-5 relative border border-gray-100">
+                                    {/* Redirect Icon - Top Right */}
+                                    <div className="absolute top-4 right-4">
+                                        <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors cursor-pointer">
+                                            {/* PUT YOUR REDIRECT ICON HERE */}
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    
+                                    {/* Title Badge */}
+                                    <div className="mb-3">
+                                        <span className="px-3 py-1 rounded-full text-sm font-semibold bg-yellow-50 text-yellow-600 border border-yellow-200">Purchase Request</span>
+                                    </div>
+                                    
+                                    {/* Number */}
+                                    <p className="text-4xl font-bold text-gray-900 mb-1">{items.purchaseRequest || 0}</p>
+                                    
+                                    {/* Description */}
+                                    <p className="text-sm text-gray-500">Telah dibuat</p>
+                                </div>
+
+                                {/* LPB Card */}
+                                <div className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow p-5 relative border border-gray-100">
+                                    {/* Redirect Icon - Top Right */}
+                                    <div className="absolute top-4 right-4">
+                                        <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors cursor-pointer">
+                                            {/* PUT YOUR REDIRECT ICON HERE */}
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    
+                                    {/* Title Badge */}
+                                    <div className="mb-3">
+                                        <span className="px-3 py-1 rounded-full text-sm font-semibold bg-blue-50 text-blue-600 border border-blue-200">LPB</span>
+                                    </div>
+                                    
+                                    {/* Number */}
+                                    <p className="text-4xl font-bold text-gray-900 mb-1">{items.lpb || 0}</p>
+                                    
+                                    {/* Description */}
+                                    <p className="text-sm text-gray-500">Telah dibuat</p>
+                                </div>
+
+                                {/* Memo Card */}
+                                <div className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow p-5 relative border border-gray-100">
+                                    {/* Redirect Icon - Top Right */}
+                                    <div className="absolute top-4 right-4">
+                                        <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors cursor-pointer">
+                                            {/* PUT YOUR REDIRECT ICON HERE */}
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    
+                                    {/* Title Badge */}
+                                    <div className="mb-3">
+                                        <span className="px-3 py-1 rounded-full text-sm font-semibold bg-purple-50 text-purple-600 border border-purple-200">Purchase Order</span>
+                                    </div>
+                                    
+                                    {/* Number */}
+                                    <p className="text-4xl font-bold text-gray-900 mb-1">{items.purchaseOrder || 0}</p>
+                                    
+                                    {/* Description */}
+                                    <p className="text-sm text-gray-500">Telah dibuat</p>
+                                    
+                                </div>
+
+                                {/* Barang Card */}
+                                <div className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow p-5 relative border border-gray-100">
+                                    {/* Redirect Icon - Top Right */}
+                                    <div className="absolute top-4 right-4">
+                                        <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors cursor-pointer">
+                                            {/* PUT YOUR REDIRECT ICON HERE */}
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    
+                                    {/* Title Badge */}
+                                    <div className="mb-3">
+                                        <span className="px-3 py-1 rounded-full text-sm font-semibold bg-orange-50 text-orange-600 border border-orange-200">Barang</span>
+                                    </div>
+                                    
+                                    {/* Number */}
+                                    <p className="text-4xl font-bold text-gray-900 mb-1">{items.barang || 0}</p>
+                                    
+                                    {/* Description */}
+                                    <p className="text-sm text-gray-500">Di Gudang</p>
+                                </div>
+
+                                {/* MR Belum Approve Card */}
+                                <div className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow p-5 relative border border-gray-100">
+                                    {/* Redirect Icon - Top Right */}
+                                    <div className="absolute top-4 right-4">
+                                        <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors cursor-pointer">
+                                            {/* PUT YOUR REDIRECT ICON HERE */}
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    
+                                    {/* Title Badge */}
+                                    <div className="mb-3">
+                                        <span className="px-3 py-1 rounded-full text-sm font-semibold bg-red-50 text-red-600 border border-red-200">MR Pending</span>
+                                    </div>
+                                    
+                                    {/* Number */}
+                                    <p className="text-4xl font-bold text-gray-900 mb-1">{items.mr_proses || 0}</p>
+                                    
+                                    {/* Description */}
+                                    <p className="text-sm text-gray-500">Belum Approve</p>
+                                </div>
+
+                                {/* PO Card */}
+                                <div className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow p-5 relative border border-gray-100">
+                                    {/* Redirect Icon - Top Right */}
+                                    <div className="absolute top-4 right-4">
+                                        <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors cursor-pointer">
+                                            {/* PUT YOUR REDIRECT ICON HERE */}
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    
+                                    {/* Title Badge */}
+                                    <div className="mb-3">
+                                        <span className="px-3 py-1 rounded-full text-sm font-semibold bg-cyan-50 text-cyan-600 border border-cyan-200">Memo</span>
+                                    </div>
+                                    
+                                    {/* Number */}
+                                    <p className="text-4xl font-bold text-gray-900 mb-1">{items.memo || 0}</p>
+                                    
+                                    {/* Description */}
+                                    <p className="text-sm text-gray-500">Telah dibuat</p>
+                                </div>
+
+                                {/* Billing Card */}
+                                <div className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow p-5 relative border border-gray-100">
+                                    {/* Redirect Icon - Top Right */}
+                                    <div className="absolute top-4 right-4">
+                                        <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors cursor-pointer">
+                                            {/* PUT YOUR REDIRECT ICON HERE */}
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    
+                                    {/* Title Badge */}
+                                    <div className="mb-3">
+                                        <span className="px-3 py-1 rounded-full text-sm font-semibold bg-teal-50 text-teal-600 border border-teal-200">Billing</span>
+                                    </div>
+                                    
+                                    {/* Number */}
+                                    <p className="text-4xl font-bold text-gray-900 mb-1">{items.billing || 0}</p>
+                                    
+                                    {/* Description */}
+                                    <p className="text-sm text-gray-500">Telah dibuat</p>
                                 </div>
                             </div>
-                            <div className="billing bg-emerald-400 rounded-full mb-4">
-                                <div className="relative billing-content flex justify-between items-center z-10 overflow-hidden rounded-full ">
-                                    <div className={`left-side text-white py-3 flex flex-col items-start w-24`}>
-                                        <div className={`total-billing-count -z-10 duration-1000 ${showPending ? 'opacity-100' : 'opacity-0'}`}>
-                                            <p className='text-center max-sm:text-2xl text-3xl font-bold w-32 overflow-hidden whitespace-nowrap  max-sm:text-ellipsis'>{items.billing}</p>
-                                            <p className='text-center font-medium w-full'>Billing</p>
+                        </div>
+
+                        {/* Right Section - Memo */}
+                        <div className="lg:w-1/2">
+                            <div className="bg-white rounded-lg shadow-md p-6">
+                                <h2 className="text-2xl font-bold mb-6">Memo</h2>
+                                <div className="space-y-4 max-h-[600px] lg:h-[562px] overflow-y-auto">
+                                    {memoData && memoData.length > 0 ? (
+                                        memoData.map((memo, index) => (
+                                            <MemoCard 
+                                                key={memo.id || index}
+                                                item={memo}
+                                                isSelected={false}
+                                                onClick={() => navigate(`/memo-information/${memo.id}`)}
+                                                initial={role}
+                                            />
+                                        ))
+                                    ) : (
+                                        <div className="text-center py-8 text-gray-500">
+                                            <p>Tidak ada memo tersedia</p>
                                         </div>
-                                        <div className={`teks -z-10 absolute text-white flex flex-col items-start justify-center transition-opacity duration-1000 ${showPending ? 'opacity-0' : 'opacity-100'}`}>
-                                                <p className=' text-center max-sm:text-2xl text-3xl font-bold w-32 overflow-hidden whitespace-nowrap '>{items.billing3MonthWarning}</p>
-                                                <p className=' text-center  font-medium w-32'>Billing Expire</p>
-                                        </div>
-                                    </div>
-                                    <div className='right-side relative w-max overflow-hidden flex items-center justify-end'>
-                                        <img src={RAIcon} className={`max-w-16 me-2 transition-opacity duration-1000 opacity-50`} alt="" />
-                                    </div>
+                                    )}
                                 </div>
                             </div>
                         </div>
