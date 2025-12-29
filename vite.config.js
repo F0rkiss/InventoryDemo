@@ -34,6 +34,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': SRC_DIR,
+      'quill': path.resolve(__dirname, 'node_modules/quill'),
     },
   },
   server: {
