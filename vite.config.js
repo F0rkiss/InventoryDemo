@@ -38,6 +38,9 @@ export default defineConfig({
     },
   },
   server: {
+    allowedHosts:[
+      'inventory.mediaindonesia.com',
+    ],
     host: true,
     // https: true,
     historyApiFallback: true, // Ensure all routes are handled by SPA
