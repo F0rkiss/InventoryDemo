@@ -188,7 +188,7 @@ function ApprovalMemoDinamis() {
                                 data={detailData} 
                                 loading={loadingDetail}
                                 onClose={handleBackToDesktop}
-                                initial="user"
+                                initial="approval"
                                 isOwner={false}
                                 showViewerManagement={false}
                             />

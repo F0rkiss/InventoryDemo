@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import Layout from '../component/Layout';
 import { useAuth } from '../../auth/AuthContext';
 import MemoCard from '../component/cards/MemoCard';
-
+import getCurrentDate from '../../helper/CurrentDateHelper';
 
 function Dashboard() {
 
@@ -18,12 +18,22 @@ function Dashboard() {
     const [loading, setLoading] = useState(false);
     const [contentVisible, setContentVisible] = useState(false)
     const [disabled, setDisabled] = useState(false)
+    const [currentTime, setCurrentTime] = useState(getCurrentDate(true));
     const { name, email, role, navigation_menu } = useAuth();
     const navigate = useNavigate()
 
     useEffect(() => {
         fetchItems();
     }, []);
+
+    useEffect(() => {
+    const timer = setInterval(() => {
+        setCurrentTime(getCurrentDate(true));
+    }, 1000); // 1000ms = 1 detik
+
+    // Bersihkan timer pas komponen di-unmount biar gak memory leak
+    return () => clearInterval(timer);
+}, []);
 
     const fetchItems = async() => {
         try {
@@ -38,9 +48,6 @@ function Dashboard() {
                 api.get('dashboardMemo')
             ]);
             
-            // console.log('Memo Response:', memoResponse);
-            // console.log('Memo Data:', memoResponse.data);
-            console.log('Memo Data Data:', memoResponse.data.data.data);
             
             setItems(dashboardResponse.data)
             setMemoData(memoResponse.data.data.data || [])
@@ -65,28 +72,26 @@ function Dashboard() {
                     <div className="flex flex-col lg:flex-row gap-4">
                         {/* Left Section - Stats Grid */}
                         <div className="lg:w-1/2">
-                            <div>
-                                <h2 className="text-2xl font-bold capitalize">Haloo {name}</h2>
-                                <h3 className='text-1xl font-bold mb-6 capitalize'>Selamat Datang di Inventory Media Indonesia</h3>
+                            <div className='ms-4'>
+                                <p className="md:text-4xl text-2xl font-semibold capitalize">Halo, {name?.split(' ')[0]}</p>
+                                <p className='text-md font-regular mb-6 text-gray-600'>{currentTime}</p>
                                 {/* <img src={LogoMi} alt="Logo Media Indonesia" className='max-w-52 mx-auto mt-4 mb-6' /> */}
 
                             </div>
                             <div className="grid grid-cols-2 gap-3">
                                 {/* MR Card */}
-                                <div className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow p-5 relative border border-gray-100">
-                                    {/* Redirect Icon - Top Right */}
+                                <div className="bg-white rounded-xl p-5 relative">
                                     <div className="absolute top-4 right-4">
-                                        <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors cursor-pointer">
-                                            {/* PUT YOUR REDIRECT ICON HERE */}
+                                        <button onClick={() => navigate('/material-request/list-material-request')} className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors cursor-pointer">
                                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                                             </svg>
-                                        </div>
+                                        </button>
                                     </div>
                                     
                                     {/* Title Badge */}
                                     <div className="mb-3">
-                                        <span className="px-3 py-1 rounded-full text-sm font-semibold bg-green-50 text-green-600 border border-green-200">Make Request</span>
+                                        <span className="px-3 py-1 rounded-full text-sm font-semibold bg-green-50 text-green-600 border border-green-200">MR</span>
                                     </div>
                                     
                                     {/* Number */}
@@ -97,20 +102,19 @@ function Dashboard() {
                                 </div>
 
                                 {/* PR Card */}
-                                <div className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow p-5 relative border border-gray-100">
+                                <div className="bg-white rounded-xl p-5 relative">
                                     {/* Redirect Icon - Top Right */}
                                     <div className="absolute top-4 right-4">
-                                        <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors cursor-pointer">
-                                            {/* PUT YOUR REDIRECT ICON HERE */}
+                                        <button onClick={() => navigate('/purchase-request/list-purchase-request')} className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors cursor-pointer">
                                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                                             </svg>
-                                        </div>
+                                        </button>
                                     </div>
                                     
                                     {/* Title Badge */}
                                     <div className="mb-3">
-                                        <span className="px-3 py-1 rounded-full text-sm font-semibold bg-yellow-50 text-yellow-600 border border-yellow-200">Purchase Request</span>
+                                        <span className="px-3 py-1 rounded-full text-sm font-semibold bg-yellow-50 text-yellow-600 border border-yellow-200">PR</span>
                                     </div>
                                     
                                     {/* Number */}
@@ -121,15 +125,14 @@ function Dashboard() {
                                 </div>
 
                                 {/* LPB Card */}
-                                <div className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow p-5 relative border border-gray-100">
+                                <div className="bg-white rounded-xl p-5 relative">
                                     {/* Redirect Icon - Top Right */}
                                     <div className="absolute top-4 right-4">
-                                        <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors cursor-pointer">
-                                            {/* PUT YOUR REDIRECT ICON HERE */}
+                                        <button onClick={() => navigate('/lpb/list-lpb')} className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors cursor-pointer">
                                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                                             </svg>
-                                        </div>
+                                        </button>
                                     </div>
                                     
                                     {/* Title Badge */}
@@ -145,20 +148,19 @@ function Dashboard() {
                                 </div>
 
                                 {/* Memo Card */}
-                                <div className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow p-5 relative border border-gray-100">
+                                <div className="bg-white rounded-xl p-5 relative">
                                     {/* Redirect Icon - Top Right */}
                                     <div className="absolute top-4 right-4">
-                                        <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors cursor-pointer">
-                                            {/* PUT YOUR REDIRECT ICON HERE */}
+                                        <button onClick={() => navigate('/purchase-order/list-purchase-order')} className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors cursor-pointer">
                                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                                             </svg>
-                                        </div>
+                                        </button>
                                     </div>
                                     
                                     {/* Title Badge */}
                                     <div className="mb-3">
-                                        <span className="px-3 py-1 rounded-full text-sm font-semibold bg-purple-50 text-purple-600 border border-purple-200">Purchase Order</span>
+                                        <span className="px-3 py-1 rounded-full text-sm font-semibold bg-purple-50 text-purple-600 border border-purple-200">PO</span>
                                     </div>
                                     
                                     {/* Number */}
@@ -170,15 +172,14 @@ function Dashboard() {
                                 </div>
 
                                 {/* Barang Card */}
-                                <div className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow p-5 relative border border-gray-100">
+                                <div className="bg-white rounded-xl p-5 relative">
                                     {/* Redirect Icon - Top Right */}
                                     <div className="absolute top-4 right-4">
-                                        <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors cursor-pointer">
-                                            {/* PUT YOUR REDIRECT ICON HERE */}
+                                        <button onClick={() => navigate('/barang/list-barang')} className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors cursor-pointer">
                                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                                             </svg>
-                                        </div>
+                                        </button>
                                     </div>
                                     
                                     {/* Title Badge */}
@@ -190,19 +191,18 @@ function Dashboard() {
                                     <p className="text-4xl font-bold text-gray-900 mb-1">{items.barang || 0}</p>
                                     
                                     {/* Description */}
-                                    <p className="text-sm text-gray-500">Di Gudang</p>
+                                    <p className="text-sm text-gray-500">Tercatat</p>
                                 </div>
 
                                 {/* MR Belum Approve Card */}
-                                <div className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow p-5 relative border border-gray-100">
+                                <div className="bg-white rounded-xl p-5 relative">
                                     {/* Redirect Icon - Top Right */}
                                     <div className="absolute top-4 right-4">
-                                        <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors cursor-pointer">
-                                            {/* PUT YOUR REDIRECT ICON HERE */}
+                                        <button onClick={() => navigate('/material-request/list-material-request')} className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors cursor-pointer">
                                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                                             </svg>
-                                        </div>
+                                        </button>
                                     </div>
                                     
                                     {/* Title Badge */}
@@ -214,19 +214,18 @@ function Dashboard() {
                                     <p className="text-4xl font-bold text-gray-900 mb-1">{items.mr_proses || 0}</p>
                                     
                                     {/* Description */}
-                                    <p className="text-sm text-gray-500">Belum Approve</p>
+                                    <p className="text-sm text-gray-500">Belum disetujui</p>
                                 </div>
 
                                 {/* PO Card */}
-                                <div className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow p-5 relative border border-gray-100">
+                                <div className="bg-white rounded-xl p-5 relative">
                                     {/* Redirect Icon - Top Right */}
                                     <div className="absolute top-4 right-4">
-                                        <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors cursor-pointer">
-                                            {/* PUT YOUR REDIRECT ICON HERE */}
+                                        <button onClick={() => navigate('/memo/list-memo')} className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors cursor-pointer">
                                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                                             </svg>
-                                        </div>
+                                        </button>
                                     </div>
                                     
                                     {/* Title Badge */}
@@ -242,15 +241,14 @@ function Dashboard() {
                                 </div>
 
                                 {/* Billing Card */}
-                                <div className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow p-5 relative border border-gray-100">
+                                <div className="bg-white rounded-xl p-5 relative">
                                     {/* Redirect Icon - Top Right */}
                                     <div className="absolute top-4 right-4">
-                                        <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors cursor-pointer">
-                                            {/* PUT YOUR REDIRECT ICON HERE */}
+                                        <button onClick={() => navigate('/billing/list-billing')} className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors cursor-pointer">
                                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                                             </svg>
-                                        </div>
+                                        </button>
                                     </div>
                                     
                                     {/* Title Badge */}
@@ -269,17 +267,24 @@ function Dashboard() {
 
                         {/* Right Section - Memo */}
                         <div className="lg:w-1/2">
-                            <div className="bg-white rounded-lg shadow-md p-6">
-                                <h2 className="text-2xl font-bold mb-6">Memo</h2>
-                                <div className="space-y-4 max-h-[600px] lg:h-[562px] overflow-y-auto">
+                            <div className="bg-white rounded-lg p-6 h-full">
+                                <div className='w-full flex justify-between items-center mb-4'>
+                                    <p className="md:text-2xl text-gray-700 font-semibold text-xl break-words">Memo Information</p>
+                                    <button onClick={() => navigate('/memo-information')} className='w-fit bg-gray-50 hover:bg-gray-100 text-gray-700 font-semibold py-2 px-4 border border-gray-200 rounded-lg'>
+                                        <span className='text-xs md:text-md'>Lihat semua</span>
+                                    </button>
+                                </div>
+                                <div className="border-t space-y-4 max-h-[600px] lg:h-[562px] overflow-y-auto pt-2">
                                     {memoData && memoData.length > 0 ? (
                                         memoData.map((memo, index) => (
                                             <MemoCard 
                                                 key={memo.id || index}
                                                 item={memo}
                                                 isSelected={false}
-                                                onClick={() => navigate(`/memo-information/${memo.id}`)}
-                                                initial={role}
+                                                onClick={() => navigate('/memo-information', { 
+                                                    state: { targetId: memo.id } 
+                                                })}
+                                                initial='dashboard'
                                             />
                                         ))
                                     ) : (

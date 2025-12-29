@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { Block} from 'framework7-react'
 import api from '../../api/api'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import SearchBar from '../component/SearchBar'
 import Loader from '../component/Loader'
 import Transition from '../component/Transition'
@@ -29,6 +29,7 @@ function MemoInformationList() {
     const [loadingDetail, setLoadingDetail] = useState(false);
 
     const navigate = useNavigate()
+    const location = useLocation();
     const { canCreate, canUpdate, canDelete } = useMenuAccess('MemoPersonal');
     const [filterStatus, setFilterStatus] = useState('all');
 
@@ -42,6 +43,14 @@ function MemoInformationList() {
       setDetailData(null);
       fetchItems();
     }, [searchTerm, filterStatus] )
+
+    useEffect(() => {
+        if (location.state?.targetId) {
+            handleCardClick(location.state.targetId);
+            
+            window.history.replaceState({}, document.title)
+        }
+    }, [location.state]);
 
     const buildReq = (cursor) => {
       const isSearching = !!searchTerm; 

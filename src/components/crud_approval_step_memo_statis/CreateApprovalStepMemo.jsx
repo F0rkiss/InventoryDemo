@@ -208,7 +208,7 @@ function CreateApprovalLPB() {
                   {errors.jenis_memo && <span className="text-red-500 text-sm">{errors.jenis_memo}</span>}
                 </div>
                 <SelectPaginate
-                  source={'jenisMemo'}
+                  source={'jenis-memo/non-dynamic'}
                   selectValue={items.jenis_memo}
                   selectName={'Jenis Memo'}
                   itemLabel={['name']}

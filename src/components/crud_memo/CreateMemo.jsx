@@ -3,10 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { Block } from 'framework7-react';
 import ReactQuill, { Quill } from 'react-quill';
 // import Quill  from 'quill';
-import ImageResize from 'quill-image-resize-module-react';
-import ImageUploader from 'quill-image-uploader';
 import 'react-quill/dist/quill.snow.css'; 
 import 'quill-image-uploader/dist/quill.imageUploader.min.css';
+import '../../js/quillconfig';
 import Swal from 'sweetalert2';
 import useAuth from '../../hooks/useAuth';
 import api from '../../api/api';
@@ -16,8 +15,6 @@ import SelectPaginate from '../component/SelectPaginate';
 import CustomCheckbox from '../component/CustomCheckBox';
 import DatePicker from '../component/DatePicker'; 
 
-Quill.register('modules/imageResize', ImageResize);
-Quill.register('modules/imageUploader', ImageUploader);
 
 const CreateMemo = () => {
     const navigate = useNavigate();
@@ -99,7 +96,6 @@ const CreateMemo = () => {
         }
     };
 
-    // 3. Gunakan useMemo untuk modules agar tidak re-render loop
     const modules = useMemo(() => ({
         toolbar: {
             container: [
@@ -141,17 +137,22 @@ const CreateMemo = () => {
                 });
             }
         },
-        imageResize: {
-            parchment: Quill.import('parchment'),
-            modules: ['Resize', 'DisplaySize', 'Toolbar'] 
-        }
+        blotFormatter: {
+            overlay: {
+                style: {
+                    border: '2px solid #0088cc',
+                }
+            }
+        },
     }), []); // Dependencies array kosong
 
     const formats = [
         'header', 'font',
         'bold', 'italic', 'underline', 'strike', 'blockquote', 'code-block',
         'list', 'bullet', 'indent',
-        'link', 'image', 'video', 'color', 'background', 'align', 'script'
+        'link', 'image', 'video', 'color', 'background', 'align', 'script',
+        'width', 'height', 'style', 'alt'
+   
     ];
 
     return (

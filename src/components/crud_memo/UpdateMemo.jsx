@@ -1,10 +1,8 @@
 import React, { useEffect, useState,  useRef, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Block } from 'framework7-react';
-import ReactQuill from 'react-quill';
-import Quill from 'quill';
-import ImageResize from 'quill-image-resize-module-react';
-import ImageUploader from 'quill-image-uploader';
+import ReactQuill, { Quill } from 'react-quill'; // Pastikan import Quill dari sini
+import '../../js/quillconfig'
 import 'quill-image-uploader/dist/quill.imageUploader.min.css';
 import 'react-quill/dist/quill.snow.css'; 
 import Swal from 'sweetalert2';
@@ -12,47 +10,13 @@ import api from '../../api/api';
 import Layout from '../component/Layout';
 import Back from '../component/Back';
 import SelectPaginate from '../component/SelectPaginate'; 
-import DatePicker from '../component/DatePicker'; // Pastikan di-uncomment/import
+import DatePicker from '../component/DatePicker'; 
 import CustomCheckbox from '../component/CustomCheckBox'; 
 import Loader from '../component/Loader';
 import { DecryptID } from '../../helper/EncryptHelper';
 import useAuth from '../../hooks/useAuth';
 import Transition from '../component/Transition';
 
-const BaseImage = Quill.import('formats/image');
-class ImageBlot extends BaseImage {
-  // Fungsi ini memberitahu Quill atribut apa saja yang harus dibaca dari HTML tag <img>
-  static formats(domNode) {
-    const formats = {};
-    if (domNode.hasAttribute('width')) formats.width = domNode.getAttribute('width');
-    if (domNode.hasAttribute('height')) formats.height = domNode.getAttribute('height');
-    if (domNode.hasAttribute('style')) formats.style = domNode.getAttribute('style');
-    return formats;
-  }
-
-  format(name, value) {
-    if (name === 'width' || name === 'height') {
-      if (value) {
-        this.domNode.setAttribute(name, value);
-      } else {
-        this.domNode.removeAttribute(name);
-      }
-    } else if (name === 'style') {
-        if (value) {
-            this.domNode.setAttribute(name, value);
-        } else {
-            this.domNode.removeAttribute(name);
-        }
-    } else {
-      super.format(name, value);
-    }
-  }
-}
-
-// Register Module dan Custom Image Blot
-Quill.register('modules/imageResize', ImageResize);
-Quill.register('modules/imageUploader', ImageUploader);
-Quill.register(ImageBlot, true);
 
 const UpdateMemo = () => {
     const { id } = useParams();
@@ -76,14 +40,12 @@ const UpdateMemo = () => {
         description: '',
         jenis_memo_id: null, 
         tanggal: '', 
-        expired: '', // Field baru
+        expired: '', 
         is_public: 0 
     });
 
-    // State untuk menyimpan data asli (untuk fitur Reset)
     const [originalData, setOriginalData] = useState(null);
 
-    // 1. Decrypt ID
     useEffect(() => {
         const decoded = DecryptID(id);
         setDecryptedId(decoded);
@@ -92,7 +54,7 @@ const UpdateMemo = () => {
         }
     }, [id, navigate]);
 
-    // 2. Fetch Data
+    // Fetch Data
     useEffect(() => {
         if (decryptedId) {
             fetchMemoData();
@@ -109,15 +71,12 @@ const UpdateMemo = () => {
                 name: data.name || '',
                 description: data.description || '',
                 jenis_memo_id: data.jenis_memo_id,
-                // Load tanggal dari API
                 tanggal: data.tanggal || '',
                 expired: data.expired || '', 
                 is_public: data.is_public ? 1 : 0
             };
 
             setFormData(initialData);
-            
-            // Simpan original data untuk tombol Reset
             setOriginalData({ ...initialData, jenis_memo_obj: data.jenis_memo });
 
             if (data.jenis_memo) {
@@ -141,7 +100,6 @@ const UpdateMemo = () => {
         }
     };
 
-    // --- HANDLERS ---
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
@@ -182,7 +140,6 @@ const UpdateMemo = () => {
                 timer: 1500,
                 showConfirmButton: false
             });
-            
             navigate('/memo/list-memo'); 
 
         } catch (error) {
@@ -219,6 +176,7 @@ const UpdateMemo = () => {
         }
     };
 
+    // --- 4. UPDATE MODULES (Ganti imageResize ke blotFormatter) ---
     const modules = useMemo(() => ({
         toolbar: {
             container: [
@@ -243,10 +201,8 @@ const UpdateMemo = () => {
                         headers: { 'Content-Type': 'multipart/form-data' }
                     })
                     .then((res) => {
-                        // Ambil URL dari response API kamu
-                        // Pastikan path ini sesuai dengan response backendmu (misal: res.data.url)
                         const imageUrl = res.data.url || res.data.data; 
-                        resolve(imageUrl); // Quill akan memasukkan URL ini ke editor
+                        resolve(imageUrl); 
                     })
                     .catch((error) => {
                         console.error("Upload failed", error);
@@ -260,17 +216,23 @@ const UpdateMemo = () => {
                 });
             }
         },
-        imageResize: {
-            parchment: Quill.import('parchment'),
-            modules: ['Resize', 'DisplaySize', 'Toolbar'] 
-        }
-    }), []); // Dependencies array kosong
+        // Blot Formatter Setting
+        blotFormatter: {
+            overlay: {
+                style: {
+                    border: '2px solid #0088cc',
+                }
+            }
+        },
+    }), []); 
 
+    // --- 5. UPDATE FORMATS WHITELIST (Tambah 'alt') ---
     const formats = [
         'header', 'font',
         'bold', 'italic', 'underline', 'strike', 'blockquote', 'code-block',
         'list', 'bullet', 'indent',
-        'link', 'image', 'video', 'color', 'background', 'align', 'script'
+        'link', 'image', 'video', 'color', 'background', 'align', 'script',
+        'width', 'height', 'style', 'alt' // Penting!
     ];
 
     return (
@@ -287,9 +249,7 @@ const UpdateMemo = () => {
                             <div className="p-7 bg-white shadow-lg shadow-gray-200 rounded-lg border border-gray-300">
                                 <form onSubmit={handleSubmit} className="space-y-6">
                                     
-                                    {/* --- Section 0: Tanggal & Expired (Baru) --- */}
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        {/* Input Tanggal (Opsional) */}
                                         <div>
                                             <label className="text-sm font-semibold text-gray-700 mb-2 ">
                                                 Tanggal
@@ -301,7 +261,6 @@ const UpdateMemo = () => {
                                             />
                                         </div>
 
-                                        {/* Input Tanggal Expired (Opsional) */}
                                         <div>
                                             <label className="text-sm font-semibold text-gray-700 mb-2 ">
                                                 Tanggal Expired
@@ -314,7 +273,6 @@ const UpdateMemo = () => {
                                         </div>
                                     </div>
 
-                                    {/* Section 1: Meta Data (Jenis Memo) */}
                                     <div className="space-y-4">
                                         <div className="space-y-2">
                                             <label className="text-sm font-semibold text-gray-700 mb-2">
@@ -332,7 +290,6 @@ const UpdateMemo = () => {
                                         </div>
                                     </div>
 
-                                    {/* Section 2: Judul Memo */}
                                     <div className="space-y-2">
                                         <label className="text-sm font-semibold text-gray-700 mb-2">
                                             Title
@@ -349,7 +306,6 @@ const UpdateMemo = () => {
                                         </div>
                                     </div>
 
-                                    {/* Section 3: Deskripsi (Rich Text Editor) */}
                                     <div className="space-y-2">
                                         <label className="text-sm font-semibold text-gray-700 mb-2 ">
                                             Konten
@@ -368,7 +324,6 @@ const UpdateMemo = () => {
                                         </div>
                                     </div>
 
-                                    {/* Checkbox Is Public */}
                                     <div className="pt-1">
                                         <CustomCheckbox 
                                             label="Memo Publik"
@@ -380,7 +335,6 @@ const UpdateMemo = () => {
                                         </p>
                                     </div>
 
-                                    {/* Tombol Action */}
                                     <div className="flex flex-col items-center justify-self-center mt-10 max-w-full w-[25rem] space-y-2 text-center">
                                         <button 
                                             disabled={submitting} 
