@@ -91,7 +91,12 @@ function Dashboard() {
                                     
                                     {/* Title Badge */}
                                     <div className="mb-3">
-                                        <span className="px-3 py-1 rounded-full text-sm font-semibold bg-green-50 text-green-600 border border-green-200">MR</span>
+                                        <span className="px-3 py-1 rounded-full text-xs font-semibold bg-green-50 text-green-600 border border-green-200">
+                                            {/* Tampil di Mobile */}
+                                            <span className="md:hidden">MR</span>
+                                            {/* Tampil di Desktop (Layar Medium ke atas) */}
+                                            <span className="hidden md:inline">Material Request</span>
+                                        </span>                                    
                                     </div>
                                     
                                     {/* Number */}
@@ -99,99 +104,6 @@ function Dashboard() {
                                     
                                     {/* Description */}
                                     <p className="text-sm text-gray-500">Yang telah dibuat</p>
-                                </div>
-
-                                {/* PR Card */}
-                                <div className="bg-white rounded-xl p-5 relative">
-                                    {/* Redirect Icon - Top Right */}
-                                    <div className="absolute top-4 right-4">
-                                        <button onClick={() => navigate('/purchase-request/list-purchase-request')} className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors cursor-pointer">
-                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                            </svg>
-                                        </button>
-                                    </div>
-                                    
-                                    {/* Title Badge */}
-                                    <div className="mb-3">
-                                        <span className="px-3 py-1 rounded-full text-sm font-semibold bg-yellow-50 text-yellow-600 border border-yellow-200">PR</span>
-                                    </div>
-                                    
-                                    {/* Number */}
-                                    <p className="text-4xl font-bold text-gray-900 mb-1">{items.purchaseRequest || 0}</p>
-                                    
-                                    {/* Description */}
-                                    <p className="text-sm text-gray-500">Telah dibuat</p>
-                                </div>
-
-                                {/* LPB Card */}
-                                <div className="bg-white rounded-xl p-5 relative">
-                                    {/* Redirect Icon - Top Right */}
-                                    <div className="absolute top-4 right-4">
-                                        <button onClick={() => navigate('/lpb/list-lpb')} className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors cursor-pointer">
-                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                            </svg>
-                                        </button>
-                                    </div>
-                                    
-                                    {/* Title Badge */}
-                                    <div className="mb-3">
-                                        <span className="px-3 py-1 rounded-full text-sm font-semibold bg-blue-50 text-blue-600 border border-blue-200">LPB</span>
-                                    </div>
-                                    
-                                    {/* Number */}
-                                    <p className="text-4xl font-bold text-gray-900 mb-1">{items.lpb || 0}</p>
-                                    
-                                    {/* Description */}
-                                    <p className="text-sm text-gray-500">Telah dibuat</p>
-                                </div>
-
-                                {/* Memo Card */}
-                                <div className="bg-white rounded-xl p-5 relative">
-                                    {/* Redirect Icon - Top Right */}
-                                    <div className="absolute top-4 right-4">
-                                        <button onClick={() => navigate('/purchase-order/list-purchase-order')} className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors cursor-pointer">
-                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                            </svg>
-                                        </button>
-                                    </div>
-                                    
-                                    {/* Title Badge */}
-                                    <div className="mb-3">
-                                        <span className="px-3 py-1 rounded-full text-sm font-semibold bg-purple-50 text-purple-600 border border-purple-200">PO</span>
-                                    </div>
-                                    
-                                    {/* Number */}
-                                    <p className="text-4xl font-bold text-gray-900 mb-1">{items.purchaseOrder || 0}</p>
-                                    
-                                    {/* Description */}
-                                    <p className="text-sm text-gray-500">Telah dibuat</p>
-                                    
-                                </div>
-
-                                {/* Barang Card */}
-                                <div className="bg-white rounded-xl p-5 relative">
-                                    {/* Redirect Icon - Top Right */}
-                                    <div className="absolute top-4 right-4">
-                                        <button onClick={() => navigate('/barang/list-barang')} className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors cursor-pointer">
-                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                            </svg>
-                                        </button>
-                                    </div>
-                                    
-                                    {/* Title Badge */}
-                                    <div className="mb-3">
-                                        <span className="px-3 py-1 rounded-full text-sm font-semibold bg-orange-50 text-orange-600 border border-orange-200">Barang</span>
-                                    </div>
-                                    
-                                    {/* Number */}
-                                    <p className="text-4xl font-bold text-gray-900 mb-1">{items.barang || 0}</p>
-                                    
-                                    {/* Description */}
-                                    <p className="text-sm text-gray-500">Tercatat</p>
                                 </div>
 
                                 {/* MR Belum Approve Card */}
@@ -207,7 +119,10 @@ function Dashboard() {
                                     
                                     {/* Title Badge */}
                                     <div className="mb-3">
-                                        <span className="px-3 py-1 rounded-full text-sm font-semibold bg-red-50 text-red-600 border border-red-200">MR Pending</span>
+                                        <span className="px-3 py-1 rounded-full text-xs font-semibold bg-red-50 text-red-600 border border-red-200">
+                                            <span className="md:hidden">MR Pending</span>
+                                            <span className="hidden md:inline">Material Request Pending</span>
+                                        </span>
                                     </div>
                                     
                                     {/* Number */}
@@ -216,6 +131,110 @@ function Dashboard() {
                                     {/* Description */}
                                     <p className="text-sm text-gray-500">Belum disetujui</p>
                                 </div>
+
+                                {/* PR Card */}
+                                <div className="bg-white rounded-xl p-5 relative">
+                                    {/* Redirect Icon - Top Right */}
+                                    <div className="absolute top-4 right-4">
+                                        <button onClick={() => navigate('/purchase-request/list-purchase-request')} className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors cursor-pointer">
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                    
+                                    {/* Title Badge */}
+                                    <div className="mb-3">
+                                        <span className="px-3 py-1 rounded-full text-xs font-semibold bg-yellow-50 text-yellow-600 border border-yellow-200">
+                                            <span className="md:hidden">PR</span>
+                                            <span className="hidden md:inline">Purchase Request</span>
+                                        </span>
+                                    </div>
+                                    
+                                    {/* Number */}
+                                    <p className="text-4xl font-bold text-gray-900 mb-1">{items.purchaseRequest || 0}</p>
+                                    
+                                    {/* Description */}
+                                    <p className="text-sm text-gray-500">Telah dibuat</p>
+                                </div>
+
+
+                                {/* Memo Card */}
+                                <div className="bg-white rounded-xl p-5 relative">
+                                    {/* Redirect Icon - Top Right */}
+                                    <div className="absolute top-4 right-4">
+                                        <button onClick={() => navigate('/purchase-order/list-purchase-order')} className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors cursor-pointer">
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                    
+                                    {/* Title Badge */}
+                                    <div className="mb-3">
+                                        <span className="px-3 py-1 rounded-full text-xs font-semibold bg-purple-50 text-purple-600 border border-purple-200">
+                                            <span className="md:hidden">PO</span>
+                                            <span className="hidden md:inline">Purchase Order</span>
+                                        </span>
+                                    </div>
+                                    
+                                    {/* Number */}
+                                    <p className="text-4xl font-bold text-gray-900 mb-1">{items.purchaseOrder || 0}</p>
+                                    
+                                    {/* Description */}
+                                    <p className="text-sm text-gray-500">Telah dibuat</p>
+                                    
+                                </div>
+
+                                {/* LPB Card */}
+                                <div className="bg-white rounded-xl p-5 relative">
+                                    {/* Redirect Icon - Top Right */}
+                                    <div className="absolute top-4 right-4">
+                                        <button onClick={() => navigate('/lpb/list-lpb')} className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors cursor-pointer">
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                    
+                                    {/* Title Badge */}
+                                    <div className="mb-3">
+                                        <span className="px-3 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-600 border border-blue-200">
+                                            <span className="md:hidden">LPB</span>
+                                            <span className="hidden md:inline">Laporan Penerimaan Barang</span>
+                                        </span>
+                                    </div>
+                                    
+                                    {/* Number */}
+                                    <p className="text-4xl font-bold text-gray-900 mb-1">{items.lpb || 0}</p>
+                                    
+                                    {/* Description */}
+                                    <p className="text-sm text-gray-500">Telah dibuat</p>
+                                </div>
+
+                                {/* Barang Card */}
+                                <div className="bg-white rounded-xl p-5 relative">
+                                    {/* Redirect Icon - Top Right */}
+                                    <div className="absolute top-4 right-4">
+                                        <button onClick={() => navigate('/barang/list-barang')} className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors cursor-pointer">
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                    
+                                    {/* Title Badge */}
+                                    <div className="mb-3">
+                                        <span className="px-3 py-1 rounded-full text-xs font-semibold bg-orange-50 text-orange-600 border border-orange-200">Barang</span>
+                                    </div>
+                                    
+                                    {/* Number */}
+                                    <p className="text-4xl font-bold text-gray-900 mb-1">{items.barang || 0}</p>
+                                    
+                                    {/* Description */}
+                                    <p className="text-sm text-gray-500">Tercatat</p>
+                                </div>
+
 
                                 {/* PO Card */}
                                 <div className="bg-white rounded-xl p-5 relative">
@@ -230,7 +249,7 @@ function Dashboard() {
                                     
                                     {/* Title Badge */}
                                     <div className="mb-3">
-                                        <span className="px-3 py-1 rounded-full text-sm font-semibold bg-cyan-50 text-cyan-600 border border-cyan-200">Memo</span>
+                                        <span className="px-3 py-1 rounded-full text-xs font-semibold bg-cyan-50 text-cyan-600 border border-cyan-200">Memo</span>
                                     </div>
                                     
                                     {/* Number */}
@@ -253,7 +272,7 @@ function Dashboard() {
                                     
                                     {/* Title Badge */}
                                     <div className="mb-3">
-                                        <span className="px-3 py-1 rounded-full text-sm font-semibold bg-teal-50 text-teal-600 border border-teal-200">Billing</span>
+                                        <span className="px-3 py-1 rounded-full text-xs font-semibold bg-teal-50 text-teal-600 border border-teal-200">Billing</span>
                                     </div>
                                     
                                     {/* Number */}
@@ -270,8 +289,8 @@ function Dashboard() {
                             <div className="bg-white rounded-lg p-6 h-full">
                                 <div className='w-full flex justify-between items-center mb-4'>
                                     <p className="md:text-2xl text-gray-700 font-semibold text-xl break-words">Memo Information</p>
-                                    <button onClick={() => navigate('/memo-information')} className='w-fit bg-gray-50 hover:bg-gray-100 text-gray-700 font-semibold py-2 px-4 border border-gray-200 rounded-lg'>
-                                        <span className='text-xs md:text-md'>Lihat semua</span>
+                                    <button onClick={() => navigate('/memo-information')} className='w-fit bg-gray-100 hover:bg-gray-200 transition-all duration-200 text-xs md:text-sm text-gray-700 font-semibold py-2 px-4 rounded-lg'>
+                                        <span className=''>Lihat semua</span>
                                     </button>
                                 </div>
                                 <div className="border-t space-y-4 max-h-[600px] lg:h-[562px] overflow-y-auto pt-2">

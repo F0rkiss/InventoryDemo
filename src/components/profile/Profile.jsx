@@ -80,7 +80,7 @@ function Profile() {
                             </div>
                             <div>
                                 <p className="text-gray-500 text-sm">Email</p>
-                                <p className={`font-medium ${user?.email_verified_at ? 'text-gray-900' : 'text-yellow-600'}`}>
+                                <p className={`font-medium text-gray-900`}>
                                     {user?.email}
                                 </p>
                             </div>
