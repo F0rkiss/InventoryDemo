@@ -13,8 +13,18 @@ import getCurrentDate from '../../helper/CurrentDateHelper';
 function Dashboard() {
 
     const [items, setItems] = useState({});
+    const mr = items.makerequest;
+    const mr_pending = items.mr_proses;
+    const pr = items.purchaseRequest;
+    const po = items.purchaseOrder;
+    const lpb = items.lpb;
+    const memo = items.memo;
+    const memo_pending = items.memo_proses;
+    const barang = items.barang;
+    const billing = items.billing;
+
     const [memoData, setMemoData] = useState([]);
-    const [barang, setBarang] = useState([]);
+    // const [barang, setBarang] = useState([]);
     const [loading, setLoading] = useState(false);
     const [contentVisible, setContentVisible] = useState(false)
     const [disabled, setDisabled] = useState(false)
@@ -80,6 +90,7 @@ function Dashboard() {
                             </div>
                             <div className="grid grid-cols-2 gap-3">
                                 {/* MR Card */}
+                               { (mr !== undefined) && 
                                 <div className="bg-white rounded-xl p-5 relative">
                                     <div className="absolute top-4 right-4">
                                         <button onClick={() => navigate('/material-request/list-material-request')} className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors cursor-pointer">
@@ -100,14 +111,15 @@ function Dashboard() {
                                     </div>
                                     
                                     {/* Number */}
-                                    <p className="text-4xl font-bold text-gray-900 mb-1">{items.makerequest || 0}</p>
+                                    <p className="text-4xl font-bold text-gray-900 mb-1">{items.makerequest}</p>
                                     
                                     {/* Description */}
                                     <p className="text-sm text-gray-500">Yang telah dibuat</p>
-                                </div>
+                                </div>}
 
                                 {/* MR Belum Approve Card */}
-                                <div className="bg-white rounded-xl p-5 relative">
+                                {   mr_pending !== undefined &&
+                                    <div className="bg-white rounded-xl p-5 relative">
                                     {/* Redirect Icon - Top Right */}
                                     <div className="absolute top-4 right-4">
                                         <button onClick={() => navigate('/material-request/list-material-request')} className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors cursor-pointer">
@@ -130,37 +142,40 @@ function Dashboard() {
                                     
                                     {/* Description */}
                                     <p className="text-sm text-gray-500">Belum disetujui</p>
-                                </div>
+                                </div>}
 
                                 {/* PR Card */}
-                                <div className="bg-white rounded-xl p-5 relative">
-                                    {/* Redirect Icon - Top Right */}
-                                    <div className="absolute top-4 right-4">
-                                        <button onClick={() => navigate('/purchase-request/list-purchase-request')} className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors cursor-pointer">
-                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                            </svg>
-                                        </button>
+                                {   pr !== undefined &&
+                                    <div className="bg-white rounded-xl p-5 relative">
+                                        {/* Redirect Icon - Top Right */}
+                                        <div className="absolute top-4 right-4">
+                                            <button onClick={() => navigate('/purchase-request/list-purchase-request')} className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors cursor-pointer">
+                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                                </svg>
+                                            </button>
+                                        </div>
+                                        
+                                        {/* Title Badge */}
+                                        <div className="mb-3">
+                                            <span className="px-3 py-1 rounded-full text-xs font-semibold bg-yellow-50 text-yellow-600 border border-yellow-200">
+                                                <span className="md:hidden">PR</span>
+                                                <span className="hidden md:inline">Purchase Request</span>
+                                            </span>
+                                        </div>
+                                        
+                                        {/* Number */}
+                                        <p className="text-4xl font-bold text-gray-900 mb-1">{items.purchaseRequest || 0}</p>
+                                        
+                                        {/* Description */}
+                                        <p className="text-sm text-gray-500">Telah dibuat</p>
                                     </div>
-                                    
-                                    {/* Title Badge */}
-                                    <div className="mb-3">
-                                        <span className="px-3 py-1 rounded-full text-xs font-semibold bg-yellow-50 text-yellow-600 border border-yellow-200">
-                                            <span className="md:hidden">PR</span>
-                                            <span className="hidden md:inline">Purchase Request</span>
-                                        </span>
-                                    </div>
-                                    
-                                    {/* Number */}
-                                    <p className="text-4xl font-bold text-gray-900 mb-1">{items.purchaseRequest || 0}</p>
-                                    
-                                    {/* Description */}
-                                    <p className="text-sm text-gray-500">Telah dibuat</p>
-                                </div>
+                                }
 
 
                                 {/* Memo Card */}
-                                <div className="bg-white rounded-xl p-5 relative">
+                                {   po !== undefined &&
+                                    <div className="bg-white rounded-xl p-5 relative">
                                     {/* Redirect Icon - Top Right */}
                                     <div className="absolute top-4 right-4">
                                         <button onClick={() => navigate('/purchase-order/list-purchase-order')} className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors cursor-pointer">
@@ -185,9 +200,11 @@ function Dashboard() {
                                     <p className="text-sm text-gray-500">Telah dibuat</p>
                                     
                                 </div>
+                                }
 
                                 {/* LPB Card */}
-                                <div className="bg-white rounded-xl p-5 relative">
+                                {  lpb !== undefined &&
+                                    <div className="bg-white rounded-xl p-5 relative">
                                     {/* Redirect Icon - Top Right */}
                                     <div className="absolute top-4 right-4">
                                         <button onClick={() => navigate('/lpb/list-lpb')} className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors cursor-pointer">
@@ -210,9 +227,10 @@ function Dashboard() {
                                     
                                     {/* Description */}
                                     <p className="text-sm text-gray-500">Telah dibuat</p>
-                                </div>
+                                </div>}
 
                                 {/* Barang Card */}
+                                {   barang !== undefined &&
                                 <div className="bg-white rounded-xl p-5 relative">
                                     {/* Redirect Icon - Top Right */}
                                     <div className="absolute top-4 right-4">
@@ -233,11 +251,12 @@ function Dashboard() {
                                     
                                     {/* Description */}
                                     <p className="text-sm text-gray-500">Tercatat</p>
-                                </div>
+                                </div>}
 
 
                                 {/* PO Card */}
-                                <div className="bg-white rounded-xl p-5 relative">
+                                {   memo !== undefined &&
+                                    <div className="bg-white rounded-xl p-5 relative">
                                     {/* Redirect Icon - Top Right */}
                                     <div className="absolute top-4 right-4">
                                         <button onClick={() => navigate('/memo/list-memo')} className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors cursor-pointer">
@@ -257,10 +276,34 @@ function Dashboard() {
                                     
                                     {/* Description */}
                                     <p className="text-sm text-gray-500">Telah dibuat</p>
-                                </div>
+                                </div>}
+
+                                {   memo_pending !== undefined &&
+                                    <div className="bg-white rounded-xl p-5 relative">
+                                    {/* Redirect Icon - Top Right */}
+                                    <div className="absolute top-4 right-4">
+                                        <button onClick={() => navigate('/memo/list-memo')} className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors cursor-pointer">
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                    
+                                    {/* Title Badge */}
+                                    <div className="mb-3">
+                                        <span className="px-3 py-1 rounded-full text-xs font-semibold bg-cyan-50 text-cyan-600 border border-cyan-200">Memo Pending</span>
+                                    </div>
+                                    
+                                    {/* Number */}
+                                    <p className="text-4xl font-bold text-gray-900 mb-1">{memo_pending}</p>
+                                    
+                                    {/* Description */}
+                                    <p className="text-sm text-gray-500">Belum disetujui</p>
+                                </div>}
 
                                 {/* Billing Card */}
-                                <div className="bg-white rounded-xl p-5 relative">
+                                {   billing !== undefined &&
+                                    <div className="bg-white rounded-xl p-5 relative">
                                     {/* Redirect Icon - Top Right */}
                                     <div className="absolute top-4 right-4">
                                         <button onClick={() => navigate('/billing/list-billing')} className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors cursor-pointer">
@@ -280,7 +323,7 @@ function Dashboard() {
                                     
                                     {/* Description */}
                                     <p className="text-sm text-gray-500">Telah dibuat</p>
-                                </div>
+                                </div>}
                             </div>
                         </div>
 

@@ -77,7 +77,6 @@ function UpdateBarang() {
         }
     }
 
-    // Enable Update only when something changed
     useEffect(() => {
         if (!original) return
         const changed =
@@ -218,7 +217,6 @@ function UpdateBarang() {
                             className="w-full p-2 placeholder:text-gray-400 placeholder:font-inter placeholder:font-light"
                             maxLength={80}
                             placeholder="Masukkan kode gudang"
-                            required
                         />
                         </div>
                     </div>
