@@ -180,6 +180,7 @@ function DetailPurchaseOrder() {
             <Back goHome={() => navigate('/purchase-order/list-purchase-order')} />
             <div className="my-4">
                 <p className='lg:text-3xl text-2xl font-semibold capitalize'>Detail Purchase Order</p>
+                
                 <div className="flex items-center justify-between sm: gap-3 pt-4"> 
                   <button
                       type="button"
@@ -200,7 +201,12 @@ function DetailPurchaseOrder() {
               <>
               <div className="flex flex-col lg:flex-row gap-4 mt-3">
                 <div className="bg-white border rounded-md p-6 flex-1 min-h-[200px]">
-                  <p className="font-semibold text-gray-400 mb-2 text-xl">Main Information</p>
+                  <div className='flex justify-between items-start'>
+                    <p className="font-semibold text-gray-400 mb-2 text-xl">Purchase Order Information</p>
+                    <p className={`flex py-1 px-2 lg:py-2 lg:px-3 items-center text-xs lg:text-sm text-center gap-1 rounded-md font-medium ${item.isApproved ? 'text-green-700 bg-green-100 border border-green-500' :item.isRejected ? 'text-red-700 bg-red-100 border border-red-500' : 'text-amber-700 bg-amber-100 border border-amber-500'}`}>
+                        {item.isApproved ? 'Approved' : item.isRejected ? 'Rejected' : 'Pending'}
+                    </p>
+                  </div>
                   <p className="text-xl font-bold capitalize">{item.kode}</p>
                   
                   {/* ... (Info Harga, Pembayaran, Keterangan, Tanggal) ... */}
@@ -349,11 +355,12 @@ function DetailPurchaseOrder() {
               {/* Purchase Request Section */}
               { purchaseRequest &&
                 <div className="bg-white border rounded-md p-6 mt-6">
-                  <div className='flex justify-between items-center mb-4'>
-                    <p className="text-xl text-gray-400 font-semibold mb-2">Purchase Request</p>
-                    <p className={`flex py-2 px-3 items-center lg:text-[14px] xs:text-xs text-center gap-1 rounded-md font-medium ${purchaseRequest.is_completed ? 'text-green-700 bg-green-100 border border-green-500' : 'text-amber-700 bg-amber-100 border border-amber-500'}`}>
-                      {purchaseRequest.is_completed ? <><i className='bx bxs-check-circle lg/md:text-sm xs:text-lg pe-1'></i>Selesai</> : <><i className='bx bxs-time lg/md:text-sm xs:text-lg pe-1'></i>Belum selesai</> }</p>
-                  </div>
+                  <div className='flex justify-between items-start'>
+                                    <p className="font-semibold text-gray-400 mb-2 text-lg lg:text-xl">Purchase Request Information</p>
+                                    <p className={`flex py-1 px-2 lg:py-2 lg:px-3 items-center text-xs lg:text-sm text-center gap-1 rounded-md font-medium ${item.purchase_request.isApproved ? 'text-green-700 bg-green-100 border border-green-500' : item.purchase_request.isRejected ? 'text-red-700 bg-red-100 border border-red-500' : 'text-amber-700 bg-amber-100 border border-amber-500'}`}>
+                                        {item.purchase_request.isApproved ? 'Approved': item.purchase_request.isRejected ? 'Rejected' : 'Pending'}
+                                    </p>
+                                </div>
                   { !purchaseRequest ?
                     (
                       <p className="text-gray-400 italic">No purchase request data</p>

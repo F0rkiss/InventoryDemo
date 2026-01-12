@@ -205,25 +205,25 @@ function DetailPurchaseRequest() {
                         <div className="flex flex-col lg:flex-row gap-4 mt-3">
                             {/* MAIN INFO */}
                             <div className="bg-white border rounded-md p-4 lg:p-6 flex-1 min-h-[200px]">
-                                <p className="font-semibold text-gray-400 mb-2 text-lg lg:text-xl">Purchase Request Information</p>
+                                <div className='flex justify-between items-start'>
+                                    <p className="font-semibold text-gray-400 mb-2 text-lg lg:text-xl">Purchase Request Information</p>
+                                    <p className={`flex py-1 px-2 lg:py-2 lg:px-3 items-center text-xs lg:text-sm text-center gap-1 rounded-md font-medium ${item.isApproved ? 'text-green-700 bg-green-100 border border-green-500' : item.isRejected ? 'text-red-700 bg-red-100 border border-red-500' : 'text-amber-700 bg-amber-100 border border-amber-500'}`}>
+                                        {item.isApproved ? 'Approved':item.isRejected ? 'Rejected' : 'Pending'}
+                                    </p>
+                                </div>
                                 <p className="text-lg lg:text-xl font-bold capitalize">{item.kode}</p>
                                 <p className="text-sm lg:text-lg mb-4">{DateFormat(item.tanggal, false)}</p>
                                 <div className="space-y-2 lg:space-y-3">
                                     <InfoRow label="Employee Name" value={item.user?.EmpName} />
                                     <InfoRow label="Employee Code" value={item.user?.EmpCode} />
                                     <InfoRow label="Employee Email" value={item.user?.email} />
-                                    <InfoRow label="Status Purchase Order" value={
-                                        <p className={`flex py-1 px-2 lg:py-2 lg:px-3 items-center text-xs lg:text-sm text-center gap-1 rounded-md font-medium ${item.is_completed ? 'text-green-700 bg-green-100 border border-green-500' : 'text-amber-700 bg-amber-100 border border-amber-500'}`}>
-                                            {item.is_completed ? 'Sudah Masuk Purchase Order' : 'Belum Masuk Purchase Order'}
-                                        </p>
-                                    }/>
                                 </div>
                             </div>
 
                             {/* MR INFO */}
                             <div className="bg-white border rounded-md p-4 lg:p-6 flex-1 min-h-[200px]">
                                 <div className='flex justify-between items-start'>
-                                    <p className="font-semibold text-gray-400 mb-2 text-lg lg:text-xl">Material Request Information</p>
+                                    <p className="font-semibold text-gray-400 mb-2 text-lg lg:text-xl">Purchase Request Information</p>
                                     <p className={`flex py-1 px-2 lg:py-2 lg:px-3 items-center text-xs lg:text-sm text-center gap-1 rounded-md font-medium ${item.make_request?.is_full_approval ? 'text-green-700 bg-green-100 border border-green-500' : 'text-amber-700 bg-amber-100 border border-amber-500'}`}>
                                         {item.make_request?.is_full_approval ? 'Approved':'Pending'}
                                     </p>

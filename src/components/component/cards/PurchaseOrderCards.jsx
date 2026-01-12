@@ -32,11 +32,17 @@ const PurchaseOrderCards = forwardRef(({item, goToUpdate, goToDetail, canUpdate,
                     <p className='text-base pe-2'>
                         {DateFormat(item.tanggal)}
                     </p>
-                    <div className={`max-h-max min-w-max max-w-max rounded-md border ${item.is_completed ? 'bg-green-50 border-green-400' : 'bg-amber-50 border-amber-400'}`} >
-                        <p className={`py-1 px-2 flex gap-1 text-left items-center text-xs font-medium ${item.is_completed ? 'text-green-700' : 'text-amber-600'}`}>
-                            <i className={`${item.is_completed ? 'bx bxs-check-circle' : 'bx bxs-time'}`}></i> 
-                            { item.is_completed ? 'Selesai' : 'Belum selesai'}</p>
-                    </div>
+                    <div className="flex items-center gap-2">
+                                <div className={`max-h-max min-w-max max-w-max rounded-md border ${!item.is_completed? 'bg-amber-100 border-amber-500': 'bg-green-100 border-green-500'}`}>
+                                    <p className={`py-1 px-2 flex items-center gap-1 text-xs font-medium ${!item.is_completed? 'text-amber-700': 'text-green-700'}`}>
+                                        <i className="bx bxs-time"></i>
+                                        {!item.is_completed? 'Belum Selesai': 'Sudah Selesai'}
+                                    </p>
+                                </div>
+                                <p className={`flex py-1 px-2 lg:py-2 lg:px-3 items-center text-xs lg:text-sm text-center gap-1 rounded-md font-medium ${item.isApproved ? 'text-green-700 bg-green-100 border border-green-500' :item.isRejected ? 'text-red-700 bg-red-100 border border-red-500' : 'text-amber-700 bg-amber-100 border border-amber-500'}`}>
+                                    {item.isApproved ? 'Approved' : item.isRejected ? 'Rejected' : 'Pending'}
+                                </p>
+                            </div>
                 </div>
                 <button
                     className='px-2 py-1 detail-button self-center'
