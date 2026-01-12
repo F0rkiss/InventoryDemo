@@ -196,7 +196,7 @@ function DetailPurchaseRequest() {
                             </span>
                         </button>
 
-                        <p className={`flex py-1 px-2 lg:py-2 lg:px-3 items-center text-xs lg:text-sm text-center gap-1 rounded-md font-medium ${!item.can_be_deleted ? 'text-green-700 bg-green-100 border border-green-500' : 'text-amber-700 bg-amber-100 border border-amber-500'}`}>
+                        <p className={`flex py-1 px-2 lg:py-2 lg:px-3 items-center text-xs lg:text-sm text-center gap-1 rounded-md font-medium ${item.is_completed ? 'text-green-700 bg-green-100 border border-green-500' : 'text-amber-700 bg-amber-100 border border-amber-500'}`}>
                             {item.is_completed ? 'Selesai' : 'Belum selesai'}
                         </p>
                         </div>
@@ -213,8 +213,8 @@ function DetailPurchaseRequest() {
                                     <InfoRow label="Employee Code" value={item.user?.EmpCode} />
                                     <InfoRow label="Employee Email" value={item.user?.email} />
                                     <InfoRow label="Status Purchase Order" value={
-                                        <p className={`flex py-1 px-2 lg:py-2 lg:px-3 items-center text-xs lg:text-sm text-center gap-1 rounded-md font-medium ${!item.can_be_deleted ? 'text-green-700 bg-green-100 border border-green-500' : 'text-amber-700 bg-amber-100 border border-amber-500'}`}>
-                                            {!item.can_be_deleted ? 'Sudah Masuk Purchase Order' : 'Belum Masuk Purchase Order'}
+                                        <p className={`flex py-1 px-2 lg:py-2 lg:px-3 items-center text-xs lg:text-sm text-center gap-1 rounded-md font-medium ${item.is_completed ? 'text-green-700 bg-green-100 border border-green-500' : 'text-amber-700 bg-amber-100 border border-amber-500'}`}>
+                                            {item.is_completed ? 'Sudah Masuk Purchase Order' : 'Belum Masuk Purchase Order'}
                                         </p>
                                     }/>
                                 </div>
