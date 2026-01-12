@@ -132,7 +132,7 @@ function ApprovalPR() {
             <Block>
                 <div className="px-4">
                     <Transition contentVisible={contentVisible}>
-                    <Back goHome={() => navigate('/purchase-request/list-purchase-request')} />
+                    <Back goHome={() => navigate('/notifications')} />
                         <div className="flex items-center justify-between my-4">
                             <p className='lg:text-3xl text-2xl font-semibold capitalize'>Approval Purchase Request</p>
                         </div>

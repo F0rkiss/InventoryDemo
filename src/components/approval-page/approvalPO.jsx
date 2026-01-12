@@ -141,7 +141,7 @@ function ApprovalPO() {
             <Block>
                 <div className="px-4">
                     <Transition contentVisible={contentVisible}>
-                        <Back goHome={() => navigate('/purchase-order/list-purchase-order')} />
+                        <Back goHome={() => navigate('/notifications')} />
                 <div className="my-4">
                     <p className='lg:text-3xl text-2xl font-semibold capitalize'>Approval Purchase Order</p>
                     
@@ -256,7 +256,7 @@ function ApprovalPO() {
                                 
                                 {/* --- PERBAIKAN DI SINI --- */}
                                 {/* Meneruskan kode mata uang (item.mata_uang?.kode) ke PriceFormat */}
-                                <td className="px-4 py-4 rounded-r-md">{PriceFormat(item.harga_sub_total, item.mataUang?.kode)}</td>
+                                <td className="px-4 py-4 rounded-r-md">{PriceFormat(item.harga_per_item, item.mataUang?.kode)}</td>
                                 {/* --- AKHIR PERBAIKAN --- */}
 
                                 </tr>
@@ -269,8 +269,7 @@ function ApprovalPO() {
                 </div>
 
                 {/* Purchase Request Section */}
-                {
-                purchaseRequest &&
+                { purchaseRequest &&
                     <div className="bg-white border rounded-md p-6 mt-6">
                     <div className='flex justify-between items-center mb-4'>
                         <p className="text-xl text-gray-400 font-semibold mb-2">Purchase Request</p>
