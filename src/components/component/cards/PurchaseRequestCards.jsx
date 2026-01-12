@@ -10,56 +10,48 @@ const PurchaseRequestCards = forwardRef(
 
         return (
             <div
-                className="mb-3 rounded-lg bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200 p-3 flex flex-col justify-between min-h-[100px] w-full"
+                className="rounded-2xl bg-white border px-5 py-3 mb-2 flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow duration-200"
                 ref={ref}
             >
                 {/* Header Section */}
-                <div className="mb-3">
-                    <div className="flex items-center justify-between">
-                        <h3 className="font-bold text-lg sm:text-xl capitalize">
+                <div className='flex justify-between items-center min-h-[64px]'>
+                    <div className='self-start py-1 space-y-1'>
+                        <p className='flex font-bold text-lg sm:text-md capitalize items-center'>
                             {item.kode}
-                        </h3>
-                        <button
-                            onClick={() => setOpen(!open)}
-                            className="inline-flex items-center justify-center w-9 h-9 border border-gray-300 rounded-md text-gray-600 hover:text-gray-800 hover:bg-gray-50 active:scale-95 focus:outline-none focus:ring-2 focus:ring-gray-300 transition"
-                            title={open ? 'Hide Details' : 'Show Details'}
-                            aria-label={open ? 'Hide Details' : 'Show Details'}
-                            aria-expanded={open}
-                            type="button"
-                        >
-                            {open ? (
-                                <i className="bx bx-chevron-up text-3xl transition-transform duration-200"></i>
-                            ) : (
-                                <i className="bx bx-chevron-down text-3xl transition-transform duration-200"></i>
-                            )}
-                        </button>
-                    </div>
-                    <div className="flex items-center justify-between mt-1">
-                        <h3 className="font-medium text-gray-600 text-sm sm:text-lg capitalize">
+                        </p>
+                        <p className='text-base pe-2'>
                             {DateFormat(item.tanggal)}
-                        </h3>
-
+                        </p>
                         {isList && (
                             <div className="flex items-center gap-2">
-                                <div className={`max-h-max min-w-max max-w-max rounded-md border ${!item.is_completed? 'bg-amber-100 border-amber-500': 'bg-green-100 border-green-500'}`}>
-                                    <p className={`py-1 px-2 flex items-center gap-1 text-xs font-medium ${!item.is_completed? 'text-amber-700': 'text-green-700'}`}>
-                                        <i className="bx bxs-time"></i>
-                                        {!item.is_completed? 'Belum Selesai': 'Sudah Selesai'}
-                                    </p>
+                                <div className={`flex items-center py-1 px-2 lg:py-1 lg:px-2 gap-1 text-xs lg:text-sm font-medium rounded-md border ${!item.is_completed? 'bg-amber-100 border-amber-500 text-amber-700': 'bg-green-100 border-green-500 text-green-700'}`}>
+                                    <i className="bx bxs-time"></i>
+                                    {!item.is_completed? 'Belum Selesai': 'Sudah Selesai'}
                                 </div>
-                                <p className={`flex py-1 px-2 lg:py-2 lg:px-3 items-center text-xs lg:text-sm text-center gap-1 rounded-md font-medium ${item.isApproved ? 'text-green-700 bg-green-100 border border-green-500' :item.isRejected ? 'text-red-700 bg-red-100 border border-red-500' : 'text-amber-700 bg-amber-100 border border-amber-500'}`}>
+                                <div className={`flex items-center py-1 px-2 lg:py-1 lg:px-2 gap-1 text-xs lg:text-sm font-medium rounded-md border ${item.isApproved ? 'text-green-700 bg-green-100 border-green-500' :item.isRejected ? 'text-red-700 bg-red-100 border-red-500' : 'text-amber-700 bg-amber-100 border-amber-500'}`}>
                                     {item.isApproved ? 'Approved' : item.isRejected ? 'Rejected' : 'Pending'}
-                                </p>
+                                </div>
                             </div>
                         )}
                     </div>
+                    <button
+                        onClick={() => setOpen(!open)}
+                        className='px-2 py-1 detail-button self-center'
+                        title={open ? 'Hide Details' : 'Show Details'}
+                        aria-label={open ? 'Hide Details' : 'Show Details'}
+                        aria-expanded={open}
+                        type="button"
+                    >
+                        <i className={`bx bxs-chevron-down text-2xl text-gray-600 transition-transform duration-300 ${open ? 'rotate-180' : ''}`} />
+                    </button>
                 </div>
 
                 {/* Content Section */}
                 <div
-                    className={`overflow-hidden transition-all duration-300 ease-in-out ${open ? 'max-h-96 opacity-100 mt-2' : 'max-h-0 opacity-0'}`}
+                    className={`mt-2 transition-all duration-500 overflow-hidden ${open ? "max-h-screen opacity-100" : "max-h-0 opacity-0"}`}
                     aria-hidden={!open}
                 >
+                    <div className="space-y-2">
                     {isList && (
                         <div className="flex justify-end space-x-2">
                             {Update === true || POLength === 0 ? (
@@ -68,13 +60,12 @@ const PurchaseRequestCards = forwardRef(
                                 onClick={() => goToUpdate(item.id)}
                                 title="Update PR"
                             >
-                                <h3>Update</h3>
+                                Update
                                 <i className="bx bx-edit"></i>
                             </button>
                             ) : (
                             <button
-                                className="w-fit px-5 py-2 bg-gray-400 text-white opacity-70 cursor-not-allowed flex items-center text-sm gap-2 rounded"
-                                disabled
+                                className="w-fit px-5 py-2 text-white bg-gray-800 rounded-lg disabled flex items-center text-sm gap-2"
                             >
                                 Sudah Masuk Purchase Order
                             </button>
@@ -82,75 +73,73 @@ const PurchaseRequestCards = forwardRef(
                         </div>
                         )}
 
-                    <div className="flex-1 space-y-2 text-sm sm:text-base">
+                    <div className="flex flex-col md:flex-row gap-x-10 gap-y-2 mb-4 text-sm">
                         {isList ? (
                             <>
-                                <div className="flex pt-3  justify-between items-start flex-wrap">
-                                    <span className="text-gray-500 w-1/2 sm:w-auto">Employee</span>
-                                    <p className="font-medium text-right max-w-[60%] break-words w-1/2 sm:w-auto">
-                                        {item.EmpName }
-                                    </p>
+                                {/* Kolom Kiri */}
+                                <div className="flex-1 space-y-2">
+                                    <div className="">
+                                        <p className='text-gray-500'>Employee</p>
+                                        <p className="font-medium">{item.EmpName}</p>
+                                    </div>
+                                    <div className="">
+                                        <p className='text-gray-500'>Note</p>
+                                        <p className="font-medium">{item.note}</p>
+                                    </div>
                                 </div>
-                                <div className="flex justify-between items-start flex-wrap">
-                                    <span className="text-gray-500 w-1/2 sm:w-auto">Note</span>
-                                    <p className="font-medium text-right max-w-[60%] break-words w-1/2 sm:w-auto">
-                                        {item.note}
-                                    </p>
-                                </div>
-                                <div className="flex justify-between items-start flex-wrap">
-                                    <span className="text-gray-500 w-1/2 sm:w-auto">Latest Update</span>
-                                    <p className="font-medium text-right max-w-[60%] break-words w-1/2 sm:w-auto">
-                                        {DateFormat(item.updated_at)}
-                                    </p>
+                                {/* Kolom Kanan */}
+                                <div className="flex-1 space-y-2">
+                                    <div className="">
+                                        <p className='text-gray-500'>Latest Update</p>
+                                        <p className="font-medium">{DateFormat(item.updated_at)}</p>
+                                    </div>
                                 </div>
                             </>
                         ) : (
                             <>
-                                <div className="flex pt-3 border-t justify-between items-start flex-wrap">
-                                    <span className="text-gray-500 w-1/2 sm:w-auto">Employee</span>
-                                    <p className="font-medium text-right max-w-[60%] break-words w-1/2 sm:w-auto">
-                                        {item.user?.EmpName}
-                                    </p>
+                                {/* Kolom Kiri */}
+                                <div className="flex-1 space-y-2">
+                                    <div className="">
+                                        <p className='text-gray-500'>Employee</p>
+                                        <p className="font-medium">{item.user?.EmpName}</p>
+                                    </div>
+                                    <div className="">
+                                        <p className='text-gray-500'>Type Request</p>
+                                        <p className="font-medium">{item.type_request?.name}</p>
+                                    </div>
                                 </div>
-                                <div className="flex justify-between items-start flex-wrap">
-                                    <span className="text-gray-500 w-1/2 sm:w-auto">Type Request</span>
-                                    <p className="font-medium text-right max-w-[60%] break-words w-1/2 sm:w-auto">
-                                        {item.type_request?.name}
-                                    </p>
-                                </div>
-                                <div className="flex justify-between items-start flex-wrap">
-                                    <span className="text-gray-500 w-1/2 sm:w-auto">Jenis</span>
-                                    <p className="font-medium text-right max-w-[60%] break-words w-1/2 sm:w-auto">
-                                        {item.type_request?.jenis}
-                                    </p>
+                                {/* Kolom Kanan */}
+                                <div className="flex-1 space-y-2">
+                                    <div className="">
+                                        <p className='text-gray-500'>Jenis</p>
+                                        <p className="font-medium">{item.type_request?.jenis}</p>
+                                    </div>
                                 </div>
                             </>
                         )}
                     </div>
                     
                     {isList ? (
-                            <div className="flex justify-end gap-2 mt-3">
+                            <div className="flex flex-col sm:flex-row py-2">
                                 <button
-                                className="more-detail-button"
-                                onClick={() => goToDetail(item.id)}
-                                title="View Details"
+                                    className="flex justify-center items-center w-full px-4 py-3 bg-slate-800 hover:bg-slate-900 text-white font-semibold rounded-lg transition-colors duration-200"
+                                    onClick={() => goToDetail(item.id)}
+                                    title="View Details"
                                 >
-                                <h3>Lihat Detail</h3>
-                                <i className="bx bx-chevron-right text-lg"></i>
-                            </button>
+                                    Lihat Detail <i className="bx bx-chevron-right text-lg"></i>
+                                </button>
                             </div>
-                            
                     ) : (
-                        <div className="flex justify-end gap-2 mt-3">
+                        <div className="flex flex-col sm:flex-row py-2">
                             <button
-                                className="flex justify-center items-center w-full px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white  font-semibold rounded-lg transition-colors duration-200"
+                                className="flex justify-center items-center w-full px-4 py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-lg transition-colors duration-200"
                                 onClick={() => goToCreate(item.id)}
                             >
-                                Buat Pembelian 
-                                <i className="bx bx-chevron-right text-lg"></i>
+                                Buat Pembelian <i className="bx bx-chevron-right text-lg"></i>
                             </button>
                         </div>
                     )}
+                    </div>
                 </div>
             </div>
         );

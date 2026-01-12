@@ -135,7 +135,7 @@ function PurchaseRequestList() {
     <Layout title={'List Purchase Request'}>
   <Block>
     <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-2">
-      <p className="lg:text-3xl text-2xl font-semibold capitalize">
+      <p className="md:text-3xl text-2xl ms-3 font-semibold capitalize">
         Purchase Request List
       </p>
       <div className="flex items-center gap-2">
