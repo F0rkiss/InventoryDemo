@@ -279,7 +279,7 @@ function UpdateApprovalMemo() {
                   {errors.jenis_memo && <span className="text-red-500 text-sm">{errors.jenis_memo}</span>}
                 </div>
                 <SelectPaginate
-                  source={'jenis-memo/non-dynamic'}
+                  source={'jenis-memo/non-dynamicd'}
                   selectValue={items.jenis_memo}
                   selectName={'Jenis Memo'}
                   itemLabel={['name']}

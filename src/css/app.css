@@ -26,6 +26,37 @@ input[type="password"]::-ms-reveal {
   display: none;
 }
 
+ql-editor img, 
+.rich-text-content img,
+.prose img {
+    display: inline-block !important; /* Jangan block, kadang bikin layout jumping */
+    max-width: 100% !important;
+    height: auto !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+/* Fix Container Height di Mobile */
+.ql-editor {
+    height: auto !important;
+    overflow-y: visible !important;
+}
+
+/* Khusus Mobile - kadang overflow parent bikin content kepotong */
+@media (max-width: 768px) {
+    .rich-text-content {
+        width: 100% !important;
+        overflow-x: hidden !important;
+    }
+    
+    /* Paksa gambar gak boleh lebih lebar dari layar HP */
+    .ql-editor img {
+        max-width: 100vw !important; 
+    }
+}
+
 /* input[type="date"] {
   appearance: none;
   -webkit-appearance: none;
