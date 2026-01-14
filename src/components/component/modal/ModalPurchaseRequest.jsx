@@ -176,14 +176,14 @@ const ModalPurchaseRequest = ({ onClose, onSave, open, initialData, apiUrl, exis
     return (
         <MiModal
             onClose={onClose}
-            contentClass="w-full p-4 flex flex-col items-center justify-center min-h-[500px]"
+            contentClass="w-full p-4 flex flex-col items-center justify-center min-h-[600px]"
             closeModal={false}
         >
             <form className='w-full flex flex-col items-center gap-4' onSubmit={handleSubmit}>
-                    <p className='text-xl sm:text-2xl font-semibold text-center'>Pilih Barang & Jumlah</p>
+                    <p className='text-xl sm:text-2xl font-semibold text-center'>Pilih Barang</p>
                     
                     {/* Barang Selection */}
-                    <div className="w-full max-w-md">
+                    <div className="w-full max-w-lg">
                         <label className="block text-sm font-medium text-gray-700 mb-1">Pilih Barang</label>
                         <div className="relative">
                             {modalData.selectedBarang ? (
@@ -192,7 +192,6 @@ const ModalPurchaseRequest = ({ onClose, onSave, open, initialData, apiUrl, exis
                                         {modalData.selectedBarang.image && (
                                             <img
                                                 src={`${apiUrl}${modalData.selectedBarang.image}`}
-                                                alt={modalData.selectedBarang.name}
                                                 className="w-10 h-10 object-cover rounded-md border"
                                             />
                                         )}

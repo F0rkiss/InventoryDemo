@@ -9,7 +9,6 @@ import ModalLPB from '../component/modal/ModalLPB'
 import { DecryptID } from '../../helper/EncryptHelper'
 import Transition from '../component/Transition'
 import ImagePreviewModal from '../component/modal/ImagePreviewModal'
-import MultiUpload from '../component/MultiUpload'
 import CreateMultiUploadModal from '../component/modal/CreateMultiUploadModal'
 
 function CreateLPB() {

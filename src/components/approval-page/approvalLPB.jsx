@@ -40,10 +40,10 @@ function ApprovalLPB() {
     }, [id]);
 
     useEffect(() => {
-        if (decryptedId) fetchPurchaseRequest();
+        if (decryptedId) fetchLPB();
     }, [decryptedId]);
 
-    const fetchPurchaseRequest = async () => {
+    const fetchLPB = async () => {
         try {
             setLoading(true);
             const { data } = await api.get(`/laporanPenerimaanBarang-detail/${decryptedId}`);
