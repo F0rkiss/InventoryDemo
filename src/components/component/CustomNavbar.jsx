@@ -5,6 +5,8 @@ import { useAuth } from '../../auth/AuthContext';
 import Notifications from '../informationPage/Notifications';
 import RefreshButton from './RefreshButton';
 import menus from '../../js/menus';
+import { isDemoMode } from '../../api/demoAdapter';
+import { resetDemoStore } from '../../api/demoStore';
 
 const CustomNavbar = ({ scrollRootSelector, scrollRootRef }) => {
   const [openSidebar, setOpenSidebar] = useState(false);
@@ -52,6 +54,13 @@ const CustomNavbar = ({ scrollRootSelector, scrollRootRef }) => {
     return () => root.removeEventListener('scroll', onScroll);
   }, [scrollRootSelector, scrollRootRef]);
 
+  const handleDemoReset = () => {
+    const confirmed = window.confirm('Reset all demo data to the original seed state?');
+    if (!confirmed) return;
+    resetDemoStore();
+    window.location.reload();
+  };
+
   return (
     <>
       {openSidebar && (
@@ -80,6 +89,17 @@ const CustomNavbar = ({ scrollRootSelector, scrollRootRef }) => {
             </span>
           </span>
           <div className='flex gap-1'>
+            {isDemoMode && (
+              <button
+                type="button"
+                onClick={handleDemoReset}
+                className="inline-flex items-center gap-2 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm font-semibold text-amber-700 hover:bg-amber-100 transition-colors"
+                title="Reset demo data"
+              >
+                <i className="bx bx-reset"></i>
+                <span className="hidden sm:inline">Reset Demo</span>
+              </button>
+            )}
             <RefreshButton onRefresh={() => window.location.reload()} />
             <Notifications />
           </div>

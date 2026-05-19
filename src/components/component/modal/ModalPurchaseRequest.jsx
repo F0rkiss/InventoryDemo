@@ -192,6 +192,7 @@ const ModalPurchaseRequest = ({ onClose, onSave, open, initialData, apiUrl, exis
                                         {modalData.selectedBarang.image && (
                                             <img
                                                 src={`${apiUrl}${modalData.selectedBarang.image}`}
+                                                alt="Preview"
                                                 className="w-10 h-10 object-cover rounded-md border"
                                             />
                                         )}

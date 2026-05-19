@@ -1,9 +1,11 @@
 import axios from 'axios';
 import encryptData from '../auth/CobaIndex';
 import { Navigate, replace, useNavigate } from 'react-router-dom';
+import { demoApiAdapter, isDemoMode } from './demoAdapter';
 
 const api = axios.create({
     baseURL: `${import.meta.env.VITE_URL}/api`,
+    ...(isDemoMode ? { adapter: demoApiAdapter } : {}),
 });
 
 const generateAccessToken = async () => {
