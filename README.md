@@ -1,86 +1,112 @@
-<<<<<<< HEAD
 # InventMain
-=======
-# INVENTORY
 
-## Framework7 CLI Options
+InventMain is a React, Framework7, and Vite inventory demo for managing internal procurement at Media Indonesia. The demo focuses on the full request lifecycle: Material Request, Purchase Request, Purchase Order, Laporan Penerimaan Barang (LPB), stock records, memo approvals, and supporting master data.
 
-Framework7 app created with following options:
+The current demo can run fully in the browser with seeded data, so reviewers can explore the app without connecting to a backend.
 
-```
-{
-  "cwd": "C:\\xampp\\htdocs\\Inven_MI",
-  "type": [
-    "web"
-  ],
-  "name": "INVENTORY",
-  "framework": "react",
-  "template": "single-view",
-  "bundler": "vite",
-  "cssPreProcessor": false,
-  "theming": {
-    "customColor": false,
-    "color": "#007aff",
-    "darkMode": false,
-    "iconFonts": true
-  },
-  "customBuild": false
-}
+## Demo Login
+
+Use these credentials when demo data mode is enabled:
+
+```text
+Employee Code: 1001
+Password: Demo@12345
 ```
 
-## Install Dependencies
+Demo data is stored in browser `localStorage` under `mi_inventory_demo_store_v1`. The navbar includes a reset action in demo mode to restore the original seeded data.
 
+## Main Demo Areas
 
-First of all we need to install dependencies, run in terminal
-```
+- Dashboard summary for Material Requests, Purchase Requests, Purchase Orders, LPB, memos, items, and billing.
+- Request workflow for creating and tracking Material Requests, Purchase Requests, Purchase Orders, and LPB.
+- Stock and item management for asset stock, non-asset stock, and barang records.
+- Memo management for admin and personal memo flows.
+- Approval setup for MR, PR/PO, LPB, and memo approvals.
+- Master data management for users, roles, suppliers, categories, item types, item sources, statuses, payment methods, currency, PPN, billing, and navigation access.
+- Information pages for notifications, mutation history, and activity logs.
+
+## Typical Demo Flow
+
+1. Sign in with the demo credentials.
+2. Review the dashboard counts and recent memo cards.
+3. Open `Request` to create or inspect a Material Request.
+4. Convert an approved Material Request into a Purchase Request.
+5. Create a Purchase Order from an open Purchase Request.
+6. Create an LPB from a Purchase Order when goods are received.
+7. Use the `Barang`, `Memo`, `Approval Step`, and `Information` menus to review the supporting modules.
+
+## Tech Stack
+
+- React 18
+- Framework7 React
+- Vite
+- Tailwind CSS
+- Axios
+- Browser-based demo API adapter
+
+## Requirements
+
+- Node.js 20.x, tested with Node.js `v20.16.0`
+- npm
+
+## Getting Started
+
+Install dependencies:
+
+```bash
 npm install
 ```
 
+Start the development server:
 
-## Requirement 
-
-Node.js v20.16.0.
-
-
-## NPM Scripts
-
-* 🔥 `start` - run development server
-* 🔧 `dev` - run development server
-* 🔧 `build` - build web app for production
-
-## Vite
-
-There is a [Vite](https://vitejs.dev) bundler setup. It compiles and bundles all "front-end" resources. You should work only with files located in `/src` folder. Vite config located in `vite.config.js`.
-The Deployment Build Location are in `/www` Folder
-
-## Assets
-
-Assets (icons, splash screens) source images located in `assets-src` folder. To generate your own icons and splash screen images, you will need to replace all assets in this directory with your own images (pay attention to image size and format), and run the following command in the project directory:
-
-```
-framework7 assets
+```bash
+npm run dev
 ```
 
-Or launch UI where you will be able to change icons and splash screens:
+Vite will print the local URL in the terminal, usually `http://localhost:5173`.
 
+## Environment
+
+For the browser-only demo, keep demo mode enabled:
+
+```env
+VITE_USE_DEMO_DATA=true
+VITE_URL=http://localhost:5173
 ```
-framework7 assets --ui
+
+For a backend-connected environment, disable demo mode and point `VITE_URL` to the API host:
+
+```env
+VITE_USE_DEMO_DATA=false
+VITE_URL=https://your-api-host.example
 ```
 
+## Scripts
 
+```bash
+npm run dev      # Start the Vite development server
+npm run start    # Alias for npm run dev
+npm run build    # Build the production web app into www/
+npm run preview  # Preview the production build locally
+```
 
-## Documentation & Resources
+## Project Structure
 
-* [Framework7 Core Documentation](https://framework7.io/docs/)
+```text
+src/
+  api/          Demo adapter, seeded demo data, and Axios setup
+  auth/         Login, auth context, and protected route handling
+  components/   App screens, CRUD modules, dashboard, layout, and shared UI
+  css/          Global styles, Framework7 styles, and app-specific CSS
+  excel/        Export helpers
+  helper/       Date, price, encryption, device, and utility helpers
+  js/           App store, menu definitions, and routing helpers
+public/         Static public assets
+www/            Production build output
+```
 
-* [Framework7 React Documentation](https://framework7.io/react/)
+## Notes
 
-* [Framework7 Icons Reference](https://framework7.io/icons/)
-* [Community Forum](https://forum.framework7.io)
-
-## Support Framework7
-
-Love Framework7? Support project by donating or pledging on:
-- Patreon: https://patreon.com/framework7
-- OpenCollective: https://opencollective.com/framework7
->>>>>>> 1e3abc8 (Innitial commit)
+- The demo adapter is enabled by `VITE_USE_DEMO_DATA=true` and handles API calls in the browser.
+- Demo changes are persisted locally until the demo store is reset.
+- The production build output is written to `www/` as configured in `vite.config.js`.

@@ -62,6 +62,22 @@ const parseBody = (data) => {
   return data;
 };
 
+const toPlainObject = (body) => {
+  if (typeof FormData === 'undefined' || !(body instanceof FormData)) return body || {};
+  const result = {};
+  for (const [key, value] of body.entries()) {
+    const normalizedKey = key.replace(/\[\d*\]$/, '').replace(/\[\]$/, '');
+    const normalizedValue = typeof File !== 'undefined' && value instanceof File ? value.name : value;
+    if (result[normalizedKey] !== undefined) {
+      result[normalizedKey] = Array.isArray(result[normalizedKey]) ? result[normalizedKey] : [result[normalizedKey]];
+      result[normalizedKey].push(normalizedValue);
+    } else {
+      result[normalizedKey] = normalizedValue;
+    }
+  }
+  return result;
+};
+
 const formValue = (body, key) => {
   if (typeof FormData !== 'undefined' && body instanceof FormData) return body.get(key);
   return body?.[key];
@@ -102,6 +118,8 @@ const demoToken = () => {
 };
 
 const collectionRoutes = {
+  inventMakeRequest: 'makeRequests',
+  makeRequest: 'makeRequests',
   inventBarang: 'barang',
   inventStok: 'stock',
   'inventStok-admin': 'stockAsset',
@@ -116,6 +134,7 @@ const collectionRoutes = {
   ppn: 'ppn',
   suplier: 'suppliers',
   role: 'roles',
+  'jenisMemo-user': 'jenisMemo',
   inventUser: 'users',
   user: 'users',
   billing: 'billing',
@@ -123,6 +142,7 @@ const collectionRoutes = {
   divisi: 'divisi',
   inventTypeRequest: 'typeRequests',
   jenisMemo: 'jenisMemo',
+  memo: 'memos',
   inventApprovalStep: 'approvalSteps',
   approvalStepPurchase: 'approvalStepPurchase',
   approvalStepLPB: 'approvalStepLPB',
@@ -134,10 +154,18 @@ const collectionRoutes = {
 const aliases = {
   paymentType: 'paymentTypes',
   'list-payment-method': 'paymentTypes',
+  'update-payment-method': 'paymentTypes',
   'billing-getUser': 'users',
+  'billing-search': 'billing',
+  billings: 'billing',
   'inventStok-barang': 'barang',
   'inventStok-detail/admin': 'stockAsset',
   'inventMakeRequest-barangOther': 'barang',
+  inventMakeRequest: 'makeRequests',
+  'makeRequest/detail': 'makeRequests',
+  'makeRequest/show': 'makeRequests',
+  'makeRequest/personal': 'makeRequests',
+  'detail-barang': 'barang',
   barang: 'barang',
   'jenis-memo/non-dynamic': 'jenisMemo',
   'jenis-memo/non-dynamicd': 'jenisMemo',
@@ -245,6 +273,25 @@ const addLog = (store, action, description) => {
     created_at: new Date().toISOString(),
   });
 };
+
+const updateApprovalState = (item, body) => {
+  if (!item) return null;
+  const status = String(formValue(body, 'status') || formValue(body, 'approval') || formValue(body, 'action') || 'approved').toLowerCase();
+  const rejected = status.includes('reject') || status.includes('decline') || status === '0';
+  item.isRejected = rejected;
+  item.isApproved = !rejected;
+  item.is_full_approval = !rejected;
+  item.approval_message = rejected ? 'Approval ditolak' : 'Approval sudah selesai';
+  item.updated_at = new Date().toISOString();
+  return item;
+};
+
+const purchaseOrderListItems = (items) =>
+  items.map((item) => ({
+    ...item,
+    suplier: item.suplier?.nama_perusahaan || item.supplier?.nama_perusahaan || item.nama_perusahaan || item.suplier,
+    kodePR: item.purchase_request?.kode || item.kodePR || '-',
+  }));
 
 const createMakeRequest = (store, body) => {
   const id = nextDemoId(store, 'makeRequest');
@@ -380,7 +427,7 @@ const createPurchaseOrder = (store, purchaseRequestId, body) => {
     supplier,
     suplier_id: supplier.id,
     nama_perusahaan: supplier.nama_perusahaan,
-    payment: { cara_pembayaran: payment.payment },
+    payment: { id: payment.id, payment: payment.payment, cara_pembayaran: payment.payment },
     cara_pembayaran: payment.payment,
     payment_type: payment,
     is_ppn: ppnValue ? 1 : 0,
@@ -490,7 +537,28 @@ const dashboard = (store) => ({
 
 const genericCreate = (store, key, body) => {
   const id = nextDemoId(store, 'generic');
-  const item = { id, ...body, created_at: new Date().toISOString(), updated_at: new Date().toISOString() };
+  const values = toPlainObject(body);
+  const item = { id, ...values, created_at: new Date().toISOString(), updated_at: new Date().toISOString() };
+  if (key === 'barang') {
+    item.name = item.name || `Demo Barang ${id}`;
+    item.nama_barang = item.name;
+    item.namaBarang = item.name;
+    item.kode_barang = item.kode_barang || `BRG-DEMO-${String(id).padStart(3, '0')}`;
+    item.kodeBarang = item.kode_barang;
+    item.kode_gudang = item.kode_gudang || '';
+    item.kodeGudang = item.kode_gudang;
+    item.category = byId(store.categories, item.invent_categories_id);
+    item.category_barang = item.category;
+    item.jenis_barang = byId(store.jenisBarang, item.invent_jenis_barangs_id);
+    item.sumber_barang = byId(store.sumberBarang, item.invent_sumber_barangs_id);
+    item.tingkat_kebutuhan = byId(store.tingkatKebutuhan, item.invent_tingkat_kebutuhans_id);
+  }
+  if (key === 'memos') {
+    const jenisMemo = byId(store.jenisMemo, item.jenis_memo_id) || store.jenisMemo[0];
+    item.jenis_memo = jenisMemo;
+    item.is_full_approval = true;
+    item.EmpName = store.users[0]?.EmpName;
+  }
   store[key].unshift(item);
   return item;
 };
@@ -498,7 +566,9 @@ const genericCreate = (store, key, body) => {
 const genericUpdate = (store, key, id, body) => {
   const item = byId(store[key], id);
   if (!item) return null;
-  Object.assign(item, body, { updated_at: new Date().toISOString() });
+  const values = toPlainObject(body);
+  Object.assign(item, values, { updated_at: new Date().toISOString() });
+  if (key === 'memos' && values.jenis_memo_id) item.jenis_memo = byId(store.jenisMemo, values.jenis_memo_id);
   return item;
 };
 
@@ -539,6 +609,66 @@ export const demoApiAdapter = async (config) => {
   if (method === 'get' && path.startsWith('inventStok-detail/admin/')) {
     return ok(config, { data: byId(store.stockAsset, routeId(path)) || store.stockAsset[0] });
   }
+  if (method === 'get' && path.startsWith('inventStok-history/')) {
+    const list = (store.stockHistories || []).filter((item) => String(item.invent_stoks_id) === String(routeId(path)));
+    return ok(config, page(list, config));
+  }
+  if (method === 'get' && path.startsWith('inventStok-mutasi/')) {
+    const list = (store.stockMutasi || []).filter((item) => String(item.invent_stoks_id) === String(routeId(path)));
+    return ok(config, page(list, config));
+  }
+  if (method === 'get' && path.startsWith('inventBarang-history/')) {
+    const list = (store.barangHistories || []).filter((item) => String(item.barang_id) === String(routeId(path)));
+    return ok(config, page(list, config));
+  }
+  if (method === 'post' && path.startsWith('inventHistory-create/')) {
+    const values = toPlainObject(body);
+    const status = byId(store.status, values.invent_status_id) || store.status[0];
+    const user = byId(store.users, values.user_id) || store.users[0];
+    const history = {
+      id: nextDemoId(store, 'generic'),
+      invent_stoks_id: Number(routeId(path)),
+      invent_status_id: status.id,
+      status: status.name,
+      user_id: user.id,
+      EmpName: user.EmpName,
+      lokasi: values.lokasi || '',
+      note: values.note || '',
+      image: '',
+      tanggal: new Date().toISOString().slice(0, 10),
+      created_at: new Date().toISOString(),
+    };
+    store.stockHistories = store.stockHistories || [];
+    store.stockHistories.unshift(history);
+    saveDemoStore(store);
+    return ok(config, { data: history, message: 'Histori stok berhasil dibuat' }, 201);
+  }
+  if (method === 'post' && path.startsWith('inventHistory-update/')) {
+    const history = byId(store.stockHistories || [], routeId(path));
+    if (!history) return fail(config, 404, 'Histori stok tidak ditemukan');
+    const values = toPlainObject(body);
+    const status = byId(store.status, values.invent_status_id);
+    const user = byId(store.users, values.user_id);
+    Object.assign(history, values, {
+      status: status?.name || history.status,
+      EmpName: user?.EmpName || history.EmpName,
+      updated_at: new Date().toISOString(),
+    });
+    saveDemoStore(store);
+    return ok(config, { data: history, message: 'Histori stok berhasil diperbarui' });
+  }
+  if (method === 'delete' && path.startsWith('inventHistory-delete/')) {
+    store.stockHistories = (store.stockHistories || []).filter((item) => String(item.id) !== String(routeId(path)));
+    saveDemoStore(store);
+    return ok(config, { message: 'Histori stok berhasil dihapus' });
+  }
+  if ((method === 'get' || method === 'post') && (path.startsWith('getSheet') || path.startsWith('export-'))) {
+    const data = typeof Blob !== 'undefined' ? new Blob(['Demo export data'], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }) : 'Demo export data';
+    return ok(config, data, 200, { 'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  }
+  if (method === 'post' && path === 'cms-upload') {
+    return ok(config, { data: '/icons/192x192.png', url: '/icons/192x192.png', message: 'Demo upload berhasil' }, 201);
+  }
 
   const memoListPath = ['memo-personal', 'memo-admin', 'memo-information', 'memo-toggle/personal', 'memo-information/search'].includes(path.split('/').slice(0, 2).join('/')) || path === 'memo-admin';
   if (method === 'get' && memoListPath) {
@@ -570,6 +700,31 @@ export const demoApiAdapter = async (config) => {
     saveDemoStore(store);
     return ok(config, { data: created, message: 'Material request berhasil dibuat' }, 201);
   }
+  if ((method === 'put' || method === 'post') && path.startsWith('inventMakeRequest-update/')) {
+    const mr = genericUpdate(store, 'makeRequests', routeId(path), body);
+    if (!mr) return fail(config, 404, 'Material request tidak ditemukan');
+    saveDemoStore(store);
+    return ok(config, { data: mr, message: 'Material request berhasil diperbarui' });
+  }
+  if ((method === 'delete' && path.startsWith('inventMakeRequest-delete/')) || (method === 'delete' && path.startsWith('makeRequest/')) || (method === 'delete' && path.startsWith('makeRequest-delete/'))) {
+    genericDelete(store, 'makeRequests', routeId(path));
+    saveDemoStore(store);
+    return ok(config, { message: 'Material request berhasil dihapus' });
+  }
+  if (method === 'get' && (path === 'makeRequest/personal' || path === 'makeRequest' || path === 'makeRequest/admin')) {
+    return ok(config, page(store.makeRequests, config));
+  }
+  if (method === 'get' && (path.startsWith('makeRequest/detail/') || path.startsWith('makeRequest/show/'))) {
+    return ok(config, { data: byId(store.makeRequests, routeId(path)) || store.makeRequests[0] });
+  }
+  if (method === 'get' && path.startsWith('makeRequest/admin/trash')) return ok(config, page(store.trash.makeRequest, config));
+  if (method === 'get' && path.startsWith('makeRequest/admin/restore/')) return ok(config, { message: 'Material request berhasil direstore' });
+  if (method === 'post' && path.startsWith('approvalStepHistory-create/')) {
+    const updated = updateApprovalState(byId(store.makeRequests, routeId(path)), body);
+    if (!updated) return fail(config, 404, 'Material request tidak ditemukan');
+    saveDemoStore(store);
+    return ok(config, { data: updated, message: 'Approval berhasil disimpan' }, 201);
+  }
 
   if (method === 'get' && path === 'purchaseRequest-makeRequest') {
     const usedMrIds = new Set(store.purchaseRequests.map((item) => String(item.make_request_id)));
@@ -597,6 +752,23 @@ export const demoApiAdapter = async (config) => {
     const pr = byId(store.purchaseRequests, routeId(path));
     return ok(config, { data: pr });
   }
+  if ((method === 'put' || method === 'post') && path.startsWith('purchaseRequest-update/')) {
+    const pr = genericUpdate(store, 'purchaseRequests', routeId(path), body);
+    if (!pr) return fail(config, 404, 'Purchase request tidak ditemukan');
+    saveDemoStore(store);
+    return ok(config, { data: pr, message: 'Purchase request berhasil diperbarui' });
+  }
+  if (method === 'delete' && path.startsWith('purchaseRequest-delete/')) {
+    genericDelete(store, 'purchaseRequests', routeId(path));
+    saveDemoStore(store);
+    return ok(config, { message: 'Purchase request berhasil dihapus' });
+  }
+  if (method === 'post' && path.startsWith('purchaseRequest-approval/')) {
+    const updated = updateApprovalState(byId(store.purchaseRequests, routeId(path)), body);
+    if (!updated) return fail(config, 404, 'Purchase request tidak ditemukan');
+    saveDemoStore(store);
+    return ok(config, { data: updated, message: 'Approval purchase request berhasil disimpan' }, 201);
+  }
 
   if (method === 'get' && path === 'purchaseOrder-listPurchaseRequest') {
     const list = store.purchaseRequests.filter((item) => item.isApproved && !item.is_completed);
@@ -616,14 +788,47 @@ export const demoApiAdapter = async (config) => {
     if (config.params?.is_completed !== undefined) {
       list = list.filter((item) => Number(item.is_completed) === Number(config.params.is_completed));
     }
-    return ok(config, page(list, config));
+    return ok(config, page(purchaseOrderListItems(list), config));
   }
   if (method === 'get' && path.startsWith('purchaseOrder/')) {
-    return ok(config, page(store.purchaseOrders, { ...config, params: { ...config.params, search: routeId(path) } }));
+    return ok(config, page(purchaseOrderListItems(store.purchaseOrders), { ...config, params: { ...config.params, search: routeId(path) } }));
   }
   if (method === 'get' && path.startsWith('purchaseOrder-detail/')) {
     const po = byId(store.purchaseOrders, routeId(path));
     return ok(config, { data: po });
+  }
+  if ((method === 'put' || method === 'post') && path.startsWith('purchaseOrder-update/')) {
+    const po = byId(store.purchaseOrders, routeId(path));
+    if (!po) return fail(config, 404, 'Purchase order tidak ditemukan');
+    const values = toPlainObject(body);
+    Object.assign(po, values, { updated_at: new Date().toISOString() });
+    if (values.invent_suplier_id) {
+      const supplier = byId(store.suppliers, values.invent_suplier_id);
+      po.suplier = supplier || po.suplier;
+      po.supplier = supplier || po.supplier;
+      po.nama_perusahaan = supplier?.nama_perusahaan || po.nama_perusahaan;
+    }
+    if (values.cara_pembayaran) {
+      const payment = byId(store.paymentTypes, values.cara_pembayaran);
+      po.payment = payment ? { id: payment.id, payment: payment.payment, cara_pembayaran: payment.payment } : po.payment;
+      po.payment_type = payment || po.payment_type;
+      po.cara_pembayaran = payment?.payment || po.cara_pembayaran;
+    }
+    saveDemoStore(store);
+    return ok(config, { data: po, message: 'Purchase order berhasil diperbarui' });
+  }
+  if (method === 'delete' && (path.startsWith('purchaseOrder-delete/') || path.startsWith('purchaseOrder/'))) {
+    genericDelete(store, 'purchaseOrders', routeId(path));
+    saveDemoStore(store);
+    return ok(config, { message: 'Purchase order berhasil dihapus' });
+  }
+  if (method === 'post' && path.startsWith('purchaseOrder/uploadBukti/')) return ok(config, { message: 'Lampiran purchase order berhasil diupload' }, 201);
+  if (method === 'delete' && path.includes('/deleteBukti/')) return ok(config, { message: 'Lampiran purchase order berhasil dihapus' });
+  if (method === 'post' && path.startsWith('purchaseOrder-approval/')) {
+    const updated = updateApprovalState(byId(store.purchaseOrders, routeId(path)), body);
+    if (!updated) return fail(config, 404, 'Purchase order tidak ditemukan');
+    saveDemoStore(store);
+    return ok(config, { data: updated, message: 'Approval purchase order berhasil disimpan' }, 201);
   }
 
   if (method === 'get' && path === 'laporanPenerimaanBarang-purchaseOrder') {
@@ -644,13 +849,58 @@ export const demoApiAdapter = async (config) => {
     const lpb = byId(store.lpbs, routeId(path));
     return ok(config, { data: lpb });
   }
+  if ((method === 'put' || method === 'post') && path.startsWith('laporanPenerimaanBarang-update/')) {
+    const lpb = genericUpdate(store, 'lpbs', routeId(path), body);
+    if (!lpb) return fail(config, 404, 'LPB tidak ditemukan');
+    saveDemoStore(store);
+    return ok(config, { data: lpb, message: 'LPB berhasil diperbarui' });
+  }
+  if (method === 'delete' && path.startsWith('laporanPenerimaanBarang-delete/')) {
+    genericDelete(store, 'lpbs', routeId(path));
+    saveDemoStore(store);
+    return ok(config, { message: 'LPB berhasil dihapus' });
+  }
+  if (method === 'post' && path.startsWith('laporanPenerimaanBarang/uploadBukti/')) return ok(config, { message: 'Bukti LPB berhasil diupload' }, 201);
+  if (method === 'delete' && path.includes('/deleteBukti/')) return ok(config, { message: 'Bukti LPB berhasil dihapus' });
+  if (method === 'post' && path.startsWith('approvalHistoriesLPB-create/')) {
+    const updated = updateApprovalState(byId(store.lpbs, routeId(path)), body);
+    if (!updated) return fail(config, 404, 'LPB tidak ditemukan');
+    saveDemoStore(store);
+    return ok(config, { data: updated, message: 'Approval LPB berhasil disimpan' }, 201);
+  }
+
+  if (method === 'post' && path === 'memo-create') {
+    const created = genericCreate(store, 'memos', body);
+    saveDemoStore(store);
+    return ok(config, { data: created, message: 'Memo berhasil dibuat' }, 201);
+  }
+  if ((method === 'put' || method === 'post') && path.startsWith('memo-update/')) {
+    const memo = genericUpdate(store, 'memos', routeId(path), body);
+    if (!memo) return fail(config, 404, 'Memo tidak ditemukan');
+    saveDemoStore(store);
+    return ok(config, { data: memo, message: 'Memo berhasil diperbarui' });
+  }
+  if (method === 'delete' && path.startsWith('memo-delete/')) {
+    genericDelete(store, 'memos', routeId(path));
+    saveDemoStore(store);
+    return ok(config, { message: 'Memo berhasil dihapus' });
+  }
+  if (method === 'post' && (path.startsWith('approvalMemoHistories-create/') || path.startsWith('approvalMemoDynamic-create/'))) {
+    const updated = updateApprovalState(byId(store.memos, routeId(path)), body);
+    if (!updated) return fail(config, 404, 'Memo tidak ditemukan');
+    saveDemoStore(store);
+    return ok(config, { data: updated, message: 'Approval memo berhasil disimpan' }, 201);
+  }
 
   if (method === 'get' && path.startsWith('category/trash')) return ok(config, page(store.trash.category, config));
   if (method === 'get' && path.startsWith('categoryTrash')) return ok(config, page(store.trash.category, config));
+  if (method === 'get' && path.startsWith('category/restore/')) return ok(config, { message: 'Category berhasil direstore' });
   if (method === 'get' && path.startsWith('department/trash')) return ok(config, page(store.trash.department, config));
   if (method === 'get' && path.startsWith('departmentTrash')) return ok(config, page(store.trash.department, config));
+  if (method === 'get' && path.startsWith('department/restore/')) return ok(config, { message: 'Department berhasil direstore' });
   if (method === 'get' && path.startsWith('divisi/trash')) return ok(config, page(store.trash.divisi, config));
   if (method === 'get' && path.startsWith('divisiTrash')) return ok(config, page(store.trash.divisi, config));
+  if (method === 'get' && path.startsWith('divisi/restore/')) return ok(config, { message: 'Divisi berhasil direstore' });
 
   if (method === 'get' && (path === 'inventStok-user' || path.startsWith('inventStok-user/'))) {
     return ok(config, { data: searchList(store.stock, { search: path.split('/')[1] || config.params?.search }) });
@@ -678,7 +928,7 @@ export const demoApiAdapter = async (config) => {
       return ok(config, { data: created, message: 'Demo data created' }, 201);
     }
 
-    if ((method === 'put' || method === 'post') && path.includes('-update/')) {
+    if ((method === 'put' || method === 'post') && (path.includes('-update/') || (method === 'put' && parts.length > 1 && !Number.isNaN(Number(possibleId))))) {
       const updated = genericUpdate(store, key, routeId(path), body);
       if (!updated) return fail(config, 404, 'Data tidak ditemukan');
       saveDemoStore(store);

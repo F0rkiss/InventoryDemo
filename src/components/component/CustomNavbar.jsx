@@ -89,7 +89,7 @@ const CustomNavbar = ({ scrollRootSelector, scrollRootRef }) => {
             </span>
           </span>
           <div className='flex gap-1'>
-            {isDemoMode && (
+            {/* {isDemoMode && (
               <button
                 type="button"
                 onClick={handleDemoReset}
@@ -99,7 +99,7 @@ const CustomNavbar = ({ scrollRootSelector, scrollRootRef }) => {
                 <i className="bx bx-reset"></i>
                 <span className="hidden sm:inline">Reset Demo</span>
               </button>
-            )}
+            )} */}
             <RefreshButton onRefresh={() => window.location.reload()} />
             <Notifications />
           </div>

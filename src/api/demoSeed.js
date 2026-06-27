@@ -1,4 +1,4 @@
-export const DEMO_STORAGE_KEY = 'mi_inventory_demo_store_v1';
+export const DEMO_STORAGE_KEY = 'mi_inventory_demo_store_v2';
 
 export const DEMO_LOGIN = {
   employeeCode: '1001',
@@ -157,6 +157,7 @@ export const createDemoSeed = () => {
     {
       id: 1,
       name: 'Laptop Lenovo ThinkPad E14',
+      nama_barang: 'Laptop Lenovo ThinkPad E14',
       namaBarang: 'Laptop Lenovo ThinkPad E14',
       kode_barang: 'BRG-IT-001',
       kodeBarang: 'BRG-IT-001',
@@ -167,6 +168,7 @@ export const createDemoSeed = () => {
       is_asset: 'ya',
       barangIsAsset: 'ya',
       category: categories[0],
+      category_barang: categories[0],
       jenis_barang: jenisBarang[0],
       sumber_barang: sumberBarang[0],
       tingkat_kebutuhan: tingkatKebutuhan[1],
@@ -176,6 +178,7 @@ export const createDemoSeed = () => {
     {
       id: 2,
       name: 'Monitor Dell 24 Inch',
+      nama_barang: 'Monitor Dell 24 Inch',
       namaBarang: 'Monitor Dell 24 Inch',
       kode_barang: 'BRG-IT-002',
       kodeBarang: 'BRG-IT-002',
@@ -186,6 +189,7 @@ export const createDemoSeed = () => {
       is_asset: 'ya',
       barangIsAsset: 'ya',
       category: categories[0],
+      category_barang: categories[0],
       jenis_barang: jenisBarang[0],
       sumber_barang: sumberBarang[0],
       tingkat_kebutuhan: tingkatKebutuhan[0],
@@ -195,6 +199,7 @@ export const createDemoSeed = () => {
     {
       id: 3,
       name: 'Kertas A4 80gsm',
+      nama_barang: 'Kertas A4 80gsm',
       namaBarang: 'Kertas A4 80gsm',
       kode_barang: 'BRG-ATK-001',
       kodeBarang: 'BRG-ATK-001',
@@ -205,6 +210,7 @@ export const createDemoSeed = () => {
       is_asset: 'tidak',
       barangIsAsset: 'tidak',
       category: categories[1],
+      category_barang: categories[1],
       jenis_barang: jenisBarang[1],
       sumber_barang: sumberBarang[1],
       tingkat_kebutuhan: tingkatKebutuhan[0],
@@ -358,7 +364,7 @@ export const createDemoSeed = () => {
       supplier: suppliers[0],
       suplier_id: 1,
       nama_perusahaan: suppliers[0].nama_perusahaan,
-      payment: { cara_pembayaran: paymentTypes[0].payment },
+      payment: { id: paymentTypes[0].id, payment: paymentTypes[0].payment, cara_pembayaran: paymentTypes[0].payment },
       cara_pembayaran: paymentTypes[0].payment,
       payment_type: paymentTypes[0],
       is_ppn: 1,
@@ -434,6 +440,9 @@ export const createDemoSeed = () => {
       name: 'Maintenance Window Gudang IT',
       tanggal: '2026-05-12',
       description: '<p>Inventory demo data is available for QA testing.</p>',
+      jenis_memo_id: 1,
+      jenis_memo: { id: 1, name: 'Informasi Umum', description: 'General information', is_dynamic: 0 },
+      expired: '2026-06-12',
       is_full_approval: true,
       is_dynamic: false,
       is_public: true,
@@ -444,6 +453,9 @@ export const createDemoSeed = () => {
       name: 'Reminder Stock Opname',
       tanggal: '2026-05-13',
       description: '<p>Stock opname simulation is ready for review.</p>',
+      jenis_memo_id: 2,
+      jenis_memo: { id: 2, name: 'Persetujuan Pengadaan', description: 'Procurement memo', is_dynamic: 1 },
+      expired: '2026-06-13',
       is_full_approval: false,
       is_dynamic: true,
       is_public: true,
@@ -488,6 +500,44 @@ export const createDemoSeed = () => {
     purchaseRequests,
     purchaseOrders,
     lpbs,
+    barangHistories: [
+      { id: 1, barang_id: 1, kode: purchaseOrders[0].kode, nama_perusahaan: suppliers[0].nama_perusahaan, tanggal: purchaseOrders[0].tanggal, harga_sub_total: 30000000, qty: 2 },
+      { id: 2, barang_id: 2, kode: 'PO-DEMO-0002', nama_perusahaan: suppliers[1].nama_perusahaan, tanggal: '2026-04-25', harga_sub_total: 4200000, qty: 2 },
+      { id: 3, barang_id: 3, kode: 'LPB-DEMO-STOCK', nama_perusahaan: suppliers[1].nama_perusahaan, tanggal: '2026-05-01', harga_sub_total: 7200000, qty: 120 },
+    ],
+    stockHistories: [
+      {
+        id: 1,
+        invent_stoks_id: 201,
+        invent_status_id: status[1].id,
+        status: status[1].name,
+        user_id: users[0].id,
+        EmpName: users[0].EmpName,
+        lokasi: 'Gudang IT',
+        note: 'Ready for assignment',
+        image: '',
+        tanggal: '2026-05-02',
+        created_at: now,
+      },
+      {
+        id: 2,
+        invent_stoks_id: 202,
+        invent_status_id: status[0].id,
+        status: status[0].name,
+        user_id: users[1].id,
+        EmpName: users[1].EmpName,
+        lokasi: 'Design Desk',
+        note: 'Assigned to design workstation',
+        image: '',
+        tanggal: '2026-05-04',
+        created_at: now,
+      },
+    ],
+    stockMutasi: [
+      { id: 1, invent_stoks_id: 101, tanggal: '2026-05-01', stok_awal: 0, stok_change: 120, stok_akhir: 120 },
+      { id: 2, invent_stoks_id: 101, tanggal: '2026-05-09', stok_awal: 120, stok_change: 20, stok_akhir: 100 },
+      { id: 3, invent_stoks_id: 102, tanggal: '2026-04-18', stok_awal: 0, stok_change: 8, stok_akhir: 8 },
+    ],
     billing: [
       {
         id: 1,

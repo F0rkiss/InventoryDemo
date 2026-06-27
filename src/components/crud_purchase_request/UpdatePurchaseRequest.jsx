@@ -61,12 +61,6 @@ function UpdatePurchaseRequest() {
         setDetailMR(data.data.details || []);
         setPrDetailQty(data.data.qty || []);
 
-        setItem(data.data);
-        setOriginalItem(data.data);
-
-        setSelectedItems(convertedItems);
-        setOriginalSelectedItems(convertedItems);
-
         const qtyDataMap = new Map();
         (data.data.qty || []).forEach(q => qtyDataMap.set(String(q.barang_id), q));
 
@@ -74,7 +68,9 @@ function UpdatePurchaseRequest() {
             const qtyData = qtyDataMap.get(String(pr.barangs?.id || pr.invent_barangs_id));
             return { selectedBarang: pr.barangs, qty: qtyData?.requested_qty || 0, originalIndex: index };
         });
+        setOriginalItem(data.data);
         setSelectedItems(convertedItems);
+        setOriginalSelectedItems(convertedItems);
         } catch (error) {
         console.error("Error fetchPurchaseRequest:", error);
         } finally {
