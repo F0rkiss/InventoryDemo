@@ -1,6 +1,7 @@
 import CryptoJS from "crypto-js";
 
-const secretKey = import.meta.env.VITE_REACT_APP_KEY || "default-secret-key";
+// Nilai VITE_* selalu ikut ter-bundle ke browser: jangan anggap ini rahasia.
+const secretKey = import.meta.env.VITE_REACT_APP_KEY || "";
 
 // AES-GCM replacement using CryptoJS AES (works without HTTPS)
 const encryptData = async (plainText) => {

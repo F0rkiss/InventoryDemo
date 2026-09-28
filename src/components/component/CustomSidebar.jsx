@@ -12,8 +12,10 @@ const CustomSidebar = ({ showProfile = true, navOpen, setNavOpen }) => {
     const { name, email, role, navigation_menu } = useAuth();
     const handleNavigation = useNavigate();
 
+    const hasMenu = (key) => navigation_menu?.some(nav => nav.name === key);
+    // Grup accordion tampil jika minimal satu submenu boleh diakses.
     const allowedMenus = menus.filter(menu =>
-        navigation_menu?.some(nav => nav.name === menu.key)
+        menu.children ? menu.children.some(sub => hasMenu(sub.key)) : hasMenu(menu.key)
     );
 
     const logout = () => {

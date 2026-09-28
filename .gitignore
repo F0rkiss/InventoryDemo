@@ -36,3 +36,6 @@ Thumbs.db
 # Production build
 www/
 
+
+# Cache PowerShell yang tidak sengaja dibuat di folder proyek
+Microsoft/

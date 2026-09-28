@@ -3,28 +3,40 @@ import { useLocation, Navigate, Outlet } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
 import { jwtDecode } from 'jwt-decode'; 
 
-const PathMenu = [
-    { menu: "Dashboard", path: "/dashboard" },
-    { menu: "Role", path: "/role/list-role" },
-    { menu: "Status", path: "/status/list-status" },
-    { menu: "Billing", path: "/billing/list-billing" },
-    { menu: "Barang", path: "/barang/list-barang" },
-    { menu: "JenisBarang", path: "/jenis-barang/list-jenis-barang" },
-    { menu: "SumberBarang", path: "/sumber-barang/list-sumber-barang" },
-    { menu: "Categories", path: "/category/list-category" },
-    { menu: "User", path: "/user/list-user" },
-    { menu: "MakeRequest", path: "/make-request/list-make-request" },
-    { menu: "TypeRequest", path: "/type-request/list-type-request" },
-    { menu: "JenisMemo", path: "/jenismemo/list-jenismemo" },
-    { menu: "NavigationGroup", path: "/navigation-groups/list-navigation-groups" },
-    { menu: "NavigationMenu", path: "/navigation-menu/list-navigation-menu" },
-]
-
-const getMenuKeyForPath = (pathname) => {
-    if (pathname === '/dashboard') return null;
-    const found = PathMenu.find(item => pathname.startsWith(item.path));
-    return found ? found.menu : null;
+// Segmen pertama URL -> nama menu (sama dengan key di js/menus.js).
+// Hanya halaman master data/admin yang dikunci di sini. Rute transaksi (MR, PR, PO, LPB, memo, stok)
+// sengaja tidak dikunci karena dibuka lewat link dashboard/notifikasi oleh approver.
+// Ini hanya pengaman tampilan: otorisasi sebenarnya tetap harus dilakukan backend.
+const SegmentMenu = {
+    'role': 'Role',
+    'status': 'Status',
+    'billing': 'Billing',
+    'barang': 'Barang',
+    'jenis-barang': 'JenisBarang',
+    'sumber-barang': 'SumberBarang',
+    'category': 'Categories',
+    'tk': 'TingkatKebutuhan',
+    'user': 'User',
+    'type-request': 'TypeRequest',
+    'jenismemo': 'JenisMemo',
+    'navigation-groups': 'NavigationGroup',
+    'approval-step': 'ApprovalStep',
+    'approval-step-purchase': 'ApprovalStepPurchase',
+    'approval-step-lpb': 'ApprovalStepLPB',
+    'approval-step-memo': 'ApprovalStepMemo',
+    'supplier': 'Suplier',
+    'mata-uang': 'MataUang',
+    'ppn': 'PPN',
+    'list-payment-method': 'PaymentType',
+    'create-payment-method': 'PaymentType',
+    'update-payment-method': 'PaymentType',
+    'mutasi': 'InventMutasi',
+    'log': 'InventLog',
+    'material-request-admin': 'MakeRequestAdmin',
+    'memo-admin': 'Memo',
 };
+
+const getMenuKeyForPath = (pathname) => SegmentMenu[pathname.split('/')[1]] ?? null;
 
 const RequireAuth = () => {
     const location = useLocation();

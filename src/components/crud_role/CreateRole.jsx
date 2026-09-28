@@ -48,7 +48,7 @@ function CreateRole() {
                 title:'Tidak Dapat Membuat role MR',
                 text:'Ada Kesalahan Dalam Sistem'
             })
-            setError(error.response.data)
+            setError(error.response?.data ?? null)
         } finally {
             setDisabled(false)
         }

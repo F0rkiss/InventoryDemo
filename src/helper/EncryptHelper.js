@@ -1,6 +1,7 @@
 import CryptoJS from "crypto-js";
 
-const secretKey = `${import.meta.env.VITE_REACT_APP_KEY}`;
+// Hanya untuk menyamarkan ID di URL, bukan pengamanan: nilai VITE_* terlihat di bundle.
+const secretKey = import.meta.env.VITE_REACT_APP_KEY || "";
 
 // Encrypting function
 export const encrypting = (id) => {

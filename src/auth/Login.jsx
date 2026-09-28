@@ -6,7 +6,6 @@ import api from '../api/api';
 import useAuth from '../hooks/useAuth';
 import gambar from '../assets/image/Media_Indonesia_(2017) (1).png';
 import { jwtDecode } from 'jwt-decode';
-import CryptoJS from 'crypto-js';
 // import encryptData from './CobaIndex';
 function Login() {
     const navigate = useNavigate();
@@ -22,11 +21,13 @@ function Login() {
     useEffect(() => {
         const token = localStorage.getItem('authToken');
         if (token) {
-            const decoded = jwtDecode(token);
-            const role = decoded.role;
-
-            if ( role ) {
-                navigate('/dashboard', { replace: true });
+            try {
+                const { role } = jwtDecode(token);
+                if (role) {
+                    navigate('/dashboard', { replace: true });
+                }
+            } catch {
+                localStorage.removeItem('authToken');
             }
         }
     }, [navigate]);
@@ -81,7 +82,7 @@ function Login() {
         } catch (error) {
             // Handle errors during login
             setErrorMessage('Login failed: ' + (error.response?.data?.message || error.message));
-            if (error.response.status === 401 || 404) {
+            if ([401, 404].includes(error.response?.status)) {
                 setErrorMessage('Kode atau Password Anda salah')
             }
         } finally {

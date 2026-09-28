@@ -13,7 +13,7 @@ Employee Code: 1001
 Password: Demo@12345
 ```
 
-Demo data is stored in browser `localStorage` under `mi_inventory_demo_store_v1`. The navbar includes a reset action in demo mode to restore the original seeded data.
+Demo data is stored in browser `localStorage` under `mi_inventory_demo_store_v3`. The navbar includes a reset action in demo mode to restore the original seeded data.
 
 ## Main Demo Areas
 
@@ -66,6 +66,10 @@ npm run dev
 Vite will print the local URL in the terminal, usually `http://localhost:5173`.
 
 ## Environment
+
+Copy `.env.example` to `.env` before running the app. Without a `.env`, demo mode is off and API calls go to `undefined/api`.
+
+All `VITE_*` values are bundled into the browser build, so never put real secrets in them.
 
 For the browser-only demo, keep demo mode enabled:
 

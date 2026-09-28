@@ -24,6 +24,7 @@
     "crypto-js": "^4.2.0",
     "dayjs": "^1.11.13",
     "depcheck": "^1.4.7",
+    "dompurify": "^3.4.16",
     "exceljs": "^4.4.0",
     "file-saver": "^2.0.5",
     "flatpickr": "^4.6.13",

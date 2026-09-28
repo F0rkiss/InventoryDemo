@@ -6,6 +6,15 @@
  * @returns {string} - String mata uang yang telah diformat.
  */
 const PriceFormatter = (price, currencyCode = 'IDR') => {
+    try {
+        return formatWithCurrency(price, currencyCode || 'IDR');
+    } catch {
+        // Kode mata uang dari master data tidak valid (bukan ISO 4217): jangan crash halaman.
+        return formatWithCurrency(price, 'IDR');
+    }
+};
+
+const formatWithCurrency = (price, currencyCode) => {
     const numPrice = Number(price);
 
     // Menangani input null, undefined, NaN, atau 0

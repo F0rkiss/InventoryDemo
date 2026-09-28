@@ -1,4 +1,4 @@
-export const DEMO_STORAGE_KEY = 'mi_inventory_demo_store_v2';
+export const DEMO_STORAGE_KEY = 'mi_inventory_demo_store_v3';
 
 export const DEMO_LOGIN = {
   employeeCode: '1001',
@@ -86,31 +86,60 @@ export const createDemoSeed = () => {
       role: roles[1],
       role_name: 'staff',
     },
+    {
+      id: 3,
+      EmpCode: '1003',
+      EmpName: 'Andi Gudang',
+      email: 'andi.gudang@mediaindonesia.test',
+      EmpPhone: '08120001003',
+      DOB: '1990-11-03',
+      role: roles[1],
+      role_name: 'staff',
+    },
+    {
+      id: 4,
+      EmpCode: '1004',
+      EmpName: 'Sari Finance',
+      email: 'sari.finance@mediaindonesia.test',
+      EmpPhone: '08120001004',
+      DOB: '1993-06-27',
+      role: roles[1],
+      role_name: 'staff',
+    },
   ];
 
   const categories = [
     { id: 1, name: 'IT Equipment', description: 'Laptop, monitor, and network devices' },
     { id: 2, name: 'Office Supply', description: 'Consumable office goods' },
+    { id: 3, name: 'Peralatan Studio', description: 'Kamera, lighting, dan audio untuk produksi' },
+    { id: 4, name: 'Furnitur', description: 'Meja, kursi, dan lemari kantor' },
   ];
 
   const jenisBarang = [
     { id: 1, name: 'Elektronik', description: 'Electronic office assets' },
     { id: 2, name: 'ATK', description: 'Office stationery' },
+    { id: 3, name: 'Jaringan', description: 'Perangkat jaringan dan konektivitas' },
   ];
 
   const sumberBarang = [
     { id: 1, name: 'Pembelian', description: 'Purchased from supplier' },
     { id: 2, name: 'Stok Gudang', description: 'Available warehouse stock' },
+    { id: 3, name: 'Hibah', description: 'Barang pemberian mitra' },
   ];
 
   const tingkatKebutuhan = [
     { id: 1, name: 'Normal', description: 'Standard need' },
     { id: 2, name: 'Urgent', description: 'Priority procurement' },
+    { id: 3, name: 'Rendah', description: 'Dapat dijadwalkan kemudian' },
   ];
 
+  // Nama status mengikuti endpoint export getSheetBarang/{status}.
   const status = [
     { id: 1, name: 'in-use', description: 'Currently used' },
     { id: 2, name: 'in-service', description: 'Ready in service' },
+    { id: 3, name: 'out', description: 'Keluar dari gudang' },
+    { id: 4, name: 'rusak', description: 'Rusak, menunggu perbaikan' },
+    { id: 5, name: 'upgrade', description: 'Sedang di-upgrade' },
   ];
 
   const suppliers = [
@@ -130,16 +159,34 @@ export const createDemoSeed = () => {
       phone: '021-555-0102',
       alamat: 'Jl. Palmerah Barat No. 8, Jakarta',
     },
+    {
+      id: 3,
+      nama_perusahaan: 'PT Jaringan Prima Indonesia',
+      pic: 'Hendra Wijaya',
+      email: 'hendra@jaringanprima.test',
+      phone: '021-555-0103',
+      alamat: 'Jl. Kebon Jeruk Raya No. 21, Jakarta',
+    },
+    {
+      id: 4,
+      nama_perusahaan: 'CV Studio Media Perkasa',
+      pic: 'Dewi Lestari',
+      email: 'dewi@studiomedia.test',
+      phone: '021-555-0104',
+      alamat: 'Jl. Kemang Raya No. 5, Jakarta',
+    },
   ];
 
   const paymentTypes = [
     { id: 1, payment: 'Transfer Bank', description: 'Bank transfer' },
     { id: 2, payment: 'Tempo 30 Hari', description: 'Net 30 payment' },
+    { id: 3, payment: 'Tunai', description: 'Cash on delivery' },
   ];
 
   const mataUang = [
     { id: 1, kode: 'IDR', name: 'Rupiah', symbol: 'Rp' },
     { id: 2, kode: 'USD', name: 'US Dollar', symbol: '$' },
+    { id: 3, kode: 'SGD', name: 'Singapore Dollar', symbol: 'S$' },
   ];
 
   const ppn = [
@@ -217,6 +264,69 @@ export const createDemoSeed = () => {
       created_at: now,
       updated_at: now,
     },
+    {
+      id: 4,
+      name: 'Router MikroTik hAP ax2',
+      nama_barang: 'Router MikroTik hAP ax2',
+      namaBarang: 'Router MikroTik hAP ax2',
+      kode_barang: 'BRG-NET-001',
+      kodeBarang: 'BRG-NET-001',
+      kode_gudang: 'GDG-IT-03',
+      kodeGudang: 'GDG-IT-03',
+      satuan: 'unit',
+      image: '',
+      is_asset: 'ya',
+      barangIsAsset: 'ya',
+      category: categories[0],
+      category_barang: categories[0],
+      jenis_barang: jenisBarang[2],
+      sumber_barang: sumberBarang[0],
+      tingkat_kebutuhan: tingkatKebutuhan[1],
+      created_at: now,
+      updated_at: now,
+    },
+    {
+      id: 5,
+      name: 'Pulpen Gel Hitam',
+      nama_barang: 'Pulpen Gel Hitam',
+      namaBarang: 'Pulpen Gel Hitam',
+      kode_barang: 'BRG-ATK-002',
+      kodeBarang: 'BRG-ATK-002',
+      kode_gudang: 'GDG-ATK-02',
+      kodeGudang: 'GDG-ATK-02',
+      satuan: 'box',
+      image: '',
+      is_asset: 'tidak',
+      barangIsAsset: 'tidak',
+      category: categories[1],
+      category_barang: categories[1],
+      jenis_barang: jenisBarang[1],
+      sumber_barang: sumberBarang[1],
+      tingkat_kebutuhan: tingkatKebutuhan[2],
+      created_at: now,
+      updated_at: now,
+    },
+    {
+      id: 6,
+      name: 'Lampu LED Studio 60W',
+      nama_barang: 'Lampu LED Studio 60W',
+      namaBarang: 'Lampu LED Studio 60W',
+      kode_barang: 'BRG-STD-001',
+      kodeBarang: 'BRG-STD-001',
+      kode_gudang: 'GDG-STD-01',
+      kodeGudang: 'GDG-STD-01',
+      satuan: 'unit',
+      image: '',
+      is_asset: 'ya',
+      barangIsAsset: 'ya',
+      category: categories[2],
+      category_barang: categories[2],
+      jenis_barang: jenisBarang[0],
+      sumber_barang: sumberBarang[2],
+      tingkat_kebutuhan: tingkatKebutuhan[0],
+      created_at: now,
+      updated_at: now,
+    },
   ];
 
   const stock = [
@@ -238,6 +348,16 @@ export const createDemoSeed = () => {
       qty: 8,
       note: 'Replacement monitor stock',
       tanggal_barang_masuk: '2026-04-18',
+      status: status[1],
+    },
+    {
+      ...barang[4],
+      id: 103,
+      barang: barang[4],
+      invent_barang_id: barang[4].id,
+      qty: 35,
+      note: 'Stok ATK lantai 3',
+      tanggal_barang_masuk: '2026-05-05',
       status: status[1],
     },
   ];
@@ -262,6 +382,26 @@ export const createDemoSeed = () => {
       note: 'Design desk monitors',
       tanggal_barang_masuk: '2026-04-20',
       status: status[0],
+    },
+    {
+      ...barang[3],
+      id: 203,
+      barang: barang[3],
+      invent_barang_id: barang[3].id,
+      qty: 3,
+      note: 'Router cadangan ruang redaksi',
+      tanggal_barang_masuk: '2026-05-03',
+      status: status[4],
+    },
+    {
+      ...barang[5],
+      id: 204,
+      barang: barang[5],
+      invent_barang_id: barang[5].id,
+      qty: 2,
+      note: 'Lampu studio 2, satu unit mati',
+      tanggal_barang_masuk: '2026-03-15',
+      status: status[3],
     },
   ];
 
@@ -308,6 +448,52 @@ export const createDemoSeed = () => {
       details: [{ id: 3, invent_barang_id: 3, barang: barang[2], selectedBarang: barang[2], qty: 20 }],
       is_full_approval: false,
       approval_message: 'Approval belum selesai',
+      canBeUpdated: true,
+      can_be_deleted: true,
+      created_at: now,
+      updated_at: now,
+    },
+    {
+      // Sudah approved dan belum punya PR: muncul di halaman "Create Purchase Request".
+      id: 3,
+      kode: 'MR-DEMO-0003',
+      tanggal: '2026-05-12',
+      user: users[2],
+      EmpName: users[2].EmpName,
+      type_request: typeRequests[1],
+      nameTypeRequest: typeRequests[1].name,
+      type_name: typeRequests[1].name,
+      jenisTypeRequest: typeRequests[1].jenis,
+      type_jenis: typeRequests[1].jenis,
+      deskripsiTypeRequest: typeRequests[1].description,
+      description: 'Router pengganti untuk ruang redaksi lantai 2',
+      details: [
+        { id: 4, invent_barang_id: 4, barang: barang[3], selectedBarang: barang[3], qty: 2 },
+        { id: 5, invent_barang_id: 6, barang: barang[5], selectedBarang: barang[5], qty: 1 },
+      ],
+      is_full_approval: true,
+      approval_message: 'Approval sudah selesai',
+      canBeUpdated: false,
+      can_be_deleted: false,
+      created_at: now,
+      updated_at: now,
+    },
+    {
+      id: 4,
+      kode: 'MR-DEMO-0004',
+      tanggal: '2026-05-13',
+      user: users[3],
+      EmpName: users[3].EmpName,
+      type_request: typeRequests[0],
+      nameTypeRequest: typeRequests[0].name,
+      type_name: typeRequests[0].name,
+      jenisTypeRequest: typeRequests[0].jenis,
+      type_jenis: typeRequests[0].jenis,
+      deskripsiTypeRequest: typeRequests[0].description,
+      description: 'Kebutuhan ATK tim finance bulan Mei',
+      details: [{ id: 6, invent_barang_id: 5, barang: barang[4], selectedBarang: barang[4], qty: 5 }],
+      is_full_approval: false,
+      approval_message: 'Menunggu approval manager',
       canBeUpdated: true,
       can_be_deleted: true,
       created_at: now,
@@ -461,12 +647,25 @@ export const createDemoSeed = () => {
       is_public: true,
       EmpName: users[1].EmpName,
     },
+    {
+      id: 3,
+      name: 'Prosedur Peminjaman Peralatan Studio',
+      tanggal: '2026-05-14',
+      description: '<p>Peminjaman peralatan studio wajib melalui Material Request.</p><ul><li>Ajukan minimal H-2</li><li>Kembalikan dalam kondisi baik</li></ul>',
+      jenis_memo_id: 1,
+      jenis_memo: { id: 1, name: 'Informasi Umum', description: 'General information', is_dynamic: 0 },
+      expired: '2026-07-14',
+      is_full_approval: true,
+      is_dynamic: false,
+      is_public: false,
+      EmpName: users[2].EmpName,
+    },
   ];
 
   return {
     meta: {
       nextIds: {
-        makeRequest: 3,
+        makeRequest: 5,
         purchaseRequest: 2,
         purchaseOrder: 2,
         lpb: 2,
@@ -532,11 +731,39 @@ export const createDemoSeed = () => {
         tanggal: '2026-05-04',
         created_at: now,
       },
+      {
+        id: 3,
+        invent_stoks_id: 203,
+        invent_status_id: status[4].id,
+        status: status[4].name,
+        user_id: users[2].id,
+        EmpName: users[2].EmpName,
+        lokasi: 'Ruang Server',
+        note: 'Upgrade firmware ke versi terbaru',
+        image: '',
+        tanggal: '2026-05-06',
+        created_at: now,
+      },
+      {
+        id: 4,
+        invent_stoks_id: 204,
+        invent_status_id: status[3].id,
+        status: status[3].name,
+        user_id: users[2].id,
+        EmpName: users[2].EmpName,
+        lokasi: 'Studio 2',
+        note: 'Satu unit tidak menyala, menunggu servis',
+        image: '',
+        tanggal: '2026-05-08',
+        created_at: now,
+      },
     ],
     stockMutasi: [
       { id: 1, invent_stoks_id: 101, tanggal: '2026-05-01', stok_awal: 0, stok_change: 120, stok_akhir: 120 },
       { id: 2, invent_stoks_id: 101, tanggal: '2026-05-09', stok_awal: 120, stok_change: 20, stok_akhir: 100 },
       { id: 3, invent_stoks_id: 102, tanggal: '2026-04-18', stok_awal: 0, stok_change: 8, stok_akhir: 8 },
+      { id: 4, invent_stoks_id: 103, tanggal: '2026-05-05', stok_awal: 0, stok_change: 40, stok_akhir: 40 },
+      { id: 5, invent_stoks_id: 103, tanggal: '2026-05-11', stok_awal: 40, stok_change: 5, stok_akhir: 35 },
     ],
     billing: [
       {
@@ -595,14 +822,19 @@ export const createDemoSeed = () => {
     notifications: [
       { id: 1, title: 'Demo mode aktif', message: 'Frontend demo data siap digunakan.', created_at: now, read_at: null },
       { id: 2, title: 'PR menunggu PO', message: 'PR-DEMO-0001 dapat dikonversi ke PO.', created_at: now, read_at: null },
+      { id: 3, title: 'MR siap dibuatkan PR', message: 'MR-DEMO-0003 sudah disetujui dan menunggu Purchase Request.', created_at: now, read_at: null },
+      { id: 4, title: 'Approval MR baru', message: 'MR-DEMO-0004 dari Sari Finance menunggu persetujuan Anda.', created_at: now, read_at: now },
     ],
     logs: [
       { id: 1, action: 'seed', table_name: 'demo', description: 'Demo data initialized', created_at: now },
       { id: 2, action: 'login', table_name: 'auth', description: 'Demo account available', created_at: now },
+      { id: 3, action: 'create', table_name: 'invent_make_requests', description: 'MR-DEMO-0003 dibuat oleh Andi Gudang', created_at: now },
+      { id: 4, action: 'update', table_name: 'invent_stoks', description: 'Status Lampu LED Studio 60W diubah ke rusak', created_at: now },
     ],
     mutasi: [
       { id: 1, kode: 'MTS-DEMO-0001', barang: barang[2], qty: 20, type: 'in', note: 'Demo stock in', created_at: now },
       { id: 2, kode: 'MTS-DEMO-0002', barang: barang[1], qty: 1, type: 'out', note: 'Demo stock out', created_at: now },
+      { id: 3, kode: 'MTS-DEMO-0003', barang: barang[4], qty: 5, type: 'out', note: 'Pengambilan ATK tim finance', created_at: now },
     ],
     trash: {
       category: [{ id: 91, name: 'Old Demo Category', description: 'Trash sample' }],

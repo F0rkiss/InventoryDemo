@@ -64,7 +64,7 @@ function CreateUser() {
                 title:'Tidak Dapat Membuat User MR',
                 text:'Ada Kesalahan Dalam Sistem'
             })
-            setError(error.response.data)
+            setError(error.response?.data ?? null)
         } finally {
             setDisabled(false)
         }
@@ -106,7 +106,7 @@ function CreateUser() {
                             <div className="flex justify-between items-center">   
                             <label>Email:</label>
                             {
-                                error?.msg.email[0] == 'The email has already been taken.' &&
+                                error?.msg?.email?.[0] == 'The email has already been taken.' &&
                                 <p className='text-xs text-red-500'>* Email Sudah Terambil</p>
                             }
                             </div>

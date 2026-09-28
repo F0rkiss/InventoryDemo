@@ -1,7 +1,6 @@
 import React, { forwardRef, useEffect, useState } from 'react'
 import DateFormat from '../../../helper/DateFormatHelper'
 import PriceFormat from '../../../helper/PriceFormatHelper'
-import { info } from 'autoprefixer'
 
 const PurchaseOrderCards = forwardRef(({item, goToUpdate, goToDetail, canUpdate, desktop = false}, ref) => {
     const [isExpanded, setIsExpanded] = useState(null)

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import DOMPurify from 'dompurify';
 import DateFormat from '../../helper/DateFormatHelper';
 import Loader from './Loader';
 import api from '../../api/api';
@@ -263,7 +264,7 @@ const MemoDetailView = ({ data, loading, onClose, goToUpdate, canUpdate, canDele
             <div className="text-gray-600 leading-relaxed text-base space-y-4 flex-1 overflow-y-auto pr-2 custom-scrollbar relative ql-snow">
                  <div 
                     className="prose max-w-none rich-text-content ql-editor" 
-                    dangerouslySetInnerHTML={{ __html: data.description }} 
+                    dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(data.description || '') }}
                  />
             </div>
             { (initial === 'dashboard' || initial === 'information' || initial === 'admin' || initial === 'user') &&

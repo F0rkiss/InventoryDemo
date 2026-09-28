@@ -26,7 +26,7 @@ function ApprovalStepPurchaseList() {
   const [availableTypes, setAvailableTypes] = useState([])
   const typingTimeoutRef = useRef(null)
   const navigate = useNavigate()
-  const { canUpdate, canDelete } = useMenuAccess('ApprovalPurchase')
+  const { canUpdate, canDelete } = useMenuAccess('ApprovalStepPurchase')
 
 
   // Extract unique types from items - flexible to handle separators or plain types

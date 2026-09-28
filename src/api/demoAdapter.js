@@ -101,8 +101,8 @@ const numberValue = (value, fallback = 0) => {
 };
 
 const base64Url = (value) => {
-  const json = JSON.stringify(value);
-  const encoded = globalThis.btoa(unescape(encodeURIComponent(json)));
+  const bytes = new TextEncoder().encode(JSON.stringify(value));
+  const encoded = globalThis.btoa(String.fromCharCode(...bytes));
   return encoded.replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
 };
 
@@ -908,10 +908,10 @@ export const demoApiAdapter = async (config) => {
 
   const key = collectionFor(path);
   if (key && store[key]) {
+    const parts = path.split('/');
+    const possibleId = parts.length > 1 ? routeId(path) : null;
     if (method === 'get') {
-      const parts = path.split('/');
       const first = parts[0];
-      const possibleId = parts.length > 1 ? routeId(path) : null;
       const isDetail = first.endsWith('-detail') || ['paymentType', 'mataUang', 'ppn'].includes(first) && possibleId;
       if (isDetail && possibleId) {
         return ok(config, { data: byId(store[key], possibleId) || store[key][0] });
